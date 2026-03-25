@@ -1,30 +1,25 @@
 import { useState, useCallback, useRef } from 'react';
 import Kirari from './components/Kirari.jsx';
 import MirrorScreen from './components/MirrorScreen.jsx';
-import DentalScreen from './components/DentalScreen.jsx';
 import ResultScreen from './components/ResultScreen.jsx';
 import colors from './styles/theme.js';
 
-const SC = { MIRROR: 0, DENTAL: 1, RESULT: 2 };
-
 export default function App() {
-  const [screen, setScreen] = useState(SC.MIRROR);
-  const skinScoresRef = useRef(null);
-  const dentalScoresRef = useRef(null);
+  const [showResult, setShowResult] = useState(false);
+  const scoresRef = useRef({ skinScores: null, dentalScores: null });
 
-  const handleSkinScores = useCallback((scores) => {
-    skinScoresRef.current = scores;
-  }, []);
-
-  const handleDentalComplete = useCallback((scores) => {
-    dentalScoresRef.current = scores;
-    setScreen(SC.RESULT);
+  const handleResult = useCallback(({ skinScores, dentalScores }) => {
+    scoresRef.current = { skinScores, dentalScores };
+    setShowResult(true);
   }, []);
 
   const handleRestart = useCallback(() => {
-    skinScoresRef.current = null;
-    dentalScoresRef.current = null;
-    setScreen(SC.MIRROR);
+    setShowResult(false);
+  }, []);
+
+  const handleDentalCheck = useCallback(() => {
+    setShowResult(false);
+    // DentalScreen は MirrorScreen に統合済み
   }, []);
 
   const Header = () => (
@@ -38,23 +33,17 @@ export default function App() {
   );
 
   return (
-    <div style={{ maxWidth: 390, margin: "0 auto", background: colors.bg, minHeight: "100vh", fontFamily: "'Noto Sans JP', sans-serif", paddingBottom: screen === SC.RESULT ? 32 : 0 }}>
+    <div style={{ maxWidth: 390, margin: "0 auto", background: colors.bg, minHeight: "100vh", fontFamily: "'Noto Sans JP', sans-serif", paddingBottom: showResult ? 32 : 0 }}>
       <Header />
-      <div key={screen} className="screen-enter">
-        {screen === SC.MIRROR && (
-          <MirrorScreen
-            onNext={() => setScreen(SC.DENTAL)}
-            onScoresReady={handleSkinScores}
-          />
-        )}
-        {screen === SC.DENTAL && (
-          <DentalScreen onComplete={handleDentalComplete} />
-        )}
-        {screen === SC.RESULT && (
+      <div key={showResult ? 'result' : 'mirror'} className="screen-enter">
+        {!showResult ? (
+          <MirrorScreen onResult={handleResult} />
+        ) : (
           <ResultScreen
-            skinScores={skinScoresRef.current}
-            dentalScores={dentalScoresRef.current}
+            skinScores={scoresRef.current.skinScores}
+            dentalScores={scoresRef.current.dentalScores}
             onRestart={handleRestart}
+            onDentalCheck={handleDentalCheck}
           />
         )}
       </div>
