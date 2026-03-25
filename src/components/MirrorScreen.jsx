@@ -98,12 +98,14 @@ export default function MirrorScreen({ onResult }) {
       setStage(STAGE.SCANNING);
 
       setTimeout(() => {
-        // 3. スコア算出 & 完了
+        // 3. スコア算出 & IDLE移行（凍結はまだ維持）
         try { applyScores(); } catch { /* */ }
         setLastCheck(currentMode);
         setStage(null);
-        setFrozenFrame(null); // 凍結解除
         setMode(MODE.IDLE);
+        // 4. スコアバッジのアニメーション完了後に凍結解除
+        // delay: 0, 600, 1200ms + アニメ300ms + 余裕500ms = 約2000ms
+        setTimeout(() => setFrozenFrame(null), 2000);
       }, 1500);
     }, 300);
   }, [applyScores]);
