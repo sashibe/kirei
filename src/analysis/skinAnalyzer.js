@@ -102,48 +102,54 @@ function scoreDullness(skinPixels, imageWidth, imageHeight) {
 
 // 軽量な顔位置検出（自動シャッター用）
 // 4pxおきにサンプリングして高速化
+// ガイド楕円: GuideFrame の viewBox(0-100) で cx=50, cy=45, rx=28, ry=35
+// → 正規化座標: cx=0.50, cy=0.45, rx=0.28, ry=0.35
+const FACE_GUIDE = { cx: 0.50, cy: 0.45, rx: 0.28, ry: 0.35 };
+
 export function detectFacePosition(imageData) {
   const data = imageData.data;
   const w = imageData.width;
   const h = imageData.height;
   const step = 4;
-  let count = 0, sumX = 0, sumY = 0;
-  let minX = w, maxX = 0, minY = h, maxY = 0;
-  let totalSampled = 0;
+
+  // ガイド枠の内側と外側でそれぞれ肌ピクセルをカウント
+  let insideCount = 0, insideSampled = 0;
+  let outsideCount = 0, outsideSampled = 0;
 
   for (let y = 0; y < h; y += step) {
     for (let x = 0; x < w; x += step) {
-      totalSampled++;
+      const nx = x / w; // 0-1に正規化
+      const ny = y / h;
+      // 楕円の内側かチェック: ((x-cx)/rx)^2 + ((y-cy)/ry)^2 <= 1
+      const dx = (nx - FACE_GUIDE.cx) / FACE_GUIDE.rx;
+      const dy = (ny - FACE_GUIDE.cy) / FACE_GUIDE.ry;
+      const isInside = (dx * dx + dy * dy) <= 1.0;
+
       const i = (y * w + x) * 4;
-      if (isSkinPixel(data[i], data[i + 1], data[i + 2])) {
-        count++;
-        sumX += x;
-        sumY += y;
-        if (x < minX) minX = x;
-        if (x > maxX) maxX = x;
-        if (y < minY) minY = y;
-        if (y > maxY) maxY = y;
+      const skin = isSkinPixel(data[i], data[i + 1], data[i + 2]);
+
+      if (isInside) {
+        insideSampled++;
+        if (skin) insideCount++;
+      } else {
+        outsideSampled++;
+        if (skin) outsideCount++;
       }
     }
   }
 
-  const ratio = count / totalSampled;
-  if (count < 20) {
-    return { ratio, centerX: 0.5, centerY: 0.5, inFrame: false };
-  }
+  const insideRatio = insideSampled > 0 ? insideCount / insideSampled : 0;
+  const outsideRatio = outsideSampled > 0 ? outsideCount / outsideSampled : 0;
+  const ratio = (insideCount + outsideCount) / (insideSampled + outsideSampled);
 
-  const centerX = (sumX / count) / w; // 0-1
-  const centerY = (sumY / count) / h; // 0-1
-  const bboxW = (maxX - minX) / w;
-  const bboxH = (maxY - minY) / h;
+  // 判定条件:
+  // 1. ガイド枠内の肌色密度が15%以上（顔が枠内にある）
+  // 2. ガイド枠内の密度が枠外よりも十分高い（顔が中央に来ている）
+  const densityOk = insideRatio > 0.15;
+  const concentrationOk = insideRatio > outsideRatio * 1.5;
+  const inFrame = densityOk && concentrationOk;
 
-  // ガイド枠内に重心があり、十分な肌領域があるか（緩和済み）
-  const xOk = centerX > 0.15 && centerX < 0.85;
-  const yOk = centerY > 0.1 && centerY < 0.85;
-  const sizeOk = ratio > 0.03 && bboxW > 0.1 && bboxH > 0.15;
-  const inFrame = xOk && yOk && sizeOk;
-
-  return { ratio, centerX, centerY, bboxW, bboxH, inFrame };
+  return { ratio, insideRatio, outsideRatio, inFrame };
 }
 
 // メインの分析関数

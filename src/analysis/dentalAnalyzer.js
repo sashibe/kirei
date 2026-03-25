@@ -137,47 +137,49 @@ function scoreStaining(teeth) {
 }
 
 // 軽量な口元位置検出（自動シャッター用）
+// ガイド矩形: GuideFrame の viewBox(0-100) で x=18, y=25, w=64, h=50, rx=20
+// → 正規化座標: x=0.18, y=0.25, w=0.64, h=0.50
+const MOUTH_GUIDE = { x: 0.18, y: 0.25, w: 0.64, h: 0.50 };
+
 export function detectMouthPosition(imageData) {
   const data = imageData.data;
   const w = imageData.width;
   const h = imageData.height;
   const step = 4;
-  let toothCount = 0, gumCount = 0, sumX = 0, sumY = 0;
-  let totalSampled = 0;
+
+  let insideTeeth = 0, insideGums = 0, insideSampled = 0;
+
+  const gx1 = MOUTH_GUIDE.x;
+  const gy1 = MOUTH_GUIDE.y;
+  const gx2 = MOUTH_GUIDE.x + MOUTH_GUIDE.w;
+  const gy2 = MOUTH_GUIDE.y + MOUTH_GUIDE.h;
 
   for (let y = 0; y < h; y += step) {
     for (let x = 0; x < w; x += step) {
-      totalSampled++;
-      const i = (y * w + x) * 4;
-      const type = classifyOralPixel(data[i], data[i + 1], data[i + 2]);
-      if (type === 'tooth') {
-        toothCount++;
-        sumX += x; sumY += y;
-      } else if (type === 'gum') {
-        gumCount++;
-        sumX += x; sumY += y;
+      const nx = x / w;
+      const ny = y / h;
+      // ガイド矩形の内側かチェック
+      const isInside = nx >= gx1 && nx <= gx2 && ny >= gy1 && ny <= gy2;
+
+      if (isInside) {
+        insideSampled++;
+        const i = (y * w + x) * 4;
+        const type = classifyOralPixel(data[i], data[i + 1], data[i + 2]);
+        if (type === 'tooth') insideTeeth++;
+        else if (type === 'gum') insideGums++;
       }
     }
   }
 
-  const oralCount = toothCount + gumCount;
-  const ratio = oralCount / totalSampled;
-  if (oralCount < 15) {
-    return { ratio, centerX: 0.5, centerY: 0.5, inFrame: false, hasTeeth: false, hasGums: false };
-  }
+  const oralCount = insideTeeth + insideGums;
+  const ratio = insideSampled > 0 ? oralCount / insideSampled : 0;
+  const hasTeeth = insideTeeth > 5;
+  const hasGums = insideGums > 5;
 
-  const centerX = (sumX / oralCount) / w;
-  const centerY = (sumY / oralCount) / h;
+  // 判定: ガイド枠内に歯または歯茎が5%以上
+  const inFrame = ratio > 0.05 && (hasTeeth || hasGums);
 
-  // 口元は画面付近にあればOK（緩和済み）
-  const xOk = centerX > 0.1 && centerX < 0.9;
-  const yOk = centerY > 0.1 && centerY < 0.9;
-  const sizeOk = ratio > 0.01;
-  const hasTeeth = toothCount > 3;
-  const hasGums = gumCount > 3;
-  const inFrame = xOk && yOk && sizeOk && (hasTeeth || hasGums);
-
-  return { ratio, centerX, centerY, inFrame, hasTeeth, hasGums };
+  return { ratio, inFrame, hasTeeth, hasGums };
 }
 
 // メインの分析関数
