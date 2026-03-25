@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>KIREI - AI Beauty Mirror Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f5f3ff; overflow-y: scroll; }
+  html { scrollbar-gutter: stable; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script>
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+const {
+  useState,
+  useEffect
+} = React;
+const IMG_FACE = "data:image/jpeg;base64,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";
+const IMG_MOUTH = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAAAAAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABcQERQRDhcUEhQaGBcbIjklIh8fIkYyNSk5UkhXVVFIUE5bZoNvW2F8Yk5QcptzfIeLkpSSWG2grJ+OqoOPko3/2wBDARgaGiIeIkMlJUONXlBejY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY3/wAARCAD6ALwDASIAAhEBAxEB/8QAGgAAAwEBAQEAAAAAAAAAAAAAAgMEBQEABv/EADYQAAEEAQMCBQIFAwQCAwAAAAEAAgMRIQQSMUFRBRMiYXEygRQjQpGhUnKxM8HR4UPwFSRi/8QAGAEBAQEBAQAAAAAAAAAAAAAAAgEDAAT/xAAgEQEBAQEAAgIDAQEAAAAAAAAAARECEiEDMRNBUTJh/9oADAMBAAIRAxEAPwDPne7y4NXGbc0bHH44KZr4xMfxEQ9LwHY9/wDvCRons3SaOY+l4oH/AAmRPdpXu0mpw39LjwlP9TpebnpJES+QNzbsLUZDwwGhxaXBpBHN5pxggD37qtjbWnV/jTmFs0ULebcfco/JgH6AfakewrojceHfsje6XjCjDFRqFg+QlGFhNBo+wVrdO3rn5RGMDos7SnKDyyOG0s+d/mTFwyyPA9yrtdP6jp4Dch+o/wBAWZO5o2wx8DH/AGpJ+6y7v6gGNMkmM5oe5W5o4RGwDr1Umi0rYxvcPUeFrQRirKHVbfHwcwNr6ST3QysbLGY3DBVMb2saRV2ELxYWVbb+nyesY/S6iiMtNg9wu6SQQ6oZqOQVfseP5Wv4rpBLDurLchYBaWHy3dMtK25vlMeX5OfG7G4GnIr7FC6FtZj/AGFoNBqBPGA4/mMw739//f8AdXAK+VKZUTdPpz+hn7JjdPBf+m37BUuj3ctBQfhm9AW/BWdpzmFO0ULx9ACmk0vlHcwkt6g9FYYnt+lx+647cBTh91NXxjE1TS14PdLC1dTpvO052j1NyFG2F1enhaS+mPXOV2SDfpXz8Pa6x8dlTppm6vS7NbGS1uBIBx/v913V+nRMjBwTZ907QMrTg1ybT3Gc58imwaqBt6WRuoh6AnhEzxDy8T6WZp//ADkJ0ukY525lsef1MNH+FO862O9k5eB/UAV3lCzvn6NPiWhkbTpJGexaUbPEtCxteccdmFQu1msH1RxO+Y0B1mq6QRD4jV2f13l1/GkfF9PxFHNKewbSRNqNZqBkN0sfe7co/wAT4g/DRt/tYAufg9XOfzXE/wBxtT07e6XLqI42GLTA0fqeeXJmh0Zc4SSD4Cq0vhY3+o2RyStZmkiY3myEL0fHx/tLHGS8dgrWcABLeA26QicR3eUfttuKbo0QnR7SMlQfjGSOrdbgEwSHvSHUxZfKHTx2HNXzet03rLKpzct+Fv8AncA8INRomapu4Ha4cEKc3K7rnY+XjlfFIHA7ZG9e/wArT0/izRQlYR8INZ4c9p9beeHjgqF+kmj4aSPbK39dPNl5vp9FDqYZvokafa6Kpa0HpYXxxL2YcCP4RN1D28PcPgo3kp8l/j7DYL4P3S5YgAdxDR7ml8t+KlPMj/3K5vc/kk/KPgv5P+Np+r0+nu3h56NZlQO8T1AJ8giJnRrQh02gm1BxTR3K0m+DadraeJJD1dur+Au3mOzvpPqju07CejaVmmFaaP8AtCjnBG5juhV2n/0o/wC0f4TtHiezWtxlc8oE0mtATAyzjlFtiUaYHojGmZ2VjIrCXK8MBDV3tZIR5bGDoluIGQlzzVeUgPcW2evCsd1iyEhvXJXnzBhJtSmagszWmWd2xhNdu67HW5GlJr4d1GRt/K4ZA8YIIPYrIj8MmcRupoV0GhEDfQ43191cZeVpjBscT3KoExA5Uj3EHhBI6Qx0w0e6N9nPS4Ti8q2DUNxRwvlJI9SHH1Pd91RopNSx4Dtxb79FLws+T9WPqXuZIzacgqB0bY3URhejmxkoJn7m2jzsp2TFDNNBKL2j4XHeE6V//jAKRBOWOB/daEcrXCwcp3RyIXeCQg4C63wmNpsNWq1wIyiLR05Q8qmSJYNOIm0AjLbNphoBLQpxnauDzCS0dLpFB/pM+FXGMlyQAGuIHAK05u+mWe9NY3I9lVE0dVKzsqBI0N5WkUUsmxpDVnTv2igf3T5ZLvKzp3lxPZG+ynqF5llzx1VTmjbXRL00eLrlNeQBaU9D91NJA4/ScIY4yzBq0x8gAxk/4QOzR7dFUtMaSUWGkCwbQj6hXB5CIRirdn/ZdqO+U12SQuNjbS9w2kTS0Mw2z/KFKAk0oqx1SxE5o9ItPO/0/q6UURzRxfdTbCxNHFLI76TXuqXwFkeeU2ORxINYrKY8bhSO+zz0zdpDrVETjwCvPjoleYKWjJXC9+47uOirDrHuSoWGgE8OxgodH9jeQTyhXi4FAXG+QFnSGBTVI7Dz8qw5BUsw2zEfBS4+2VE1/VG52MJI4TRx7LVxMhwpiy3Kt4s0lkBmT0Ui10UxnCnklzd0PhenlJbgEe5CRHZJBz36ps9NGASG0O/KNgB+mgOUyGKxkfunMi22epR0pyUGfSRhd2hp6V391QBG3lwC9+WQcilPbScoXtIJANm0yOI9sFOdFGSHDojbsx6lLVnBIY63GsXkLjmEvJDgGjoDStYGH9QtKlgNgtqrv5Q12FMcXxiwQ4Jgouw6+yXNGQ7zM4SXucwtP1Ai8HIXO3FMjL9kgYT45PMjBNWUo1vNBac0KJvPKeHYU7aHROGMgI9LHbA/2QE54XXXuFcIDzys6Spo9LfdS6k//ZPwFY3kewUU+Zr9yrz9s683KMGzn7JbeE1tkYH7rZI6Gg8KeY+qhyO6qHFLP1DyZCS70j9I/wCVYnVJfd4GTixwmaZjW24m/wDCSPW4urJGAOAmucRCBxYVo8+6bJqtmG8e6jk1xutxJ7BKdue/bnOFa3w3Y2MkfVkfuid6xJ50h/S4Jn5tXRpa8uiaY2+nk0CqnaRoiAoChwuT8lfOGd7cF1ITqiOp/ZbMWhD5XlwBANBK1uhAiLg3Iyu9L+Ss1muLcm8eyfF4kXHB46IpdG1kO6sjKQ7QER7xzypkX8lakOqbMwh/JSNQCCQD6ehCz4ZMAhaD3eZAELMpbsJieY39NpGaOAqwS5zfccqeVjBtu8D6uyohZtaB9xRVgwYFFGDjC8e697V91LTgCU6AsDDv5tTOd6cDjj3UD5NaZX+TGHMugbRk0erkbYNbj7KGU8H3VjjUTvdRTfSVJ9o6M9eExp6HlJZ0ynMFrdIOV2yEkYoLKe4ueNwsnuOFqSDcyhys9zPWW391YPTjQC4gfde1B9AP+UTWbSdvwh1jXeSSMUCV1TlJpXB+taCcC1uuLntbR3bccrK8DhZJK4uPQZX0OmiaIXEC+SFBt0iKUuc0HLAc/Kok1DXWcn+0EpUDfrPUEhO0eIjn9RXW67MK08rWsJNts36hRXdRPC+Nw3tyOmUccYf5h5G4pcEDXaYEgZFlC2HIz9RqI/K+v0jk0ly6mN8LgxwOFfPpGP0LqaL22s6fTNOl3AVY6K83UqBhDXho6q6MnywByswx7Z2EEnBWpG2mAmxYS6i8X0OyYzTQSOB2+F6JpieLNbsmxSHcRk5A7o43/mNFAsP8IFqse68QKsrooensuPNhCtSJHbWk9ha+di8Q2t9V3d4X0ExAjdebHVfPy+HHfcbvSc56K83mfbH5Ld9PqpTTAO6kkKyppjHIfMkeT3Jz8rZ8Pkh116edoj1DWB25vUH2UvOe3eSdhoDKew5C9qdK7SSBrnbmuyDSW05FX8rWXY6KJHYHuoTgmz6vboq9w8onv0U7Q2Qk5IvpgKx1LYxz28kJjgHRlrhjhNc0VQH7JDsXyFy8+k2lgl0cxdE8OacV1W1otY0ab8zDs2FntHYppZuA62pZpzjmrYNSxofZHqN8psE7Awiwc9FlGGwcJkcLgzDiL90aX44sbMYwWtc2iSXZ4+F2PVARlt0AFA3TvFu8wknuh8qQWA67UwvGK36gkFrTiqolQTTPfC6CPmqsprIXPNEO+6YIQxt/qpdPSXiVFpdG5p3Seo91a+Hdtq8DouuIbRJymx+puVL1U8ZJkTmA16uAvadoDq6A4tM1DSW8WghxeDzyrL6DMqkktdmvlLkcSaR3lJce1AIUkOtnH4lkIJraXOUUs20gA9E5hbKybUY3Pdi+jeFn6qQHUO2mwOFp4bMea9b1pr3bze7zXnmuyfBNI/xduogJbIP/ABuxY7WtsCB0bvyGWeabSx5tnmh0bS2iKtSdad5x9Pq2/i9BvY07m+oDr7hYzTn2TdD4k+L0vyF3VhhkM0P0ON1/SV3Fz1XZgCNzcihXXouQNFmv2S3EPoWKPco4Q0kkHj+Vo79nHHukvjJyKH2TrtCQuNI4ll80ibqXNOP5Ty0EUUiSAmyFXbYb+NcOQF4a2zyKUT43txylU4DIXYv5K0zqkTdWOqyA5wNd0QMnQWEcWfI1/wAY2iLASZNXu4UjIHvJ7e3IT4dIWEF3qQskLyt+oZC1zyD0VjTjHCFjQKAGEyvZAgvyElsgGKyenZPdgGlOPqJkwRwFYFFvIJs2FB4nqmxQeXdOkBA/5VE72sDnONNGb7r5vVTu1M7nn4A7BLnnaz76yK9DOHflnoKpSai2TuFdUERLZGkGja1vIbOA+UW6ufZa2zn280hLfxUf0Fw/teuQvldMGPJ5zYVoCCJgMjnu+kLPW+GNLAck/ZT6nxJxHlwEhgOScl3/AEuazWB0A08TQKPqf1PsoDxhPjj90Ou/1GtptQ2Vu4AAnkHorIyausf+9F85FOYX7hhy2tLqfMia669iMpWO56aDCu7QQhb9IKY0INoDZle2JwApdpcRBivkJTtODmlZSE0Ks5K7XYiGjbd0mx6cBoNZpUUBx1RBu0KWrOSWxBvT7owC34R7f2XgM4Qpx1oFWi24XhxlesIOJlaQwm8+ykkfYBN54yqdRI5oOPjusDxDXF4MbCQOv/CfM1l31I5rNYJpfLYfQ089ypXtabJx7pDT6k4nc/b0HK2kx5rd+3ooXGXpTcrY072iPb/SaWWL6JoeQOaXWTqZXS59KpZKO0Gu5SZtWBEIoQQf6igdK0F7nZPRTe56qc8/0uuv48gJpdJooXcWtWRZyVp+HgnSWOQ4rLK1vCf9A/3FGlz9tKCXeNpNOHNFUMdR9Ru1AWFr9zT7pgkx6jVcgdUftrLjSabFA0ub8lSDUARix0uuyYydrmgHnqETnRu+3EUflDZHPH8pe6mi3cCwhDy69tn56qFp2bNWia72SGzAWD9XK7uAG4UTyouqN11S6SG+3upjJuo3QOQiLsEbuMo4XkeJBZCCSdsYdZU28WKIJHdA2M6i2uFNs2T0Uwb1/BOjMrQ8GhfHdfOawn8XKKqnEL6wNDRtHHRYHiWiIkdLHmzZCXx9ew+Tn0zAcow4i/dBRBRLd5zYnGzlOCnZgpwOOVK4JJccoSUXCA8pC4UJXShXKErT8MtrK75WZVmlp6PBAUqxpe6CSMUXgW/umxi2rxwg1S7yPqbnp7e6MSVuDck4Rvia7P8AKX5ZYbGVU9jZN0Is5I91x0h3VdZQA7WuGw24AX2Sy0kHBBPZTF2jEvq5BpMkkb5noOQBWOlKUNcD+oIw0ltV9yudtUumaWXV0Mj2XdznYZYoi0MUDi4kNJBbtrpSqjhEfTPbshbIclpUULnPAd0v+Vc1gYNo72uMbtz1KOu6xt1pzMCR6VHKzduBVx4SNvqKkWvm9Xp9rzWFLxytzxGGjuAWNIKcF6uLseXuZXAmg4SgjCbMRSymFLKrglCiKFc51o9S0dNyFnx/UtKAcI0o04vpROHUcdUuM4ThwicKC4W9iicNvHCJowoRYjJ6I2xDsmCwEW7uEdXACNvZdDR2CMbey7be1qWlI82zgBE1oGSbK5ZPGEQwFnTgq9V3hFaELvHyorx4IQBvqXeSiaPVnhRUfiDAYyvnNUKd919RrqELiey+X1B3SFb/ABPP8pYRJbT0RjhbsBuQphQLnAIQ0jKEqOej+v7LT0xDmrMiP5lq2J3lPDh9JUqxqx8BOHdJgIe3Cd7I1pBVYXhH1H7Im5CMDCNOAo9lxNyu0D0Q0sKC6KRljV7a35XaoQbTGi1xoA6JjSjSgg2hZSnHKYTjCABFXmBMAXGilPrtW3Ts2tNvP8LpNS3EXiuos+U04HKwZPqKsleXWTyVG/6ivVxMjy93aWOUQXAupgaUJXrXqUUKEoygK5HmCiq2OxnhTsCa3CsRbppjE7m2rSa9sjdzSCsVrk6OYsNtNIWNJ012J7VnafWAmn491pRua4WCCh015eXCjpcItZmEL22+q7t+F1crgFHlG3KBE00FK6CIoIRXJSZ9XHHy4E9gs3Ua98mG+kLpzal7kX6nXNiaQw25Y0shkeXONkoHPJ5K4FtzzIw66vQX8KZ3JVLgp34TgFdUSHqjHCSDvsuWvLyiuFcAv7rpXW8KOeBpydtsWEsAYTY/pViODCMFcK4qhgNdU6PUSRn0uU45XVLFlxoN8TeB6gCjHiY6tKzV4oeEPzrV/wDkmdigPijejT+6zAvKeEXzq93iTz9IASH6uaTBea7DCnC93V8ZE8rXd18rhK4VwJC6AiC8F0KOA+gLUruSqX/UfgqYqxxZHVdBwjk4PwlKo//Z";
+const SKIN = {
+  tone: {
+    score: 72,
+    label: "肌トーン",
+    color: "#e879f9",
+    bg: "#fdf4ff"
+  },
+  pores: {
+    score: 68,
+    label: "毛穴",
+    color: "#a78bfa",
+    bg: "#f5f3ff"
+  },
+  dullness: {
+    score: 81,
+    label: "くすみ",
+    color: "#2dd4bf",
+    bg: "#f0fdfa"
+  }
+};
+const DENTAL = {
+  gums: {
+    score: 78,
+    label: "歯茎の色味",
+    color: "#22c55e",
+    bg: "#dcfce7"
+  },
+  alignment: {
+    score: 62,
+    label: "歯並び",
+    color: "#f59e0b",
+    bg: "#fef9c3"
+  },
+  staining: {
+    score: 55,
+    label: "着色",
+    color: "#f97316",
+    bg: "#ffedd5"
+  }
+};
+function Kirari({
+  size = 48,
+  expression = "happy",
+  bounce = false
+}) {
+  // Mirror fairy mascot - simplified SVG
+  const faces = {
+    happy: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("ellipse", {
+      cx: "17",
+      cy: "19",
+      rx: "1.8",
+      ry: "2.2",
+      fill: "#4a235a"
+    }), /*#__PURE__*/React.createElement("ellipse", {
+      cx: "27",
+      cy: "19",
+      rx: "1.8",
+      ry: "2.2",
+      fill: "#4a235a"
+    }), /*#__PURE__*/React.createElement("circle", {
+      cx: "18.2",
+      cy: "18.2",
+      r: ".6",
+      fill: "#fff"
+    }), /*#__PURE__*/React.createElement("circle", {
+      cx: "28.2",
+      cy: "18.2",
+      r: ".6",
+      fill: "#fff"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M19 25 Q22 30 25 25",
+      stroke: "#4a235a",
+      strokeWidth: "1.5",
+      fill: "none",
+      strokeLinecap: "round"
+    })),
+    thinking: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("ellipse", {
+      cx: "17",
+      cy: "19",
+      rx: "1.8",
+      ry: "2",
+      fill: "#4a235a"
+    }), /*#__PURE__*/React.createElement("ellipse", {
+      cx: "27",
+      cy: "19",
+      rx: "1.8",
+      ry: "2",
+      fill: "#4a235a"
+    }), /*#__PURE__*/React.createElement("circle", {
+      cx: "25",
+      cy: "26",
+      r: "2",
+      fill: "#4a235a"
+    })),
+    sparkle: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("ellipse", {
+      cx: "17",
+      cy: "19",
+      rx: "1.8",
+      ry: "2.2",
+      fill: "#4a235a"
+    }), /*#__PURE__*/React.createElement("ellipse", {
+      cx: "27",
+      cy: "19",
+      rx: "1.8",
+      ry: "2.2",
+      fill: "#4a235a"
+    }), /*#__PURE__*/React.createElement("circle", {
+      cx: "18.2",
+      cy: "18.2",
+      r: ".6",
+      fill: "#fff"
+    }), /*#__PURE__*/React.createElement("circle", {
+      cx: "28.2",
+      cy: "18.2",
+      r: ".6",
+      fill: "#fff"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M19 25 Q22 30 25 25",
+      stroke: "#4a235a",
+      strokeWidth: "1.5",
+      fill: "none",
+      strokeLinecap: "round"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M32 10 L34 8 M34 12 L36 10",
+      stroke: "#f59e0b",
+      strokeWidth: ".8",
+      strokeLinecap: "round"
+    })),
+    wink: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("ellipse", {
+      cx: "17",
+      cy: "19",
+      rx: "1.8",
+      ry: "2.2",
+      fill: "#4a235a"
+    }), /*#__PURE__*/React.createElement("circle", {
+      cx: "18.2",
+      cy: "18.2",
+      r: ".6",
+      fill: "#fff"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M24 19 Q27 17 30 19",
+      stroke: "#4a235a",
+      strokeWidth: "1.5",
+      fill: "none",
+      strokeLinecap: "round"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M19 25 Q22 30 25 25",
+      stroke: "#4a235a",
+      strokeWidth: "1.5",
+      fill: "none",
+      strokeLinecap: "round"
+    }))
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: size,
+      height: size,
+      flexShrink: 0,
+      animation: bounce ? "kb 1s ease-in-out infinite" : "none"
+    }
+  }, /*#__PURE__*/React.createElement("style", null, `@keyframes kb{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}`), /*#__PURE__*/React.createElement("svg", {
+    viewBox: "0 0 44 44",
+    width: size,
+    height: size
+  }, /*#__PURE__*/React.createElement("defs", null, /*#__PURE__*/React.createElement("linearGradient", {
+    id: "fg",
+    x1: "0",
+    y1: "0",
+    x2: "0",
+    y2: "1"
+  }, /*#__PURE__*/React.createElement("stop", {
+    offset: "0%",
+    stopColor: "#e9d5ff"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "100%",
+    stopColor: "#d8b4fe"
+  })), /*#__PURE__*/React.createElement("linearGradient", {
+    id: "wg",
+    x1: "0",
+    y1: "0",
+    x2: "1",
+    y2: "1"
+  }, /*#__PURE__*/React.createElement("stop", {
+    offset: "0%",
+    stopColor: "rgba(255,255,255,0.6)"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "100%",
+    stopColor: "rgba(200,220,255,0.3)"
+  }))), /*#__PURE__*/React.createElement("ellipse", {
+    cx: "8",
+    cy: "14",
+    rx: "7",
+    ry: "10",
+    fill: "url(#wg)",
+    stroke: "#c4b5fd",
+    strokeWidth: ".5",
+    transform: "rotate(-15 8 14)"
+  }), /*#__PURE__*/React.createElement("ellipse", {
+    cx: "36",
+    cy: "14",
+    rx: "7",
+    ry: "10",
+    fill: "url(#wg)",
+    stroke: "#c4b5fd",
+    strokeWidth: ".5",
+    transform: "rotate(15 36 14)"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M15 24 Q14 36 12 40 Q18 38 22 38 Q26 38 32 40 Q30 36 29 24 Z",
+    fill: "url(#fg)",
+    stroke: "#c084fc",
+    strokeWidth: ".6"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "22",
+    cy: "16",
+    r: "10",
+    fill: "#fef3c7",
+    stroke: "#fbbf24",
+    strokeWidth: ".3"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M12 14 Q12 5 22 5 Q32 5 32 14 Q30 10 22 9 Q14 10 12 14 Z",
+    fill: "#c084fc"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M12 14 Q11 18 13 20",
+    fill: "#a855f7",
+    stroke: "none"
+  }), /*#__PURE__*/React.createElement("polygon", {
+    points: "23,4 24,6.5 26.5,6.5 24.5,8 25.2,10.5 23,9 20.8,10.5 21.5,8 19.5,6.5 22,6.5",
+    fill: "#fbbf24",
+    stroke: "#f59e0b",
+    strokeWidth: ".3"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "14",
+    cy: "22",
+    r: "2.5",
+    fill: "rgba(251,191,36,0.2)"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "30",
+    cy: "22",
+    r: "2.5",
+    fill: "rgba(251,191,36,0.2)"
+  }), faces[expression], /*#__PURE__*/React.createElement("line", {
+    x1: "10",
+    y1: "22",
+    x2: "6",
+    y2: "28",
+    stroke: "#d4a853",
+    strokeWidth: "1",
+    strokeLinecap: "round"
+  }), /*#__PURE__*/React.createElement("ellipse", {
+    cx: "5",
+    cy: "30",
+    rx: "3",
+    ry: "3.5",
+    fill: "#e0e7ff",
+    stroke: "#d4a853",
+    strokeWidth: ".8"
+  })));
+}
+function Bubble({
+  children
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "#fff",
+      borderRadius: 18,
+      padding: "10px 14px",
+      boxShadow: "0 2px 12px rgba(139,92,246,0.08)",
+      border: "1px solid rgba(139,92,246,0.1)",
+      flex: 1,
+      position: "relative"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      top: 14,
+      left: -7,
+      width: 0,
+      height: 0,
+      borderTop: "7px solid transparent",
+      borderBottom: "7px solid transparent",
+      borderRight: "7px solid #fff"
+    }
+  }), children);
+}
+function Score({
+  score,
+  size = 80,
+  color = "#a78bfa",
+  label,
+  delay = 0
+}) {
+  const [cur, setCur] = useState(0);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      let s = 0;
+      const iv = setInterval(() => {
+        s++;
+        setCur(s);
+        if (s >= score) clearInterval(iv);
+      }, 18);
+      return () => clearInterval(iv);
+    }, delay);
+    return () => clearTimeout(t);
+  }, [score, delay]);
+  const r = (size - 8) / 2,
+    c = 2 * Math.PI * r,
+    o = c - cur / 100 * c;
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 2
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: size,
+    height: size,
+    style: {
+      transform: "rotate(-90deg)"
+    }
+  }, /*#__PURE__*/React.createElement("circle", {
+    cx: size / 2,
+    cy: size / 2,
+    r: r,
+    fill: "none",
+    stroke: "#f1f5f9",
+    strokeWidth: "6"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: size / 2,
+    cy: size / 2,
+    r: r,
+    fill: "none",
+    stroke: color,
+    strokeWidth: "6",
+    strokeDasharray: c,
+    strokeDashoffset: o,
+    strokeLinecap: "round",
+    style: {
+      transition: "stroke-dashoffset 0.08s"
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "relative",
+      marginTop: -size + 2,
+      height: size,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: size * 0.3,
+      fontWeight: 800,
+      color
+    }
+  }, cur)), label && /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 10,
+      color: "#64748b",
+      marginTop: 1,
+      fontWeight: 600
+    }
+  }, label));
+}
+function ProductCard({
+  emoji,
+  name,
+  reason,
+  tag,
+  tagColor,
+  onClick
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    onClick: onClick,
+    style: {
+      background: "#fff",
+      borderRadius: 14,
+      padding: "10px 12px",
+      boxShadow: "0 1px 6px rgba(0,0,0,0.04)",
+      border: "1px solid #f1f5f9",
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      cursor: "pointer",
+      minWidth: 200,
+      flexShrink: 0,
+      transition: "box-shadow 0.15s"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 38,
+      height: 38,
+      borderRadius: 10,
+      background: "#f8fafc",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: 18,
+      flexShrink: 0
+    }
+  }, emoji), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      minWidth: 0
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 4,
+      marginBottom: 1
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 12,
+      fontWeight: 700,
+      color: "#334155"
+    }
+  }, name), tag && /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 8,
+      fontWeight: 700,
+      color: tagColor,
+      background: tagColor + "15",
+      padding: "1px 5px",
+      borderRadius: 5
+    }
+  }, tag)), /*#__PURE__*/React.createElement("p", {
+    style: {
+      fontSize: 10,
+      color: "#94a3b8",
+      margin: 0,
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap"
+    }
+  }, reason)), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 14,
+      color: "#cbd5e1",
+      flexShrink: 0
+    }
+  }, "\u203A"));
+}
+function ProductModal({
+  product,
+  onClose
+}) {
+  if (!product) return null;
+  return /*#__PURE__*/React.createElement("div", {
+    onClick: onClose,
+    style: {
+      position: "fixed",
+      inset: 0,
+      background: "rgba(0,0,0,0.4)",
+      zIndex: 100,
+      display: "flex",
+      alignItems: "flex-end",
+      justifyContent: "center",
+      animation: "modalBg 0.2s ease"
+    }
+  }, /*#__PURE__*/React.createElement("style", null, `@keyframes modalBg{from{opacity:0}to{opacity:1}} @keyframes modalSlide{from{transform:translateY(100%)}to{transform:translateY(0)}}`), /*#__PURE__*/React.createElement("div", {
+    onClick: e => e.stopPropagation(),
+    style: {
+      background: "#fff",
+      borderRadius: "24px 24px 0 0",
+      width: "100%",
+      maxWidth: 390,
+      padding: "20px 20px 32px",
+      animation: "modalSlide 0.3s ease"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 36,
+      height: 4,
+      borderRadius: 2,
+      background: "#e2e8f0",
+      margin: "0 auto 16px"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 12,
+      marginBottom: 14
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 56,
+      height: 56,
+      borderRadius: 16,
+      background: product.tagColor + "10",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: 28,
+      flexShrink: 0
+    }
+  }, product.emoji), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 6,
+      marginBottom: 2
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 16,
+      fontWeight: 800,
+      color: "#1e293b"
+    }
+  }, product.name), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 9,
+      fontWeight: 700,
+      color: product.tagColor,
+      background: product.tagColor + "15",
+      padding: "2px 7px",
+      borderRadius: 6
+    }
+  }, product.tag)), /*#__PURE__*/React.createElement("p", {
+    style: {
+      fontSize: 12,
+      color: "#64748b",
+      margin: 0
+    }
+  }, product.brand))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "baseline",
+      gap: 4,
+      marginBottom: 12
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 24,
+      fontWeight: 800,
+      color: "#1e293b"
+    }
+  }, "\xA5", product.price.toLocaleString()), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 11,
+      color: "#94a3b8"
+    }
+  }, "(\u7A0E\u8FBC)"), product.size && /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 11,
+      color: "#94a3b8",
+      marginLeft: 4
+    }
+  }, product.size)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "flex-start",
+      gap: 8,
+      background: "#faf5ff",
+      borderRadius: 14,
+      padding: "10px 12px",
+      marginBottom: 14
+    }
+  }, /*#__PURE__*/React.createElement(Kirari, {
+    size: 32,
+    expression: "sparkle"
+  }), /*#__PURE__*/React.createElement("p", {
+    style: {
+      fontSize: 11,
+      color: "#475569",
+      margin: 0,
+      lineHeight: 1.6,
+      flex: 1
+    }
+  }, product.kirpicomment)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 16
+    }
+  }, /*#__PURE__*/React.createElement("p", {
+    style: {
+      fontSize: 12,
+      fontWeight: 700,
+      color: "#334155",
+      marginBottom: 6
+    }
+  }, "\u304A\u3059\u3059\u3081\u30DD\u30A4\u30F3\u30C8"), product.features.map((f, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      display: "flex",
+      alignItems: "flex-start",
+      gap: 6,
+      marginBottom: 4
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: product.tagColor,
+      fontSize: 12,
+      marginTop: 1,
+      flexShrink: 0
+    }
+  }, "\u2713"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 11,
+      color: "#475569",
+      lineHeight: 1.5
+    }
+  }, f)))), /*#__PURE__*/React.createElement("button", {
+    style: {
+      width: "100%",
+      padding: 14,
+      background: "linear-gradient(135deg, #a855f7, #ec4899)",
+      border: "none",
+      borderRadius: 14,
+      fontSize: 14,
+      fontWeight: 700,
+      color: "#fff",
+      cursor: "pointer",
+      boxShadow: "0 4px 16px rgba(168,85,247,0.25)",
+      marginBottom: 8
+    }
+  }, "\u8CFC\u5165\u30DA\u30FC\u30B8\u3092\u958B\u304F"), /*#__PURE__*/React.createElement("button", {
+    onClick: onClose,
+    style: {
+      width: "100%",
+      padding: 10,
+      background: "transparent",
+      border: "none",
+      fontSize: 12,
+      color: "#94a3b8",
+      cursor: "pointer"
+    }
+  }, "\u9589\u3058\u308B")));
+}
+const SC = {
+  MIRROR: 0,
+  DENTAL: 1,
+  RESULT: 2
+};
+function App() {
+  const [screen, setScreen] = useState(SC.MIRROR);
+  const [skinDone, setSkinDone] = useState(false);
+  const [dentalProg, setDentalProg] = useState(0);
+  const [tab, setTab] = useState("skin");
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  useEffect(() => {
+    if (screen === SC.MIRROR) {
+      setSkinDone(false);
+      const t = setTimeout(() => setSkinDone(true), 3000);
+      return () => clearTimeout(t);
+    }
+  }, [screen]);
+  useEffect(() => {
+    if (screen === SC.DENTAL) {
+      setDentalProg(0);
+      const iv = setInterval(() => {
+        setDentalProg(p => {
+          if (p >= 100) {
+            clearInterval(iv);
+            setTimeout(() => setScreen(SC.RESULT), 500);
+            return 100;
+          }
+          return p + 1;
+        });
+      }, 35);
+      return () => clearInterval(iv);
+    }
+  }, [screen]);
+  const bg = "linear-gradient(180deg, #faf5ff 0%, #fdf2f8 35%, #fff 65%, #f0fdf4 100%)";
+  const Header = () => /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      padding: "14px 20px 6px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 6
+    }
+  }, /*#__PURE__*/React.createElement(Kirari, {
+    size: 28,
+    expression: "happy"
+  }), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 17,
+      fontWeight: 800,
+      background: "linear-gradient(135deg, #a855f7, #ec4899)",
+      WebkitBackgroundClip: "text",
+      WebkitTextFillColor: "transparent"
+    }
+  }, "KIREI")), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 9,
+      color: "#c084fc",
+      background: "#faf5ff",
+      padding: "3px 10px",
+      borderRadius: 20,
+      fontWeight: 600
+    }
+  }, "PROTOTYPE"));
+
+  // ─── SCREEN 1: BEAUTY MIRROR ───
+  if (screen === SC.MIRROR) {
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        maxWidth: 390,
+        margin: "0 auto",
+        background: bg,
+        minHeight: "100vh",
+        fontFamily: "'Noto Sans JP', sans-serif"
+      }
+    }, /*#__PURE__*/React.createElement(Header, null), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        alignItems: "flex-start",
+        gap: 8,
+        padding: "4px 20px 10px"
+      }
+    }, /*#__PURE__*/React.createElement(Kirari, {
+      size: 44,
+      expression: skinDone ? "sparkle" : "thinking",
+      bounce: !skinDone
+    }), /*#__PURE__*/React.createElement(Bubble, null, /*#__PURE__*/React.createElement("p", {
+      style: {
+        fontSize: 13,
+        color: "#334155",
+        margin: 0,
+        lineHeight: 1.7
+      }
+    }, skinDone ? "肌チェック完了♪ 口元を映すとデンタルチェックもできるよ！" : "キラリだよ♪ お顔を映してね、肌の状態をチェックしてるよ〜"))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        margin: "0 20px",
+        position: "relative",
+        borderRadius: 24,
+        overflow: "hidden",
+        aspectRatio: "3/4",
+        background: "#000",
+        boxShadow: "0 8px 32px rgba(168,85,247,0.12)"
+      }
+    }, /*#__PURE__*/React.createElement("img", {
+      src: IMG_FACE,
+      alt: "",
+      style: {
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+        opacity: 0.9
+      }
+    }), !skinDone && /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "absolute",
+        left: 0,
+        right: 0,
+        height: 2,
+        background: "linear-gradient(90deg, transparent, #e879f9, transparent)",
+        animation: "ms 2s ease-in-out infinite",
+        boxShadow: "0 0 12px #e879f9"
+      }
+    }), /*#__PURE__*/React.createElement("style", null, `@keyframes ms{0%,100%{top:15%}50%{top:70%}}`)), skinDone && /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "absolute",
+        top: 16,
+        right: 16,
+        display: "flex",
+        flexDirection: "column",
+        gap: 6,
+        animation: "fadeIn 0.5s ease"
+      }
+    }, /*#__PURE__*/React.createElement("style", null, `@keyframes fadeIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}`), Object.entries(SKIN).map(([k, v], i) => /*#__PURE__*/React.createElement("div", {
+      key: k,
+      style: {
+        background: "rgba(255,255,255,0.9)",
+        backdropFilter: "blur(8px)",
+        borderRadius: 10,
+        padding: "4px 10px",
+        display: "flex",
+        alignItems: "center",
+        gap: 6,
+        animationDelay: `${i * 0.15}s`
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 11,
+        color: "#64748b",
+        fontWeight: 500
+      }
+    }, v.label), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 14,
+        fontWeight: 800,
+        color: v.color
+      }
+    }, v.score)))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "absolute",
+        inset: 0,
+        borderRadius: 24,
+        border: "3px solid rgba(168,85,247,0.15)",
+        pointerEvents: "none"
+      }
+    })), /*#__PURE__*/React.createElement("div", {
+      style: {
+        padding: "16px 20px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 10
+      }
+    }, skinDone ? /*#__PURE__*/React.createElement("button", {
+      onClick: () => setScreen(SC.DENTAL),
+      style: {
+        width: "100%",
+        padding: 14,
+        background: "linear-gradient(135deg, #a855f7, #ec4899)",
+        border: "none",
+        borderRadius: 16,
+        fontSize: 15,
+        fontWeight: 700,
+        color: "#fff",
+        cursor: "pointer",
+        boxShadow: "0 4px 20px rgba(168,85,247,0.3)"
+      }
+    }, "\u53E3\u5143\u3092\u6620\u3057\u3066\u30C7\u30F3\u30BF\u30EB\u30C1\u30A7\u30C3\u30AF \u2192") : /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 8
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        width: 8,
+        height: 8,
+        borderRadius: "50%",
+        background: "#e879f9",
+        animation: "pulse 1s ease-in-out infinite"
+      }
+    }), /*#__PURE__*/React.createElement("style", null, `@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}`), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 13,
+        color: "#a855f7",
+        fontWeight: 600
+      }
+    }, "\u808C\u3092\u5206\u6790\u4E2D...")), /*#__PURE__*/React.createElement("p", {
+      style: {
+        fontSize: 10,
+        color: "#cbd5e1",
+        margin: 0
+      }
+    }, "\u203B\u672C\u30A2\u30D7\u30EA\u306F\u533B\u7642\u8A3A\u65AD\u3092\u884C\u3046\u3082\u306E\u3067\u306F\u3042\u308A\u307E\u305B\u3093")));
+  }
+
+  // ─── SCREEN 2: AUTO DENTAL CHECK ───
+  if (screen === SC.DENTAL) {
+    const msgs = ["口元を検出したよ！", "歯茎の色を見てるよ〜", "着色チェック中♪", "もう少しで完了！"];
+    const mi = Math.min(3, Math.floor(dentalProg / 25));
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        maxWidth: 390,
+        margin: "0 auto",
+        background: bg,
+        minHeight: "100vh",
+        fontFamily: "'Noto Sans JP', sans-serif"
+      }
+    }, /*#__PURE__*/React.createElement(Header, null), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        alignItems: "flex-start",
+        gap: 8,
+        padding: "4px 20px 10px"
+      }
+    }, /*#__PURE__*/React.createElement(Kirari, {
+      size: 44,
+      expression: "thinking",
+      bounce: true
+    }), /*#__PURE__*/React.createElement(Bubble, null, /*#__PURE__*/React.createElement("p", {
+      style: {
+        fontSize: 13,
+        color: "#334155",
+        margin: 0
+      }
+    }, msgs[mi]))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        margin: "0 20px",
+        position: "relative",
+        borderRadius: 24,
+        overflow: "hidden",
+        aspectRatio: "4/3",
+        background: "#000",
+        boxShadow: "0 8px 32px rgba(168,85,247,0.12)"
+      }
+    }, /*#__PURE__*/React.createElement("img", {
+      src: IMG_MOUTH,
+      alt: "",
+      style: {
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+        opacity: 0.7
+      }
+    }), /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        overflow: "hidden"
+      }
+    }, dentalProg < 95 && /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "absolute",
+        left: 0,
+        right: 0,
+        height: 3,
+        background: "linear-gradient(90deg, transparent, #a855f7, transparent)",
+        animation: "ds 1.8s ease-in-out infinite",
+        boxShadow: "0 0 16px #a855f7"
+      }
+    }), /*#__PURE__*/React.createElement("style", null, `@keyframes ds{0%,100%{top:10%}50%{top:85%}}`)), dentalProg > 25 && /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "absolute",
+        top: "20%",
+        left: "18%",
+        width: "64%",
+        height: "60%",
+        border: "2px solid rgba(168,85,247,0.5)",
+        borderRadius: 40,
+        background: "rgba(168,85,247,0.06)",
+        opacity: Math.min(1, (dentalProg - 25) / 20)
+      }
+    }), /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "absolute",
+        top: 12,
+        left: 12,
+        background: "rgba(255,255,255,0.9)",
+        borderRadius: 8,
+        padding: "4px 10px",
+        display: "flex",
+        alignItems: "center",
+        gap: 4
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 11,
+        color: "#a855f7",
+        fontWeight: 600
+      }
+    }, "DENTAL CHECK"), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 10,
+        color: "#94a3b8"
+      }
+    }, "AUTO"))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        padding: "16px 20px 0"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "#f1f5f9",
+        borderRadius: 10,
+        height: 10,
+        overflow: "hidden"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        height: "100%",
+        borderRadius: 10,
+        width: `${dentalProg}%`,
+        background: "linear-gradient(90deg, #a855f7, #ec4899)",
+        transition: "width 0.08s"
+      }
+    })), /*#__PURE__*/React.createElement("p", {
+      style: {
+        fontSize: 12,
+        color: "#94a3b8",
+        margin: "8px 0 0",
+        textAlign: "center"
+      }
+    }, "\u808C\u30C1\u30A7\u30C3\u30AF \u2713 \u30FB \u30C7\u30F3\u30BF\u30EB\u30C1\u30A7\u30C3\u30AF ", dentalProg < 100 ? `${dentalProg}%` : "✓")));
+  }
+
+  // ─── SCREEN 3: COMBINED RESULTS ───
+  const items = tab === "skin" ? SKIN : DENTAL;
+  const overallSkin = Math.round((72 + 68 + 81) / 3);
+  const overallDental = Math.round((78 + 62 + 55) / 3);
+  const kirariMsg = tab === "skin" ? "肌の調子はまあまあ♪ くすみ対策は優秀だよ！毛穴ケアをプラスするともっと良くなるかも〜" : "着色ケアをがんばれば、もっとスコアが上がるよ〜！歯間ブラシを使ってみてね♪";
+  const skinAdvice = [{
+    emoji: "🧴",
+    name: "ビタミンC美容液",
+    reason: "肌トーンの均一化に",
+    tag: "トーン",
+    tagColor: "#e879f9",
+    brand: "KIREI SELECT / スキンケア",
+    price: 3280,
+    size: "30ml",
+    kirpicomment: "肌トーンスコアが72だから、ビタミンC誘導体で透明感アップを狙おう♪ 朝晩の洗顔後に使ってね！",
+    features: ["高濃度ビタミンC誘導体15%配合", "肌のくすみ・トーンムラにアプローチ", "保湿成分ヒアルロン酸Na配合", "無香料・パラベンフリー"]
+  }, {
+    emoji: "🧊",
+    name: "毛穴引き締めパック",
+    reason: "週2回の集中ケアに",
+    tag: "毛穴",
+    tagColor: "#a78bfa",
+    brand: "KIREI SELECT / スペシャルケア",
+    price: 1980,
+    size: "7枚入り",
+    kirpicomment: "毛穴スコア68はちょっと惜しい！週2回このパックで集中ケアすれば、75以上も見えてくるよ〜",
+    features: ["クレイ+炭の吸着処方で毛穴汚れをオフ", "引き締め成分ハマメリスエキス配合", "使用後すぐに毛穴が目立たなくなる実感", "個包装で衛生的・旅行にも◎"]
+  }];
+  const dentalAdvice = [{
+    emoji: "🪥",
+    name: "やわらか歯ブラシ",
+    reason: "歯茎にやさしい超極細毛",
+    tag: "歯茎",
+    tagColor: "#22c55e",
+    brand: "KIREI SELECT / オーラルケア",
+    price: 580,
+    size: "1本",
+    kirpicomment: "歯茎スコア78は良い感じ！超極細毛で歯茎をいたわりながら、もっとスコアを上げていこう♪",
+    features: ["0.01mm超極細毛が歯周ポケットに届く", "歯茎を傷つけにくいラウンドカット加工", "コンパクトヘッドで奥歯までしっかり届く", "歯科医推奨のやさしい磨き心地"]
+  }, {
+    emoji: "🧵",
+    name: "歯間ブラシ SSS",
+    reason: "歯間のステイン除去に",
+    tag: "着色",
+    tagColor: "#f97316",
+    brand: "KIREI SELECT / オーラルケア",
+    price: 480,
+    size: "20本入り",
+    kirpicomment: "着色スコア55は伸びしろたっぷり！歯間の着色は歯ブラシだけじゃ取れないから、毎日使ってね♪",
+    features: ["SSSサイズで初めてでも使いやすい", "ナイロンブラシが歯間の着色を除去", "折れにくいワイヤー設計", "携帯ケース付きで外出先でも使える"]
+  }, {
+    emoji: "✨",
+    name: "ステイン除去歯磨き粉",
+    reason: "毎日のブラッシングで白い歯に",
+    tag: "着色",
+    tagColor: "#f97316",
+    brand: "KIREI SELECT / オーラルケア",
+    price: 1280,
+    size: "100g",
+    kirpicomment: "毎日のブラッシングでステインを浮かせて落とす処方だよ！着色スコア55→65を目指そう♪",
+    features: ["微粒子シリカがステインを浮かせて除去", "フッ素1450ppm配合で虫歯予防も", "研磨剤控えめでエナメル質にやさしい", "爽やかミント味で口臭ケアも同時に"]
+  }];
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      maxWidth: 390,
+      margin: "0 auto",
+      background: bg,
+      minHeight: "100vh",
+      fontFamily: "'Noto Sans JP', sans-serif",
+      paddingBottom: 32,
+      overflowY: "scroll"
+    }
+  }, /*#__PURE__*/React.createElement(Header, null), /*#__PURE__*/React.createElement("p", {
+    style: {
+      fontSize: 11,
+      color: "#94a3b8",
+      margin: 0,
+      padding: "2px 20px 0"
+    }
+  }, "2026\u5E743\u670825\u65E5 \u30C1\u30A7\u30C3\u30AF\u7D50\u679C"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "center",
+      gap: 24,
+      padding: "16px 20px 8px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 4
+    }
+  }, /*#__PURE__*/React.createElement(Score, {
+    score: overallSkin,
+    size: 90,
+    color: "#a855f7",
+    delay: 0
+  }), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 12,
+      fontWeight: 700,
+      color: "#a855f7"
+    }
+  }, "\u808C\u30B9\u30B3\u30A2")), /*#__PURE__*/React.createElement(Kirari, {
+    size: 56,
+    expression: "happy",
+    bounce: true
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 4
+    }
+  }, /*#__PURE__*/React.createElement(Score, {
+    score: overallDental,
+    size: 90,
+    color: "#22c55e",
+    delay: 200
+  }), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 12,
+      fontWeight: 700,
+      color: "#22c55e"
+    }
+  }, "\u30C7\u30F3\u30BF\u30EB"))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "flex-start",
+      gap: 8,
+      padding: "6px 16px 12px"
+    }
+  }, /*#__PURE__*/React.createElement(Kirari, {
+    size: 36,
+    expression: "wink"
+  }), /*#__PURE__*/React.createElement(Bubble, null, /*#__PURE__*/React.createElement("p", {
+    style: {
+      fontSize: 12,
+      color: "#334155",
+      margin: 0,
+      lineHeight: 1.6
+    }
+  }, kirariMsg))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      margin: "0 16px 12px",
+      background: "#f1f5f9",
+      borderRadius: 14,
+      padding: 3
+    }
+  }, [["skin", "肌診断", "#a855f7"], ["dental", "デンタル", "#22c55e"]].map(([key, label, color]) => /*#__PURE__*/React.createElement("button", {
+    key: key,
+    onClick: () => setTab(key),
+    style: {
+      flex: 1,
+      padding: "8px 0",
+      border: "none",
+      borderRadius: 12,
+      fontSize: 13,
+      fontWeight: 700,
+      cursor: "pointer",
+      background: tab === key ? "#fff" : "transparent",
+      color: tab === key ? color : "#94a3b8",
+      boxShadow: tab === key ? "0 1px 4px rgba(0,0,0,0.06)" : "none"
+    }
+  }, label))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "0 16px",
+      display: "flex",
+      justifyContent: "center",
+      gap: 8,
+      marginBottom: 12
+    }
+  }, Object.entries(items).map(([k, v], i) => /*#__PURE__*/React.createElement(Score, {
+    key: k,
+    score: v.score,
+    size: 72,
+    color: v.color,
+    label: v.label,
+    delay: 100 + i * 200
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "0 16px",
+      marginBottom: 14
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "flex-start",
+      gap: 8,
+      marginBottom: 8
+    }
+  }, /*#__PURE__*/React.createElement(Kirari, {
+    size: 32,
+    expression: "sparkle"
+  }), /*#__PURE__*/React.createElement("p", {
+    style: {
+      fontSize: 12,
+      color: "#64748b",
+      margin: 0,
+      paddingTop: 4
+    }
+  }, tab === "skin" ? "あなたの肌に合ったケアグッズ♪" : "あなたの口腔スコアに合ったケア♪")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 8
+    }
+  }, (tab === "skin" ? skinAdvice : dentalAdvice).map((p, i) => /*#__PURE__*/React.createElement(ProductCard, _extends({
+    key: i
+  }, p, {
+    onClick: () => setSelectedProduct(p)
+  }))))), /*#__PURE__*/React.createElement(ProductModal, {
+    product: selectedProduct,
+    onClose: () => setSelectedProduct(null)
+  }), tab === "dental" && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 10,
+      padding: "0 16px",
+      marginBottom: 14
+    }
+  }, [{
+    icon: "🦷",
+    title: "ホワイトニング",
+    desc: "着色スコア55→改善",
+    color: "#a855f7",
+    btn: "詳しく見る"
+  }, {
+    icon: "😬",
+    title: "歯列矯正",
+    desc: "歯並びスコア62→UP",
+    color: "#f59e0b",
+    btn: "無料相談"
+  }].map((t, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      flex: 1,
+      background: t.color + "08",
+      borderRadius: 16,
+      padding: "12px 14px",
+      border: `1px solid ${t.color}20`
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 20,
+      marginBottom: 4
+    }
+  }, t.icon), /*#__PURE__*/React.createElement("p", {
+    style: {
+      fontSize: 13,
+      fontWeight: 700,
+      color: "#334155",
+      margin: "0 0 2px"
+    }
+  }, t.title), /*#__PURE__*/React.createElement("p", {
+    style: {
+      fontSize: 10,
+      color: "#64748b",
+      margin: "0 0 8px"
+    }
+  }, t.desc), /*#__PURE__*/React.createElement("button", {
+    style: {
+      width: "100%",
+      padding: "6px 0",
+      background: t.color,
+      border: "none",
+      borderRadius: 8,
+      fontSize: 11,
+      fontWeight: 700,
+      color: "#fff",
+      cursor: "pointer"
+    }
+  }, t.btn)))), tab === "dental" && /*#__PURE__*/React.createElement("div", {
+    style: {
+      margin: "0 16px 12px",
+      background: "#fff",
+      borderRadius: 18,
+      padding: "14px 16px",
+      boxShadow: "0 2px 12px rgba(139,92,246,0.08)",
+      border: "1px solid #ede9fe"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "flex-start",
+      gap: 8,
+      marginBottom: 10
+    }
+  }, /*#__PURE__*/React.createElement(Kirari, {
+    size: 36,
+    expression: "happy"
+  }), /*#__PURE__*/React.createElement("p", {
+    style: {
+      fontSize: 11,
+      color: "#475569",
+      margin: 0,
+      lineHeight: 1.6,
+      flex: 1
+    }
+  }, "\u30D7\u30ED\u306B\u8A3A\u3066\u3082\u3089\u3046\u306E\u304C\u3044\u3061\u3070\u3093\uFF01\u8FD1\u304F\u306E\u63D0\u643A\u6B6F\u79D1\u3092\u63A2\u3057\u3066\u307F\u3066\u306D\u266A")), /*#__PURE__*/React.createElement("button", {
+    style: {
+      width: "100%",
+      padding: 12,
+      background: "linear-gradient(135deg, #a855f7, #ec4899)",
+      border: "none",
+      borderRadius: 12,
+      fontSize: 13,
+      fontWeight: 700,
+      color: "#fff",
+      cursor: "pointer",
+      boxShadow: "0 4px 16px rgba(168,85,247,0.25)"
+    }
+  }, "\u8FD1\u304F\u306E\u63D0\u643A\u6B6F\u79D1\u3092\u63A2\u3059 \u2192")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      margin: "0 16px 12px",
+      background: "#fff",
+      borderRadius: 16,
+      padding: "10px 14px",
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      cursor: "pointer",
+      boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
+      border: "1px solid #fecaca"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 38,
+      height: 38,
+      borderRadius: 10,
+      background: "linear-gradient(135deg, #ef4444, #f87171)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: 16,
+      flexShrink: 0,
+      color: "#fff"
+    }
+  }, "\u25B6"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+    style: {
+      fontSize: 12,
+      fontWeight: 700,
+      color: "#334155",
+      margin: 0
+    }
+  }, "\u6B6F\u8178\u30C9\u30AF\u30BF\u30FC\u30BA\u3092\u898B\u308B"), /*#__PURE__*/React.createElement("p", {
+    style: {
+      fontSize: 10,
+      color: "#94a3b8",
+      margin: 0
+    }
+  }, "\u30D7\u30ED\u306E\u8A3A\u5BDF\u52D5\u753B\u3092\u30C1\u30A7\u30C3\u30AF\uFF01"))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "0 16px"
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      setScreen(SC.MIRROR);
+      setTab("skin");
+    },
+    style: {
+      width: "100%",
+      padding: 11,
+      background: "#f8fafc",
+      border: "1px solid #e2e8f0",
+      borderRadius: 14,
+      fontSize: 12,
+      fontWeight: 600,
+      color: "#64748b",
+      cursor: "pointer"
+    }
+  }, "\u3082\u3046\u4E00\u5EA6\u30DF\u30E9\u30FC\u3092\u958B\u304F")), /*#__PURE__*/React.createElement("p", {
+    style: {
+      textAlign: "center",
+      fontSize: 10,
+      color: "#cbd5e1",
+      marginTop: 12,
+      padding: "0 20px"
+    }
+  }, "\u203B\u672C\u30A2\u30D7\u30EA\u306F\u533B\u7642\u8A3A\u65AD\u3092\u884C\u3046\u3082\u306E\u3067\u306F\u3042\u308A\u307E\u305B\u3093\u3002"));
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+</script>
+</body>
+</html>
