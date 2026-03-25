@@ -2,7 +2,7 @@ import { forwardRef, useImperativeHandle } from 'react';
 import useCamera from '../hooks/useCamera.js';
 import { IMG_FACE, IMG_MOUTH } from '../data/images.js';
 
-const CameraView = forwardRef(function CameraView({ mode = "face", aspectRatio = "3/4", children }, ref) {
+const CameraView = forwardRef(function CameraView({ mode = "face", aspectRatio = "3/4", frozenSrc = null, children }, ref) {
   const { videoRef, isActive, error, captureFrame } = useCamera();
   const fallbackImg = mode === "face" ? IMG_FACE : IMG_MOUTH;
 
@@ -24,10 +24,18 @@ const CameraView = forwardRef(function CameraView({ mode = "face", aspectRatio =
           height: "100%",
           objectFit: "cover",
           transform: "scaleX(-1)",
-          display: isActive ? "block" : "none",
+          display: (isActive && !frozenSrc) ? "block" : "none",
         }}
       />
-      {!isActive && (
+      {/* 凍結画像（シャッター後の静止画） */}
+      {frozenSrc && (
+        <img src={frozenSrc} alt="" style={{
+          width: "100%", height: "100%", objectFit: "cover",
+          transform: "scaleX(-1)",
+        }} />
+      )}
+      {/* カメラ不可時のデモ画像 */}
+      {!isActive && !frozenSrc && (
         <>
           <img src={fallbackImg} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.9 }} />
           {error && (

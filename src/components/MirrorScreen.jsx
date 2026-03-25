@@ -34,6 +34,7 @@ export default function MirrorScreen({ onResult }) {
   const [dentalScores, setDentalScores] = useState(null);
   const [showScores, setShowScores] = useState(true);
   const [lastCheck, setLastCheck] = useState(null);
+  const [frozenFrame, setFrozenFrame] = useState(null); // シャッター後の静止画dataURL
   const cameraRef = useRef(null);
   const handledReadyRef = useRef(false);
   const modeRef = useRef(mode);
@@ -73,15 +74,27 @@ export default function MirrorScreen({ onResult }) {
     }
   }, []);
 
-  // 演出フロー: シャッター → スキャン → 完了
+  // 演出フロー: フレームキャプチャ → シャッターフラッシュ → 静止画スキャン → 完了
   const runShutterSequence = useCallback(() => {
     const currentMode = modeRef.current;
+
+    // 0. シャッター直前にフレームをキャプチャして凍結
+    const frame = cameraRef.current?.isActive ? cameraRef.current.captureFrame() : null;
+    if (frame) {
+      // canvasからdataURLを生成して凍結
+      const canvas = document.createElement('canvas');
+      canvas.width = frame.width;
+      canvas.height = frame.height;
+      const ctx = canvas.getContext('2d');
+      ctx.putImageData(frame, 0, 0);
+      setFrozenFrame(canvas.toDataURL('image/jpeg', 0.9));
+    }
 
     // 1. シャッターフラッシュ (300ms)
     setStage(STAGE.SHUTTER);
 
     setTimeout(() => {
-      // 2. スキャンアニメーション (1500ms)
+      // 2. 静止画上でスキャンアニメーション (1500ms)
       setStage(STAGE.SCANNING);
 
       setTimeout(() => {
@@ -89,6 +102,7 @@ export default function MirrorScreen({ onResult }) {
         try { applyScores(); } catch { /* */ }
         setLastCheck(currentMode);
         setStage(null);
+        setFrozenFrame(null); // 凍結解除
         setMode(MODE.IDLE);
       }, 1500);
     }, 300);
@@ -136,6 +150,7 @@ export default function MirrorScreen({ onResult }) {
   const startCheck = useCallback((checkMode) => {
     resetShutter();
     handledReadyRef.current = false;
+    setFrozenFrame(null);
     setStage(STAGE.SEARCHING);
     if (checkMode === MODE.SKIN) setSkinScores(null);
     if (checkMode === MODE.DENTAL) setDentalScores(null);
@@ -172,7 +187,7 @@ export default function MirrorScreen({ onResult }) {
   return (
     <>
       <div style={{ position: "relative", boxShadow: "0 8px 32px rgba(168,85,247,0.12)" }}>
-        <CameraView ref={cameraRef} mode={cameraMode} aspectRatio={aspectRatio}>
+        <CameraView ref={cameraRef} mode={cameraMode} aspectRatio={aspectRatio} frozenSrc={frozenFrame}>
           {/* キラリ吹き出し（カメラ内オーバーレイ） */}
           <div style={{ position: "absolute", top: 8, left: 8, right: 8, zIndex: 3, display: "flex", alignItems: "flex-start", gap: 6 }}>
             <Kirari size={36} expression={kirariExpression} bounce={isChecking} />
