@@ -47,7 +47,7 @@ export default function ResultScreen({ skinScores: propSkin, dentalScores: propD
   const kirariMsg = generateMessage(tab, hasSkin ? skinScores : null, hasDental ? dentalScores : null);
 
   return (
-    <>
+    <div style={{ position: "relative", minHeight: "100%" }}>
       <p style={{ fontSize: 11, color: "#94a3b8", margin: 0, padding: "2px 20px 0" }}>チェック結果</p>
 
       <div style={{ display: "flex", justifyContent: "center", gap: 24, padding: "16px 20px 8px" }}>
@@ -159,6 +159,6 @@ export default function ResultScreen({ skinScores: propSkin, dentalScores: propD
         <button className="btn-secondary" onClick={onRestart} style={{ width: "100%", padding: 11, background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 14, fontSize: 12, fontWeight: 600, color: "#64748b", cursor: "pointer" }}>もう一度ミラーを開く</button>
       </div>
       <p className="disclaimer" style={{ textAlign: "center", fontSize: 10, color: "#cbd5e1", marginTop: 12, padding: "0 20px" }}>※本アプリは医療診断を行うものではありません。</p>
-    </>
+    </div>
   );
 }

@@ -3,7 +3,7 @@ import Kirari from './Kirari.jsx';
 export default function ProductModal({ product, onClose }) {
   if (!product) return null;
   return (
-    <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 100, display: "flex", alignItems: "flex-end", justifyContent: "center", animation: "modalBg 0.2s ease" }}>
+    <div onClick={onClose} style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 100, display: "flex", alignItems: "flex-end", justifyContent: "center", animation: "modalBg 0.2s ease" }}>
       <style>{`@keyframes modalBg{from{opacity:0}to{opacity:1}} @keyframes modalSlide{from{transform:translateY(100%)}to{transform:translateY(0)}}`}</style>
       <div onClick={e => e.stopPropagation()} style={{ background: "#fff", borderRadius: "24px 24px 0 0", width: "100%", maxWidth: 390, padding: "20px 20px 32px", animation: "modalSlide 0.3s ease" }}>
         <div style={{ width: 36, height: 4, borderRadius: 2, background: "#e2e8f0", margin: "0 auto 16px" }} />
