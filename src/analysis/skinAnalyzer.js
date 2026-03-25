@@ -100,6 +100,52 @@ function scoreDullness(skinPixels, imageWidth, imageHeight) {
   return Math.round(Math.max(40, Math.min(95, finalScore)));
 }
 
+// 軽量な顔位置検出（自動シャッター用）
+// 4pxおきにサンプリングして高速化
+export function detectFacePosition(imageData) {
+  const data = imageData.data;
+  const w = imageData.width;
+  const h = imageData.height;
+  const step = 4;
+  let count = 0, sumX = 0, sumY = 0;
+  let minX = w, maxX = 0, minY = h, maxY = 0;
+  let totalSampled = 0;
+
+  for (let y = 0; y < h; y += step) {
+    for (let x = 0; x < w; x += step) {
+      totalSampled++;
+      const i = (y * w + x) * 4;
+      if (isSkinPixel(data[i], data[i + 1], data[i + 2])) {
+        count++;
+        sumX += x;
+        sumY += y;
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
+    }
+  }
+
+  const ratio = count / totalSampled;
+  if (count < 20) {
+    return { ratio, centerX: 0.5, centerY: 0.5, inFrame: false };
+  }
+
+  const centerX = (sumX / count) / w; // 0-1
+  const centerY = (sumY / count) / h; // 0-1
+  const bboxW = (maxX - minX) / w;
+  const bboxH = (maxY - minY) / h;
+
+  // ガイド枠（中央60%x70%の楕円）内に重心があり、十分なサイズか
+  const xOk = centerX > 0.25 && centerX < 0.75;
+  const yOk = centerY > 0.15 && centerY < 0.75;
+  const sizeOk = ratio > 0.06 && bboxW > 0.2 && bboxH > 0.25;
+  const inFrame = xOk && yOk && sizeOk;
+
+  return { ratio, centerX, centerY, bboxW, bboxH, inFrame };
+}
+
 // メインの分析関数
 export function analyzeSkin(imageData) {
   if (!imageData) {

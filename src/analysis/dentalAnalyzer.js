@@ -136,6 +136,50 @@ function scoreStaining(teeth) {
   return Math.round(Math.max(40, Math.min(95, deScore - yellowPenalty)));
 }
 
+// 軽量な口元位置検出（自動シャッター用）
+export function detectMouthPosition(imageData) {
+  const data = imageData.data;
+  const w = imageData.width;
+  const h = imageData.height;
+  const step = 4;
+  let toothCount = 0, gumCount = 0, sumX = 0, sumY = 0;
+  let totalSampled = 0;
+
+  for (let y = 0; y < h; y += step) {
+    for (let x = 0; x < w; x += step) {
+      totalSampled++;
+      const i = (y * w + x) * 4;
+      const type = classifyOralPixel(data[i], data[i + 1], data[i + 2]);
+      if (type === 'tooth') {
+        toothCount++;
+        sumX += x; sumY += y;
+      } else if (type === 'gum') {
+        gumCount++;
+        sumX += x; sumY += y;
+      }
+    }
+  }
+
+  const oralCount = toothCount + gumCount;
+  const ratio = oralCount / totalSampled;
+  if (oralCount < 15) {
+    return { ratio, centerX: 0.5, centerY: 0.5, inFrame: false, hasTeeth: false, hasGums: false };
+  }
+
+  const centerX = (sumX / oralCount) / w;
+  const centerY = (sumY / oralCount) / h;
+
+  // 口元は画面中央付近にあるべき
+  const xOk = centerX > 0.2 && centerX < 0.8;
+  const yOk = centerY > 0.2 && centerY < 0.8;
+  const sizeOk = ratio > 0.02;
+  const hasTeeth = toothCount > 5;
+  const hasGums = gumCount > 5;
+  const inFrame = xOk && yOk && sizeOk && hasTeeth;
+
+  return { ratio, centerX, centerY, inFrame, hasTeeth, hasGums };
+}
+
 // メインの分析関数
 export function analyzeDental(imageData) {
   if (!imageData) {
