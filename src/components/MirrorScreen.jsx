@@ -127,15 +127,15 @@ export default function MirrorScreen({ onResult }) {
 
   return (
     <>
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 8, padding: "4px 20px 10px" }}>
-        <Kirari size={44} expression={kirariExpression} bounce={isChecking} />
-        <Bubble>
-          <p style={{ fontSize: 13, color: "#334155", margin: 0, lineHeight: 1.7 }}>{getKirariMsg()}</p>
-        </Bubble>
-      </div>
-
-      <div style={{ margin: "0 20px", boxShadow: "0 8px 32px rgba(168,85,247,0.12)" }}>
+      <div style={{ position: "relative", boxShadow: "0 8px 32px rgba(168,85,247,0.12)" }}>
         <CameraView ref={cameraRef} mode={cameraMode} aspectRatio={aspectRatio}>
+          {/* キラリ吹き出し（カメラ内オーバーレイ） */}
+          <div style={{ position: "absolute", top: 8, left: 8, right: 8, zIndex: 3, display: "flex", alignItems: "flex-start", gap: 6 }}>
+            <Kirari size={36} expression={kirariExpression} bounce={isChecking} />
+            <div style={{ background: "rgba(255,255,255,0.88)", backdropFilter: "blur(8px)", borderRadius: 14, padding: "6px 10px", flex: 1 }}>
+              <p style={{ fontSize: 11, color: "#334155", margin: 0, lineHeight: 1.5 }}>{getKirariMsg()}</p>
+            </div>
+          </div>
           {/* ガイドフレーム（チェック中のみ） */}
           {isChecking && !analyzing && (
             <GuideFrame mode={shutterMode} status={status} confidence={confidence} />
@@ -214,25 +214,27 @@ export default function MirrorScreen({ onResult }) {
                 className="btn-primary"
                 onClick={() => startCheck(MODE.SKIN)}
                 style={{
-                  flex: 1, padding: 14, border: "none", borderRadius: 16, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer",
+                  flex: 1, padding: "12px 0", border: "none", borderRadius: 14, fontSize: 13, fontWeight: 700, color: "#fff", cursor: "pointer",
                   background: skinScores ? "#a855f7" : "linear-gradient(135deg, #a855f7, #c084fc)",
                   boxShadow: "0 4px 16px rgba(168,85,247,0.25)",
                   opacity: skinScores ? 0.7 : 1,
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 5, whiteSpace: "nowrap",
                 }}
               >
-                {skinScores ? "✓ 肌チェック" : "肌チェック"}
+                <span>{skinScores ? "✓" : "✨"}</span>肌
               </button>
               <button
                 className="btn-primary"
                 onClick={() => startCheck(MODE.DENTAL)}
                 style={{
-                  flex: 1, padding: 14, border: "none", borderRadius: 16, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer",
+                  flex: 1, padding: "12px 0", border: "none", borderRadius: 14, fontSize: 13, fontWeight: 700, color: "#fff", cursor: "pointer",
                   background: dentalScores ? "#22c55e" : "linear-gradient(135deg, #22c55e, #4ade80)",
                   boxShadow: "0 4px 16px rgba(34,197,94,0.25)",
                   opacity: dentalScores ? 0.7 : 1,
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 5, whiteSpace: "nowrap",
                 }}
               >
-                {dentalScores ? "✓ デンタル" : "デンタルチェック"}
+                <span>{dentalScores ? "✓" : "🦷"}</span>デンタル
               </button>
             </div>
             {/* 結果を見るボタン */}
