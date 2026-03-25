@@ -116,10 +116,10 @@ export default function MirrorScreen({ onResult }) {
     setMode(checkMode);
   }, [resetShutter]);
 
-  // 実効ステータス（カメラ有効時はautoShutter、不可時はdemoPhase）
+  const hasAnyScore = skinScores || dentalScores;
+  const isChecking = mode !== MODE.IDLE;
   const effectiveStatus = demoPhase || (isChecking ? status : 'idle');
 
-  // キラリメッセージ
   const getKirariMsg = () => {
     if (analyzing || effectiveStatus === 'scanning') {
       const prefix = mode === MODE.DENTAL ? 'dental' : 'skin';
@@ -134,11 +134,8 @@ export default function MirrorScreen({ onResult }) {
   };
 
   const kirariExpression = (analyzing || effectiveStatus === 'scanning') ? "thinking"
-    : mode !== MODE.IDLE ? (effectiveStatus === 'detected' || effectiveStatus === 'ready' ? "happy" : "thinking")
-    : (skinScores || dentalScores) ? "sparkle" : "happy";
-
-  const hasAnyScore = skinScores || dentalScores;
-  const isChecking = mode !== MODE.IDLE;
+    : isChecking ? (effectiveStatus === 'detected' || effectiveStatus === 'ready' ? "happy" : "thinking")
+    : hasAnyScore ? "sparkle" : "happy";
   // IDLE時は最後にチェックしたモードの画像を維持
   const displayMode = isChecking ? mode : (lastCheck || MODE.SKIN);
   const cameraMode = displayMode === MODE.DENTAL ? "mouth" : "face";
