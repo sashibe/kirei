@@ -169,13 +169,13 @@ export function detectMouthPosition(imageData) {
   const centerX = (sumX / oralCount) / w;
   const centerY = (sumY / oralCount) / h;
 
-  // 口元は画面中央付近にあるべき
-  const xOk = centerX > 0.2 && centerX < 0.8;
-  const yOk = centerY > 0.2 && centerY < 0.8;
-  const sizeOk = ratio > 0.02;
-  const hasTeeth = toothCount > 5;
-  const hasGums = gumCount > 5;
-  const inFrame = xOk && yOk && sizeOk && hasTeeth;
+  // 口元は画面付近にあればOK（緩和済み）
+  const xOk = centerX > 0.1 && centerX < 0.9;
+  const yOk = centerY > 0.1 && centerY < 0.9;
+  const sizeOk = ratio > 0.01;
+  const hasTeeth = toothCount > 3;
+  const hasGums = gumCount > 3;
+  const inFrame = xOk && yOk && sizeOk && (hasTeeth || hasGums);
 
   return { ratio, centerX, centerY, inFrame, hasTeeth, hasGums };
 }

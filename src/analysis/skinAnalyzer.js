@@ -137,10 +137,10 @@ export function detectFacePosition(imageData) {
   const bboxW = (maxX - minX) / w;
   const bboxH = (maxY - minY) / h;
 
-  // ガイド枠（中央60%x70%の楕円）内に重心があり、十分なサイズか
-  const xOk = centerX > 0.25 && centerX < 0.75;
-  const yOk = centerY > 0.15 && centerY < 0.75;
-  const sizeOk = ratio > 0.06 && bboxW > 0.2 && bboxH > 0.25;
+  // ガイド枠内に重心があり、十分な肌領域があるか（緩和済み）
+  const xOk = centerX > 0.15 && centerX < 0.85;
+  const yOk = centerY > 0.1 && centerY < 0.85;
+  const sizeOk = ratio > 0.03 && bboxW > 0.1 && bboxH > 0.15;
   const inFrame = xOk && yOk && sizeOk;
 
   return { ratio, centerX, centerY, bboxW, bboxH, inFrame };

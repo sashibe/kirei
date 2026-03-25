@@ -30,7 +30,8 @@ export default function MirrorScreen({ onResult }) {
   const [skinScores, setSkinScores] = useState(null);
   const [dentalScores, setDentalScores] = useState(null);
   const [showScores, setShowScores] = useState(true);
-  const [lastCheck, setLastCheck] = useState(null); // 最後にチェックしたモードを記憶
+  const [lastCheck, setLastCheck] = useState(null);
+  const [demoPhase, setDemoPhase] = useState(null); // 'searching' | 'detected' | 'ready' | 'scanning'
   const cameraRef = useRef(null);
 
   const shutterMode = mode === MODE.SKIN ? 'face' : mode === MODE.DENTAL ? 'mouth' : 'face';
@@ -83,17 +84,29 @@ export default function MirrorScreen({ onResult }) {
     return () => clearTimeout(t);
   }, [status, analyzing, mode]);
 
-  // カメラ不可時のフォールバック
+  // カメラ不可時のフォールバック（演出フロー付き）
   useEffect(() => {
     if (cameraRef.current?.isActive || mode === MODE.IDLE || analyzing) return;
-    const t = setTimeout(() => {
+
+    // searching → detected → ready → scanning → 完了
+    setDemoPhase('searching');
+    const timers = [];
+    timers.push(setTimeout(() => setDemoPhase('detected'), 1000));
+    timers.push(setTimeout(() => setDemoPhase('ready'), 2000));
+    timers.push(setTimeout(() => {
+      setDemoPhase('scanning');
+      setAnalyzing(true);
+    }, 2400));
+    timers.push(setTimeout(() => {
       if (mode === MODE.SKIN) setSkinScores(SKIN_SCORES);
       else if (mode === MODE.DENTAL) setDentalScores(DENTAL_SCORES);
       setLastCheck(mode);
       setAnalyzing(false);
+      setDemoPhase(null);
       setMode(MODE.IDLE);
-    }, 3000);
-    return () => clearTimeout(t);
+    }, 4000));
+
+    return () => timers.forEach(clearTimeout);
   }, [mode, analyzing]);
 
   const startCheck = useCallback((checkMode) => {
@@ -103,19 +116,25 @@ export default function MirrorScreen({ onResult }) {
     setMode(checkMode);
   }, [resetShutter]);
 
+  // 実効ステータス（カメラ有効時はautoShutter、不可時はdemoPhase）
+  const effectiveStatus = demoPhase || (isChecking ? status : 'idle');
+
   // キラリメッセージ
   const getKirariMsg = () => {
-    if (analyzing) return KIRARI_MSGS[`${mode}_analyzing`];
-    if (mode === MODE.SKIN) return KIRARI_MSGS[`skin_${status}`] || KIRARI_MSGS.skin_searching;
-    if (mode === MODE.DENTAL) return KIRARI_MSGS[`dental_${status}`] || KIRARI_MSGS.dental_searching;
+    if (analyzing || effectiveStatus === 'scanning') {
+      const prefix = mode === MODE.DENTAL ? 'dental' : 'skin';
+      return KIRARI_MSGS[`${prefix}_analyzing`];
+    }
+    if (mode === MODE.SKIN) return KIRARI_MSGS[`skin_${effectiveStatus}`] || KIRARI_MSGS.skin_searching;
+    if (mode === MODE.DENTAL) return KIRARI_MSGS[`dental_${effectiveStatus}`] || KIRARI_MSGS.dental_searching;
     if (skinScores && dentalScores) return KIRARI_MSGS.both_done;
     if (skinScores) return KIRARI_MSGS.skin_done;
     if (dentalScores) return KIRARI_MSGS.dental_done;
     return KIRARI_MSGS.idle;
   };
 
-  const kirariExpression = analyzing ? "thinking"
-    : mode !== MODE.IDLE ? (status === 'detected' ? "happy" : "thinking")
+  const kirariExpression = (analyzing || effectiveStatus === 'scanning') ? "thinking"
+    : mode !== MODE.IDLE ? (effectiveStatus === 'detected' || effectiveStatus === 'ready' ? "happy" : "thinking")
     : (skinScores || dentalScores) ? "sparkle" : "happy";
 
   const hasAnyScore = skinScores || dentalScores;
@@ -136,12 +155,12 @@ export default function MirrorScreen({ onResult }) {
               <p style={{ fontSize: 11, color: "#334155", margin: 0, lineHeight: 1.5 }}>{getKirariMsg()}</p>
             </div>
           </div>
-          {/* ガイドフレーム（チェック中のみ） */}
-          {isChecking && !analyzing && (
-            <GuideFrame mode={shutterMode} status={status} confidence={confidence} />
+          {/* ガイドフレーム（チェック中、スキャン前まで表示） */}
+          {isChecking && effectiveStatus !== 'scanning' && !analyzing && (
+            <GuideFrame mode={shutterMode} status={demoPhase || status} confidence={demoPhase ? (demoPhase === 'searching' ? 20 : demoPhase === 'detected' ? 60 : 100) : confidence} />
           )}
           {/* 分析中のスキャンライン */}
-          {analyzing && (
+          {(analyzing || effectiveStatus === 'scanning') && (
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
               <div style={{ position: "absolute", left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${mode === MODE.DENTAL ? '#22c55e' : '#e879f9'}, transparent)`, animation: "scanLine 1.5s ease-in-out infinite", boxShadow: `0 0 12px ${mode === MODE.DENTAL ? '#22c55e' : '#e879f9'}` }} />
               <style>{`@keyframes scanLine{0%,100%{top:15%}50%{top:70%}}`}</style>
@@ -199,7 +218,7 @@ export default function MirrorScreen({ onResult }) {
               <div style={{ width: 8, height: 8, borderRadius: "50%", background: mode === MODE.DENTAL ? "#22c55e" : "#e879f9", animation: "pulse 1s ease-in-out infinite" }} />
               <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}`}</style>
               <span style={{ fontSize: 13, color: mode === MODE.DENTAL ? "#22c55e" : "#a855f7", fontWeight: 600 }}>
-                {analyzing ? "分析中..." : status === 'detected' ? "検出中..." : "探しています..."}
+                {(analyzing || effectiveStatus === 'scanning') ? "分析中..." : effectiveStatus === 'ready' ? "シャッター！" : effectiveStatus === 'detected' ? "検出中..." : "探しています..."}
               </span>
             </div>
             <button className="btn-secondary" onClick={() => setMode(MODE.IDLE)} style={{ padding: "8px 24px", background: "transparent", border: "1px solid #e2e8f0", borderRadius: 12, fontSize: 12, fontWeight: 600, color: "#94a3b8", cursor: "pointer" }}>
