@@ -23,25 +23,24 @@ function PhoneFrame({ children }) {
           }
           .phone-bezel {
             position: relative;
-            width: 400px;
-            border-radius: 52px;
+            width: 390px;
+            border-radius: 46px;
             background: #2c2530;
-            padding: 14px;
+            padding: 8px;
             box-shadow:
-              0 0 0 2px #1a1520,
-              0 20px 60px rgba(0,0,0,0.3),
-              0 0 0 14px #2c2530,
-              inset 0 0 4px rgba(255,255,255,0.05);
+              0 0 0 1px #1a1520,
+              0 16px 48px rgba(0,0,0,0.25),
+              inset 0 0 3px rgba(255,255,255,0.04);
           }
           .phone-notch {
             position: absolute;
-            top: 14px;
+            top: 8px;
             left: 50%;
             transform: translateX(-50%);
-            width: 120px;
-            height: 28px;
+            width: 110px;
+            height: 24px;
             background: #2c2530;
-            border-radius: 0 0 18px 18px;
+            border-radius: 0 0 16px 16px;
             z-index: 20;
           }
           .phone-notch::before {
@@ -56,7 +55,7 @@ function PhoneFrame({ children }) {
             border-radius: 50%;
           }
           .phone-screen {
-            border-radius: 40px;
+            border-radius: 38px;
             overflow: hidden;
             height: 844px;
             position: relative;
@@ -67,13 +66,13 @@ function PhoneFrame({ children }) {
           }
           .phone-bottom-bar {
             position: absolute;
-            bottom: 22px;
+            bottom: 16px;
             left: 50%;
             transform: translateX(-50%);
-            width: 140px;
-            height: 5px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 3px;
+            width: 130px;
+            height: 4px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 2px;
             z-index: 20;
           }
         }
