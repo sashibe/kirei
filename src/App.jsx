@@ -4,6 +4,97 @@ import MirrorScreen from './components/MirrorScreen.jsx';
 import ResultScreen from './components/ResultScreen.jsx';
 import colors from './styles/theme.js';
 
+// PC表示時のiPhoneモックアップフレーム
+function PhoneFrame({ children }) {
+  return (
+    <>
+      <style>{`
+        .phone-frame {
+          display: none;
+        }
+        @media (min-width: 500px) {
+          .phone-frame {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f3f0 0%, #ebe8e4 50%, #f5f3f0 100%);
+            padding: 32px 0;
+          }
+          .phone-bezel {
+            position: relative;
+            width: 400px;
+            border-radius: 52px;
+            background: #2c2530;
+            padding: 14px;
+            box-shadow:
+              0 0 0 2px #1a1520,
+              0 20px 60px rgba(0,0,0,0.3),
+              0 0 0 14px #2c2530,
+              inset 0 0 4px rgba(255,255,255,0.05);
+          }
+          .phone-notch {
+            position: absolute;
+            top: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 28px;
+            background: #2c2530;
+            border-radius: 0 0 18px 18px;
+            z-index: 20;
+          }
+          .phone-notch::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 8px;
+            background: #1a1520;
+            border-radius: 50%;
+          }
+          .phone-screen {
+            border-radius: 40px;
+            overflow: hidden;
+            height: 844px;
+            position: relative;
+          }
+          .phone-screen > div {
+            height: 100%;
+            overflow-y: auto;
+          }
+          .phone-bottom-bar {
+            position: absolute;
+            bottom: 22px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 5px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            z-index: 20;
+          }
+        }
+        @media (max-width: 499px) {
+          .phone-bezel, .phone-notch, .phone-bottom-bar { display: none; }
+          .phone-screen { min-height: 100dvh; }
+        }
+      `}</style>
+      <div className="phone-frame">
+        <div className="phone-bezel">
+          <div className="phone-notch" />
+          <div className="phone-screen">
+            {children}
+          </div>
+          <div className="phone-bottom-bar" />
+        </div>
+      </div>
+    </>
+  );
+}
+
 export default function App() {
   const [showResult, setShowResult] = useState(false);
   const scoresRef = useRef({ skinScores: null, dentalScores: null });
@@ -19,7 +110,6 @@ export default function App() {
 
   const handleDentalCheck = useCallback(() => {
     setShowResult(false);
-    // DentalScreen は MirrorScreen に統合済み
   }, []);
 
   const Header = ({ overlay = false }) => (
@@ -39,37 +129,43 @@ export default function App() {
     </div>
   );
 
-  return (
+  const appContent = (
     <div style={{
-      display: "flex", justifyContent: "center", alignItems: "flex-start",
-      minHeight: "100vh", background: "#f0edf6", fontFamily: "'Noto Sans JP', sans-serif",
+      width: "100%",
+      background: colors.bg,
+      minHeight: "100%",
+      fontFamily: "'Noto Sans JP', sans-serif",
+      paddingBottom: showResult ? 32 : 0,
     }}>
-      {/* スマホフレーム */}
-      <div style={{
-        width: 390, maxWidth: "100vw",
-        minHeight: "100dvh",
-        background: colors.bg,
-        position: "relative", overflow: "hidden",
-        boxShadow: "0 0 40px rgba(168,85,247,0.12)",
-        paddingBottom: showResult ? 32 : 0,
-      }}>
-        {showResult && <Header />}
-        <div key={showResult ? 'result' : 'mirror'} className="screen-enter" style={{ position: "relative" }}>
-          {!showResult ? (
-            <>
-              <Header overlay />
-              <MirrorScreen onResult={handleResult} />
-            </>
-          ) : (
-            <ResultScreen
-              skinScores={scoresRef.current.skinScores}
-              dentalScores={scoresRef.current.dentalScores}
-              onRestart={handleRestart}
-              onDentalCheck={handleDentalCheck}
-            />
-          )}
-        </div>
+      {showResult && <Header />}
+      <div key={showResult ? 'result' : 'mirror'} className="screen-enter" style={{ position: "relative" }}>
+        {!showResult ? (
+          <>
+            <Header overlay />
+            <MirrorScreen onResult={handleResult} />
+          </>
+        ) : (
+          <ResultScreen
+            skinScores={scoresRef.current.skinScores}
+            dentalScores={scoresRef.current.dentalScores}
+            onRestart={handleRestart}
+            onDentalCheck={handleDentalCheck}
+          />
+        )}
       </div>
     </div>
+  );
+
+  return (
+    <>
+      {/* PC: iPhoneモックアップ内に表示 */}
+      <PhoneFrame>{appContent}</PhoneFrame>
+      {/* スマホ: フルスクリーン表示 */}
+      <style>{`
+        @media (max-width: 499px) {
+          .phone-frame { display: contents !important; }
+        }
+      `}</style>
+    </>
   );
 }
