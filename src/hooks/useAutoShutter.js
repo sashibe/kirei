@@ -9,6 +9,7 @@ const TIMEOUT = 8000;
 export default function useAutoShutter({ cameraRef, mode = 'face', enabled = true }) {
   const [status, setStatus] = useState('searching');
   const [confidence, setConfidence] = useState(0);
+  const [epoch, setEpoch] = useState(0); // reset時にインクリメントしてeffectを再起動
   const stableCountRef = useRef(0);
   const triggeredRef = useRef(false);
   const elapsedRef = useRef(0);
@@ -19,10 +20,15 @@ export default function useAutoShutter({ cameraRef, mode = 'face', enabled = tru
     stableCountRef.current = 0;
     triggeredRef.current = false;
     elapsedRef.current = 0;
+    setEpoch(e => e + 1);
   }, []);
 
   useEffect(() => {
-    if (!enabled || triggeredRef.current) return;
+    if (!enabled) return;
+    // reset後にtriggeredRefはfalseに戻されている
+    triggeredRef.current = false;
+    elapsedRef.current = 0;
+    stableCountRef.current = 0;
 
     const detect = mode === 'face' ? detectFacePosition : detectMouthPosition;
 
@@ -30,7 +36,6 @@ export default function useAutoShutter({ cameraRef, mode = 'face', enabled = tru
       if (triggeredRef.current) return;
       elapsedRef.current += INTERVAL;
 
-      // ref 経由で最新の captureFrame を取得
       const cam = cameraRef?.current;
       const frame = cam?.isActive && typeof cam.captureFrame === 'function'
         ? cam.captureFrame()
@@ -55,7 +60,6 @@ export default function useAutoShutter({ cameraRef, mode = 'face', enabled = tru
         }
       }
 
-      // タイムアウト
       if (elapsedRef.current >= TIMEOUT) {
         setStatus('ready');
         triggeredRef.current = true;
@@ -63,7 +67,7 @@ export default function useAutoShutter({ cameraRef, mode = 'face', enabled = tru
     }, INTERVAL);
 
     return () => clearInterval(iv);
-  }, [enabled, mode, cameraRef]);
+  }, [enabled, mode, cameraRef, epoch]);
 
-  return { status, confidence, reset, triggered: triggeredRef.current };
+  return { status, confidence, reset };
 }
