@@ -69,7 +69,7 @@ export default function GuideFrame({ mode = 'face', status = 'searching', confid
         ) : (
           // 口元用: 横長角丸矩形（フルスクリーン対応で拡大）
           <rect
-            x="12" y="22" width="76" height="52" rx="22" ry="22"
+            x="20" y="30" width="60" height="35" rx="16" ry="16"
             fill={s.fill}
             stroke={s.stroke}
             strokeWidth={isReady ? 3 : 2}
