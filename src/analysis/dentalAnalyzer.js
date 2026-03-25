@@ -210,3 +210,38 @@ export function analyzeDental(imageData) {
     staining: { score: scoreStaining(teeth) },
   };
 }
+
+// ランドマーク付き分析: 口腔領域だけをクロップして分析
+// 外唇輪郭ランドマーク番号
+const OUTER_LIP = [61, 185, 40, 39, 37, 0, 267, 269, 270, 409, 291, 375, 321, 405, 314, 17, 84, 181, 91, 146];
+
+export function analyzeDentalWithLandmarks(imageData, landmarks) {
+  if (!imageData || !landmarks?.length) return analyzeDental(imageData);
+
+  const cropped = cropMouthRegion(imageData, landmarks);
+  return analyzeDental(cropped);
+}
+
+function cropMouthRegion(src, landmarks) {
+  const lipPoints = OUTER_LIP.map(i => landmarks[i]).filter(Boolean);
+  if (lipPoints.length < 10) return src;
+
+  const xs = lipPoints.map(p => p.x * src.width);
+  const ys = lipPoints.map(p => p.y * src.height);
+  // 少し余白を付けてクロップ
+  const margin = 10;
+  const x0 = Math.max(0, Math.floor(Math.min(...xs)) - margin);
+  const y0 = Math.max(0, Math.floor(Math.min(...ys)) - margin);
+  const x1 = Math.min(src.width, Math.ceil(Math.max(...xs)) + margin);
+  const y1 = Math.min(src.height, Math.ceil(Math.max(...ys)) + margin);
+  const w = x1 - x0;
+  const h = y1 - y0;
+  if (w < 10 || h < 10) return src;
+
+  const full = new OffscreenCanvas(src.width, src.height);
+  full.getContext('2d').putImageData(src, 0, 0);
+  const crop = new OffscreenCanvas(w, h);
+  const ctx = crop.getContext('2d');
+  ctx.drawImage(full, x0, y0, w, h, 0, 0, w, h);
+  return ctx.getImageData(0, 0, w, h);
+}

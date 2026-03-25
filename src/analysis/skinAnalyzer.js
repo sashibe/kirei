@@ -186,3 +186,30 @@ export function analyzeSkin(imageData) {
     dullness: { score: scoreDullness(skinPixels, normalized.width, normalized.height) },
   };
 }
+
+// ランドマーク付き分析: 顔領域だけをクロップして分析
+export function analyzeSkinWithLandmarks(imageData, landmarks) {
+  if (!imageData || !landmarks?.length) return analyzeSkin(imageData);
+
+  const cropped = cropFaceRegion(imageData, landmarks);
+  return analyzeSkin(cropped);
+}
+
+function cropFaceRegion(src, landmarks) {
+  const xs = landmarks.map(p => p.x * src.width);
+  const ys = landmarks.map(p => p.y * src.height);
+  const x0 = Math.max(0, Math.floor(Math.min(...xs)));
+  const y0 = Math.max(0, Math.floor(Math.min(...ys)));
+  const x1 = Math.min(src.width, Math.ceil(Math.max(...xs)));
+  const y1 = Math.min(src.height, Math.ceil(Math.max(...ys)));
+  const w = x1 - x0;
+  const h = y1 - y0;
+  if (w < 10 || h < 10) return src;
+
+  const full = new OffscreenCanvas(src.width, src.height);
+  full.getContext('2d').putImageData(src, 0, 0);
+  const crop = new OffscreenCanvas(w, h);
+  const ctx = crop.getContext('2d');
+  ctx.drawImage(full, x0, y0, w, h, 0, 0, w, h);
+  return ctx.getImageData(0, 0, w, h);
+}

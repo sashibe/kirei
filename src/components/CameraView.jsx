@@ -9,6 +9,7 @@ const CameraView = forwardRef(function CameraView({ mode = "face", aspectRatio =
   useImperativeHandle(ref, () => ({
     captureFrame,
     isActive,
+    get videoEl() { return videoRef.current; },
   }), [captureFrame, isActive]);
 
   return (

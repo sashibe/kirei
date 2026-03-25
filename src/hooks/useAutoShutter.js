@@ -3,26 +3,38 @@ import { detectFacePosition } from '../analysis/skinAnalyzer.js';
 import { detectMouthPosition } from '../analysis/dentalAnalyzer.js';
 
 const INTERVAL = 300;
-const STABLE_FRAMES = 3;   // 3回連続 = 約900ms安定で発火
+const STABLE_FRAMES = 3;
 const TIMEOUT = 10000;
 
+// 口の開き判定（ランドマークベース）
+function isMouthOpen(landmarks) {
+  const upperLip = landmarks[13];
+  const lowerLip = landmarks[14];
+  const leftCorner = landmarks[61];
+  const rightCorner = landmarks[291];
+  const mouthWidth = Math.abs(rightCorner.x - leftCorner.x);
+  if (mouthWidth < 0.01) return false;
+  const openRatio = (lowerLip.y - upperLip.y) / mouthWidth;
+  return openRatio > 0.15;
+}
+
 // status: 'searching' | 'detected' | 'ready' | 'timeout'
-export default function useAutoShutter({ cameraRef, mode = 'face', enabled = true }) {
+export default function useAutoShutter({ cameraRef, videoRef, faceLandmarker, mode = 'face', enabled = true }) {
   const [status, setStatus] = useState('searching');
   const [confidence, setConfidence] = useState(0);
   const [epoch, setEpoch] = useState(0);
+  const [lastLandmarks, setLastLandmarks] = useState(null);
   const stableCountRef = useRef(0);
   const triggeredRef = useRef(false);
   const elapsedRef = useRef(0);
-  const everDetectedRef = useRef(false); // 一度でも検出したか
 
   const reset = useCallback(() => {
     setStatus('searching');
     setConfidence(0);
+    setLastLandmarks(null);
     stableCountRef.current = 0;
     triggeredRef.current = false;
     elapsedRef.current = 0;
-    everDetectedRef.current = false;
     setEpoch(e => e + 1);
   }, []);
 
@@ -31,40 +43,63 @@ export default function useAutoShutter({ cameraRef, mode = 'face', enabled = tru
     triggeredRef.current = false;
     elapsedRef.current = 0;
     stableCountRef.current = 0;
-    everDetectedRef.current = false;
 
-    const detect = mode === 'face' ? detectFacePosition : detectMouthPosition;
+    const useLandmarker = faceLandmarker?.ready;
 
     const iv = setInterval(() => {
       if (triggeredRef.current) return;
       elapsedRef.current += INTERVAL;
 
-      const cam = cameraRef?.current;
-      const frame = cam?.isActive && typeof cam.captureFrame === 'function'
-        ? cam.captureFrame()
-        : null;
+      let inFrame = false;
+      let conf = 0;
+      let detectedLandmarks = null;
 
-      if (frame) {
-        const result = detect(frame);
-        const conf = Math.round(Math.min(100, result.ratio * 1000));
-        setConfidence(conf);
-
-        if (result.inFrame) {
-          everDetectedRef.current = true;
-          stableCountRef.current++;
-          if (stableCountRef.current >= STABLE_FRAMES) {
-            setStatus('ready');
-            triggeredRef.current = true;
-            return;
+      if (useLandmarker && videoRef?.current) {
+        // === MediaPipe ランドマーク検出 ===
+        const result = faceLandmarker.detect(videoRef.current, performance.now());
+        if (result) {
+          detectedLandmarks = result.landmarks;
+          if (mode === 'face') {
+            // 顔が検出されればOK
+            inFrame = true;
+            conf = 90;
+          } else {
+            // デンタル: 顔検出 + 口が開いているか
+            inFrame = isMouthOpen(result.landmarks);
+            conf = inFrame ? 90 : 40;
           }
-          setStatus('detected');
-        } else {
-          stableCountRef.current = Math.max(0, stableCountRef.current - 1);
-          setStatus(conf > 5 ? 'detected' : 'searching');
+        }
+      } else {
+        // === フォールバック: HSVヒューリスティック ===
+        const cam = cameraRef?.current;
+        const frame = cam?.isActive && typeof cam.captureFrame === 'function'
+          ? cam.captureFrame()
+          : null;
+
+        if (frame) {
+          const detect = mode === 'face' ? detectFacePosition : detectMouthPosition;
+          const result = detect(frame);
+          conf = Math.round(Math.min(100, result.ratio * 1000));
+          inFrame = result.inFrame;
         }
       }
 
-      // タイムアウト: 検出できなかった場合は 'timeout' を返す（シャッターは切らない）
+      setConfidence(conf);
+
+      if (inFrame) {
+        stableCountRef.current++;
+        if (detectedLandmarks) setLastLandmarks(detectedLandmarks);
+        if (stableCountRef.current >= STABLE_FRAMES) {
+          setStatus('ready');
+          triggeredRef.current = true;
+          return;
+        }
+        setStatus('detected');
+      } else {
+        stableCountRef.current = Math.max(0, stableCountRef.current - 1);
+        setStatus(conf > 5 ? 'detected' : 'searching');
+      }
+
       if (elapsedRef.current >= TIMEOUT) {
         triggeredRef.current = true;
         setStatus('timeout');
@@ -72,7 +107,7 @@ export default function useAutoShutter({ cameraRef, mode = 'face', enabled = tru
     }, INTERVAL);
 
     return () => clearInterval(iv);
-  }, [enabled, mode, cameraRef, epoch]);
+  }, [enabled, mode, cameraRef, videoRef, faceLandmarker, epoch]);
 
-  return { status, confidence, reset };
+  return { status, confidence, lastLandmarks, reset };
 }

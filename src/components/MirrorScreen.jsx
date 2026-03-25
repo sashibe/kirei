@@ -5,9 +5,10 @@ import CameraView from './CameraView.jsx';
 import ScoreBadge from './ScoreBadge.jsx';
 import GuideFrame from './GuideFrame.jsx';
 import useAutoShutter from '../hooks/useAutoShutter.js';
+import useFaceLandmarker from '../hooks/useFaceLandmarker.js';
 import { SKIN_SCORES, DENTAL_SCORES } from '../data/scores.js';
-import { analyzeSkin } from '../analysis/skinAnalyzer.js';
-import { analyzeDental } from '../analysis/dentalAnalyzer.js';
+import { analyzeSkin, analyzeSkinWithLandmarks } from '../analysis/skinAnalyzer.js';
+import { analyzeDental, analyzeDentalWithLandmarks } from '../analysis/dentalAnalyzer.js';
 
 const MODE = { IDLE: 'idle', SKIN: 'skin', DENTAL: 'dental' };
 
@@ -34,30 +35,44 @@ export default function MirrorScreen({ onResult }) {
   const [dentalScores, setDentalScores] = useState(null);
   const [showScores, setShowScores] = useState(true);
   const [lastCheck, setLastCheck] = useState(null);
-  const [frozenFrame, setFrozenFrame] = useState(null); // シャッター後の静止画dataURL
+  const [frozenFrame, setFrozenFrame] = useState(null);
   const cameraRef = useRef(null);
   const handledReadyRef = useRef(false);
   const modeRef = useRef(mode);
   modeRef.current = mode;
 
+  // MediaPipe FaceLandmarker
+  const faceLandmarker = useFaceLandmarker();
+
   const shutterMode = mode === MODE.SKIN ? 'face' : mode === MODE.DENTAL ? 'mouth' : 'face';
   const isScanning = stage === STAGE.SCANNING;
   const shutterEnabled = (mode === MODE.SKIN || mode === MODE.DENTAL) && !isScanning && stage !== STAGE.SHUTTER;
 
-  const { status, confidence, reset: resetShutter } = useAutoShutter({
+  const { status, confidence, lastLandmarks, reset: resetShutter } = useAutoShutter({
     cameraRef,
+    videoRef: { get current() { return cameraRef.current?.videoEl || null; } },
+    faceLandmarker,
     mode: shutterMode,
     enabled: shutterEnabled,
   });
 
-  // スコアをセットする共通関数
+  // スコアをセットする共通関数（ランドマークがあれば使う）
+  const landmarksRef = useRef(null);
+  // lastLandmarks を ref に同期（コールバック内で最新値を使うため）
+  useEffect(() => { landmarksRef.current = lastLandmarks; }, [lastLandmarks]);
+
   const applyScores = useCallback(() => {
     const currentMode = modeRef.current;
     const frame = cameraRef.current?.isActive ? cameraRef.current.captureFrame() : null;
+    const lm = landmarksRef.current;
 
     if (currentMode === MODE.SKIN) {
       let result = null;
-      try { result = frame ? analyzeSkin(frame) : null; } catch { /* */ }
+      try {
+        result = frame
+          ? (lm ? analyzeSkinWithLandmarks(frame, lm) : analyzeSkin(frame))
+          : null;
+      } catch { /* */ }
       setSkinScores((result && !result.error) ? {
         tone: { ...SKIN_SCORES.tone, score: result.tone.score },
         pores: { ...SKIN_SCORES.pores, score: result.pores.score },
@@ -65,7 +80,11 @@ export default function MirrorScreen({ onResult }) {
       } : SKIN_SCORES);
     } else if (currentMode === MODE.DENTAL) {
       let result = null;
-      try { result = frame ? analyzeDental(frame) : null; } catch { /* */ }
+      try {
+        result = frame
+          ? (lm ? analyzeDentalWithLandmarks(frame, lm) : analyzeDental(frame))
+          : null;
+      } catch { /* */ }
       setDentalScores((result && !result.error) ? {
         gums: { ...DENTAL_SCORES.gums, score: result.gums.score },
         alignment: { ...DENTAL_SCORES.alignment, score: result.alignment.score },
