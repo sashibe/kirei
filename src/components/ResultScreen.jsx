@@ -119,7 +119,7 @@ export default function ResultScreen({ skinScores: propSkin, dentalScores: propD
               <div style={{ fontSize: 20, marginBottom: 4 }}>{t.icon}</div>
               <p style={{ fontSize: 13, fontWeight: 700, color: "#334155", margin: "0 0 2px" }}>{t.title}</p>
               <p style={{ fontSize: 10, color: "#64748b", margin: "0 0 8px" }}>{t.desc}</p>
-              <button className="btn-primary" style={{ width: "100%", padding: "6px 0", background: t.color, border: "none", borderRadius: 8, fontSize: 11, fontWeight: 700, color: "#fff", cursor: "pointer" }}>{t.btn}</button>
+              <button className="btn-primary" onClick={() => alert("詳細ページは準備中です")} style={{ width: "100%", padding: "6px 0", background: t.color, border: "none", borderRadius: 8, fontSize: 11, fontWeight: 700, color: "#fff", cursor: "pointer" }}>{t.btn}</button>
             </div>
           ))}
         </div>
