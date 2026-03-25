@@ -59,6 +59,7 @@ function PhoneFrame({ children }) {
             overflow: hidden;
             height: 844px;
             position: relative;
+            transform: translateZ(0);
           }
           .phone-screen > div {
             height: 100%;
