@@ -59,7 +59,7 @@ export default function GuideFrame({ mode = 'face', status = 'searching', confid
         {mode === 'face' ? (
           // 顔用: 楕円ガイド（フルスクリーン対応で拡大）
           <ellipse
-            cx="50" cy="42" rx="34" ry="38"
+            cx="50" cy="42" rx="35" ry="32"
             fill={s.fill}
             stroke={s.stroke}
             strokeWidth={isReady ? 3 : 2}

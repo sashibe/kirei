@@ -111,7 +111,7 @@ function scoreDullness(skinPixels, imageWidth, imageHeight) {
 // 4pxおきにサンプリングして高速化
 // ガイド楕円: GuideFrame の viewBox(0-100) で cx=50, cy=42, rx=34, ry=38
 // → 正規化座標
-const FACE_GUIDE = { cx: 0.50, cy: 0.42, rx: 0.34, ry: 0.38 };
+const FACE_GUIDE = { cx: 0.50, cy: 0.42, rx: 0.35, ry: 0.32 };
 
 export function detectFacePosition(imageData) {
   const data = imageData.data;
