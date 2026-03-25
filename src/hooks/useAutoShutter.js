@@ -6,6 +6,30 @@ const INTERVAL = 300;
 const STABLE_FRAMES = 3;
 const TIMEOUT = 10000;
 
+// 顔が遮蔽されていないか判定（キーポイントの配置チェック）
+// 額(10) → 鼻先(1) → 顎(152) が上から下に適切な間隔で並んでいるか
+function isFaceUnoccluded(landmarks) {
+  const forehead = landmarks[10]; // 額の中央
+  const noseTip = landmarks[1];   // 鼻先
+  const chin = landmarks[152];     // 顎先
+  const leftCheek = landmarks[234]; // 左頬
+  const rightCheek = landmarks[454]; // 右頬
+
+  // 縦方向: 額→鼻→顎が上から下に順番に並ぶ
+  if (!(forehead.y < noseTip.y && noseTip.y < chin.y)) return false;
+
+  // 顔の縦幅と横幅が妥当（極端に潰れていない）
+  const faceHeight = chin.y - forehead.y;
+  const faceWidth = Math.abs(rightCheek.x - leftCheek.x);
+  if (faceHeight < 0.08 || faceWidth < 0.08) return false;
+
+  // アスペクト比チェック（顔は縦長〜正方形。極端に横長はNG）
+  const aspect = faceHeight / faceWidth;
+  if (aspect < 0.5 || aspect > 2.5) return false;
+
+  return true;
+}
+
 // 口の開き判定（ランドマークベース）
 function isMouthOpen(landmarks) {
   const upperLip = landmarks[13];
@@ -66,16 +90,17 @@ export default function useAutoShutter({ cameraRef, videoRef, faceLandmarker, mo
             detectedLandmarks = result.landmarks;
             const box = result.faceBox;
 
+            // 顔が遮蔽されていないかチェック
+            const unoccluded = isFaceUnoccluded(result.landmarks);
+
             if (mode === 'face') {
-              // 顔が十分な大きさで中央付近にあるか
               const centered = box.x + box.w / 2 > 0.2 && box.x + box.w / 2 < 0.8;
-              const largeEnough = box.w > 0.25 && box.h > 0.25;
-              inFrame = centered && largeEnough;
-              conf = inFrame ? 90 : 30;
-            } else {
-              // デンタル: 顔検出 + 口が十分に開いている
               const largeEnough = box.w > 0.2 && box.h > 0.2;
-              inFrame = largeEnough && isMouthOpen(result.landmarks);
+              inFrame = centered && largeEnough && unoccluded;
+              conf = unoccluded ? (inFrame ? 90 : 30) : 15;
+            } else {
+              const largeEnough = box.w > 0.15 && box.h > 0.15;
+              inFrame = largeEnough && unoccluded && isMouthOpen(result.landmarks);
               conf = inFrame ? 90 : 40;
             }
           }
