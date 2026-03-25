@@ -31,8 +31,9 @@ export default function MirrorScreen({ onResult }) {
   const [dentalScores, setDentalScores] = useState(null);
   const [showScores, setShowScores] = useState(true);
   const [lastCheck, setLastCheck] = useState(null);
-  const [demoPhase, setDemoPhase] = useState(null); // 'searching' | 'detected' | 'ready' | 'scanning'
+  const [demoPhase, setDemoPhase] = useState(null);
   const cameraRef = useRef(null);
+  const handledReadyRef = useRef(false); // status='ready'を1回だけ処理するフラグ
 
   const shutterMode = mode === MODE.SKIN ? 'face' : mode === MODE.DENTAL ? 'mouth' : 'face';
   const shutterEnabled = (mode === MODE.SKIN || mode === MODE.DENTAL) && !analyzing;
@@ -43,16 +44,21 @@ export default function MirrorScreen({ onResult }) {
     enabled: shutterEnabled,
   });
 
-  // 自動シャッター発火 → 分析実行
-  useEffect(() => {
-    if (status !== 'ready' || analyzing) return;
+  // 分析を実行する共通関数（refで参照するためuseCallbackにしない）
+  const modeRef = useRef(mode);
+  modeRef.current = mode;
+
+  const runAnalysis = useCallback(() => {
+    const currentMode = modeRef.current;
+    if (currentMode === MODE.IDLE) return;
+
     setAnalyzing(true);
 
-    const t = setTimeout(() => {
+    setTimeout(() => {
       try {
         const frame = cameraRef.current?.isActive ? cameraRef.current.captureFrame() : null;
 
-        if (mode === MODE.SKIN) {
+        if (currentMode === MODE.SKIN) {
           let result = null;
           try { result = frame ? analyzeSkin(frame) : null; } catch { /* 分析失敗 */ }
           setSkinScores((result && !result.error) ? {
@@ -60,7 +66,7 @@ export default function MirrorScreen({ onResult }) {
             pores: { ...SKIN_SCORES.pores, score: result.pores.score },
             dullness: { ...SKIN_SCORES.dullness, score: result.dullness.score },
           } : SKIN_SCORES);
-        } else if (mode === MODE.DENTAL) {
+        } else if (currentMode === MODE.DENTAL) {
           let result = null;
           try { result = frame ? analyzeDental(frame) : null; } catch { /* 分析失敗 */ }
           setDentalScores((result && !result.error) ? {
@@ -71,32 +77,37 @@ export default function MirrorScreen({ onResult }) {
         }
       } catch { /* 予期せぬエラー */ }
 
-      // 必ず完了状態にする
-      setLastCheck(mode);
+      setLastCheck(currentMode);
       setAnalyzing(false);
       setMode(MODE.IDLE);
     }, 400);
+  }, []);
 
-    return () => clearTimeout(t);
-  }, [status, analyzing, mode]);
+  // 自動シャッター発火 → 分析実行（status変化のみ監視、1回だけ実行）
+  useEffect(() => {
+    if (status === 'ready' && !handledReadyRef.current) {
+      handledReadyRef.current = true;
+      runAnalysis();
+    }
+  }, [status, runAnalysis]);
 
   // カメラ不可時のフォールバック（演出フロー付き）
-  const modeRef = useRef(mode);
-  modeRef.current = mode;
-
   useEffect(() => {
     if (mode === MODE.IDLE) return;
     let cancelled = false;
     const currentMode = mode;
 
-    // 500ms待ってカメラ状態を確認
     const t0 = setTimeout(() => {
       if (cancelled || cameraRef.current?.isActive) return;
 
       setDemoPhase('searching');
       setTimeout(() => { if (!cancelled) setDemoPhase('detected'); }, 1000);
       setTimeout(() => { if (!cancelled) setDemoPhase('ready'); }, 2000);
-      setTimeout(() => { if (!cancelled) setDemoPhase('scanning'); }, 2400);
+      setTimeout(() => {
+        if (cancelled) return;
+        setDemoPhase('scanning');
+        setAnalyzing(true);
+      }, 2400);
       setTimeout(() => {
         if (cancelled) return;
         if (currentMode === MODE.SKIN) setSkinScores(SKIN_SCORES);
@@ -113,6 +124,7 @@ export default function MirrorScreen({ onResult }) {
 
   const startCheck = useCallback((checkMode) => {
     resetShutter();
+    handledReadyRef.current = false; // リセット
     if (checkMode === MODE.SKIN) setSkinScores(null);
     if (checkMode === MODE.DENTAL) setDentalScores(null);
     setMode(checkMode);

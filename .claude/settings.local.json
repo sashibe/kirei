@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm init:*)",
+      "Bash(npm install:*)",
+      "Bash(npx vite:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(taskkill //PID 25184 //F)",
+      "Bash(gh api:*)",
+      "Bash(where gh:*)",
+      "Bash(git status:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "WebFetch(domain:sashibe.github.io)",
+      "Bash(node -e \":*)",
+      "Bash(git restore:*)",
+      "Bash(git rm:*)"
+    ]
+  }
+}
