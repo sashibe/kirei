@@ -64,11 +64,18 @@ export default function useAutoShutter({ cameraRef, videoRef, faceLandmarker, mo
           if (result) {
             mpSuccess = true;
             detectedLandmarks = result.landmarks;
+            const box = result.faceBox;
+
             if (mode === 'face') {
-              inFrame = true;
-              conf = 90;
+              // 顔が十分な大きさで中央付近にあるか
+              const centered = box.x + box.w / 2 > 0.2 && box.x + box.w / 2 < 0.8;
+              const largeEnough = box.w > 0.25 && box.h > 0.25;
+              inFrame = centered && largeEnough;
+              conf = inFrame ? 90 : 30;
             } else {
-              inFrame = isMouthOpen(result.landmarks);
+              // デンタル: 顔検出 + 口が十分に開いている
+              const largeEnough = box.w > 0.2 && box.h > 0.2;
+              inFrame = largeEnough && isMouthOpen(result.landmarks);
               conf = inFrame ? 90 : 40;
             }
           }
