@@ -38,8 +38,7 @@ export default function MirrorScreen({ onResult }) {
   const shutterEnabled = (mode === MODE.SKIN || mode === MODE.DENTAL) && !analyzing;
 
   const { status, confidence, reset: resetShutter } = useAutoShutter({
-    captureFrame: cameraRef.current?.captureFrame,
-    isActive: cameraRef.current?.isActive && shutterEnabled,
+    cameraRef,
     mode: shutterMode,
     enabled: shutterEnabled,
   });

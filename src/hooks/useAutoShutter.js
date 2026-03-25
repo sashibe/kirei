@@ -2,23 +2,23 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { detectFacePosition } from '../analysis/skinAnalyzer.js';
 import { detectMouthPosition } from '../analysis/dentalAnalyzer.js';
 
-const INTERVAL = 300; // ms
-const STABLE_FRAMES = 2; // 連続2フレームで発火
-const TIMEOUT = 8000; // 8秒で検出できなくても強制発火
+const INTERVAL = 300;
+const STABLE_FRAMES = 2;
+const TIMEOUT = 8000;
 
-export default function useAutoShutter({ captureFrame, isActive, mode = 'face', enabled = true }) {
+export default function useAutoShutter({ cameraRef, mode = 'face', enabled = true }) {
   const [status, setStatus] = useState('searching');
   const [confidence, setConfidence] = useState(0);
   const stableCountRef = useRef(0);
   const triggeredRef = useRef(false);
-  const frameCountRef = useRef(0);
+  const elapsedRef = useRef(0);
 
   const reset = useCallback(() => {
     setStatus('searching');
     setConfidence(0);
     stableCountRef.current = 0;
     triggeredRef.current = false;
-    frameCountRef.current = 0;
+    elapsedRef.current = 0;
   }, []);
 
   useEffect(() => {
@@ -28,10 +28,13 @@ export default function useAutoShutter({ captureFrame, isActive, mode = 'face', 
 
     const iv = setInterval(() => {
       if (triggeredRef.current) return;
-      frameCountRef.current++;
+      elapsedRef.current += INTERVAL;
 
-      // captureFrame が利用可能かチェック
-      const frame = typeof captureFrame === 'function' ? captureFrame() : null;
+      // ref 経由で最新の captureFrame を取得
+      const cam = cameraRef?.current;
+      const frame = cam?.isActive && typeof cam.captureFrame === 'function'
+        ? cam.captureFrame()
+        : null;
 
       if (frame) {
         const result = detect(frame);
@@ -52,15 +55,15 @@ export default function useAutoShutter({ captureFrame, isActive, mode = 'face', 
         }
       }
 
-      // タイムアウト: 一定時間検出できなくても強制的にreadyにする
-      if (frameCountRef.current * INTERVAL >= TIMEOUT) {
+      // タイムアウト
+      if (elapsedRef.current >= TIMEOUT) {
         setStatus('ready');
         triggeredRef.current = true;
       }
     }, INTERVAL);
 
     return () => clearInterval(iv);
-  }, [enabled, isActive, mode, captureFrame]);
+  }, [enabled, mode, cameraRef]);
 
   return { status, confidence, reset, triggered: triggeredRef.current };
 }
