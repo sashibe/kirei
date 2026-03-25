@@ -21,7 +21,7 @@ export default function Score({ score, size = 80, color = "#a78bfa", label, dela
   const o = c - (cur / 100) * c;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+    <div className={cur >= score && score > 0 ? "score-complete" : undefined} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
       <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#f1f5f9" strokeWidth="6" />
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth="6" strokeDasharray={c} strokeDashoffset={o} strokeLinecap="round" style={{ transition: "stroke-dashoffset 0.08s" }} />

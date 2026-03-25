@@ -65,6 +65,74 @@ export function rgbToHsv(r, g, b) {
   return [h, s, max]; // H: 0-360, S: 0-1, V: 0-1
 }
 
+// ΔE2000 色差計算（簡易版）
+// 2つのLab色の知覚的な差を算出
+export function deltaE2000(lab1, lab2) {
+  const [L1, a1, b1] = lab1;
+  const [L2, a2, b2] = lab2;
+  const avgL = (L1 + L2) / 2;
+  const C1 = Math.sqrt(a1 * a1 + b1 * b1);
+  const C2 = Math.sqrt(a2 * a2 + b2 * b2);
+  const avgC = (C1 + C2) / 2;
+
+  const G = 0.5 * (1 - Math.sqrt(avgC ** 7 / (avgC ** 7 + 25 ** 7)));
+  const a1p = a1 * (1 + G);
+  const a2p = a2 * (1 + G);
+  const C1p = Math.sqrt(a1p * a1p + b1 * b1);
+  const C2p = Math.sqrt(a2p * a2p + b2 * b2);
+
+  const h1p = Math.atan2(b1, a1p) * 180 / Math.PI;
+  const h2p = Math.atan2(b2, a2p) * 180 / Math.PI;
+  const h1pn = h1p >= 0 ? h1p : h1p + 360;
+  const h2pn = h2p >= 0 ? h2p : h2p + 360;
+
+  const dLp = L2 - L1;
+  const dCp = C2p - C1p;
+  let dhp = h2pn - h1pn;
+  if (Math.abs(dhp) > 180) dhp -= 360 * Math.sign(dhp);
+  const dHp = 2 * Math.sqrt(C1p * C2p) * Math.sin(dhp * Math.PI / 360);
+
+  const SL = 1 + 0.015 * (avgL - 50) ** 2 / Math.sqrt(20 + (avgL - 50) ** 2);
+  const SC = 1 + 0.045 * (C1p + C2p) / 2;
+  const SH = 1 + 0.015 * (C1p + C2p) / 2;
+
+  return Math.sqrt((dLp / SL) ** 2 + (dCp / SC) ** 2 + (dHp / SH) ** 2);
+}
+
+// Laplacian フィルタ（エッジ検出・テクスチャ粗さ計測）
+// 入力: ImageData, 出力: 各肌ピクセルのLaplacian応答の平均
+export function laplacianResponse(imageData, isSkinFn) {
+  const data = imageData.data;
+  const w = imageData.width;
+  const h = imageData.height;
+  // 輝度画像
+  const lum = new Float32Array(w * h);
+  for (let i = 0; i < w * h; i++) {
+    const i4 = i * 4;
+    lum[i] = 0.299 * data[i4] + 0.587 * data[i4 + 1] + 0.114 * data[i4 + 2];
+  }
+
+  let total = 0, count = 0;
+  // Laplacian kernel: [0,1,0; 1,-4,1; 0,1,0]
+  for (let y = 1; y < h - 1; y += 2) {
+    for (let x = 1; x < w - 1; x += 2) {
+      const idx = y * w + x;
+      const i4 = idx * 4;
+      if (!isSkinFn(data[i4], data[i4 + 1], data[i4 + 2])) continue;
+
+      const lap = -4 * lum[idx]
+        + lum[(y - 1) * w + x]
+        + lum[(y + 1) * w + x]
+        + lum[y * w + (x - 1)]
+        + lum[y * w + (x + 1)];
+      total += Math.abs(lap);
+      count++;
+    }
+  }
+
+  return count > 0 ? total / count : 0;
+}
+
 // === 照明正規化 ===
 
 // グレーワールド仮定によるホワイトバランス補正

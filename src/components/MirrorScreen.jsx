@@ -88,7 +88,7 @@ export default function MirrorScreen({ onNext, onScoresReady }) {
 
       <div style={{ padding: "16px 20px", display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
         {skinDone ? (
-          <button onClick={onNext} style={{ width: "100%", padding: 14, background: "linear-gradient(135deg, #a855f7, #ec4899)", border: "none", borderRadius: 16, fontSize: 15, fontWeight: 700, color: "#fff", cursor: "pointer", boxShadow: "0 4px 20px rgba(168,85,247,0.3)" }}>
+          <button className="btn-primary" onClick={onNext} style={{ width: "100%", padding: 14, background: "linear-gradient(135deg, #a855f7, #ec4899)", border: "none", borderRadius: 16, fontSize: 15, fontWeight: 700, color: "#fff", cursor: "pointer", boxShadow: "0 4px 20px rgba(168,85,247,0.3)" }}>
             口元を映してデンタルチェック →
           </button>
         ) : (
@@ -98,7 +98,7 @@ export default function MirrorScreen({ onNext, onScoresReady }) {
             <span style={{ fontSize: 13, color: "#a855f7", fontWeight: 600 }}>肌を分析中...</span>
           </div>
         )}
-        <p style={{ fontSize: 10, color: "#cbd5e1", margin: 0 }}>※本アプリは医療診断を行うものではありません</p>
+        <p className="disclaimer" style={{ fontSize: 10, color: "#cbd5e1", margin: 0 }}>※本アプリは医療診断を行うものではありません</p>
       </div>
     </>
   );

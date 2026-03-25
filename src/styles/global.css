@@ -13,3 +13,87 @@ body {
 html {
   scrollbar-gutter: stable;
 }
+
+/* === 画面遷移アニメーション === */
+@keyframes screenFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.screen-enter {
+  animation: screenFadeIn 0.35s ease-out;
+}
+
+/* === ボタンインタラクション === */
+.btn-primary {
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(168, 85, 247, 0.35);
+  filter: brightness(1.05);
+}
+
+.btn-primary:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.2);
+}
+
+.btn-secondary {
+  transition: transform 0.1s ease, background 0.15s ease;
+}
+
+.btn-secondary:hover {
+  background: #f1f5f9 !important;
+  transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+  transform: scale(0.97);
+}
+
+/* === カード・タップフィードバック === */
+.card-interactive {
+  transition: transform 0.12s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+}
+
+.card-interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.12);
+}
+
+.card-interactive:active {
+  transform: scale(0.97);
+}
+
+/* === タブ切り替えアニメーション === */
+@keyframes tabContentFade {
+  from { opacity: 0; transform: translateX(8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.tab-content {
+  animation: tabContentFade 0.25s ease-out;
+}
+
+/* === スコアバウンス === */
+@keyframes scoreBounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.score-complete {
+  animation: scoreBounce 0.3s ease-out;
+}
+
+/* === 免責表示 === */
+.disclaimer {
+  font-size: 10px;
+  color: #cbd5e1;
+  text-align: center;
+  margin-top: 12px;
+  padding: 0 20px;
+}

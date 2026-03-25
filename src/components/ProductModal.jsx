@@ -35,7 +35,7 @@ export default function ProductModal({ product, onClose }) {
             </div>
           ))}
         </div>
-        <button style={{ width: "100%", padding: 14, background: "linear-gradient(135deg, #a855f7, #ec4899)", border: "none", borderRadius: 14, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer", boxShadow: "0 4px 16px rgba(168,85,247,0.25)", marginBottom: 8 }}>購入ページを開く</button>
+        <button onClick={() => { if (product.url) { window.open(product.url, '_blank'); } else { alert('購入ページは準備中です'); } }} style={{ width: "100%", padding: 14, background: "linear-gradient(135deg, #a855f7, #ec4899)", border: "none", borderRadius: 14, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer", boxShadow: "0 4px 16px rgba(168,85,247,0.25)", marginBottom: 8 }}>購入ページを開く</button>
         <button onClick={onClose} style={{ width: "100%", padding: 10, background: "transparent", border: "none", fontSize: 12, color: "#94a3b8", cursor: "pointer" }}>閉じる</button>
       </div>
     </div>

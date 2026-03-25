@@ -1,107 +1,139 @@
-import { rgbToLab, rgbToHsv, normalizeIllumination } from './colorUtils.js';
+import { rgbToLab, rgbToHsv, normalizeIllumination, deltaE2000 } from './colorUtils.js';
 
-// 口腔領域の簡易色分類
-// 歯: 高明度 + 低彩度
-// 歯茎: ピンク〜赤系
+// 口腔領域の色分類（RGB + Lab + HSV 複合条件）
 function classifyOralPixel(r, g, b) {
   const [h, s, v] = rgbToHsv(r, g, b);
   const [l, a, bVal] = rgbToLab(r, g, b);
 
-  // 歯（白〜黄色、高明度・低彩度）
-  if (l > 65 && s < 0.35 && v > 0.5) return 'tooth';
-  // 歯茎（ピンク〜赤、中明度）
-  if ((h <= 20 || h >= 340) && s > 0.15 && a > 5 && l > 30 && l < 75) return 'gum';
+  // 歯（白〜黄色系、高明度・低彩度）
+  // Lab: L > 65, |a*| < 10, b* < 25
+  if (l > 65 && s < 0.35 && v > 0.5 && Math.abs(a) < 15 && bVal < 30) return 'tooth';
+
+  // 歯茎（ピンク〜赤系、中明度、a*が正=赤み）
+  // HSV: 赤〜ピンク範囲, Lab: a* > 5
+  if ((h <= 25 || h >= 330) && s > 0.12 && a > 3 && l > 25 && l < 80) return 'gum';
+
   return 'other';
 }
 
-// 口腔領域のピクセルを分類
+// 口腔領域のピクセルを分類（座標付き）
 function classifyOralRegion(imageData) {
   const data = imageData.data;
+  const w = imageData.width;
   const teeth = [];
   const gums = [];
 
   for (let i = 0; i < data.length; i += 4) {
-    const type = classifyOralPixel(data[i], data[i + 1], data[i + 2]);
-    if (type === 'tooth') teeth.push([data[i], data[i + 1], data[i + 2]]);
-    else if (type === 'gum') gums.push([data[i], data[i + 1], data[i + 2]]);
+    const r = data[i], g = data[i + 1], b = data[i + 2];
+    const type = classifyOralPixel(r, g, b);
+    const idx = i / 4;
+    const px = { r, g, b, x: idx % w, y: Math.floor(idx / w) };
+    if (type === 'tooth') teeth.push(px);
+    else if (type === 'gum') gums.push(px);
   }
 
   return { teeth, gums };
 }
 
-// 歯茎スコア: 健康な歯茎はサーモンピンク（Lab: a*が適度に正、b*がやや正）
-// 赤すぎ → 炎症気味、白っぽい → 貧血気味
+// 健康な歯茎のリファレンスLab値（サーモンピンク）
+const HEALTHY_GUM_LAB = [55, 22, 12];
+
+// 歯茎スコア: 健康色との色差 + 均一性
 function scoreGums(gums) {
   if (gums.length < 50) return 50;
 
-  const labs = gums.map(([r, g, b]) => rgbToLab(r, g, b));
+  const labs = gums.map(p => rgbToLab(p.r, p.g, p.b));
+
+  // 平均色と健康色のΔE2000
+  const avgL = labs.reduce((s, l) => s + l[0], 0) / labs.length;
   const avgA = labs.reduce((s, l) => s + l[1], 0) / labs.length;
   const avgB = labs.reduce((s, l) => s + l[2], 0) / labs.length;
+  const colorDist = deltaE2000([avgL, avgA, avgB], HEALTHY_GUM_LAB);
 
-  // 健康な歯茎の目安: a* = 15〜25, b* = 5〜15
-  const idealA = 20, idealB = 10;
-  const distA = Math.abs(avgA - idealA);
-  const distB = Math.abs(avgB - idealB);
-  const dist = Math.sqrt(distA ** 2 + distB ** 2);
+  // 均一性: 歯茎内部の色のばらつき
+  const varA = Math.sqrt(labs.reduce((s, l) => s + (l[1] - avgA) ** 2, 0) / labs.length);
+  const varB = Math.sqrt(labs.reduce((s, l) => s + (l[2] - avgB) ** 2, 0) / labs.length);
+  const uniformity = (varA + varB) / 2;
 
-  // 色差 0〜30 を スコア 95〜40 にマッピング
-  return Math.round(Math.max(40, Math.min(95, 95 - dist * 1.83)));
+  // ΔE 0〜25 → 95〜40、均一性ペナルティ
+  const colorScore = 95 - colorDist * 2.2;
+  const uniformityPenalty = Math.max(0, uniformity - 5) * 1.5;
+  return Math.round(Math.max(40, Math.min(95, colorScore - uniformityPenalty)));
 }
 
-// 歯並びスコア: 歯領域の水平対称性
-// 中心線から左右の歯の分布が対称なほど高スコア
+// 歯並びスコア: 左右対称性 + 歯領域の連続性
 function scoreAlignment(imageData, teeth) {
   if (teeth.length < 50) return 50;
 
-  const data = imageData.data;
   const w = imageData.width;
   const centerX = w / 2;
 
+  // 左右の歯ピクセル統計
   let leftCount = 0, rightCount = 0;
   let leftYSum = 0, rightYSum = 0;
+  let leftXSum = 0, rightXSum = 0;
 
-  for (let i = 0; i < data.length; i += 4) {
-    const pixelIdx = i / 4;
-    const x = pixelIdx % w;
-    const y = Math.floor(pixelIdx / w);
-    const type = classifyOralPixel(data[i], data[i + 1], data[i + 2]);
-
-    if (type === 'tooth') {
-      if (x < centerX) { leftCount++; leftYSum += y; }
-      else { rightCount++; rightYSum += y; }
+  for (const p of teeth) {
+    if (p.x < centerX) {
+      leftCount++; leftYSum += p.y; leftXSum += p.x;
+    } else {
+      rightCount++; rightYSum += p.y; rightXSum += p.x;
     }
   }
 
   if (leftCount < 10 || rightCount < 10) return 50;
 
-  // 左右の歯の数のバランス
+  // 左右の数バランス
   const countRatio = Math.min(leftCount, rightCount) / Math.max(leftCount, rightCount);
-  // 左右の歯のY位置（高さ）の平均差
+
+  // 左右の高さバランス
   const leftAvgY = leftYSum / leftCount;
   const rightAvgY = rightYSum / rightCount;
   const yDiff = Math.abs(leftAvgY - rightAvgY) / imageData.height;
 
-  // 対称性スコア
-  const symmetry = countRatio * 0.6 + (1 - Math.min(1, yDiff * 10)) * 0.4;
-  return Math.round(Math.max(40, Math.min(95, symmetry * 95)));
+  // 左右の横方向の対称性（中心からの距離が近いほど対称）
+  const leftAvgDist = (centerX - leftXSum / leftCount) / centerX;
+  const rightAvgDist = (rightXSum / rightCount - centerX) / centerX;
+  const xSymmetry = 1 - Math.abs(leftAvgDist - rightAvgDist);
+
+  // 歯領域の垂直方向の幅の一貫性（歯列が揃っているか）
+  const yValues = teeth.map(p => p.y);
+  const yMin = Math.min(...yValues);
+  const yMax = Math.max(...yValues);
+  const ySpread = (yMax - yMin) / imageData.height;
+  const verticalConsistency = Math.max(0, 1 - ySpread * 3);
+
+  const score = countRatio * 0.3 + (1 - Math.min(1, yDiff * 8)) * 0.25
+    + xSymmetry * 0.25 + verticalConsistency * 0.2;
+  return Math.round(Math.max(40, Math.min(95, score * 95)));
 }
 
-// 着色スコア: 歯の白さ（Lab L値とb*値）
-// L値が高く、b*値が低いほど白い → 高スコア
+// 理想的な白い歯のLab値
+const IDEAL_TOOTH_LAB = [92, -1, 5];
+
+// 着色スコア: ΔE2000で理想白との色差を精密計算
 function scoreStaining(teeth) {
   if (teeth.length < 50) return 50;
 
-  const labs = teeth.map(([r, g, b]) => rgbToLab(r, g, b));
-  const avgL = labs.reduce((s, l) => s + l[0], 0) / labs.length;
+  const labs = teeth.map(p => rgbToLab(p.r, p.g, p.b));
+
+  // 各歯ピクセルと理想白のΔE2000を算出
+  // サンプリング（全ピクセルは重いので1/4で計算）
+  const step = Math.max(1, Math.floor(labs.length / 500));
+  let totalDE = 0, sampleCount = 0;
+  for (let i = 0; i < labs.length; i += step) {
+    totalDE += deltaE2000(labs[i], IDEAL_TOOTH_LAB);
+    sampleCount++;
+  }
+  const avgDE = sampleCount > 0 ? totalDE / sampleCount : 30;
+
+  // 黄ばみ方向の偏り（b*値）
   const avgB = labs.reduce((s, l) => s + l[2], 0) / labs.length;
+  const yellowPenalty = Math.max(0, avgB - 8) * 0.8;
 
-  // 白い歯: L > 80, b* < 10
-  // 着色: L < 70, b* > 20（黄ばみ）
-  const whiteness = (avgL - 50) / 40; // 0〜1にマッピング
-  const yellowness = Math.max(0, avgB - 5) / 25; // b*が高いほど黄色
-
-  const score = whiteness * 0.6 - yellowness * 0.4;
-  return Math.round(Math.max(40, Math.min(95, 40 + score * 55)));
+  // ΔE 5〜35 → スコア 95〜40
+  const deScore = 95 - (avgDE - 5) * (55 / 30);
+  return Math.round(Math.max(40, Math.min(95, deScore - yellowPenalty)));
 }
 
 // メインの分析関数

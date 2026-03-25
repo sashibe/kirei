@@ -1,89 +1,103 @@
-import { rgbToLab, rgbToHsv, normalizeIllumination } from './colorUtils.js';
+import { rgbToLab, rgbToHsv, normalizeIllumination, laplacianResponse } from './colorUtils.js';
 
-// 肌領域の簡易検出（HSVベースのスキンカラー判定）
+// 肌領域の検出（HSV + RGB複合条件）
 function isSkinPixel(r, g, b) {
   const [h, s, v] = rgbToHsv(r, g, b);
-  return h >= 0 && h <= 50 && s >= 0.1 && s <= 0.8 && v >= 0.2;
+  // HSV条件: 暖色系 + 適度な彩度 + 暗すぎない
+  if (!(h >= 0 && h <= 55 && s >= 0.08 && s <= 0.75 && v >= 0.15)) return false;
+  // RGB条件: R > G > B（肌色の基本特性）
+  if (!(r > g && g > b)) return false;
+  // 均一色（壁など）除外: RGBの差が小さすぎるものは肌ではない
+  if (r - b < 15) return false;
+  return true;
 }
 
-// 肌ピクセルを抽出
+// 肌ピクセルを抽出（座標付き）
 function extractSkinPixels(imageData) {
   const data = imageData.data;
+  const w = imageData.width;
   const pixels = [];
   for (let i = 0; i < data.length; i += 4) {
     if (isSkinPixel(data[i], data[i + 1], data[i + 2])) {
-      pixels.push([data[i], data[i + 1], data[i + 2]]);
+      const idx = i / 4;
+      pixels.push({
+        r: data[i], g: data[i + 1], b: data[i + 2],
+        x: idx % w, y: Math.floor(idx / w),
+      });
     }
   }
   return pixels;
 }
 
-// 肌トーンスコア: Lab色空間での色の均一性
-// 分散が小さいほどトーンが均一 → 高スコア
+// 肌トーンスコア: Lab a*b*平面での色ムラ + クラスタリング
 function scoreTone(skinPixels) {
   if (skinPixels.length < 100) return 50;
 
-  const labs = skinPixels.map(([r, g, b]) => rgbToLab(r, g, b));
+  const labs = skinPixels.map(p => rgbToLab(p.r, p.g, p.b));
   const avgA = labs.reduce((s, l) => s + l[1], 0) / labs.length;
   const avgB = labs.reduce((s, l) => s + l[2], 0) / labs.length;
 
   // a*, b* の標準偏差（色ムラの指標）
   const varA = Math.sqrt(labs.reduce((s, l) => s + (l[1] - avgA) ** 2, 0) / labs.length);
   const varB = Math.sqrt(labs.reduce((s, l) => s + (l[2] - avgB) ** 2, 0) / labs.length);
-  const colorVar = (varA + varB) / 2;
 
-  // 分散 0〜20 を スコア 95〜40 にマッピング
-  return Math.round(Math.max(40, Math.min(95, 95 - colorVar * 2.75)));
+  // 色相の分散方向も考慮（a*方向=赤み、b*方向=黄みのムラを別々に評価）
+  const redUnevenness = varA * 1.2; // 赤みムラはトーン印象に影響大
+  const yellowUnevenness = varB * 0.8;
+  const colorVar = (redUnevenness + yellowUnevenness) / 2;
+
+  // 外れ値の割合（平均から2σ以上離れたピクセルの比率）
+  const threshold = (varA + varB);
+  const outliers = labs.filter(l =>
+    Math.sqrt((l[1] - avgA) ** 2 + (l[2] - avgB) ** 2) > threshold
+  ).length / labs.length;
+
+  // 分散 + 外れ値を総合してスコア算出
+  const rawScore = 95 - colorVar * 2.5 - outliers * 30;
+  return Math.round(Math.max(40, Math.min(95, rawScore)));
 }
 
-// 毛穴スコア: テクスチャの粗さ（隣接ピクセルとの差分）
-// テクスチャが滑らかなほど高スコア
-function scorePores(imageData, skinPixels) {
+// 毛穴スコア: Laplacian フィルタによるテクスチャ粗さ
+function scorePores(imageData) {
+  const lapAvg = laplacianResponse(imageData, isSkinPixel);
+  // Laplacian応答 0〜20 を スコア 95〜40 にマッピング
+  // 応答が大きい = テクスチャが粗い = 毛穴が目立つ
+  return Math.round(Math.max(40, Math.min(95, 95 - lapAvg * 2.75)));
+}
+
+// くすみスコア: L値の空間分布（中心 vs 周辺）
+function scoreDullness(skinPixels, imageWidth, imageHeight) {
   if (skinPixels.length < 100) return 50;
 
-  const data = imageData.data;
-  const w = imageData.width;
-  let totalDiff = 0;
-  let count = 0;
+  const labs = skinPixels.map(p => ({
+    l: rgbToLab(p.r, p.g, p.b)[0],
+    x: p.x, y: p.y,
+  }));
 
-  // サンプリング（全ピクセルだと重いのでステップ付き）
-  const step = 2;
-  for (let y = 1; y < imageData.height - 1; y += step) {
-    for (let x = 1; x < w - 1; x += step) {
-      const idx = (y * w + x) * 4;
-      const r = data[idx], g = data[idx + 1], b = data[idx + 2];
-      if (!isSkinPixel(r, g, b)) continue;
+  // 全体の平均L値
+  const avgL = labs.reduce((s, p) => s + p.l, 0) / labs.length;
 
-      // 4近傍との輝度差
-      const lum = 0.299 * r + 0.587 * g + 0.114 * b;
-      const neighbors = [
-        (y - 1) * w + x, (y + 1) * w + x,
-        y * w + (x - 1), y * w + (x + 1),
-      ];
-      for (const ni of neighbors) {
-        const ni4 = ni * 4;
-        const nLum = 0.299 * data[ni4] + 0.587 * data[ni4 + 1] + 0.114 * data[ni4 + 2];
-        totalDiff += Math.abs(lum - nLum);
-        count++;
-      }
-    }
+  // 顔の中心エリア vs 周辺の明度差
+  const cx = imageWidth / 2, cy = imageHeight / 2;
+  const centerR = Math.min(imageWidth, imageHeight) * 0.25;
+  const center = labs.filter(p => Math.sqrt((p.x - cx) ** 2 + (p.y - cy) ** 2) < centerR);
+  const peripheral = labs.filter(p => Math.sqrt((p.x - cx) ** 2 + (p.y - cy) ** 2) >= centerR);
+
+  let uniformityBonus = 0;
+  if (center.length > 20 && peripheral.length > 20) {
+    const centerAvg = center.reduce((s, p) => s + p.l, 0) / center.length;
+    const periAvg = peripheral.reduce((s, p) => s + p.l, 0) / peripheral.length;
+    // 中心と周辺の差が小さい = 均一な明るさ = くすみが少ない
+    uniformityBonus = Math.max(0, 10 - Math.abs(centerAvg - periAvg));
   }
 
-  const avgDiff = count > 0 ? totalDiff / count : 0;
-  // 差分 0〜15 を スコア 95〜40 にマッピング
-  return Math.round(Math.max(40, Math.min(95, 95 - avgDiff * 3.67)));
-}
+  // L値の標準偏差（明暗ムラ）
+  const varL = Math.sqrt(labs.reduce((s, p) => s + (p.l - avgL) ** 2, 0) / labs.length);
 
-// くすみスコア: L値（明度）の平均
-// 明るいほどくすみが少ない → 高スコア
-function scoreDullness(skinPixels) {
-  if (skinPixels.length < 100) return 50;
-
-  const labs = skinPixels.map(([r, g, b]) => rgbToLab(r, g, b));
-  const avgL = labs.reduce((s, l) => s + l[0], 0) / labs.length;
-
-  // L値 40〜80 を スコア 40〜95 にマッピング
-  return Math.round(Math.max(40, Math.min(95, 40 + (avgL - 40) * (55 / 40))));
+  // L値 40〜80 → スコア 40〜85、均一性ボーナス + 明暗ムラペナルティ
+  const baseScore = 40 + (avgL - 40) * (45 / 40);
+  const finalScore = baseScore + uniformityBonus - varL * 0.5;
+  return Math.round(Math.max(40, Math.min(95, finalScore)));
 }
 
 // メインの分析関数
@@ -109,7 +123,7 @@ export function analyzeSkin(imageData) {
 
   return {
     tone: { score: scoreTone(skinPixels) },
-    pores: { score: scorePores(normalized, skinPixels) },
-    dullness: { score: scoreDullness(skinPixels) },
+    pores: { score: scorePores(normalized) },
+    dullness: { score: scoreDullness(skinPixels, normalized.width, normalized.height) },
   };
 }

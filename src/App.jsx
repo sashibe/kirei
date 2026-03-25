@@ -40,22 +40,24 @@ export default function App() {
   return (
     <div style={{ maxWidth: 390, margin: "0 auto", background: colors.bg, minHeight: "100vh", fontFamily: "'Noto Sans JP', sans-serif", paddingBottom: screen === SC.RESULT ? 32 : 0 }}>
       <Header />
-      {screen === SC.MIRROR && (
-        <MirrorScreen
-          onNext={() => setScreen(SC.DENTAL)}
-          onScoresReady={handleSkinScores}
-        />
-      )}
-      {screen === SC.DENTAL && (
-        <DentalScreen onComplete={handleDentalComplete} />
-      )}
-      {screen === SC.RESULT && (
-        <ResultScreen
-          skinScores={skinScoresRef.current}
-          dentalScores={dentalScoresRef.current}
-          onRestart={handleRestart}
-        />
-      )}
+      <div key={screen} className="screen-enter">
+        {screen === SC.MIRROR && (
+          <MirrorScreen
+            onNext={() => setScreen(SC.DENTAL)}
+            onScoresReady={handleSkinScores}
+          />
+        )}
+        {screen === SC.DENTAL && (
+          <DentalScreen onComplete={handleDentalComplete} />
+        )}
+        {screen === SC.RESULT && (
+          <ResultScreen
+            skinScores={skinScoresRef.current}
+            dentalScores={dentalScoresRef.current}
+            onRestart={handleRestart}
+          />
+        )}
+      </div>
     </div>
   );
 }
