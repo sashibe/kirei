@@ -134,10 +134,11 @@ export default function App() {
       width: "100%", height: "100%",
       background: colors.bg,
       fontFamily: "'Noto Sans JP', sans-serif",
-      overflow: "hidden", position: "relative",
+      overflow: showResult ? "auto" : "hidden",
+      position: "relative",
     }}>
       {showResult && <Header />}
-      <div key={showResult ? 'result' : 'mirror'} className="screen-enter" style={{ position: "relative", height: showResult ? "auto" : "100%", overflow: showResult ? "auto" : "hidden" }}>
+      <div key={showResult ? 'result' : 'mirror'} className="screen-enter" style={{ position: "relative", height: showResult ? "auto" : "100%" }}>
         {!showResult ? (
           <>
             <Header overlay />
