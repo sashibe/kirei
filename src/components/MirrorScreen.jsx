@@ -50,32 +50,29 @@ export default function MirrorScreen({ onResult }) {
     setAnalyzing(true);
 
     const t = setTimeout(() => {
-      const frame = cameraRef.current?.isActive ? cameraRef.current.captureFrame() : null;
+      try {
+        const frame = cameraRef.current?.isActive ? cameraRef.current.captureFrame() : null;
 
-      if (mode === MODE.SKIN) {
-        const result = frame ? analyzeSkin(frame) : null;
-        if (result && !result.error) {
-          setSkinScores({
+        if (mode === MODE.SKIN) {
+          let result = null;
+          try { result = frame ? analyzeSkin(frame) : null; } catch { /* 分析失敗 */ }
+          setSkinScores((result && !result.error) ? {
             tone: { ...SKIN_SCORES.tone, score: result.tone.score },
             pores: { ...SKIN_SCORES.pores, score: result.pores.score },
             dullness: { ...SKIN_SCORES.dullness, score: result.dullness.score },
-          });
-        } else {
-          setSkinScores(SKIN_SCORES);
-        }
-      } else if (mode === MODE.DENTAL) {
-        const result = frame ? analyzeDental(frame) : null;
-        if (result && !result.error) {
-          setDentalScores({
+          } : SKIN_SCORES);
+        } else if (mode === MODE.DENTAL) {
+          let result = null;
+          try { result = frame ? analyzeDental(frame) : null; } catch { /* 分析失敗 */ }
+          setDentalScores((result && !result.error) ? {
             gums: { ...DENTAL_SCORES.gums, score: result.gums.score },
             alignment: { ...DENTAL_SCORES.alignment, score: result.alignment.score },
             staining: { ...DENTAL_SCORES.staining, score: result.staining.score },
-          });
-        } else {
-          setDentalScores(DENTAL_SCORES);
+          } : DENTAL_SCORES);
         }
-      }
+      } catch { /* 予期せぬエラー */ }
 
+      // 必ず完了状態にする
       setLastCheck(mode);
       setAnalyzing(false);
       setMode(MODE.IDLE);
@@ -85,26 +82,32 @@ export default function MirrorScreen({ onResult }) {
   }, [status, analyzing, mode]);
 
   // カメラ不可時のフォールバック（演出フロー付き）
+  // 500ms遅延してカメラ状態が安定してから判定
   useEffect(() => {
-    if (cameraRef.current?.isActive || mode === MODE.IDLE || analyzing) return;
+    if (mode === MODE.IDLE || analyzing) return;
 
-    // searching → detected → ready → scanning → 完了
-    setDemoPhase('searching');
     const timers = [];
-    timers.push(setTimeout(() => setDemoPhase('detected'), 1000));
-    timers.push(setTimeout(() => setDemoPhase('ready'), 2000));
     timers.push(setTimeout(() => {
-      setDemoPhase('scanning');
-      setAnalyzing(true);
-    }, 2400));
-    timers.push(setTimeout(() => {
-      if (mode === MODE.SKIN) setSkinScores(SKIN_SCORES);
-      else if (mode === MODE.DENTAL) setDentalScores(DENTAL_SCORES);
-      setLastCheck(mode);
-      setAnalyzing(false);
-      setDemoPhase(null);
-      setMode(MODE.IDLE);
-    }, 4000));
+      // カメラが起動していたらデモフォールバック不要
+      if (cameraRef.current?.isActive) return;
+
+      // searching → detected → ready → scanning → 完了
+      setDemoPhase('searching');
+      timers.push(setTimeout(() => setDemoPhase('detected'), 1000));
+      timers.push(setTimeout(() => setDemoPhase('ready'), 2000));
+      timers.push(setTimeout(() => {
+        setDemoPhase('scanning');
+        setAnalyzing(true);
+      }, 2400));
+      timers.push(setTimeout(() => {
+        if (mode === MODE.SKIN) setSkinScores(SKIN_SCORES);
+        else if (mode === MODE.DENTAL) setDentalScores(DENTAL_SCORES);
+        setLastCheck(mode);
+        setAnalyzing(false);
+        setDemoPhase(null);
+        setMode(MODE.IDLE);
+      }, 4000));
+    }, 500));
 
     return () => timers.forEach(clearTimeout);
   }, [mode, analyzing]);
