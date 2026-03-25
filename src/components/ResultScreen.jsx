@@ -15,6 +15,7 @@ function avg(scores) {
 
 function generateMessage(tab, skinScores, dentalScores) {
   const scores = tab === "skin" ? skinScores : dentalScores;
+  if (!scores) return "チェックしてみてね♪";
   const entries = Object.entries(scores).sort((a, b) => a[1].score - b[1].score);
   const worst = entries[0];
   const best = entries[entries.length - 1];
@@ -30,32 +31,39 @@ function generateMessage(tab, skinScores, dentalScores) {
   return `${worst[1].label}のスコアが気になるかも。でも大丈夫！ケアを続ければ必ず改善するよ♪`;
 }
 
-export default function ResultScreen({ skinScores: propSkin, dentalScores: propDental, onRestart }) {
-  const [tab, setTab] = useState("skin");
+export default function ResultScreen({ skinScores: propSkin, dentalScores: propDental, onRestart, onDentalCheck }) {
+  const hasSkin = propSkin !== null;
+  const hasDental = propDental !== null;
+  const defaultTab = hasSkin ? "skin" : "dental";
+  const [tab, setTab] = useState(defaultTab);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showClinicModal, setShowClinicModal] = useState(false);
 
   const skinScores = propSkin || SKIN_SCORES;
   const dentalScores = propDental || DENTAL_SCORES;
   const items = tab === "skin" ? skinScores : dentalScores;
-  const overallSkin = avg(skinScores);
-  const overallDental = avg(dentalScores);
-  const kirariMsg = generateMessage(tab, skinScores, dentalScores);
+  const overallSkin = hasSkin ? avg(skinScores) : null;
+  const overallDental = hasDental ? avg(dentalScores) : null;
+  const kirariMsg = generateMessage(tab, hasSkin ? skinScores : null, hasDental ? dentalScores : null);
 
   return (
     <>
       <p style={{ fontSize: 11, color: "#94a3b8", margin: 0, padding: "2px 20px 0" }}>チェック結果</p>
 
       <div style={{ display: "flex", justifyContent: "center", gap: 24, padding: "16px 20px 8px" }}>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-          <Score score={overallSkin} size={90} color="#a855f7" delay={0} />
-          <span style={{ fontSize: 12, fontWeight: 700, color: "#a855f7" }}>肌スコア</span>
-        </div>
+        {hasSkin && (
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+            <Score score={overallSkin} size={hasSkin && hasDental ? 90 : 110} color="#a855f7" delay={0} />
+            <span style={{ fontSize: 12, fontWeight: 700, color: "#a855f7" }}>肌スコア</span>
+          </div>
+        )}
         <Kirari size={56} expression="happy" bounce />
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-          <Score score={overallDental} size={90} color="#22c55e" delay={200} />
-          <span style={{ fontSize: 12, fontWeight: 700, color: "#22c55e" }}>デンタル</span>
-        </div>
+        {hasDental && (
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+            <Score score={overallDental} size={hasSkin && hasDental ? 90 : 110} color="#22c55e" delay={200} />
+            <span style={{ fontSize: 12, fontWeight: 700, color: "#22c55e" }}>デンタル</span>
+          </div>
+        )}
       </div>
 
       <div style={{ display: "flex", alignItems: "flex-start", gap: 8, padding: "6px 16px 12px" }}>
@@ -63,16 +71,18 @@ export default function ResultScreen({ skinScores: propSkin, dentalScores: propD
         <Bubble><p style={{ fontSize: 12, color: "#334155", margin: 0, lineHeight: 1.6 }}>{kirariMsg}</p></Bubble>
       </div>
 
-      <div style={{ display: "flex", margin: "0 16px 12px", background: "#f1f5f9", borderRadius: 14, padding: 3 }}>
-        {[["skin", "肌診断", "#a855f7"], ["dental", "デンタル", "#22c55e"]].map(([key, label, color]) => (
-          <button key={key} onClick={() => setTab(key)} style={{
-            flex: 1, padding: "8px 0", border: "none", borderRadius: 12, fontSize: 13, fontWeight: 700, cursor: "pointer",
-            background: tab === key ? "#fff" : "transparent",
-            color: tab === key ? color : "#94a3b8",
-            boxShadow: tab === key ? "0 1px 4px rgba(0,0,0,0.06)" : "none",
-          }}>{label}</button>
-        ))}
-      </div>
+      {hasSkin && hasDental && (
+        <div style={{ display: "flex", margin: "0 16px 12px", background: "#f1f5f9", borderRadius: 14, padding: 3 }}>
+          {[["skin", "肌診断", "#a855f7"], ["dental", "デンタル", "#22c55e"]].map(([key, label, color]) => (
+            <button key={key} onClick={() => setTab(key)} style={{
+              flex: 1, padding: "8px 0", border: "none", borderRadius: 12, fontSize: 13, fontWeight: 700, cursor: "pointer",
+              background: tab === key ? "#fff" : "transparent",
+              color: tab === key ? color : "#94a3b8",
+              boxShadow: tab === key ? "0 1px 4px rgba(0,0,0,0.06)" : "none",
+            }}>{label}</button>
+          ))}
+        </div>
+      )}
 
       <div className="tab-content" key={tab}>
         <div style={{ padding: "0 16px", display: "flex", justifyContent: "center", gap: 8, marginBottom: 12 }}>
@@ -135,7 +145,17 @@ export default function ResultScreen({ skinScores: propSkin, dentalScores: propD
         </div>
       </a>
 
-      <div style={{ padding: "0 16px" }}>
+      <div style={{ padding: "0 16px", display: "flex", flexDirection: "column", gap: 8 }}>
+        {!hasDental && onDentalCheck && (
+          <button className="btn-primary" onClick={onDentalCheck} style={{ width: "100%", padding: 14, background: "linear-gradient(135deg, #22c55e, #10b981)", border: "none", borderRadius: 14, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer", boxShadow: "0 4px 16px rgba(34,197,94,0.25)", textAlign: "center" }}>
+            デンタルチェックも受ける 🦷
+          </button>
+        )}
+        {!hasSkin && onDentalCheck && (
+          <button className="btn-primary" onClick={onDentalCheck} style={{ width: "100%", padding: 14, background: "linear-gradient(135deg, #a855f7, #c084fc)", border: "none", borderRadius: 14, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer", boxShadow: "0 4px 16px rgba(168,85,247,0.25)", textAlign: "center" }}>
+            肌チェックも受ける ✨
+          </button>
+        )}
         <button className="btn-secondary" onClick={onRestart} style={{ width: "100%", padding: 11, background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 14, fontSize: 12, fontWeight: 600, color: "#64748b", cursor: "pointer" }}>もう一度ミラーを開く</button>
       </div>
       <p className="disclaimer" style={{ textAlign: "center", fontSize: 10, color: "#cbd5e1", marginTop: 12, padding: "0 20px" }}>※本アプリは医療診断を行うものではありません。</p>

@@ -30,6 +30,7 @@ export default function MirrorScreen({ onResult }) {
   const [skinScores, setSkinScores] = useState(null);
   const [dentalScores, setDentalScores] = useState(null);
   const [showScores, setShowScores] = useState(true);
+  const [lastCheck, setLastCheck] = useState(null); // 最後にチェックしたモードを記憶
   const cameraRef = useRef(null);
 
   const shutterMode = mode === MODE.SKIN ? 'face' : mode === MODE.DENTAL ? 'mouth' : 'face';
@@ -74,6 +75,7 @@ export default function MirrorScreen({ onResult }) {
         }
       }
 
+      setLastCheck(mode);
       setAnalyzing(false);
       setMode(MODE.IDLE);
     }, 400);
@@ -87,6 +89,7 @@ export default function MirrorScreen({ onResult }) {
     const t = setTimeout(() => {
       if (mode === MODE.SKIN) setSkinScores(SKIN_SCORES);
       else if (mode === MODE.DENTAL) setDentalScores(DENTAL_SCORES);
+      setLastCheck(mode);
       setAnalyzing(false);
       setMode(MODE.IDLE);
     }, 3000);
@@ -95,6 +98,8 @@ export default function MirrorScreen({ onResult }) {
 
   const startCheck = useCallback((checkMode) => {
     resetShutter();
+    if (checkMode === MODE.SKIN) setSkinScores(null);
+    if (checkMode === MODE.DENTAL) setDentalScores(null);
     setMode(checkMode);
   }, [resetShutter]);
 
@@ -115,7 +120,10 @@ export default function MirrorScreen({ onResult }) {
 
   const hasAnyScore = skinScores || dentalScores;
   const isChecking = mode !== MODE.IDLE;
-  const aspectRatio = mode === MODE.DENTAL ? "4/3" : "3/4";
+  // IDLE時は最後にチェックしたモードの画像を維持
+  const displayMode = isChecking ? mode : (lastCheck || MODE.SKIN);
+  const cameraMode = displayMode === MODE.DENTAL ? "mouth" : "face";
+  const aspectRatio = "3/4";
 
   return (
     <>
@@ -127,7 +135,7 @@ export default function MirrorScreen({ onResult }) {
       </div>
 
       <div style={{ margin: "0 20px", boxShadow: "0 8px 32px rgba(168,85,247,0.12)" }}>
-        <CameraView ref={cameraRef} mode={mode === MODE.DENTAL ? "mouth" : "face"} aspectRatio={aspectRatio}>
+        <CameraView ref={cameraRef} mode={cameraMode} aspectRatio={aspectRatio}>
           {/* ガイドフレーム（チェック中のみ） */}
           {isChecking && !analyzing && (
             <GuideFrame mode={shutterMode} status={status} confidence={confidence} />
@@ -155,17 +163,17 @@ export default function MirrorScreen({ onResult }) {
                 <span style={{ fontSize: 12 }}>{showScores ? "👁" : "👁‍🗨"}</span>
                 {showScores ? "スコア非表示" : "スコア表示"}
               </button>
-              {showScores && skinScores && (
+              {showScores && lastCheck === MODE.SKIN && skinScores && (
                 <div style={{ position: "absolute", top: 16, right: 16, display: "flex", flexDirection: "column", gap: 8 }}>
                   {Object.entries(skinScores).map(([k, v], i) => (
                     <ScoreBadge key={`skin-${k}`} label={v.label} score={v.score} color={v.color} delay={i * 600} />
                   ))}
                 </div>
               )}
-              {showScores && dentalScores && (
-                <div style={{ position: "absolute", bottom: 16, right: 16, display: "flex", flexDirection: "column", gap: 8 }}>
+              {showScores && lastCheck === MODE.DENTAL && dentalScores && (
+                <div style={{ position: "absolute", top: 16, right: 16, display: "flex", flexDirection: "column", gap: 8 }}>
                   {Object.entries(dentalScores).map(([k, v], i) => (
-                    <ScoreBadge key={`dental-${k}`} label={v.label} score={v.score} color={v.color} delay={(skinScores ? 3 : 0) * 600 + i * 600} />
+                    <ScoreBadge key={`dental-${k}`} label={v.label} score={v.score} color={v.color} delay={i * 600} />
                   ))}
                 </div>
               )}
