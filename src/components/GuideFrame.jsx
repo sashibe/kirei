@@ -57,9 +57,9 @@ export default function GuideFrame({ mode = 'face', status = 'searching', confid
         }}
       >
         {mode === 'face' ? (
-          // 顔用: 楕円ガイド
+          // 顔用: 楕円ガイド（フルスクリーン対応で拡大）
           <ellipse
-            cx="50" cy="45" rx="28" ry="35"
+            cx="50" cy="42" rx="34" ry="38"
             fill={s.fill}
             stroke={s.stroke}
             strokeWidth={isReady ? 3 : 2}
@@ -67,9 +67,9 @@ export default function GuideFrame({ mode = 'face', status = 'searching', confid
             style={isReady ? { animation: 'guideReady 0.6s ease-in-out' } : {}}
           />
         ) : (
-          // 口元用: 横長角丸矩形
+          // 口元用: 横長角丸矩形（フルスクリーン対応で拡大）
           <rect
-            x="18" y="25" width="64" height="50" rx="20" ry="20"
+            x="12" y="22" width="76" height="52" rx="22" ry="22"
             fill={s.fill}
             stroke={s.stroke}
             strokeWidth={isReady ? 3 : 2}

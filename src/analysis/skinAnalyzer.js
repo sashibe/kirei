@@ -109,9 +109,9 @@ function scoreDullness(skinPixels, imageWidth, imageHeight) {
 
 // 軽量な顔位置検出（自動シャッター用）
 // 4pxおきにサンプリングして高速化
-// ガイド楕円: GuideFrame の viewBox(0-100) で cx=50, cy=45, rx=28, ry=35
-// → 正規化座標: cx=0.50, cy=0.45, rx=0.28, ry=0.35
-const FACE_GUIDE = { cx: 0.50, cy: 0.45, rx: 0.28, ry: 0.35 };
+// ガイド楕円: GuideFrame の viewBox(0-100) で cx=50, cy=42, rx=34, ry=38
+// → 正規化座標
+const FACE_GUIDE = { cx: 0.50, cy: 0.42, rx: 0.34, ry: 0.38 };
 
 export function detectFacePosition(imageData) {
   const data = imageData.data;

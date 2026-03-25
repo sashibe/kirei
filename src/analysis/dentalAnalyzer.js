@@ -137,9 +137,9 @@ function scoreStaining(teeth) {
 }
 
 // 軽量な口元位置検出（自動シャッター用）
-// ガイド矩形: GuideFrame の viewBox(0-100) で x=18, y=25, w=64, h=50, rx=20
-// → 正規化座標: x=0.18, y=0.25, w=0.64, h=0.50
-const MOUTH_GUIDE = { x: 0.18, y: 0.25, w: 0.64, h: 0.50 };
+// ガイド矩形: GuideFrame の viewBox(0-100) で x=12, y=22, w=76, h=52
+// → 正規化座標
+const MOUTH_GUIDE = { x: 0.12, y: 0.22, w: 0.76, h: 0.52 };
 
 export function detectMouthPosition(imageData) {
   const data = imageData.data;
