@@ -42,6 +42,13 @@ refactor: Kirariコンポーネントを分離
 docs: README更新
 ```
 
+## ウェブ版Claudeとの連携ルール
+
+- コードを書いたら必ず `git push origin main` する
+- 変更したファイルのパスをウェブ版Claudeに報告する
+- ウェブ版Claudeはこのリポジトリのraw URLでファイルを読む
+  例: https://raw.githubusercontent.com/sashibe/kirei/main/{ファイルパス}
+
 ---
 
 ## ビジネスコンテキスト
@@ -190,18 +197,23 @@ const colors = {
 
 ## 開発フェーズ
 
-### Phase 0: 技術POC（現在）
+### Phase 0: 技術POC ✅
 - [x] プロトタイプ作成（JSX/HTML、ウェブ版Claudeで完成済み）
-- [ ] リポジトリ初期化、CLAUDE.md配置
-- [ ] プロトタイプをリポジトリに移行
-- [ ] GitHub Pagesでデモ公開
+- [x] リポジトリ初期化、CLAUDE.md配置
+- [x] プロトタイプをリポジトリに移行
+- [x] GitHub Pagesでデモ公開
 
-### Phase 1: MVP
-- [ ] Viteプロジェクト構築
-- [ ] コンポーネント分離（プロトタイプから抽出）
-- [ ] WebRTCカメラ統合
-- [ ] 照明正規化POC（最重要技術課題）
-- [ ] 簡易スコアリングロジック実装
+### Phase 1: MVP ✅
+- [x] Viteプロジェクト構築
+- [x] コンポーネント分離（プロトタイプから抽出）
+- [x] WebRTCカメラ統合
+- [x] 照明正規化POC（グレーワールド補正＋明度正規化）
+- [x] 簡易スコアリングロジック実装（肌: HSV/Lab、デンタル: 色分類）
+- [x] ガイド枠内の自動シャッター（肌色/口腔ピクセル密度ベース判定）
+- [x] シャッター→静止画凍結→スキャン演出フロー
+- [x] カメラフルスクリーン＋オーバーレイUI
+- [x] PCブラウザ用iPhoneモックアップフレーム
+- [x] GitHub Actions自動デプロイ
 
 ### Phase 2: 提携歯科導入
 - [ ] 山田兄弟歯科グループとのテスト運用
@@ -212,6 +224,11 @@ const colors = {
 - [ ] KIREI SELECT（ケアグッズEC）
 - [ ] スコア履歴・トレンド表示
 - [ ] プッシュ通知（定期チェックリマインダー）
+
+### 技術的な既知の制約（デモ版）
+- 顔/手の区別不可（肌色ベース判定のため。ML導入で解決予定）
+- 口の開閉判定不可（唇の赤みが歯茎と誤判定される場合あり）
+- 低照度環境では肌検出精度が低下（低照度用の緩和条件で対応済み）
 
 ---
 
@@ -245,6 +262,7 @@ const colors = {
 - Node.js / npm はインストール済み
 
 ### GitHub Pages
-- `main` ブランチの `/` (root) からデプロイ
-- 設定: Settings → Pages → Branch: main → / (root) → Save
+- GitHub Actionsで自動デプロイ（`.github/workflows/deploy.yml`）
+- `git push origin main` → ビルド → dist/ をデプロイ
 - デプロイ後数分で反映
+- URL: https://sashibe.github.io/kirei/
