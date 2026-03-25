@@ -82,35 +82,35 @@ export default function MirrorScreen({ onResult }) {
   }, [status, analyzing, mode]);
 
   // カメラ不可時のフォールバック（演出フロー付き）
-  // 500ms遅延してカメラ状態が安定してから判定
+  const modeRef = useRef(mode);
+  modeRef.current = mode;
+
   useEffect(() => {
-    if (mode === MODE.IDLE || analyzing) return;
+    if (mode === MODE.IDLE) return;
+    let cancelled = false;
+    const currentMode = mode;
 
-    const timers = [];
-    timers.push(setTimeout(() => {
-      // カメラが起動していたらデモフォールバック不要
-      if (cameraRef.current?.isActive) return;
+    // 500ms待ってカメラ状態を確認
+    const t0 = setTimeout(() => {
+      if (cancelled || cameraRef.current?.isActive) return;
 
-      // searching → detected → ready → scanning → 完了
       setDemoPhase('searching');
-      timers.push(setTimeout(() => setDemoPhase('detected'), 1000));
-      timers.push(setTimeout(() => setDemoPhase('ready'), 2000));
-      timers.push(setTimeout(() => {
-        setDemoPhase('scanning');
-        setAnalyzing(true);
-      }, 2400));
-      timers.push(setTimeout(() => {
-        if (mode === MODE.SKIN) setSkinScores(SKIN_SCORES);
-        else if (mode === MODE.DENTAL) setDentalScores(DENTAL_SCORES);
-        setLastCheck(mode);
+      setTimeout(() => { if (!cancelled) setDemoPhase('detected'); }, 1000);
+      setTimeout(() => { if (!cancelled) setDemoPhase('ready'); }, 2000);
+      setTimeout(() => { if (!cancelled) setDemoPhase('scanning'); }, 2400);
+      setTimeout(() => {
+        if (cancelled) return;
+        if (currentMode === MODE.SKIN) setSkinScores(SKIN_SCORES);
+        else if (currentMode === MODE.DENTAL) setDentalScores(DENTAL_SCORES);
+        setLastCheck(currentMode);
         setAnalyzing(false);
         setDemoPhase(null);
         setMode(MODE.IDLE);
-      }, 4000));
-    }, 500));
+      }, 4000);
+    }, 500);
 
-    return () => timers.forEach(clearTimeout);
-  }, [mode, analyzing]);
+    return () => { cancelled = true; clearTimeout(t0); };
+  }, [mode]);
 
   const startCheck = useCallback((checkMode) => {
     resetShutter();
