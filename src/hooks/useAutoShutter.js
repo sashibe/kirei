@@ -57,18 +57,10 @@ export default function useAutoShutter({ cameraRef, videoRef, faceLandmarker, mo
       const videoEl = videoRef?.current;
       let mpSuccess = false;
 
-      // DEBUG: 最初の5tickだけログ出力
-      if (elapsedRef.current <= INTERVAL * 5) {
-        console.log('[AutoShutter]', { tick: elapsedRef.current, useLandmarker, hasVideoEl: !!videoEl, videoElTag: videoEl?.tagName, mode });
-      }
-
       if (useLandmarker && videoEl) {
         // === MediaPipe ランドマーク検出 ===
         try {
           const result = faceLandmarker.detect(videoEl, performance.now());
-          if (elapsedRef.current <= INTERVAL * 5) {
-            console.log('[AutoShutter] MP result:', result ? { faces: result.landmarks?.length } : 'null');
-          }
           if (result) {
             mpSuccess = true;
             detectedLandmarks = result.landmarks;
@@ -80,9 +72,7 @@ export default function useAutoShutter({ cameraRef, videoRef, faceLandmarker, mo
               conf = inFrame ? 90 : 40;
             }
           }
-        } catch (e) {
-          console.warn('[AutoShutter] MP detect error:', e.message);
-        }
+        } catch { /* detectForVideo失敗 → フォールバック */ }
       }
       if (!mpSuccess) {
         // === フォールバック: HSVヒューリスティック ===
