@@ -193,7 +193,7 @@ export default function MirrorScreen({ onResult }) {
     : hasAnyScore ? "sparkle" : "happy";
   const displayMode = isChecking ? mode : (lastCheck || MODE.SKIN);
   const cameraMode = displayMode === MODE.DENTAL ? "mouth" : "face";
-  const aspectRatio = "3/4";
+  const aspectRatio = "9/14";
 
   return (
     <>
@@ -272,7 +272,7 @@ export default function MirrorScreen({ onResult }) {
       </div>
 
       {/* アクションエリア */}
-      <div style={{ padding: "10px 16px", display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+      <div style={{ padding: "8px 16px 4px", display: "flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
         {isChecking ? (
           <>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
