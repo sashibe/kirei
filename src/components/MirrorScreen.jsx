@@ -24,19 +24,24 @@ const KIRARI_MSGS = {
   both_done: "肌もデンタルもチェック完了！結果を見てみよう♪",
 };
 
+// 演出フェーズ: searching → detected → ready → shutter → scanning → done
+const STAGE = { SEARCHING: 'searching', DETECTED: 'detected', READY: 'ready', SHUTTER: 'shutter', SCANNING: 'scanning' };
+
 export default function MirrorScreen({ onResult }) {
   const [mode, setMode] = useState(MODE.IDLE);
-  const [analyzing, setAnalyzing] = useState(false);
+  const [stage, setStage] = useState(null); // 演出ステージ
   const [skinScores, setSkinScores] = useState(null);
   const [dentalScores, setDentalScores] = useState(null);
   const [showScores, setShowScores] = useState(true);
   const [lastCheck, setLastCheck] = useState(null);
-  const [demoPhase, setDemoPhase] = useState(null);
   const cameraRef = useRef(null);
-  const handledReadyRef = useRef(false); // status='ready'を1回だけ処理するフラグ
+  const handledReadyRef = useRef(false);
+  const modeRef = useRef(mode);
+  modeRef.current = mode;
 
   const shutterMode = mode === MODE.SKIN ? 'face' : mode === MODE.DENTAL ? 'mouth' : 'face';
-  const shutterEnabled = (mode === MODE.SKIN || mode === MODE.DENTAL) && !analyzing;
+  const isScanning = stage === STAGE.SCANNING;
+  const shutterEnabled = (mode === MODE.SKIN || mode === MODE.DENTAL) && !isScanning && stage !== STAGE.SHUTTER;
 
   const { status, confidence, reset: resetShutter } = useAutoShutter({
     cameraRef,
@@ -44,54 +49,60 @@ export default function MirrorScreen({ onResult }) {
     enabled: shutterEnabled,
   });
 
-  // 分析を実行する共通関数（refで参照するためuseCallbackにしない）
-  const modeRef = useRef(mode);
-  modeRef.current = mode;
-
-  const runAnalysis = useCallback(() => {
+  // スコアをセットする共通関数
+  const applyScores = useCallback(() => {
     const currentMode = modeRef.current;
-    if (currentMode === MODE.IDLE) return;
+    const frame = cameraRef.current?.isActive ? cameraRef.current.captureFrame() : null;
 
-    setAnalyzing(true);
-
-    setTimeout(() => {
-      try {
-        const frame = cameraRef.current?.isActive ? cameraRef.current.captureFrame() : null;
-
-        if (currentMode === MODE.SKIN) {
-          let result = null;
-          try { result = frame ? analyzeSkin(frame) : null; } catch { /* 分析失敗 */ }
-          setSkinScores((result && !result.error) ? {
-            tone: { ...SKIN_SCORES.tone, score: result.tone.score },
-            pores: { ...SKIN_SCORES.pores, score: result.pores.score },
-            dullness: { ...SKIN_SCORES.dullness, score: result.dullness.score },
-          } : SKIN_SCORES);
-        } else if (currentMode === MODE.DENTAL) {
-          let result = null;
-          try { result = frame ? analyzeDental(frame) : null; } catch { /* 分析失敗 */ }
-          setDentalScores((result && !result.error) ? {
-            gums: { ...DENTAL_SCORES.gums, score: result.gums.score },
-            alignment: { ...DENTAL_SCORES.alignment, score: result.alignment.score },
-            staining: { ...DENTAL_SCORES.staining, score: result.staining.score },
-          } : DENTAL_SCORES);
-        }
-      } catch { /* 予期せぬエラー */ }
-
-      setLastCheck(currentMode);
-      setAnalyzing(false);
-      setMode(MODE.IDLE);
-    }, 400);
+    if (currentMode === MODE.SKIN) {
+      let result = null;
+      try { result = frame ? analyzeSkin(frame) : null; } catch { /* */ }
+      setSkinScores((result && !result.error) ? {
+        tone: { ...SKIN_SCORES.tone, score: result.tone.score },
+        pores: { ...SKIN_SCORES.pores, score: result.pores.score },
+        dullness: { ...SKIN_SCORES.dullness, score: result.dullness.score },
+      } : SKIN_SCORES);
+    } else if (currentMode === MODE.DENTAL) {
+      let result = null;
+      try { result = frame ? analyzeDental(frame) : null; } catch { /* */ }
+      setDentalScores((result && !result.error) ? {
+        gums: { ...DENTAL_SCORES.gums, score: result.gums.score },
+        alignment: { ...DENTAL_SCORES.alignment, score: result.alignment.score },
+        staining: { ...DENTAL_SCORES.staining, score: result.staining.score },
+      } : DENTAL_SCORES);
+    }
   }, []);
 
-  // 自動シャッター発火 → 分析実行（status変化のみ監視、1回だけ実行）
+  // 演出フロー: シャッター → スキャン → 完了
+  const runShutterSequence = useCallback(() => {
+    const currentMode = modeRef.current;
+
+    // 1. シャッターフラッシュ (300ms)
+    setStage(STAGE.SHUTTER);
+
+    setTimeout(() => {
+      // 2. スキャンアニメーション (1500ms)
+      setStage(STAGE.SCANNING);
+
+      setTimeout(() => {
+        // 3. スコア算出 & 完了
+        try { applyScores(); } catch { /* */ }
+        setLastCheck(currentMode);
+        setStage(null);
+        setMode(MODE.IDLE);
+      }, 1500);
+    }, 300);
+  }, [applyScores]);
+
+  // カメラON時: autoShutterが ready → 演出開始
   useEffect(() => {
     if (status === 'ready' && !handledReadyRef.current) {
       handledReadyRef.current = true;
-      runAnalysis();
+      runShutterSequence();
     }
-  }, [status, runAnalysis]);
+  }, [status, runShutterSequence]);
 
-  // カメラ不可時のフォールバック（演出フロー付き）
+  // カメラ不可時のフォールバック（デモ演出フロー）
   useEffect(() => {
     if (mode === MODE.IDLE) return;
     let cancelled = false;
@@ -100,23 +111,23 @@ export default function MirrorScreen({ onResult }) {
     const t0 = setTimeout(() => {
       if (cancelled || cameraRef.current?.isActive) return;
 
-      setDemoPhase('searching');
-      setTimeout(() => { if (!cancelled) setDemoPhase('detected'); }, 1000);
-      setTimeout(() => { if (!cancelled) setDemoPhase('ready'); }, 2000);
-      setTimeout(() => {
-        if (cancelled) return;
-        setDemoPhase('scanning');
-        setAnalyzing(true);
-      }, 2400);
+      // デモ: 検出演出
+      setStage(STAGE.SEARCHING);
+      setTimeout(() => { if (!cancelled) setStage(STAGE.DETECTED); }, 1000);
+      setTimeout(() => { if (!cancelled) setStage(STAGE.READY); }, 2000);
+      // シャッター
+      setTimeout(() => { if (!cancelled) setStage(STAGE.SHUTTER); }, 2400);
+      // スキャン
+      setTimeout(() => { if (!cancelled) setStage(STAGE.SCANNING); }, 2700);
+      // 完了
       setTimeout(() => {
         if (cancelled) return;
         if (currentMode === MODE.SKIN) setSkinScores(SKIN_SCORES);
         else if (currentMode === MODE.DENTAL) setDentalScores(DENTAL_SCORES);
         setLastCheck(currentMode);
-        setAnalyzing(false);
-        setDemoPhase(null);
+        setStage(null);
         setMode(MODE.IDLE);
-      }, 4000);
+      }, 4200);
     }, 500);
 
     return () => { cancelled = true; clearTimeout(t0); };
@@ -124,7 +135,8 @@ export default function MirrorScreen({ onResult }) {
 
   const startCheck = useCallback((checkMode) => {
     resetShutter();
-    handledReadyRef.current = false; // リセット
+    handledReadyRef.current = false;
+    setStage(STAGE.SEARCHING);
     if (checkMode === MODE.SKIN) setSkinScores(null);
     if (checkMode === MODE.DENTAL) setDentalScores(null);
     setMode(checkMode);
@@ -132,10 +144,13 @@ export default function MirrorScreen({ onResult }) {
 
   const hasAnyScore = skinScores || dentalScores;
   const isChecking = mode !== MODE.IDLE;
-  const effectiveStatus = demoPhase || (isChecking ? status : 'idle');
+  const analyzing = stage === STAGE.SCANNING;
+  // カメラON時はautoShutterのstatus、デモ時はstageを表示用に使う
+  const effectiveStatus = stage || (isChecking ? status : 'idle');
 
   const getKirariMsg = () => {
-    if (analyzing || effectiveStatus === 'scanning') {
+    if (stage === STAGE.SHUTTER) return "📸 パシャ！";
+    if (analyzing) {
       const prefix = mode === MODE.DENTAL ? 'dental' : 'skin';
       return KIRARI_MSGS[`${prefix}_analyzing`];
     }
@@ -147,10 +162,9 @@ export default function MirrorScreen({ onResult }) {
     return KIRARI_MSGS.idle;
   };
 
-  const kirariExpression = (analyzing || effectiveStatus === 'scanning') ? "thinking"
+  const kirariExpression = (analyzing || stage === STAGE.SHUTTER) ? "thinking"
     : isChecking ? (effectiveStatus === 'detected' || effectiveStatus === 'ready' ? "happy" : "thinking")
     : hasAnyScore ? "sparkle" : "happy";
-  // IDLE時は最後にチェックしたモードの画像を維持
   const displayMode = isChecking ? mode : (lastCheck || MODE.SKIN);
   const cameraMode = displayMode === MODE.DENTAL ? "mouth" : "face";
   const aspectRatio = "3/4";
@@ -166,12 +180,22 @@ export default function MirrorScreen({ onResult }) {
               <p style={{ fontSize: 11, color: "#334155", margin: 0, lineHeight: 1.5 }}>{getKirariMsg()}</p>
             </div>
           </div>
-          {/* ガイドフレーム（チェック中、スキャン前まで表示） */}
-          {isChecking && effectiveStatus !== 'scanning' && !analyzing && (
-            <GuideFrame mode={shutterMode} status={demoPhase || status} confidence={demoPhase ? (demoPhase === 'searching' ? 20 : demoPhase === 'detected' ? 60 : 100) : confidence} />
+          {/* ガイドフレーム（検出フェーズ中のみ表示） */}
+          {isChecking && (stage === STAGE.SEARCHING || stage === STAGE.DETECTED || stage === STAGE.READY || (!stage && (status === 'searching' || status === 'detected'))) && (
+            <GuideFrame mode={shutterMode} status={stage || status} confidence={stage ? (stage === 'searching' ? 20 : stage === 'detected' ? 60 : 100) : confidence} />
           )}
-          {/* 分析中のスキャンライン */}
-          {(analyzing || effectiveStatus === 'scanning') && (
+          {/* シャッターフラッシュ */}
+          {stage === STAGE.SHUTTER && (
+            <div style={{
+              position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+              background: "white", zIndex: 10,
+              animation: "shutterFlash 300ms ease-out forwards",
+            }}>
+              <style>{`@keyframes shutterFlash{0%{opacity:1}100%{opacity:0}}`}</style>
+            </div>
+          )}
+          {/* スキャンアニメーション */}
+          {analyzing && (
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
               <div style={{ position: "absolute", left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${mode === MODE.DENTAL ? '#22c55e' : '#e879f9'}, transparent)`, animation: "scanLine 1.5s ease-in-out infinite", boxShadow: `0 0 12px ${mode === MODE.DENTAL ? '#22c55e' : '#e879f9'}` }} />
               <style>{`@keyframes scanLine{0%,100%{top:15%}50%{top:70%}}`}</style>
@@ -229,7 +253,7 @@ export default function MirrorScreen({ onResult }) {
               <div style={{ width: 8, height: 8, borderRadius: "50%", background: mode === MODE.DENTAL ? "#22c55e" : "#e879f9", animation: "pulse 1s ease-in-out infinite" }} />
               <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}`}</style>
               <span style={{ fontSize: 13, color: mode === MODE.DENTAL ? "#22c55e" : "#a855f7", fontWeight: 600 }}>
-                {(analyzing || effectiveStatus === 'scanning') ? "分析中..." : effectiveStatus === 'ready' ? "シャッター！" : effectiveStatus === 'detected' ? "検出中..." : "探しています..."}
+                {stage === STAGE.SHUTTER ? "📸 シャッター！" : analyzing ? "分析中..." : effectiveStatus === 'ready' ? "撮影準備OK" : effectiveStatus === 'detected' ? "検出中..." : "探しています..."}
               </span>
             </div>
             <button className="btn-secondary" onClick={() => setMode(MODE.IDLE)} style={{ padding: "8px 24px", background: "transparent", border: "1px solid #e2e8f0", borderRadius: 12, fontSize: 12, fontWeight: 600, color: "#94a3b8", cursor: "pointer" }}>
