@@ -13,20 +13,21 @@ const CameraView = forwardRef(function CameraView({ mode = "face", aspectRatio =
 
   return (
     <div style={{ position: "relative", borderRadius: 24, overflow: "hidden", aspectRatio, background: "#000" }}>
-      {isActive ? (
-        <video
-          ref={videoRef}
-          autoPlay
-          playsInline
-          muted
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            transform: "scaleX(-1)",
-          }}
-        />
-      ) : (
+      {/* video は常にDOMに存在させ、srcObject の接続を維持する */}
+      <video
+        ref={videoRef}
+        autoPlay
+        playsInline
+        muted
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          transform: "scaleX(-1)",
+          display: isActive ? "block" : "none",
+        }}
+      />
+      {!isActive && (
         <>
           <img src={fallbackImg} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.9 }} />
           {error && (

@@ -45,7 +45,12 @@ export default function useCamera({ enabled = true, facingMode = "user" } = {}) 
         streamRef.current = stream;
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
-          await videoRef.current.play();
+          // play() は autoPlay 属性でも発火するが、明示的に呼んで確実にする
+          try {
+            await videoRef.current.play();
+          } catch {
+            // autoPlay で再生済みの場合は無視
+          }
         }
         setIsActive(true);
       } catch (err) {
