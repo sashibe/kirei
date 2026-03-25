@@ -130,14 +130,13 @@ export default function App() {
 
   const appContent = (
     <div style={{
-      width: "100%",
+      width: "100%", height: "100%",
       background: colors.bg,
-      minHeight: "100%",
       fontFamily: "'Noto Sans JP', sans-serif",
-      paddingBottom: showResult ? 32 : 0,
+      overflow: "hidden", position: "relative",
     }}>
       {showResult && <Header />}
-      <div key={showResult ? 'result' : 'mirror'} className="screen-enter" style={{ position: "relative" }}>
+      <div key={showResult ? 'result' : 'mirror'} className="screen-enter" style={{ position: "relative", height: showResult ? "auto" : "100%", overflow: showResult ? "auto" : "hidden" }}>
         {!showResult ? (
           <>
             <Header overlay />

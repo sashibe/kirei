@@ -12,7 +12,7 @@ const CameraView = forwardRef(function CameraView({ mode = "face", aspectRatio =
   }), [captureFrame, isActive]);
 
   return (
-    <div style={{ position: "relative", overflow: "hidden", aspectRatio, background: "#000" }}>
+    <div style={{ position: "relative", overflow: "hidden", background: "#000", ...(aspectRatio === 'auto' ? { width: '100%', height: '100%' } : { aspectRatio }) }}>
       {/* video は常にDOMに存在させ、srcObject の接続を維持する */}
       <video
         ref={videoRef}

@@ -193,159 +193,153 @@ export default function MirrorScreen({ onResult }) {
     : hasAnyScore ? "sparkle" : "happy";
   const displayMode = isChecking ? mode : (lastCheck || MODE.SKIN);
   const cameraMode = displayMode === MODE.DENTAL ? "mouth" : "face";
-  const aspectRatio = "9/14";
+  // オーバーレイボタンの共通スタイル
+  const glassStyle = {
+    background: "rgba(255,255,255,0.88)",
+    backdropFilter: "blur(12px)",
+    WebkitBackdropFilter: "blur(12px)",
+    boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
+  };
 
   return (
-    <>
-      <div style={{ position: "relative" }}>
-        <CameraView ref={cameraRef} mode={cameraMode} aspectRatio={aspectRatio} frozenSrc={frozenFrame}>
-          {/* キラリ吹き出し（カメラ内オーバーレイ） */}
-          <div style={{ position: "absolute", top: 36, left: 8, right: 8, zIndex: 3, display: "flex", alignItems: "flex-start", gap: 6 }}>
-            <Kirari size={32} expression={kirariExpression} bounce={isChecking} />
-            <div style={{ background: "rgba(255,255,255,0.85)", backdropFilter: "blur(8px)", borderRadius: 12, padding: "5px 10px", flex: 1 }}>
-              <p style={{ fontSize: 11, color: "#334155", margin: 0, lineHeight: 1.4 }}>{getKirariMsg()}</p>
-            </div>
+    <div style={{ position: "relative", width: "100%", height: "100%" }}>
+      <CameraView ref={cameraRef} mode={cameraMode} aspectRatio="auto" frozenSrc={frozenFrame}>
+        {/* === キラリ吹き出し === */}
+        <div style={{ position: "absolute", top: 36, left: 8, right: 8, zIndex: 3, display: "flex", alignItems: "flex-start", gap: 6 }}>
+          <Kirari size={32} expression={kirariExpression} bounce={isChecking} />
+          <div style={{ ...glassStyle, borderRadius: 12, padding: "5px 10px", flex: 1 }}>
+            <p style={{ fontSize: 11, color: "#334155", margin: 0, lineHeight: 1.4 }}>{getKirariMsg()}</p>
           </div>
-          {/* ガイドフレーム（検出フェーズ中のみ表示） */}
-          {isChecking && (stage === STAGE.SEARCHING || stage === STAGE.DETECTED || stage === STAGE.READY || (!stage && (status === 'searching' || status === 'detected'))) && (
-            <GuideFrame mode={shutterMode} status={stage || status} confidence={stage ? (stage === 'searching' ? 20 : stage === 'detected' ? 60 : 100) : confidence} />
-          )}
-          {/* シャッターフラッシュ */}
-          {stage === STAGE.SHUTTER && (
-            <div style={{
-              position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
-              background: "white", zIndex: 10,
-              animation: "shutterFlash 300ms ease-out forwards",
-            }}>
-              <style>{`@keyframes shutterFlash{0%{opacity:1}100%{opacity:0}}`}</style>
-            </div>
-          )}
-          {/* スキャンアニメーション */}
-          {analyzing && (
-            <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
-              <div style={{ position: "absolute", left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${mode === MODE.DENTAL ? '#22c55e' : '#e879f9'}, transparent)`, animation: "scanLine 1.5s ease-in-out infinite", boxShadow: `0 0 12px ${mode === MODE.DENTAL ? '#22c55e' : '#e879f9'}` }} />
-              <style>{`@keyframes scanLine{0%,100%{top:15%}50%{top:70%}}`}</style>
-            </div>
-          )}
-          {/* スコアバッジ（IDLE時、スコアあり） */}
-          {!isChecking && !analyzing && hasAnyScore && (
+        </div>
+
+        {/* === ガイドフレーム === */}
+        {isChecking && (stage === STAGE.SEARCHING || stage === STAGE.DETECTED || stage === STAGE.READY || (!stage && (status === 'searching' || status === 'detected'))) && (
+          <GuideFrame mode={shutterMode} status={stage || status} confidence={stage ? (stage === 'searching' ? 20 : stage === 'detected' ? 60 : 100) : confidence} />
+        )}
+
+        {/* === シャッターフラッシュ === */}
+        {stage === STAGE.SHUTTER && (
+          <div style={{ position: "absolute", inset: 0, background: "white", zIndex: 10, animation: "shutterFlash 300ms ease-out forwards" }}>
+            <style>{`@keyframes shutterFlash{0%{opacity:1}100%{opacity:0}}`}</style>
+          </div>
+        )}
+
+        {/* === スキャンアニメーション === */}
+        {analyzing && (
+          <div style={{ position: "absolute", inset: 0 }}>
+            <div style={{ position: "absolute", left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${mode === MODE.DENTAL ? '#22c55e' : '#e879f9'}, transparent)`, animation: "scanLine 1.5s ease-in-out infinite", boxShadow: `0 0 12px ${mode === MODE.DENTAL ? '#22c55e' : '#e879f9'}` }} />
+            <style>{`@keyframes scanLine{0%,100%{top:15%}50%{top:70%}}`}</style>
+          </div>
+        )}
+
+        {/* === スコアバッジ === */}
+        {!isChecking && !analyzing && hasAnyScore && showScores && (
+          <div style={{ position: "absolute", top: 72, right: 12, display: "flex", flexDirection: "column", gap: 8, zIndex: 2 }}>
+            {lastCheck === MODE.SKIN && skinScores && Object.entries(skinScores).map(([k, v], i) => (
+              <ScoreBadge key={`skin-${k}`} label={v.label} score={v.score} color={v.color} delay={i * 600} />
+            ))}
+            {lastCheck === MODE.DENTAL && dentalScores && Object.entries(dentalScores).map(([k, v], i) => (
+              <ScoreBadge key={`dental-${k}`} label={v.label} score={v.score} color={v.color} delay={i * 600} />
+            ))}
+          </div>
+        )}
+
+        {/* === 下部オーバーレイ（ボタンエリア） === */}
+        <div style={{
+          position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 4,
+          background: "linear-gradient(0deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.85) 70%, transparent 100%)",
+          backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
+          padding: "24px 16px 12px",
+          display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
+        }}>
+          <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}`}</style>
+
+          {isChecking ? (
             <>
-              <button
-                onClick={() => setShowScores(s => !s)}
-                style={{
-                  position: "absolute", top: 12, left: 12, zIndex: 2,
-                  background: "rgba(255,255,255,0.85)", backdropFilter: "blur(6px)",
-                  border: "none", borderRadius: 20, padding: "5px 12px",
-                  fontSize: 10, fontWeight: 600, color: "#64748b", cursor: "pointer",
-                  display: "flex", alignItems: "center", gap: 4,
-                }}
-              >
-                <span style={{ fontSize: 12 }}>{showScores ? "👁" : "👁‍🗨"}</span>
-                {showScores ? "スコア非表示" : "スコア表示"}
-              </button>
-              {showScores && lastCheck === MODE.SKIN && skinScores && (
-                <div style={{ position: "absolute", top: 16, right: 16, display: "flex", flexDirection: "column", gap: 8 }}>
-                  {Object.entries(skinScores).map(([k, v], i) => (
-                    <ScoreBadge key={`skin-${k}`} label={v.label} score={v.score} color={v.color} delay={i * 600} />
-                  ))}
+              {/* チェック中ステータス */}
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                {stage !== 'timeout' && (
+                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: mode === MODE.DENTAL ? "#22c55e" : "#e879f9", animation: "pulse 1s ease-in-out infinite" }} />
+                )}
+                <span style={{ fontSize: 13, color: stage === 'timeout' ? "#ef4444" : (mode === MODE.DENTAL ? "#22c55e" : "#a855f7"), fontWeight: 600 }}>
+                  {stage === 'timeout' ? "検出できませんでした" : stage === STAGE.SHUTTER ? "📸 シャッター！" : analyzing ? "分析中..." : effectiveStatus === 'ready' ? "撮影準備OK" : effectiveStatus === 'detected' ? "検出中..." : "探しています..."}
+                </span>
+              </div>
+              {stage === 'timeout' ? (
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button className="btn-primary" onClick={() => startCheck(mode)} style={{ padding: "8px 20px", background: "linear-gradient(135deg, #a855f7, #c084fc)", border: "none", borderRadius: 12, fontSize: 12, fontWeight: 600, color: "#fff", cursor: "pointer" }}>
+                    もう一度
+                  </button>
+                  <button className="btn-secondary" onClick={() => { setStage(null); setMode(MODE.IDLE); }} style={{ padding: "8px 20px", background: "rgba(255,255,255,0.9)", border: "1px solid #e2e8f0", borderRadius: 12, fontSize: 12, fontWeight: 600, color: "#94a3b8", cursor: "pointer" }}>
+                    やめる
+                  </button>
                 </div>
+              ) : (
+                <button className="btn-secondary" onClick={() => { setStage(null); setMode(MODE.IDLE); }} style={{ padding: "8px 24px", background: "rgba(255,255,255,0.9)", border: "1px solid #e2e8f0", borderRadius: 12, fontSize: 12, fontWeight: 600, color: "#94a3b8", cursor: "pointer" }}>
+                  キャンセル
+                </button>
               )}
-              {showScores && lastCheck === MODE.DENTAL && dentalScores && (
-                <div style={{ position: "absolute", top: 16, right: 16, display: "flex", flexDirection: "column", gap: 8 }}>
-                  {Object.entries(dentalScores).map(([k, v], i) => (
-                    <ScoreBadge key={`dental-${k}`} label={v.label} score={v.score} color={v.color} delay={i * 600} />
-                  ))}
-                </div>
+            </>
+          ) : (
+            <>
+              {/* スコア表示/非表示トグル */}
+              {hasAnyScore && (
+                <button
+                  onClick={() => setShowScores(s => !s)}
+                  style={{
+                    ...glassStyle, border: "none", borderRadius: 20, padding: "4px 14px",
+                    fontSize: 10, fontWeight: 600, color: "#64748b", cursor: "pointer",
+                    display: "flex", alignItems: "center", gap: 4, marginBottom: 2,
+                  }}
+                >
+                  <span style={{ fontSize: 12 }}>{showScores ? "👁" : "👁‍🗨"}</span>
+                  {showScores ? "スコア非表示" : "スコア表示"}
+                </button>
+              )}
+              {/* チェックボタン */}
+              <div style={{ display: "flex", gap: 10, width: "100%" }}>
+                <button
+                  className="btn-primary"
+                  onClick={() => startCheck(MODE.SKIN)}
+                  style={{
+                    flex: 1, padding: "12px 0", border: "none", borderRadius: 14, fontSize: 13, fontWeight: 700, color: "#fff", cursor: "pointer",
+                    background: skinScores ? "#a855f7" : "linear-gradient(135deg, #a855f7, #c084fc)",
+                    boxShadow: "0 4px 16px rgba(168,85,247,0.25)",
+                    opacity: skinScores ? 0.7 : 1,
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
+                  }}
+                >
+                  <span>{skinScores ? "✓" : "✨"}</span>肌
+                </button>
+                <button
+                  className="btn-primary"
+                  onClick={() => startCheck(MODE.DENTAL)}
+                  style={{
+                    flex: 1, padding: "12px 0", border: "none", borderRadius: 14, fontSize: 13, fontWeight: 700, color: "#fff", cursor: "pointer",
+                    background: dentalScores ? "#22c55e" : "linear-gradient(135deg, #22c55e, #4ade80)",
+                    boxShadow: "0 4px 16px rgba(34,197,94,0.25)",
+                    opacity: dentalScores ? 0.7 : 1,
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
+                  }}
+                >
+                  <span>{dentalScores ? "✓" : "🦷"}</span>デンタル
+                </button>
+              </div>
+              {/* 結果を見るボタン */}
+              {hasAnyScore && (
+                <button
+                  className="btn-primary"
+                  onClick={() => onResult({ skinScores, dentalScores })}
+                  style={{ width: "100%", padding: 12, background: "linear-gradient(135deg, #a855f7, #ec4899)", border: "none", borderRadius: 14, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer", boxShadow: "0 4px 20px rgba(168,85,247,0.3)" }}
+                >
+                  結果を見る →
+                </button>
               )}
             </>
           )}
-          {/* チェック中ラベル */}
-          {isChecking && (
-            <div style={{ position: "absolute", top: 12, left: 12, background: "rgba(255,255,255,0.9)", borderRadius: 8, padding: "4px 10px", display: "flex", alignItems: "center", gap: 4 }}>
-              <span style={{ fontSize: 11, color: mode === MODE.DENTAL ? "#22c55e" : "#a855f7", fontWeight: 600 }}>
-                {mode === MODE.DENTAL ? "DENTAL CHECK" : "SKIN CHECK"}
-              </span>
-              <span style={{ fontSize: 10, color: "#94a3b8" }}>LIVE</span>
-            </div>
-          )}
-        </CameraView>
-      </div>
-
-      {/* アクションエリア */}
-      <div style={{ padding: "8px 16px 4px", display: "flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
-        {isChecking ? (
-          <>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              {stage !== 'timeout' && (
-                <>
-                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: mode === MODE.DENTAL ? "#22c55e" : "#e879f9", animation: "pulse 1s ease-in-out infinite" }} />
-                  <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}`}</style>
-                </>
-              )}
-              <span style={{ fontSize: 13, color: stage === 'timeout' ? "#ef4444" : (mode === MODE.DENTAL ? "#22c55e" : "#a855f7"), fontWeight: 600 }}>
-                {stage === 'timeout' ? "検出できませんでした" : stage === STAGE.SHUTTER ? "📸 シャッター！" : analyzing ? "分析中..." : effectiveStatus === 'ready' ? "撮影準備OK" : effectiveStatus === 'detected' ? "検出中..." : "探しています..."}
-              </span>
-            </div>
-            {stage === 'timeout' ? (
-              <div style={{ display: "flex", gap: 8 }}>
-                <button className="btn-primary" onClick={() => startCheck(mode)} style={{ padding: "8px 20px", background: "linear-gradient(135deg, #a855f7, #c084fc)", border: "none", borderRadius: 12, fontSize: 12, fontWeight: 600, color: "#fff", cursor: "pointer" }}>
-                  もう一度
-                </button>
-                <button className="btn-secondary" onClick={() => { setStage(null); setMode(MODE.IDLE); }} style={{ padding: "8px 20px", background: "transparent", border: "1px solid #e2e8f0", borderRadius: 12, fontSize: 12, fontWeight: 600, color: "#94a3b8", cursor: "pointer" }}>
-                  やめる
-                </button>
-              </div>
-            ) : (
-              <button className="btn-secondary" onClick={() => { setStage(null); setMode(MODE.IDLE); }} style={{ padding: "8px 24px", background: "transparent", border: "1px solid #e2e8f0", borderRadius: 12, fontSize: 12, fontWeight: 600, color: "#94a3b8", cursor: "pointer" }}>
-                キャンセル
-              </button>
-            )}
-          </>
-        ) : (
-          <>
-            {/* チェックボタン */}
-            <div style={{ display: "flex", gap: 10, width: "100%" }}>
-              <button
-                className="btn-primary"
-                onClick={() => startCheck(MODE.SKIN)}
-                style={{
-                  flex: 1, padding: "12px 0", border: "none", borderRadius: 14, fontSize: 13, fontWeight: 700, color: "#fff", cursor: "pointer",
-                  background: skinScores ? "#a855f7" : "linear-gradient(135deg, #a855f7, #c084fc)",
-                  boxShadow: "0 4px 16px rgba(168,85,247,0.25)",
-                  opacity: skinScores ? 0.7 : 1,
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: 5, whiteSpace: "nowrap",
-                }}
-              >
-                <span>{skinScores ? "✓" : "✨"}</span>肌
-              </button>
-              <button
-                className="btn-primary"
-                onClick={() => startCheck(MODE.DENTAL)}
-                style={{
-                  flex: 1, padding: "12px 0", border: "none", borderRadius: 14, fontSize: 13, fontWeight: 700, color: "#fff", cursor: "pointer",
-                  background: dentalScores ? "#22c55e" : "linear-gradient(135deg, #22c55e, #4ade80)",
-                  boxShadow: "0 4px 16px rgba(34,197,94,0.25)",
-                  opacity: dentalScores ? 0.7 : 1,
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: 5, whiteSpace: "nowrap",
-                }}
-              >
-                <span>{dentalScores ? "✓" : "🦷"}</span>デンタル
-              </button>
-            </div>
-            {/* 結果を見るボタン */}
-            {hasAnyScore && (
-              <button
-                className="btn-primary"
-                onClick={() => onResult({ skinScores, dentalScores })}
-                style={{ width: "100%", padding: 14, background: "linear-gradient(135deg, #a855f7, #ec4899)", border: "none", borderRadius: 16, fontSize: 15, fontWeight: 700, color: "#fff", cursor: "pointer", boxShadow: "0 4px 20px rgba(168,85,247,0.3)" }}
-              >
-                結果を見る →
-              </button>
-            )}
-          </>
-        )}
-        <p className="disclaimer">※本アプリは医療診断を行うものではありません</p>
-      </div>
-    </>
+          <p style={{ fontSize: 8, color: "#94a3b8", margin: 0 }}>※本アプリは医療診断を行うものではありません</p>
+        </div>
+      </CameraView>
+    </div>
   );
 }
