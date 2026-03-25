@@ -44,8 +44,6 @@ export default function useAutoShutter({ cameraRef, videoRef, faceLandmarker, mo
     elapsedRef.current = 0;
     stableCountRef.current = 0;
 
-    const useLandmarker = faceLandmarker?.ready;
-
     const iv = setInterval(() => {
       if (triggeredRef.current) return;
       elapsedRef.current += INTERVAL;
@@ -54,22 +52,27 @@ export default function useAutoShutter({ cameraRef, videoRef, faceLandmarker, mo
       let conf = 0;
       let detectedLandmarks = null;
 
+      // 毎tick最新のready状態を参照
+      const useLandmarker = faceLandmarker?.ready;
+      let mpSuccess = false;
       if (useLandmarker && videoRef?.current) {
         // === MediaPipe ランドマーク検出 ===
-        const result = faceLandmarker.detect(videoRef.current, performance.now());
-        if (result) {
-          detectedLandmarks = result.landmarks;
-          if (mode === 'face') {
-            // 顔が検出されればOK
-            inFrame = true;
-            conf = 90;
-          } else {
-            // デンタル: 顔検出 + 口が開いているか
-            inFrame = isMouthOpen(result.landmarks);
-            conf = inFrame ? 90 : 40;
+        try {
+          const result = faceLandmarker.detect(videoRef.current, performance.now());
+          if (result) {
+            mpSuccess = true;
+            detectedLandmarks = result.landmarks;
+            if (mode === 'face') {
+              inFrame = true;
+              conf = 90;
+            } else {
+              inFrame = isMouthOpen(result.landmarks);
+              conf = inFrame ? 90 : 40;
+            }
           }
-        }
-      } else {
+        } catch { /* detectForVideo失敗 → フォールバック */ }
+      }
+      if (!mpSuccess) {
         // === フォールバック: HSVヒューリスティック ===
         const cam = cameraRef?.current;
         const frame = cam?.isActive && typeof cam.captureFrame === 'function'
