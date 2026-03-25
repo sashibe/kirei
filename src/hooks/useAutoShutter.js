@@ -3,16 +3,18 @@ import { detectFacePosition } from '../analysis/skinAnalyzer.js';
 import { detectMouthPosition } from '../analysis/dentalAnalyzer.js';
 
 const INTERVAL = 300;
-const STABLE_FRAMES = 2;
-const TIMEOUT = 8000;
+const STABLE_FRAMES = 3;   // 3回連続 = 約900ms安定で発火
+const TIMEOUT = 10000;
 
+// status: 'searching' | 'detected' | 'ready' | 'timeout'
 export default function useAutoShutter({ cameraRef, mode = 'face', enabled = true }) {
   const [status, setStatus] = useState('searching');
   const [confidence, setConfidence] = useState(0);
-  const [epoch, setEpoch] = useState(0); // reset時にインクリメントしてeffectを再起動
+  const [epoch, setEpoch] = useState(0);
   const stableCountRef = useRef(0);
   const triggeredRef = useRef(false);
   const elapsedRef = useRef(0);
+  const everDetectedRef = useRef(false); // 一度でも検出したか
 
   const reset = useCallback(() => {
     setStatus('searching');
@@ -20,15 +22,16 @@ export default function useAutoShutter({ cameraRef, mode = 'face', enabled = tru
     stableCountRef.current = 0;
     triggeredRef.current = false;
     elapsedRef.current = 0;
+    everDetectedRef.current = false;
     setEpoch(e => e + 1);
   }, []);
 
   useEffect(() => {
     if (!enabled) return;
-    // reset後にtriggeredRefはfalseに戻されている
     triggeredRef.current = false;
     elapsedRef.current = 0;
     stableCountRef.current = 0;
+    everDetectedRef.current = false;
 
     const detect = mode === 'face' ? detectFacePosition : detectMouthPosition;
 
@@ -47,6 +50,7 @@ export default function useAutoShutter({ cameraRef, mode = 'face', enabled = tru
         setConfidence(conf);
 
         if (result.inFrame) {
+          everDetectedRef.current = true;
           stableCountRef.current++;
           if (stableCountRef.current >= STABLE_FRAMES) {
             setStatus('ready');
@@ -60,9 +64,10 @@ export default function useAutoShutter({ cameraRef, mode = 'face', enabled = tru
         }
       }
 
+      // タイムアウト: 検出できなかった場合は 'timeout' を返す（シャッターは切らない）
       if (elapsedRef.current >= TIMEOUT) {
-        setStatus('ready');
         triggeredRef.current = true;
+        setStatus('timeout');
       }
     }, INTERVAL);
 

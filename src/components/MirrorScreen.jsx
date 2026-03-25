@@ -110,11 +110,15 @@ export default function MirrorScreen({ onResult }) {
     }, 300);
   }, [applyScores]);
 
-  // カメラON時: autoShutterが ready → 演出開始
+  // カメラON時: autoShutterが ready → 演出開始、timeout → リトライ促し
   useEffect(() => {
     if (status === 'ready' && !handledReadyRef.current) {
       handledReadyRef.current = true;
       runShutterSequence();
+    }
+    if (status === 'timeout' && !handledReadyRef.current) {
+      handledReadyRef.current = true;
+      setStage('timeout');
     }
   }, [status, runShutterSequence]);
 
@@ -166,6 +170,11 @@ export default function MirrorScreen({ onResult }) {
   const effectiveStatus = stage || (isChecking ? status : 'idle');
 
   const getKirariMsg = () => {
+    if (stage === 'timeout') {
+      return mode === MODE.DENTAL
+        ? "口元がうまく映ってないみたい…もう一度試してみてね！"
+        : "お顔がうまく映ってないみたい…もう一度試して��てね！";
+    }
     if (stage === STAGE.SHUTTER) return "📸 パシャ！";
     if (analyzing) {
       const prefix = mode === MODE.DENTAL ? 'dental' : 'skin';
@@ -267,15 +276,30 @@ export default function MirrorScreen({ onResult }) {
         {isChecking ? (
           <>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <div style={{ width: 8, height: 8, borderRadius: "50%", background: mode === MODE.DENTAL ? "#22c55e" : "#e879f9", animation: "pulse 1s ease-in-out infinite" }} />
-              <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}`}</style>
-              <span style={{ fontSize: 13, color: mode === MODE.DENTAL ? "#22c55e" : "#a855f7", fontWeight: 600 }}>
-                {stage === STAGE.SHUTTER ? "📸 シャッター！" : analyzing ? "分析中..." : effectiveStatus === 'ready' ? "撮影準備OK" : effectiveStatus === 'detected' ? "検出中..." : "探しています..."}
+              {stage !== 'timeout' && (
+                <>
+                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: mode === MODE.DENTAL ? "#22c55e" : "#e879f9", animation: "pulse 1s ease-in-out infinite" }} />
+                  <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}`}</style>
+                </>
+              )}
+              <span style={{ fontSize: 13, color: stage === 'timeout' ? "#ef4444" : (mode === MODE.DENTAL ? "#22c55e" : "#a855f7"), fontWeight: 600 }}>
+                {stage === 'timeout' ? "検出できませんでした" : stage === STAGE.SHUTTER ? "📸 シャッター！" : analyzing ? "分析中..." : effectiveStatus === 'ready' ? "撮影準備OK" : effectiveStatus === 'detected' ? "検出中..." : "探しています..."}
               </span>
             </div>
-            <button className="btn-secondary" onClick={() => setMode(MODE.IDLE)} style={{ padding: "8px 24px", background: "transparent", border: "1px solid #e2e8f0", borderRadius: 12, fontSize: 12, fontWeight: 600, color: "#94a3b8", cursor: "pointer" }}>
-              キャンセル
-            </button>
+            {stage === 'timeout' ? (
+              <div style={{ display: "flex", gap: 8 }}>
+                <button className="btn-primary" onClick={() => startCheck(mode)} style={{ padding: "8px 20px", background: "linear-gradient(135deg, #a855f7, #c084fc)", border: "none", borderRadius: 12, fontSize: 12, fontWeight: 600, color: "#fff", cursor: "pointer" }}>
+                  もう一度
+                </button>
+                <button className="btn-secondary" onClick={() => { setStage(null); setMode(MODE.IDLE); }} style={{ padding: "8px 20px", background: "transparent", border: "1px solid #e2e8f0", borderRadius: 12, fontSize: 12, fontWeight: 600, color: "#94a3b8", cursor: "pointer" }}>
+                  やめる
+                </button>
+              </div>
+            ) : (
+              <button className="btn-secondary" onClick={() => { setStage(null); setMode(MODE.IDLE); }} style={{ padding: "8px 24px", background: "transparent", border: "1px solid #e2e8f0", borderRadius: 12, fontSize: 12, fontWeight: 600, color: "#94a3b8", cursor: "pointer" }}>
+                キャンセル
+              </button>
+            )}
           </>
         ) : (
           <>
