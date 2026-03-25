@@ -197,13 +197,13 @@ export default function MirrorScreen({ onResult }) {
 
   return (
     <>
-      <div style={{ position: "relative", boxShadow: "0 8px 32px rgba(168,85,247,0.12)" }}>
+      <div style={{ position: "relative" }}>
         <CameraView ref={cameraRef} mode={cameraMode} aspectRatio={aspectRatio} frozenSrc={frozenFrame}>
           {/* キラリ吹き出し（カメラ内オーバーレイ） */}
-          <div style={{ position: "absolute", top: 8, left: 8, right: 8, zIndex: 3, display: "flex", alignItems: "flex-start", gap: 6 }}>
-            <Kirari size={36} expression={kirariExpression} bounce={isChecking} />
-            <div style={{ background: "rgba(255,255,255,0.88)", backdropFilter: "blur(8px)", borderRadius: 14, padding: "6px 10px", flex: 1 }}>
-              <p style={{ fontSize: 11, color: "#334155", margin: 0, lineHeight: 1.5 }}>{getKirariMsg()}</p>
+          <div style={{ position: "absolute", top: 36, left: 8, right: 8, zIndex: 3, display: "flex", alignItems: "flex-start", gap: 6 }}>
+            <Kirari size={32} expression={kirariExpression} bounce={isChecking} />
+            <div style={{ background: "rgba(255,255,255,0.85)", backdropFilter: "blur(8px)", borderRadius: 12, padding: "5px 10px", flex: 1 }}>
+              <p style={{ fontSize: 11, color: "#334155", margin: 0, lineHeight: 1.4 }}>{getKirariMsg()}</p>
             </div>
           </div>
           {/* ガイドフレーム（検出フェーズ中のみ表示） */}
@@ -272,7 +272,7 @@ export default function MirrorScreen({ onResult }) {
       </div>
 
       {/* アクションエリア */}
-      <div style={{ padding: "16px 20px", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+      <div style={{ padding: "10px 16px", display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
         {isChecking ? (
           <>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
