@@ -1,15 +1,22 @@
 import { rgbToLab, rgbToHsv, normalizeIllumination, laplacianResponse } from './colorUtils.js';
 
-// 肌領域の検出（HSV + RGB複合条件）
+// 肌領域の検出（HSV + RGB複合条件、低照度対応）
 function isSkinPixel(r, g, b) {
   const [h, s, v] = rgbToHsv(r, g, b);
-  // HSV条件: 暖色系 + 適度な彩度 + 暗すぎない
-  if (!(h >= 0 && h <= 55 && s >= 0.08 && s <= 0.75 && v >= 0.15)) return false;
-  // RGB条件: R > G > B（肌色の基本特性）
-  if (!(r > g && g > b)) return false;
-  // 均一色（壁など）除外: RGBの差が小さすぎるものは肌ではない
-  if (r - b < 15) return false;
-  return true;
+
+  // 暗すぎる / 明るすぎる（白壁など）は除外
+  if (v < 0.10 || v > 0.95) return false;
+
+  // 条件1: 標準的な肌色（暖色系 + 適度な彩度）
+  const standardSkin = (h >= 0 && h <= 55) && s >= 0.08 && s <= 0.75
+    && r > g && g > b && (r - b) >= 15;
+
+  // 条件2: 低照度の肌色（彩度が低くても R>=G>=B で明度が中程度ならOK）
+  // 暗い部屋では肌色の彩度が極端に下がり色相が不安定になるため
+  const lowLightSkin = v >= 0.20 && v <= 0.75 && s < 0.12
+    && r >= g && g >= b && (r - b) >= 5 && (r - b) <= 40;
+
+  return standardSkin || lowLightSkin;
 }
 
 // 肌ピクセルを抽出（座標付き）
@@ -143,10 +150,10 @@ export function detectFacePosition(imageData) {
   const ratio = (insideCount + outsideCount) / (insideSampled + outsideSampled);
 
   // 判定条件:
-  // 1. ガイド枠内の肌色密度が15%以上（顔が枠内にある）
-  // 2. ガイド枠内の密度が枠外よりも十分高い（顔が中央に来ている）
-  const densityOk = insideRatio > 0.15;
-  const concentrationOk = insideRatio > outsideRatio * 1.5;
+  // 1. ガイド枠内の肌色密度が8%以上（顔が枠内にある、低照度でも通る）
+  // 2. ガイド枠内の密度が枠外よりも高い（顔が中央に来ている）
+  const densityOk = insideRatio > 0.08;
+  const concentrationOk = insideRatio > outsideRatio * 1.2;
   const inFrame = densityOk && concentrationOk;
 
   return { ratio, insideRatio, outsideRatio, inFrame };
