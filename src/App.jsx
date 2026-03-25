@@ -40,22 +40,35 @@ export default function App() {
   );
 
   return (
-    <div style={{ maxWidth: 390, margin: "0 auto", background: colors.bg, minHeight: "100vh", fontFamily: "'Noto Sans JP', sans-serif", paddingBottom: showResult ? 32 : 0 }}>
-      {showResult && <Header />}
-      <div key={showResult ? 'result' : 'mirror'} className="screen-enter" style={{ position: "relative" }}>
-        {!showResult ? (
-          <>
-            <Header overlay />
-            <MirrorScreen onResult={handleResult} />
-          </>
-        ) : (
-          <ResultScreen
-            skinScores={scoresRef.current.skinScores}
-            dentalScores={scoresRef.current.dentalScores}
-            onRestart={handleRestart}
-            onDentalCheck={handleDentalCheck}
-          />
-        )}
+    <div style={{
+      display: "flex", justifyContent: "center", alignItems: "flex-start",
+      minHeight: "100vh", background: "#f0edf6", fontFamily: "'Noto Sans JP', sans-serif",
+    }}>
+      {/* スマホフレーム */}
+      <div style={{
+        width: 390, maxWidth: "100vw",
+        minHeight: "100dvh",
+        background: colors.bg,
+        position: "relative", overflow: "hidden",
+        boxShadow: "0 0 40px rgba(168,85,247,0.12)",
+        paddingBottom: showResult ? 32 : 0,
+      }}>
+        {showResult && <Header />}
+        <div key={showResult ? 'result' : 'mirror'} className="screen-enter" style={{ position: "relative" }}>
+          {!showResult ? (
+            <>
+              <Header overlay />
+              <MirrorScreen onResult={handleResult} />
+            </>
+          ) : (
+            <ResultScreen
+              skinScores={scoresRef.current.skinScores}
+              dentalScores={scoresRef.current.dentalScores}
+              onRestart={handleRestart}
+              onDentalCheck={handleDentalCheck}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
