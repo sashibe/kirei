@@ -122,7 +122,7 @@ export default function useAutoShutter({ cameraRef, videoRef, faceLandmarker, mo
     }, INTERVAL);
 
     return () => clearInterval(iv);
-  }, [enabled, mode, cameraRef, videoRef, faceLandmarker, epoch]);
+  }, [enabled, mode, epoch]); // cameraRef/videoRef/faceLandmarkerはref的アクセスなので依存不要
 
   return { status, confidence, lastLandmarks, reset };
 }

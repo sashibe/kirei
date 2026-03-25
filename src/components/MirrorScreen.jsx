@@ -48,9 +48,17 @@ export default function MirrorScreen({ onResult }) {
   const isScanning = stage === STAGE.SCANNING;
   const shutterEnabled = (mode === MODE.SKIN || mode === MODE.DENTAL) && !isScanning && stage !== STAGE.SHUTTER;
 
+  // videoRef を安定した参照にする（毎レンダリングで新オブジェクト生成を防ぐ）
+  const videoRef = useRef(null);
+  // cameraRef.current?.videoEl を動的に取得するためのupdater
+  Object.defineProperty(videoRef, 'current', {
+    get: () => cameraRef.current?.videoEl || null,
+    configurable: true,
+  });
+
   const { status, confidence, lastLandmarks, reset: resetShutter } = useAutoShutter({
     cameraRef,
-    videoRef: { get current() { return cameraRef.current?.videoEl || null; } },
+    videoRef,
     faceLandmarker,
     mode: shutterMode,
     enabled: shutterEnabled,
