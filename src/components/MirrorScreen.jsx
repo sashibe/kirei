@@ -56,7 +56,7 @@ export default function MirrorScreen({ onResult }) {
     configurable: true,
   });
 
-  const { status, confidence, lastLandmarks, reset: resetShutter } = useAutoShutter({
+  const { status, confidence, lastLandmarks, lowLight, reset: resetShutter } = useAutoShutter({
     cameraRef,
     videoRef,
     faceLandmarker,
@@ -197,6 +197,9 @@ export default function MirrorScreen({ onResult }) {
   const effectiveStatus = stage || (isChecking ? status : 'idle');
 
   const getKirariMsg = () => {
+    if (isChecking && lowLight && !analyzing && stage !== STAGE.SHUTTER) {
+      return "ちょっと暗いかも💡 明るい場所で試してみてね！";
+    }
     if (stage === 'timeout') {
       return mode === MODE.DENTAL
         ? "口元がうまく映ってないみたい…もう一度試してみてね！"
@@ -242,6 +245,26 @@ export default function MirrorScreen({ onResult }) {
         {/* === ガイドフレーム === */}
         {isChecking && (stage === STAGE.SEARCHING || stage === STAGE.DETECTED || stage === STAGE.READY || (!stage && (status === 'searching' || status === 'detected'))) && (
           <GuideFrame mode={shutterMode} status={stage || status} confidence={stage ? (stage === 'searching' ? 20 : stage === 'detected' ? 60 : 100) : confidence} />
+        )}
+
+        {/* === 低照度アラート === */}
+        {isChecking && lowLight && !analyzing && stage !== STAGE.SHUTTER && (
+          <div style={{
+            position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
+            zIndex: 5, display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
+            background: "rgba(0,0,0,0.7)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
+            borderRadius: 16, padding: "16px 24px", maxWidth: "80%",
+            animation: "lowLightFadeIn 0.4s ease-out",
+          }}>
+            <style>{`@keyframes lowLightFadeIn{from{opacity:0;transform:translate(-50%,-50%) scale(0.9)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}`}</style>
+            <span style={{ fontSize: 28 }}>💡</span>
+            <p style={{ fontSize: 13, color: "#fbbf24", fontWeight: 700, margin: 0, textAlign: "center", lineHeight: 1.5 }}>
+              暗すぎます
+            </p>
+            <p style={{ fontSize: 11, color: "#e2e8f0", margin: 0, textAlign: "center", lineHeight: 1.5 }}>
+              明るい場所に移動してね
+            </p>
+          </div>
         )}
 
         {/* === シャッターフラッシュ === */}
