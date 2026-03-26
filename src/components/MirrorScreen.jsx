@@ -241,8 +241,9 @@ export default function MirrorScreen({ onResult }) {
     {isDentalChecking ? (
       /* ========== デンタル専用フルスクリーンレイアウト ========== */
       <div style={{
-        width: "100vw",
-        height: "100vh",
+        position: "fixed",
+        inset: 0,
+        zIndex: 9999,
         display: "flex",
         flexDirection: "column",
         background: "#000",
