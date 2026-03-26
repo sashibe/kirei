@@ -68,25 +68,25 @@ export default function GuideFrame({ mode = 'face', status = 'searching', confid
             style={isReady ? { animation: 'guideReady 0.6s ease-in-out' } : {}}
           >
             {/* 顔の輪郭 */}
-            <ellipse cx="50" cy="58" rx="42" ry="45" fill={s.fill} />
+            <ellipse cx="50" cy="65" rx="42" ry="42" fill={s.fill} />
             {/* 左耳 */}
-            <path d="M8,56 Q1,52 2,64 Q3,73 9,70" />
+            <path d="M8,62 Q1,58 2,70 Q3,79 9,76" />
             {/* 右耳 */}
-            <path d="M92,56 Q99,52 98,64 Q97,73 91,70" />
+            <path d="M92,62 Q99,58 98,70 Q97,79 91,76" />
             {/* 左目 */}
-            <path d="M31,63 Q37,57 43,63 Q37,67 31,63" strokeWidth={isReady ? 2 : 1.4} />
-            <circle cx="37" cy="63" r="2" fill={s.stroke} stroke="none" />
+            <path d="M31,70 Q37,64 43,70 Q37,74 31,70" strokeWidth={isReady ? 2 : 1.4} />
+            <circle cx="37" cy="70" r="2" fill={s.stroke} stroke="none" />
             {/* 右目 */}
-            <path d="M57,63 Q63,57 69,63 Q63,67 57,63" strokeWidth={isReady ? 2 : 1.4} />
-            <circle cx="63" cy="63" r="2" fill={s.stroke} stroke="none" />
+            <path d="M57,70 Q63,64 69,70 Q63,74 57,70" strokeWidth={isReady ? 2 : 1.4} />
+            <circle cx="63" cy="70" r="2" fill={s.stroke} stroke="none" />
             {/* 眉（左） */}
-            <path d="M29,54 Q37,48 45,54" strokeWidth={isReady ? 1.8 : 1.2} />
+            <path d="M29,62 Q37,56 45,62" strokeWidth={isReady ? 1.8 : 1.2} />
             {/* 眉（右） */}
-            <path d="M55,54 Q63,48 71,54" strokeWidth={isReady ? 1.8 : 1.2} />
+            <path d="M55,62 Q63,56 71,62" strokeWidth={isReady ? 1.8 : 1.2} />
             {/* 鼻 */}
-            <path d="M50,67 L48,79 Q50,82 52,79 Z" strokeWidth={isReady ? 1.5 : 1} fill="none" />
+            <path d="M50,74 L48,86 Q50,89 52,86 Z" strokeWidth={isReady ? 1.5 : 1} fill="none" />
             {/* 口 */}
-            <path d="M39,89 Q44,94 50,93 Q56,94 61,89" strokeWidth={isReady ? 1.8 : 1.2} />
+            <path d="M39,96 Q44,101 50,100 Q56,101 61,96" strokeWidth={isReady ? 1.8 : 1.2} />
           </g>
         </svg>
       ) : (
