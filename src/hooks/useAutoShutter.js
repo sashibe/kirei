@@ -81,7 +81,7 @@ export default function useAutoShutter({ cameraRef, videoRef, faceLandmarker, mo
       const videoEl = videoRef?.current;
       let mpSuccess = false;
 
-      if (useLandmarker && videoEl) {
+      if (useLandmarker && videoEl && videoEl.videoWidth > 0) {
         // === MediaPipe ランドマーク検出 ===
         try {
           const result = faceLandmarker.detect(videoEl, performance.now());

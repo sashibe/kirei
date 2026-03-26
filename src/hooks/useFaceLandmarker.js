@@ -41,6 +41,8 @@ export default function useFaceLandmarker() {
   // 戻り値: { landmarks, faceBox } | null
   const detect = useCallback((videoEl, timestamp) => {
     if (!detectorRef.current || !ready || !videoEl) return null;
+    // video要素のサイズが0の場合はスキップ（iOS/カメラ不可時のクラッシュ防止）
+    if (!videoEl.videoWidth || !videoEl.videoHeight) return null;
     try {
       const result = detectorRef.current.detectForVideo(videoEl, timestamp);
       if (!result.faceLandmarks?.length) return null;
