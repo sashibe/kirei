@@ -266,3 +266,15 @@ const colors = {
 - `git push origin main` → ビルド → dist/ をデプロイ
 - デプロイ後数分で反映
 - URL: https://sashibe.github.io/kirei/
+
+### 技術的負債メモ（ネイティブ移行時に解決する）
+
+#### スコア取得と画面遷移の非同期問題
+- **現状**: `setState` の非同期性を回避するため、
+  `applyScores()` の戻り値でスコアを直接受け取り、
+  500ms の遅延後に `onResult()` を呼び出している
+- **問題点**: 泥縄的な実装でタイミング依存のバグが起きやすい
+- **理想的な解決策**: `useReducer` で画面遷移とスコア更新を
+  一元管理する。`dispatch({ type: 'DENTAL_COMPLETE', payload: scores })`
+  のような単一アクションで state と遷移を同時に確定させる
+- **対応フェーズ**: Capacitor移行時（Phase 2前）
