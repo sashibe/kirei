@@ -70,23 +70,23 @@ export default function GuideFrame({ mode = 'face', status = 'searching', confid
             {/* 顔の輪郭 */}
             <ellipse cx="50" cy="58" rx="36" ry="48" fill={s.fill} />
             {/* 左耳 */}
-            <path d="M14,50 Q8,46 9,58 Q10,68 15,66" />
+            <path d="M14,56 Q7,52 8,64 Q9,73 15,70" />
             {/* 右耳 */}
-            <path d="M86,50 Q92,46 91,58 Q90,68 85,66" />
+            <path d="M86,56 Q93,52 92,64 Q91,73 85,70" />
             {/* 左目 */}
-            <path d="M30,60 Q37,54 44,60 Q37,64 30,60" strokeWidth={isReady ? 2 : 1.4} />
-            <circle cx="37" cy="60" r="2" fill={s.stroke} stroke="none" />
+            <path d="M31,63 Q37,57 43,63 Q37,67 31,63" strokeWidth={isReady ? 2 : 1.4} />
+            <circle cx="37" cy="63" r="2" fill={s.stroke} stroke="none" />
             {/* 右目 */}
-            <path d="M56,60 Q63,54 70,60 Q63,64 56,60" strokeWidth={isReady ? 2 : 1.4} />
-            <circle cx="63" cy="60" r="2" fill={s.stroke} stroke="none" />
+            <path d="M57,63 Q63,57 69,63 Q63,67 57,63" strokeWidth={isReady ? 2 : 1.4} />
+            <circle cx="63" cy="63" r="2" fill={s.stroke} stroke="none" />
             {/* 眉（左） */}
-            <path d="M28,51 Q37,45 46,51" strokeWidth={isReady ? 1.8 : 1.2} />
+            <path d="M29,54 Q37,48 45,54" strokeWidth={isReady ? 1.8 : 1.2} />
             {/* 眉（右） */}
-            <path d="M54,51 Q63,45 72,51" strokeWidth={isReady ? 1.8 : 1.2} />
+            <path d="M55,54 Q63,48 71,54" strokeWidth={isReady ? 1.8 : 1.2} />
             {/* 鼻 */}
-            <path d="M50,64 Q49,73 46,80 Q50,82 54,80 Q51,73 50,64" strokeWidth={isReady ? 1.5 : 1} fill="none" />
+            <path d="M50,67 L48,79 Q50,82 52,79 Z" strokeWidth={isReady ? 1.5 : 1} fill="none" />
             {/* 口 */}
-            <path d="M38,91 Q44,97 50,95 Q56,97 62,91" strokeWidth={isReady ? 1.8 : 1.2} />
+            <path d="M39,89 Q44,94 50,93 Q56,94 61,89" strokeWidth={isReady ? 1.8 : 1.2} />
           </g>
         </svg>
       ) : (
