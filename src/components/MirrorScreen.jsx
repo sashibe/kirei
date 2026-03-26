@@ -84,11 +84,13 @@ export default function MirrorScreen({ onResult }) {
           ? (lm ? analyzeSkinWithLandmarks(frame, lm) : analyzeSkin(frame))
           : null;
       } catch { /* */ }
-      setSkinScores((result && !result.error) ? {
+      const scores = (result && !result.error) ? {
         tone: { ...SKIN_SCORES.tone, score: result.tone.score },
         pores: { ...SKIN_SCORES.pores, score: result.pores.score },
         dullness: { ...SKIN_SCORES.dullness, score: result.dullness.score },
-      } : SKIN_SCORES);
+      } : SKIN_SCORES;
+      setSkinScores(scores);
+      return { type: 'skin', scores };
     } else if (currentMode === MODE.DENTAL) {
       let result = null;
       try {
@@ -96,11 +98,13 @@ export default function MirrorScreen({ onResult }) {
           ? (lm ? analyzeDentalWithLandmarks(frame, lm) : analyzeDental(frame))
           : null;
       } catch { /* */ }
-      setDentalScores((result && !result.error) ? {
+      const scores = (result && !result.error) ? {
         gums: { ...DENTAL_SCORES.gums, score: result.gums.score },
         alignment: { ...DENTAL_SCORES.alignment, score: result.alignment.score },
         staining: { ...DENTAL_SCORES.staining, score: result.staining.score },
-      } : DENTAL_SCORES);
+      } : DENTAL_SCORES;
+      setDentalScores(scores);
+      return { type: 'dental', scores };
     }
   }, []);
 
@@ -128,14 +132,23 @@ export default function MirrorScreen({ onResult }) {
       setStage(STAGE.SCANNING);
 
       setTimeout(() => {
-        // 3. スコア算出 & IDLE移行（凍結はまだ維持）
-        try { applyScores(); } catch { /* */ }
+        // 3. スコア算出
+        let scoreResult = null;
+        try { scoreResult = applyScores(); } catch { /* */ }
         setLastCheck(currentMode);
-        setStage(null);
-        setMode(MODE.IDLE);
-        // 4. スコアバッジのアニメーション完了後に凍結解除
-        // delay: 0, 600, 1200ms + アニメ300ms + 余裕500ms = 約2000ms
-        setTimeout(() => setFrozenFrame(null), 2000);
+        if (currentMode === MODE.DENTAL) {
+          // デンタル完了 → 自動で結果画面へ
+          const finalDental = scoreResult?.scores || DENTAL_SCORES;
+          setTimeout(() => {
+            setFrozenFrame(null);
+            onResult({ skinScores, dentalScores: finalDental });
+          }, 500);
+        } else {
+          setStage(null);
+          setMode(MODE.IDLE);
+          // 4. スコアバッジのアニメーション完了後に凍結解除
+          setTimeout(() => setFrozenFrame(null), 2000);
+        }
       }, 1500);
     }, 300);
   }, [applyScores]);
@@ -172,11 +185,18 @@ export default function MirrorScreen({ onResult }) {
       // 完了
       setTimeout(() => {
         if (cancelled) return;
-        if (currentMode === MODE.SKIN) setSkinScores(SKIN_SCORES);
-        else if (currentMode === MODE.DENTAL) setDentalScores(DENTAL_SCORES);
-        setLastCheck(currentMode);
-        setStage(null);
-        setMode(MODE.IDLE);
+        if (currentMode === MODE.SKIN) {
+          setSkinScores(SKIN_SCORES);
+          setLastCheck(currentMode);
+          setStage(null);
+          setMode(MODE.IDLE);
+        } else if (currentMode === MODE.DENTAL) {
+          const finalDental = DENTAL_SCORES;
+          setDentalScores(finalDental);
+          setLastCheck(currentMode);
+          // デンタル完了 → 自動で結果画面へ
+          onResult({ skinScores, dentalScores: finalDental });
+        }
       }, 4200);
     }, 500);
 
