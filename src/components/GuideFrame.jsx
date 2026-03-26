@@ -50,7 +50,7 @@ export default function GuideFrame({ mode = 'face', status = 'searching', confid
         // 顔用: 簡易フェイスシルエット（目・鼻・口・耳）
         <svg
           width="68%"
-          height="92%"
+          height="82%"
           viewBox="-5 -5 110 130"
           preserveAspectRatio="none"
           style={{
