@@ -49,13 +49,12 @@ export default function GuideFrame({ mode = 'face', status = 'searching', confid
       {mode === 'face' ? (
         // 顔用: 簡易フェイスシルエット（目・鼻・口・耳）
         <svg
-          width="80%"
-          viewBox="0 0 100 120"
+          width="82%"
+          viewBox="-5 0 110 120"
           preserveAspectRatio="xMidYMid meet"
           style={{
             filter: s.shadow !== 'none' ? `drop-shadow(${s.shadow})` : 'none',
             animation: isReady ? 'guidePulse 0.6s ease-in-out' : 'none',
-            overflow: 'visible',
           }}
         >
           <g
