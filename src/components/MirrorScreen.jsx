@@ -4,6 +4,7 @@ import Bubble from './Bubble.jsx';
 import CameraView from './CameraView.jsx';
 import ScoreBadge from './ScoreBadge.jsx';
 import GuideFrame from './GuideFrame.jsx';
+import DentalRotationModal from './DentalRotationModal';
 import useAutoShutter from '../hooks/useAutoShutter.js';
 import useFaceLandmarker from '../hooks/useFaceLandmarker.js';
 import { SKIN_SCORES, DENTAL_SCORES } from '../data/scores.js';
@@ -34,6 +35,7 @@ export default function MirrorScreen({ onResult }) {
   const [skinScores, setSkinScores] = useState(null);
   const [dentalScores, setDentalScores] = useState(null);
   const [showScores, setShowScores] = useState(true);
+  const [showRotationModal, setShowRotationModal] = useState(false);
   const [lastCheck, setLastCheck] = useState(null);
   const [frozenFrame, setFrozenFrame] = useState(null);
   const cameraRef = useRef(null);
@@ -232,6 +234,7 @@ export default function MirrorScreen({ onResult }) {
   };
 
   return (
+    <>
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
       <CameraView ref={cameraRef} mode={cameraMode} aspectRatio="auto" frozenSrc={frozenFrame}>
         {/* === キラリ吹き出し === */}
@@ -363,7 +366,7 @@ export default function MirrorScreen({ onResult }) {
                 </button>
                 <button
                   className="btn-primary"
-                  onClick={() => startCheck(MODE.DENTAL)}
+                  onClick={() => setShowRotationModal(true)}
                   style={{
                     flex: 1, padding: "12px 0", border: "none", borderRadius: 14, fontSize: 13, fontWeight: 700, color: "#fff", cursor: "pointer",
                     background: dentalScores ? "#22c55e" : "linear-gradient(135deg, #22c55e, #4ade80)",
@@ -391,5 +394,18 @@ export default function MirrorScreen({ onResult }) {
         </div>
       </CameraView>
     </div>
+    {showRotationModal && (
+      <DentalRotationModal
+        onReady={() => {
+          setShowRotationModal(false);
+          startCheck(MODE.DENTAL);
+        }}
+        onSkip={() => {
+          setShowRotationModal(false);
+          startCheck(MODE.DENTAL);
+        }}
+      />
+    )}
+  </>
   );
 }
