@@ -79,7 +79,14 @@ function PhoneFrame({ children }) {
         }
         @media (max-width: 499px) {
           .phone-bezel, .phone-notch, .phone-bottom-bar { display: none; }
-          .phone-screen { min-height: 100dvh; }
+          .phone-screen {
+            height: 100dvh !important;
+            border-radius: 0 !important;
+            transform: none !important;
+          }
+          .phone-screen > div {
+            height: 100dvh !important;
+          }
         }
       `}</style>
       <div className="phone-frame">

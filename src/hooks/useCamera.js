@@ -44,12 +44,19 @@ export default function useCamera({ enabled = true, facingMode = "user" } = {}) 
 
         streamRef.current = stream;
         if (videoRef.current) {
-          videoRef.current.srcObject = stream;
+          const video = videoRef.current;
+          video.srcObject = stream;
+          // iOS対応: setAttribute で webkit-playsinline を確実に設定
+          video.setAttribute('playsinline', '');
+          video.setAttribute('webkit-playsinline', '');
           // play() は autoPlay 属性でも発火するが、明示的に呼んで確実にする
           try {
-            await videoRef.current.play();
+            await video.play();
           } catch {
-            // autoPlay で再生済みの場合は無視
+            // iOS では loadedmetadata 後に再試行
+            video.addEventListener('loadedmetadata', () => {
+              video.play().catch(() => {});
+            }, { once: true });
           }
         }
         setIsActive(true);
