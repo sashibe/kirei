@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import Kirari from './Kirari.jsx';
 import Bubble from './Bubble.jsx';
 import CameraView from './CameraView.jsx';
@@ -238,7 +239,7 @@ export default function MirrorScreen({ onResult }) {
 
   return (
     <>
-    {isDentalChecking ? (
+    {isDentalChecking ? createPortal(
       /* ========== デンタル専用フルスクリーンレイアウト ========== */
       <div style={{
         position: "fixed",
@@ -345,7 +346,8 @@ export default function MirrorScreen({ onResult }) {
 
           </CameraView>
         </div>
-      </div>
+      </div>,
+      document.body
     ) : (
       /* ========== 通常レイアウト（肌チェック＆IDLE） ========== */
       <div style={{ position: "relative", width: "100%", height: "100%" }}>
