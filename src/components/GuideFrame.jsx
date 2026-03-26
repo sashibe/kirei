@@ -49,6 +49,7 @@ export default function GuideFrame({ mode = 'face', status = 'searching', confid
       {mode === 'face' ? (
         // ===== KIREI 顔ガイド overlay =====
         // viewBox="0 0 195 346" に合わせた絶対値
+        // カメラ映像の上に position:absolute で重ねる
         <svg
           style={{position:'absolute',inset:0,width:'100%',height:'100%',pointerEvents:'none'}}
           viewBox="0 0 195 346"
@@ -56,7 +57,7 @@ export default function GuideFrame({ mode = 'face', status = 'searching', confid
         >
           {/* 顔ガイド楕円 */}
           <ellipse
-            cx="97" cy="142" rx="68" ry="98"
+            cx="97" cy="146" rx="68" ry="98"
             fill="rgba(255,255,255,0.05)"
             stroke="rgba(255,255,255,0.9)"
             strokeWidth="1.6"
@@ -65,29 +66,29 @@ export default function GuideFrame({ mode = 'face', status = 'searching', confid
           />
           {/* 左目 */}
           <ellipse
-            cx="47" cy="133" rx="18" ry="11"
+            cx="67" cy="134" rx="20" ry="12"
             fill="rgba(168,85,247,0.1)"
             stroke="rgba(168,85,247,0.75)"
             strokeWidth="1.2"
           />
           {/* 右目 */}
           <ellipse
-            cx="147" cy="133" rx="18" ry="11"
+            cx="127" cy="134" rx="20" ry="12"
             fill="rgba(168,85,247,0.1)"
             stroke="rgba(168,85,247,0.75)"
             strokeWidth="1.2"
           />
           {/* 眉毛ライン(左) */}
           <line
-            x1="31" y1="122"
-            x2="63" y2="120"
+            x1="49" y1="123"
+            x2="85" y2="121"
             stroke="rgba(255,255,255,0.5)"
             strokeWidth="1" strokeDasharray="3 3"
           />
           {/* 眉毛ライン(右) */}
           <line
-            x1="131" y1="120"
-            x2="163" y2="122"
+            x1="109" y1="121"
+            x2="145" y2="123"
             stroke="rgba(255,255,255,0.5)"
             strokeWidth="1" strokeDasharray="3 3"
           />
@@ -99,9 +100,9 @@ export default function GuideFrame({ mode = 'face', status = 'searching', confid
             strokeWidth="1"
             strokeDasharray="3 3"
           />
-          {/* 口ガイド弧 */}
+          {/* 口ガイド弧 — 端点を目の中心に揃え、カーブを少し深めに */}
           <path
-            d="M39,200 Q97,210 155,200"
+            d="M67,202 Q97,218 127,202"
             fill="none"
             stroke="rgba(168,85,247,0.75)"
             strokeWidth="1.4"
@@ -109,7 +110,7 @@ export default function GuideFrame({ mode = 'face', status = 'searching', confid
           />
           {/* 左耳ライン */}
           <path
-            d="M32,128 Q22,133 32,162"
+            d="M32,129 Q22,134 32,163"
             fill="none"
             stroke="rgba(255,255,255,0.45)"
             strokeWidth="1.2"
@@ -117,7 +118,7 @@ export default function GuideFrame({ mode = 'face', status = 'searching', confid
           />
           {/* 右耳ライン */}
           <path
-            d="M162,128 Q172,133 162,162"
+            d="M162,129 Q172,134 162,163"
             fill="none"
             stroke="rgba(255,255,255,0.45)"
             strokeWidth="1.2"
