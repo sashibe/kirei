@@ -47,47 +47,82 @@ export default function GuideFrame({ mode = 'face', status = 'searching', confid
       `}</style>
 
       {mode === 'face' ? (
-        // 顔用: 簡易フェイスシルエット（目・鼻・口・耳）
+        // ===== KIREI 顔ガイド overlay =====
+        // viewBox="0 0 195 346" に合わせた絶対値
         <svg
-          width="72%"
-          height="70%"
-          viewBox="-5 -5 110 130"
-          preserveAspectRatio="none"
-          style={{
-            filter: s.shadow !== 'none' ? `drop-shadow(${s.shadow})` : 'none',
-            animation: isReady ? 'guidePulse 0.6s ease-in-out' : 'none',
-          }}
+          style={{position:'absolute',inset:0,width:'100%',height:'100%',pointerEvents:'none'}}
+          viewBox="0 0 195 346"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <g
-            fill="none"
-            stroke={s.stroke}
-            strokeWidth={isReady ? 2.5 : 1.8}
-            strokeDasharray={s.strokeDasharray}
+          {/* 顔ガイド楕円 */}
+          <ellipse
+            cx="97" cy="142" rx="68" ry="98"
+            fill="rgba(255,255,255,0.05)"
+            stroke="rgba(255,255,255,0.9)"
+            strokeWidth="1.6"
+            strokeDasharray="7 4"
             strokeLinecap="round"
-            strokeLinejoin="round"
-            style={isReady ? { animation: 'guideReady 0.6s ease-in-out' } : {}}
-          >
-            {/* 顔の輪郭 */}
-            <ellipse cx="50" cy="65" rx="42" ry="42" fill={s.fill} />
-            {/* 左耳 */}
-            <path d="M8,62 Q1,58 2,70 Q3,79 9,76" />
-            {/* 右耳 */}
-            <path d="M92,62 Q99,58 98,70 Q97,79 91,76" />
-            {/* 左目 */}
-            <path d="M31,70 Q37,64 43,70 Q37,74 31,70" strokeWidth={isReady ? 2 : 1.4} />
-            <circle cx="37" cy="70" r="2" fill={s.stroke} stroke="none" />
-            {/* 右目 */}
-            <path d="M57,70 Q63,64 69,70 Q63,74 57,70" strokeWidth={isReady ? 2 : 1.4} />
-            <circle cx="63" cy="70" r="2" fill={s.stroke} stroke="none" />
-            {/* 眉（左） */}
-            <path d="M29,62 Q37,56 45,62" strokeWidth={isReady ? 1.8 : 1.2} />
-            {/* 眉（右） */}
-            <path d="M55,62 Q63,56 71,62" strokeWidth={isReady ? 1.8 : 1.2} />
-            {/* 鼻 */}
-            <path d="M50,74 L48,86 Q50,89 52,86 Z" strokeWidth={isReady ? 1.5 : 1} fill="none" />
-            {/* 口 */}
-            <path d="M39,96 Q44,101 50,100 Q56,101 61,96" strokeWidth={isReady ? 1.8 : 1.2} />
-          </g>
+          />
+          {/* 左目 */}
+          <ellipse
+            cx="47" cy="133" rx="18" ry="11"
+            fill="rgba(168,85,247,0.1)"
+            stroke="rgba(168,85,247,0.75)"
+            strokeWidth="1.2"
+          />
+          {/* 右目 */}
+          <ellipse
+            cx="147" cy="133" rx="18" ry="11"
+            fill="rgba(168,85,247,0.1)"
+            stroke="rgba(168,85,247,0.75)"
+            strokeWidth="1.2"
+          />
+          {/* 眉毛ライン(左) */}
+          <line
+            x1="31" y1="122"
+            x2="63" y2="120"
+            stroke="rgba(255,255,255,0.5)"
+            strokeWidth="1" strokeDasharray="3 3"
+          />
+          {/* 眉毛ライン(右) */}
+          <line
+            x1="131" y1="120"
+            x2="163" y2="122"
+            stroke="rgba(255,255,255,0.5)"
+            strokeWidth="1" strokeDasharray="3 3"
+          />
+          {/* 鼻ガイド */}
+          <ellipse
+            cx="97" cy="172" rx="14" ry="10"
+            fill="none"
+            stroke="rgba(168,85,247,0.6)"
+            strokeWidth="1"
+            strokeDasharray="3 3"
+          />
+          {/* 口ガイド弧 */}
+          <path
+            d="M39,200 Q97,210 155,200"
+            fill="none"
+            stroke="rgba(168,85,247,0.75)"
+            strokeWidth="1.4"
+            strokeLinecap="round"
+          />
+          {/* 左耳ライン */}
+          <path
+            d="M32,128 Q22,133 32,162"
+            fill="none"
+            stroke="rgba(255,255,255,0.45)"
+            strokeWidth="1.2"
+            strokeLinecap="round"
+          />
+          {/* 右耳ライン */}
+          <path
+            d="M162,128 Q172,133 162,162"
+            fill="none"
+            stroke="rgba(255,255,255,0.45)"
+            strokeWidth="1.2"
+            strokeLinecap="round"
+          />
         </svg>
       ) : (
         // 口元用: 横長角丸矩形
