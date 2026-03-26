@@ -233,9 +233,121 @@ export default function MirrorScreen({ onResult }) {
     boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
   };
 
+  // デンタルチェック中はフルスクリーンレイアウト
+  const isDentalChecking = isChecking && mode === MODE.DENTAL;
+
   return (
     <>
-    <div style={{ position: "relative", width: "100%", height: "100%" }}>
+    {isDentalChecking ? (
+      /* ========== デンタル専用フルスクリーンレイアウト ========== */
+      <div style={{
+        width: "100vw",
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        background: "#000",
+        overflow: "hidden",
+      }}>
+        {/* カメラ領域 */}
+        <div style={{ flex: 1, position: "relative", width: "100%" }}>
+          <CameraView ref={cameraRef} mode={cameraMode} aspectRatio="auto" frozenSrc={frozenFrame}>
+
+            {/* === 上部ミニバー（ヘッダー＆キラリの代替） === */}
+            <div style={{
+              position: "absolute", top: 0, left: 0, right: 0, zIndex: 5,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              padding: "8px 16px",
+              background: "linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%)",
+            }}>
+              <span style={{ fontSize: 11, color: "rgba(255,255,255,0.85)", fontWeight: 600 }}>
+                🦷 デンタルチェック
+              </span>
+            </div>
+
+            {/* === ガイドフレーム === */}
+            {(stage === STAGE.SEARCHING || stage === STAGE.DETECTED || stage === STAGE.READY || (!stage && (status === 'searching' || status === 'detected'))) && (
+              <GuideFrame mode={shutterMode} status={stage || status} confidence={stage ? (stage === 'searching' ? 20 : stage === 'detected' ? 60 : 100) : confidence} />
+            )}
+
+            {/* === 低照度アラート === */}
+            {lowLight && !analyzing && stage !== STAGE.SHUTTER && (
+              <div style={{
+                position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
+                zIndex: 5, display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
+                background: "rgba(0,0,0,0.7)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
+                borderRadius: 16, padding: "16px 24px", maxWidth: "80%",
+                animation: "lowLightFadeIn 0.4s ease-out",
+              }}>
+                <style>{`@keyframes lowLightFadeIn{from{opacity:0;transform:translate(-50%,-50%) scale(0.9)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}`}</style>
+                <span style={{ fontSize: 28 }}>💡</span>
+                <p style={{ fontSize: 13, color: "#fbbf24", fontWeight: 700, margin: 0, textAlign: "center", lineHeight: 1.5 }}>
+                  暗すぎます
+                </p>
+                <p style={{ fontSize: 11, color: "#e2e8f0", margin: 0, textAlign: "center", lineHeight: 1.5 }}>
+                  明るい場所に移動してね
+                </p>
+              </div>
+            )}
+
+            {/* === シャッターフラッシュ === */}
+            {stage === STAGE.SHUTTER && (
+              <div style={{ position: "absolute", inset: 0, background: "white", zIndex: 10, animation: "shutterFlash 300ms ease-out forwards" }}>
+                <style>{`@keyframes shutterFlash{0%{opacity:1}100%{opacity:0}}`}</style>
+              </div>
+            )}
+
+            {/* === スキャンアニメーション === */}
+            {analyzing && (
+              <div style={{ position: "absolute", inset: 0 }}>
+                <div style={{ position: "absolute", left: 0, right: 0, height: 2, background: "linear-gradient(90deg, transparent, #22c55e, transparent)", animation: "scanLine 1.5s ease-in-out infinite", boxShadow: "0 0 12px #22c55e" }} />
+                <style>{`@keyframes scanLine{0%,100%{top:15%}50%{top:70%}}`}</style>
+              </div>
+            )}
+
+            {/* === 下部オーバーレイ（プログレス＆キャンセル） === */}
+            <div style={{
+              position: "absolute", bottom: 16, left: 16, right: 16, zIndex: 4,
+              display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
+            }}>
+              <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}`}</style>
+
+              {/* ステータス表示 */}
+              <div style={{
+                display: "flex", alignItems: "center", gap: 8,
+                background: "rgba(0,0,0,0.6)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
+                borderRadius: 20, padding: "6px 16px",
+              }}>
+                {stage !== 'timeout' && (
+                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#22c55e", animation: "pulse 1s ease-in-out infinite" }} />
+                )}
+                <span style={{ fontSize: 12, color: stage === 'timeout' ? "#ef4444" : "#22c55e", fontWeight: 600 }}>
+                  {stage === 'timeout' ? "検出できませんでした" : stage === STAGE.SHUTTER ? "📸 シャッター！" : analyzing ? "分析中..." : effectiveStatus === 'ready' ? "撮影準備OK" : effectiveStatus === 'detected' ? "検出中..." : "探しています..."}
+                </span>
+              </div>
+
+              {/* ボタン */}
+              {stage === 'timeout' ? (
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button className="btn-primary" onClick={() => startCheck(mode)} style={{ padding: "8px 20px", background: "rgba(34,197,94,0.85)", backdropFilter: "blur(8px)", border: "none", borderRadius: 12, fontSize: 12, fontWeight: 600, color: "#fff", cursor: "pointer" }}>
+                    もう一度
+                  </button>
+                  <button className="btn-secondary" onClick={() => { setStage(null); setMode(MODE.IDLE); }} style={{ padding: "8px 20px", background: "rgba(255,255,255,0.2)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 12, fontSize: 12, fontWeight: 600, color: "#fff", cursor: "pointer" }}>
+                    やめる
+                  </button>
+                </div>
+              ) : (
+                <button className="btn-secondary" onClick={() => { setStage(null); setMode(MODE.IDLE); }} style={{ padding: "8px 24px", background: "rgba(255,255,255,0.2)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 12, fontSize: 12, fontWeight: 600, color: "#fff", cursor: "pointer" }}>
+                  キャンセル
+                </button>
+              )}
+            </div>
+
+          </CameraView>
+        </div>
+      </div>
+    ) : (
+      /* ========== 通常レイアウト（肌チェック＆IDLE） ========== */
+      <div style={{ position: "relative", width: "100%", height: "100%" }}>
       <CameraView ref={cameraRef} mode={cameraMode} aspectRatio="auto" frozenSrc={frozenFrame}>
         {/* === キラリ吹き出し === */}
         <div style={{ position: "absolute", top: 36, left: 8, right: 8, zIndex: 3, display: "flex", alignItems: "flex-start", gap: 6 }}>
@@ -394,6 +506,7 @@ export default function MirrorScreen({ onResult }) {
         </div>
       </CameraView>
     </div>
+    )}
     {showRotationModal && (
       <DentalRotationModal
         onReady={() => {
