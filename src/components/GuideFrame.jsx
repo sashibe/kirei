@@ -50,7 +50,7 @@ export default function GuideFrame({ mode = 'face', status = 'searching', confid
         // 顔用: 簡易フェイスシルエット（目・鼻・口・耳）
         <svg
           width="68%"
-          height="82%"
+          height="92%"
           viewBox="-5 -5 110 130"
           preserveAspectRatio="none"
           style={{
@@ -68,25 +68,25 @@ export default function GuideFrame({ mode = 'face', status = 'searching', confid
             style={isReady ? { animation: 'guideReady 0.6s ease-in-out' } : {}}
           >
             {/* 顔の輪郭 */}
-            <ellipse cx="50" cy="60" rx="36" ry="48" fill={s.fill} />
+            <ellipse cx="50" cy="58" rx="36" ry="48" fill={s.fill} />
             {/* 左耳 */}
-            <path d="M14,52 Q8,48 9,60 Q10,70 15,68" />
+            <path d="M14,50 Q8,46 9,58 Q10,68 15,66" />
             {/* 右耳 */}
-            <path d="M86,52 Q92,48 91,60 Q90,70 85,68" />
+            <path d="M86,50 Q92,46 91,58 Q90,68 85,66" />
             {/* 左目 */}
-            <path d="M30,62 Q37,56 44,62 Q37,66 30,62" strokeWidth={isReady ? 2 : 1.4} />
-            <circle cx="37" cy="62" r="2" fill={s.stroke} stroke="none" />
+            <path d="M30,60 Q37,54 44,60 Q37,64 30,60" strokeWidth={isReady ? 2 : 1.4} />
+            <circle cx="37" cy="60" r="2" fill={s.stroke} stroke="none" />
             {/* 右目 */}
-            <path d="M56,62 Q63,56 70,62 Q63,66 56,62" strokeWidth={isReady ? 2 : 1.4} />
-            <circle cx="63" cy="62" r="2" fill={s.stroke} stroke="none" />
+            <path d="M56,60 Q63,54 70,60 Q63,64 56,60" strokeWidth={isReady ? 2 : 1.4} />
+            <circle cx="63" cy="60" r="2" fill={s.stroke} stroke="none" />
             {/* 眉（左） */}
-            <path d="M28,53 Q37,47 46,53" strokeWidth={isReady ? 1.8 : 1.2} />
+            <path d="M28,51 Q37,45 46,51" strokeWidth={isReady ? 1.8 : 1.2} />
             {/* 眉（右） */}
-            <path d="M54,53 Q63,47 72,53" strokeWidth={isReady ? 1.8 : 1.2} />
+            <path d="M54,51 Q63,45 72,51" strokeWidth={isReady ? 1.8 : 1.2} />
             {/* 鼻 */}
-            <path d="M50,66 Q49,75 46,82 Q50,84 54,82 Q51,75 50,66" strokeWidth={isReady ? 1.5 : 1} fill="none" />
+            <path d="M50,64 Q49,73 46,80 Q50,82 54,80 Q51,73 50,64" strokeWidth={isReady ? 1.5 : 1} fill="none" />
             {/* 口 */}
-            <path d="M38,93 Q44,99 50,97 Q56,99 62,93" strokeWidth={isReady ? 1.8 : 1.2} />
+            <path d="M38,91 Q44,97 50,95 Q56,97 62,91" strokeWidth={isReady ? 1.8 : 1.2} />
           </g>
         </svg>
       ) : (
