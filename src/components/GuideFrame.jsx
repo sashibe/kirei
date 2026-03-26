@@ -68,11 +68,11 @@ export default function GuideFrame({ mode = 'face', status = 'searching', confid
             style={isReady ? { animation: 'guideReady 0.6s ease-in-out' } : {}}
           >
             {/* 顔の輪郭 */}
-            <ellipse cx="50" cy="58" rx="36" ry="48" fill={s.fill} />
+            <ellipse cx="50" cy="58" rx="42" ry="45" fill={s.fill} />
             {/* 左耳 */}
-            <path d="M14,56 Q7,52 8,64 Q9,73 15,70" />
+            <path d="M8,56 Q1,52 2,64 Q3,73 9,70" />
             {/* 右耳 */}
-            <path d="M86,56 Q93,52 92,64 Q91,73 85,70" />
+            <path d="M92,56 Q99,52 98,64 Q97,73 91,70" />
             {/* 左目 */}
             <path d="M31,63 Q37,57 43,63 Q37,67 31,63" strokeWidth={isReady ? 2 : 1.4} />
             <circle cx="37" cy="63" r="2" fill={s.stroke} stroke="none" />
