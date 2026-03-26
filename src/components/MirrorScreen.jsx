@@ -266,9 +266,54 @@ export default function MirrorScreen({ onResult }) {
               </span>
             </div>
 
-            {/* === ガイドフレーム === */}
+            {/* === デンタル専用SVGガイド（横向き用） === */}
             {(stage === STAGE.SEARCHING || stage === STAGE.DETECTED || stage === STAGE.READY || (!stage && (status === 'searching' || status === 'detected'))) && (
-              <GuideFrame mode={shutterMode} status={stage || status} confidence={stage ? (stage === 'searching' ? 20 : stage === 'detected' ? 60 : 100) : confidence} />
+              <svg
+                style={{position:'absolute',inset:0,width:'100%',
+                  height:'100%',pointerEvents:'none'}}
+                viewBox="0 0 260 195"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                {/* 外枠ガイド楕円（口全体） */}
+                <ellipse
+                  cx="130" cy="105" rx="60" ry="40"
+                  fill="rgba(255,255,255,0.04)"
+                  stroke="rgba(255,255,255,0.85)"
+                  strokeWidth="1.6"
+                  strokeDasharray="7 4"
+                  strokeLinecap="round"
+                />
+                {/* 唇ゾーン */}
+                <ellipse
+                  cx="130" cy="105" rx="46" ry="28"
+                  fill="rgba(34,197,94,0.08)"
+                  stroke="rgba(34,197,94,0.7)"
+                  strokeWidth="1.2"
+                  strokeDasharray="4 3"
+                />
+                {/* 歯列ゾーン（分析ROI） */}
+                <rect
+                  x="99" y="97" width="62" height="20" rx="5"
+                  fill="rgba(168,85,247,0.1)"
+                  stroke="rgba(168,85,247,0.8)"
+                  strokeWidth="1"
+                  strokeDasharray="3 2"
+                />
+                {/* 歯肉ライン */}
+                <line
+                  x1="99" y1="97" x2="161" y2="97"
+                  stroke="rgba(34,197,94,0.7)"
+                  strokeWidth="1.2"
+                />
+                {/* コーナーマーカー */}
+                <g stroke="rgba(255,255,255,0.7)" strokeWidth="1.5"
+                   fill="none" strokeLinecap="round">
+                  <path d="M70,70 L70,80 L80,80"/>
+                  <path d="M190,70 L190,80 L180,80"/>
+                  <path d="M70,140 L70,130 L80,130"/>
+                  <path d="M190,140 L190,130 L180,130"/>
+                </g>
+              </svg>
             )}
 
             {/* === 低照度アラート === */}
