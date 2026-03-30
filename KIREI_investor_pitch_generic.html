@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KIREI — 投資家向け企画書</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Sans+JP:wght@300;400;500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --purple: #a855f7;
+    --purple-deep: #7c3aed;
+    --pink: #ec4899;
+    --ink: #1a1625;
+    --ink-soft: #3d3554;
+    --muted: #7c7291;
+    --pearl: #faf9f6;
+    --surface: #f3f0f8;
+    --border: rgba(168,85,247,0.12);
+    --gold: #c9a96e;
+    --gold-light: #e8d5b0;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--pearl);
+    color: var(--ink);
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── COVER ──────────────────────────── */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 80px 40px;
+    background: linear-gradient(160deg, #1a1625 0%, #2d1f4e 45%, #1a1625 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    width: 700px; height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(168,85,247,0.18) 0%, transparent 70%);
+    top: -200px; left: 50%; transform: translateX(-50%);
+    pointer-events: none;
+  }
+  .cover::after {
+    content: '';
+    position: absolute;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(236,72,153,0.12) 0%, transparent 70%);
+    bottom: -100px; right: -100px;
+    pointer-events: none;
+  }
+  .cover-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 40px;
+  }
+  .cover-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(72px, 12vw, 120px);
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    color: #fff;
+    line-height: 1;
+    margin-bottom: 16px;
+    position: relative;
+  }
+  .cover-logo span {
+    background: linear-gradient(135deg, #e0b4ff, #f9a8d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .cover-tagline {
+    font-size: clamp(14px, 2.5vw, 18px);
+    font-weight: 300;
+    color: rgba(255,255,255,0.65);
+    letter-spacing: 0.08em;
+    margin-bottom: 64px;
+    max-width: 480px;
+  }
+  .cover-divider {
+    width: 48px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 0 auto 48px;
+  }
+  .cover-meta {
+    display: flex;
+    gap: 48px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .cover-meta-item {
+    text-align: center;
+  }
+  .cover-meta-item .label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-family: 'DM Sans', sans-serif;
+    margin-bottom: 6px;
+  }
+  .cover-meta-item .value {
+    font-size: 13px;
+    color: rgba(255,255,255,0.75);
+    font-weight: 300;
+  }
+  .scroll-hint {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255,255,255,0.3);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    font-family: 'DM Sans', sans-serif;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:0.7} }
+
+  /* ── SECTIONS ──────────────────────── */
+  section {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 100px 48px;
+  }
+  section.full-width {
+    max-width: 100%;
+    padding: 0;
+  }
+  section.dark {
+    background: var(--ink);
+    max-width: 100%;
+    padding: 100px 0;
+  }
+  section.dark > .inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 48px;
+  }
+  section.tinted {
+    background: var(--surface);
+    max-width: 100%;
+    padding: 100px 0;
+  }
+  section.tinted > .inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 48px;
+  }
+
+  /* ── TYPOGRAPHY ────────────────────── */
+  .section-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--purple);
+    margin-bottom: 12px;
+    font-style: italic;
+  }
+  .section-number.light { color: rgba(168,85,247,0.7); }
+
+  h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--ink);
+    margin-bottom: 32px;
+    letter-spacing: 0.02em;
+  }
+  h2.light { color: #fff; }
+  h2 em { font-style: italic; color: var(--purple); }
+  h2.light em { color: #e0b4ff; }
+
+  h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    color: var(--ink);
+  }
+  h3.light { color: #fff; }
+
+  p.lead {
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--ink-soft);
+    line-height: 1.9;
+    margin-bottom: 24px;
+    max-width: 640px;
+  }
+  p.lead.light { color: rgba(255,255,255,0.7); }
+
+  p.body-text {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.9;
+    margin-bottom: 16px;
+  }
+  p.body-text.light { color: rgba(255,255,255,0.55); }
+
+  .divider {
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--purple), var(--pink));
+    margin-bottom: 40px;
+    border-radius: 2px;
+  }
+
+  /* ── CARDS ─────────────────────────── */
+  .card-grid {
+    display: grid;
+    gap: 20px;
+    margin-top: 48px;
+  }
+  .card-grid.col-2 { grid-template-columns: 1fr 1fr; }
+  .card-grid.col-3 { grid-template-columns: 1fr 1fr 1fr; }
+  @media (max-width: 680px) {
+    .card-grid.col-2, .card-grid.col-3 { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px 28px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(168,85,247,0.1);
+  }
+  .card.dark-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .card.accent {
+    background: linear-gradient(135deg, rgba(168,85,247,0.08), rgba(236,72,153,0.06));
+    border-color: rgba(168,85,247,0.2);
+  }
+
+  .card-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+    font-size: 20px;
+  }
+  .card-icon.purple { background: rgba(168,85,247,0.12); }
+  .card-icon.pink { background: rgba(236,72,153,0.12); }
+  .card-icon.green { background: rgba(34,197,94,0.12); }
+  .card-icon.gold { background: rgba(201,169,110,0.12); }
+
+  /* ── STAT BLOCKS ───────────────────── */
+  .stats-row {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    margin-top: 48px;
+  }
+  .stat {
+    flex: 1;
+    min-width: 140px;
+    border-left: 2px solid rgba(168,85,247,0.3);
+    padding-left: 20px;
+  }
+  .stat .number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 42px;
+    font-weight: 400;
+    color: var(--purple);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat .number.light { color: #e0b4ff; }
+  .stat .label {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .stat .label.light { color: rgba(255,255,255,0.5); }
+
+  /* ── FLOW DIAGRAM ──────────────────── */
+  .flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin: 48px 0;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .flow-step {
+    flex: 1;
+    padding: 32px 24px;
+    text-align: center;
+    position: relative;
+    background: #fff;
+  }
+  .flow-step:not(:last-child)::after {
+    content: '›';
+    position: absolute;
+    right: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 28px;
+    color: var(--purple);
+    z-index: 1;
+  }
+  .flow-step:nth-child(2) { background: rgba(168,85,247,0.04); }
+  .flow-step:nth-child(3) { background: rgba(168,85,247,0.08); }
+  .flow-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36px;
+    font-weight: 300;
+    color: rgba(168,85,247,0.25);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .flow-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+  }
+  .flow-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  section.dark .flow-step {
+    background: rgba(255,255,255,0.06);
+  }
+  section.dark .flow-step:nth-child(2) {
+    background: rgba(168,85,247,0.15);
+  }
+  section.dark .flow-step:nth-child(3) {
+    background: rgba(168,85,247,0.22);
+  }
+  section.dark .flow-title { color: #fff; }
+  section.dark .flow-desc  { color: rgba(255,255,255,0.6); }
+  section.dark .flow-num   { color: rgba(168,85,247,0.5); }
+
+  /* ── REVENUE MODEL ─────────────────── */
+  .layer-stack {
+    margin-top: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+  .layer {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 28px 36px;
+    position: relative;
+  }
+  .layer-1 { background: linear-gradient(135deg, rgba(168,85,247,0.15), rgba(168,85,247,0.08)); }
+  .layer-2 { background: linear-gradient(135deg, rgba(236,72,153,0.12), rgba(236,72,153,0.06)); }
+  .layer-3 { background: linear-gradient(135deg, rgba(201,169,110,0.15), rgba(201,169,110,0.08)); }
+  .layer-badge {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+    font-weight: 500;
+    min-width: 80px;
+    text-align: center;
+  }
+  .layer-1 .layer-badge { background: rgba(168,85,247,0.2); color: var(--purple-deep); }
+  .layer-2 .layer-badge { background: rgba(236,72,153,0.2); color: #be185d; }
+  .layer-3 .layer-badge { background: rgba(201,169,110,0.2); color: #92400e; }
+  .layer-content h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .layer-content p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ── TIMELINE ──────────────────────── */
+  .timeline {
+    margin-top: 48px;
+    position: relative;
+    padding-left: 32px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 7px; top: 8px; bottom: 8px;
+    width: 1px;
+    background: linear-gradient(180deg, var(--purple), var(--pink), rgba(201,169,110,0.4));
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 40px;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -29px; top: 6px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--purple);
+    background: var(--pearl);
+  }
+  .timeline-item.active::before {
+    background: var(--purple);
+    box-shadow: 0 0 0 4px rgba(168,85,247,0.15);
+  }
+  .timeline-phase {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--purple);
+    font-family: 'DM Sans', sans-serif;
+    margin-bottom: 6px;
+  }
+  .timeline-title {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .timeline-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .timeline-tag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-top: 10px;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .timeline-tag.done { background: rgba(34,197,94,0.12); color: #15803d; }
+  .timeline-tag.wip  { background: rgba(168,85,247,0.12); color: var(--purple-deep); }
+  .timeline-tag.plan { background: rgba(201,169,110,0.12); color: #92400e; }
+
+  /* ── PARTNERS ──────────────────────── */
+  .partner-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 32px;
+    display: flex;
+    gap: 28px;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .partner-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(168,85,247,0.08);
+  }
+  .partner-icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, rgba(168,85,247,0.12), rgba(236,72,153,0.08));
+  }
+  .partner-info h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .partner-info .sub {
+    font-size: 12px;
+    color: var(--purple);
+    margin-bottom: 10px;
+    letter-spacing: 0.05em;
+  }
+  .partner-info p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* ── DISCLAIMER / FOOTER ───────────── */
+  .disclaimer {
+    background: var(--ink);
+    padding: 60px 48px;
+    text-align: center;
+    font-size: 12px;
+    color: rgba(255,255,255,0.3);
+    line-height: 1.8;
+    max-width: 100%;
+  }
+  .disclaimer p { max-width: 720px; margin: 0 auto 8px; }
+
+  /* ── HIGHLIGHT BOX ─────────────────── */
+  .highlight {
+    background: linear-gradient(135deg, rgba(168,85,247,0.08), rgba(236,72,153,0.05));
+    border: 1px solid rgba(168,85,247,0.18);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin: 32px 0;
+  }
+  .highlight p {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    line-height: 1.8;
+    font-style: italic;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+  }
+
+  /* ── TAG ───────────────────────────── */
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0.05em;
+    background: rgba(168,85,247,0.1);
+    color: var(--purple-deep);
+    margin: 4px 4px 4px 0;
+  }
+
+  /* ── TABLE ─────────────────────────── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 32px;
+  }
+  th {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    padding: 10px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    font-size: 14px;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(168,85,247,0.06);
+    color: var(--ink-soft);
+    vertical-align: middle;
+  }
+  td strong { color: var(--ink); }
+  tr:last-child td { border-bottom: none; }
+  .check { color: var(--purple); font-size: 16px; }
+  .cross { color: #d1d5db; font-size: 16px; }
+
+  /* ── RESPONSIVE ────────────────────── */
+  @media (max-width: 600px) {
+    section { padding: 72px 24px; }
+    section.dark > .inner, section.tinted > .inner { padding: 0 24px; }
+    .flow { flex-direction: column; }
+    .flow-step:not(:last-child)::after { display: none; }
+    .partner-card { flex-direction: column; }
+    .layer { flex-direction: column; gap: 12px; }
+    .stats-row { flex-direction: column; }
+    .disclaimer { padding: 40px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════ COVER ══════════════════════════════════ -->
+<div class="cover">
+  <p class="cover-label">Investor Deck — Confidential</p>
+  <h1 class="cover-logo"><span>KIREI</span></h1>
+  <p class="cover-tagline">スマートフォンを、毎日触れる「AI美容鏡」に</p>
+  <div class="cover-divider"></div>
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <p class="label">カテゴリ</p>
+      <p class="value">ビューティーテック × ヘルスケア</p>
+    </div>
+    <div class="cover-meta-item">
+      <p class="label">フェーズ</p>
+      <p class="value">Phase 0 完了・MVP 開発中</p>
+    </div>
+    <div class="cover-meta-item">
+      <p class="label">プロトタイプ</p>
+      <p class="value">sashibe.github.io/kirei</p>
+    </div>
+  </div>
+  <p class="scroll-hint">↓ スクロール</p>
+</div>
+
+<!-- ════════════════ PROBLEM ════════════════════════════════ -->
+<section>
+  <p class="section-number">01 — 課題</p>
+  <div class="divider"></div>
+  <h2>女性は一日に何度も<br><em>鏡を確認する</em></h2>
+  <p class="lead">20〜30代の女性にとって「自分の状態を確認する」行為は、生活に深く組み込まれた習慣です。朝の洗面台、オフィスのトイレ、スマートフォンのインカメラ——複数回、複数の場面で行われます。</p>
+
+  <div class="stats-row">
+    <div class="stat">
+      <p class="number">7+</p>
+      <p class="label">一日の平均的な<br>鏡・自撮り確認回数<br><span style="font-size:10px;opacity:0.6">（推計）</span></p>
+    </div>
+    <div class="stat">
+      <p class="number">20s</p>
+      <p class="label">KIREIの<br>コアターゲット層<br>（20〜30代女性）</p>
+    </div>
+    <div class="stat">
+      <p class="number">∞</p>
+      <p class="label">既存の鏡が<br>提供できなかった<br>「気づき」の蓄積</p>
+    </div>
+  </div>
+
+  <div class="highlight" style="margin-top: 48px;">
+    <p>既存の「歯科アプリ」や「肌診断アプリ」の最大の課題は<strong>リテンション</strong>だ。<br>
+    "チェックのためだけ"に開く習慣は、定着しない。</p>
+  </div>
+
+  <div class="card-grid col-2" style="margin-top: 36px;">
+    <div class="card">
+      <div class="card-icon purple">🔍</div>
+      <h3>単発利用に留まる</h3>
+      <p class="body-text">「歯科アプリを使ってみた」は起こる。しかし翌週も使う理由がなく、アンインストールされる。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon pink">📱</div>
+      <h3>インカメラは毎日使われている</h3>
+      <p class="body-text">スマートフォンのカメラは自撮り・ビデオ通話で日常的に使用される。この動線に乗れるアプリだけが残る。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ SOLUTION ════════════════════════════════ -->
+<section class="dark">
+  <div class="inner">
+    <p class="section-number light">02 — ソリューション</p>
+    <div class="divider"></div>
+    <h2 class="light">「鏡の代替」として設計された<br><em>AIビューティーミラー</em></h2>
+    <p class="lead light">KIREIは「歯科アプリ」でも「スキンケアアプリ」でもない。スマートフォンを「毎朝触れる鏡」そのものに置き換えることで、リテンション問題を構造的に解決する。</p>
+
+    <div class="flow" style="margin-top: 48px;">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <div class="flow-title">ミラー画面</div>
+        <div class="flow-desc">カメラを向けると自動で肌分析。トーン・毛穴・くすみをリアルタイム評価。</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <div class="flow-title">デンタルチェック</div>
+        <div class="flow-desc">口元を映すと歯茎の色味・着色・歯並びを自動スコアリング。</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <div class="flow-title">統合結果</div>
+        <div class="flow-desc">肌スコア＋デンタルスコアを表示。ケア提案・クリニック送客・コンテンツ誘導。</div>
+      </div>
+    </div>
+
+    <div class="card-grid col-3" style="margin-top: 16px;">
+      <div class="card dark-card">
+        <div style="font-size: 28px; margin-bottom: 16px;">✨</div>
+        <h3 class="light" style="font-size:16px;">マスコット「キラリ」</h3>
+        <p class="body-text light">鏡の妖精キャラクターが毎日のチェックをナビゲート。継続使用を感情的に後押しする。</p>
+      </div>
+      <div class="card dark-card">
+        <div style="font-size: 28px; margin-bottom: 16px;">📊</div>
+        <h3 class="light" style="font-size:16px;">スコア履歴</h3>
+        <p class="body-text light">日々のチェックが積み重なり「変化がわかる」体験に。ケア継続のモチベーションを生む。</p>
+      </div>
+      <div class="card dark-card">
+        <div style="font-size: 28px; margin-bottom: 16px;">🔔</div>
+        <h3 class="light" style="font-size:16px;">定期リマインダー</h3>
+        <p class="body-text light">朝のルーティンにプッシュ通知で組み込み。習慣化レイヤーをアプリ側で担保する。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ BUSINESS MODEL ═════════════════════════ -->
+<section>
+  <p class="section-number">03 — ビジネスモデル</p>
+  <div class="divider"></div>
+  <h2>三層収益構造</h2>
+  <p class="lead">無料ユーザー獲得 → 高単価送客 → データマネタイズという三層設計。Cocomiプラットフォームと共通するアーキテクチャを採用し、開発ノウハウを流用する。</p>
+
+  <div class="layer-stack">
+    <div class="layer layer-1">
+      <div class="layer-badge">Layer 1</div>
+      <div class="layer-content">
+        <h4>無料ビューティー / ヘルスチェック</h4>
+        <p>AIスコアリング・キラリのコメント・履歴閲覧は完全無料。ユーザー獲得コストを最小化し、習慣化をまず確立する。</p>
+      </div>
+    </div>
+    <div class="layer layer-2">
+      <div class="layer-badge">Layer 2</div>
+      <div class="layer-content">
+        <h4>提携歯科送客 ／ ケアグッズ EC（KIREI SELECT）</h4>
+        <p>デンタルスコアから提携クリニックへの予約誘導。自費診療（ホワイトニング・矯正）の客単価は高く、送客手数料が主要収益源となる。並行してケアグッズのアフィリエイト・直販も展開。</p>
+      </div>
+    </div>
+    <div class="layer layer-3">
+      <div class="layer-badge">Layer 3</div>
+      <div class="layer-content">
+        <h4>匿名化データ分析・提供（将来フェーズ）</h4>
+        <p>蓄積された口腔・肌データの匿名化集計値を、製薬・化粧品・医療機器メーカーへ提供。個人情報保護法・倫理ガイドラインに準拠した設計を初期から実装。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="highlight" style="margin-top: 40px;">
+    <p>自費診療（ホワイトニング・矯正・インプラント）に積極的なクリニックへの送客は客単価が高く、<br>送客モデルの収益貢献が大きい。提携先候補との初期折衝を進めている。</p>
+  </div>
+</section>
+
+<!-- ════════════════ MARKET ══════════════════════════════════ -->
+<section class="tinted">
+  <div class="inner">
+    <p class="section-number">04 — 市場</p>
+    <div class="divider"></div>
+    <h2>口腔ケア × 美容テック<br><em>交差する二大市場</em></h2>
+    <p class="lead">KIREIは単一市場ではなく、口腔ヘルスケアと美容テックの交差点に位置する。どちらの文脈でも訴求でき、タム（TAM）が広い。</p>
+
+    <div class="card-grid col-3">
+      <div class="card">
+        <div class="card-icon green" style="margin-bottom:16px;">🦷</div>
+        <h3 style="font-size:15px; margin-bottom:8px;">国内歯科市場</h3>
+        <p class="body-text">約3兆円規模（医療費ベース）。近年は自費診療比率が上昇傾向にあり、ホワイトニング・矯正需要が拡大中。</p>
+        <p style="font-size:11px; color:var(--muted); margin-top:12px;">※ 公的統計に基づく推計</p>
+      </div>
+      <div class="card">
+        <div class="card-icon purple" style="margin-bottom:16px;">💄</div>
+        <h3 style="font-size:15px; margin-bottom:8px;">国内スキンケア市場</h3>
+        <p class="body-text">化粧品市場は1兆5,000億円超（矢野経済研究所推計）。スキンケアカテゴリが最大の比率を占め、D2Cブランドも急増。</p>
+        <p style="font-size:11px; color:var(--muted); margin-top:12px;">※ 矢野経済研究所等の公開資料より</p>
+      </div>
+      <div class="card">
+        <div class="card-icon gold" style="margin-bottom:16px;">📱</div>
+        <h3 style="font-size:15px; margin-bottom:8px;">ビューティーテック</h3>
+        <p class="body-text">AI肌診断・パーソナライズ提案のスタートアップが国内外で増加。スマホカメラを活用したノンデバイス型が注目を集める。</p>
+        <p style="font-size:11px; color:var(--muted); margin-top:12px;">※ 参入機会として整理</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ COMPETITIVE ADVANTAGE ══════════════════ -->
+<section>
+  <p class="section-number">05 — 競合優位性</p>
+  <div class="divider"></div>
+  <h2>なぜ、<em>今</em>・<em>ここ</em>か</h2>
+  <p class="lead">単機能アプリとの最大の差別化は「習慣化の構造設計」。機能競合では勝てなくても、ユーザーの朝のルーティンに入ることで離脱を防ぐ。</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>比較軸</th>
+        <th>一般的な歯科アプリ</th>
+        <th>一般的な肌診断アプリ</th>
+        <th style="color:var(--purple);">KIREI</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>日常利用動機</strong></td>
+        <td>低い（チェック目的のみ）</td>
+        <td>中程度</td>
+        <td><strong>高い（鏡代替）</strong></td>
+      </tr>
+      <tr>
+        <td><strong>複数機能統合</strong></td>
+        <td class="cross">✗</td>
+        <td class="cross">✗</td>
+        <td class="check" style="color:var(--purple);">✓ 肌＋口腔</td>
+      </tr>
+      <tr>
+        <td><strong>医療連携・送客</strong></td>
+        <td>部分的</td>
+        <td class="cross">✗</td>
+        <td class="check" style="color:var(--purple);">✓ 提携歯科</td>
+      </tr>
+      <tr>
+        <td><strong>コンテンツ連動</strong></td>
+        <td class="cross">✗</td>
+        <td class="cross">✗</td>
+        <td class="check" style="color:var(--purple);">✓ 医師コンテンツ連動</td>
+      </tr>
+      <tr>
+        <td><strong>キャラクター体験</strong></td>
+        <td class="cross">✗</td>
+        <td class="cross">✗</td>
+        <td class="check" style="color:var(--purple);">✓ キラリ</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ════════════════ PARTNERS ════════════════════════════════ -->
+<section class="dark">
+  <div class="inner">
+    <p class="section-number light">06 — パートナーシップ戦略</p>
+    <div class="divider"></div>
+    <h2 class="light">医療の<em>信頼性</em>と<br><em>コンテンツ</em>の力を組み込む</h2>
+    <p class="lead light">KIREIは単独のアプリではなく、提携クリニック・医師コンテンツとのエコシステムとして設計されている。アプリ単体では生まれない送客サイクルと医療的権威性が、差別化の核となる。</p>
+
+    <div class="card-grid col-2" style="margin-top: 48px;">
+      <div class="card dark-card">
+        <div style="font-size:28px;margin-bottom:16px;">🏥</div>
+        <h3 class="light" style="font-size:16px;">自費診療クリニックとの送客連携</h3>
+        <p class="body-text light">ホワイトニング・矯正・インプラント等の自費メニューを持つクリニックを提携先として組み込む。デンタルスコアから自然な流れで予約導線を設け、高単価送客を実現する。クリニック側は新規患者獲得チャネルを得る。</p>
+        <div style="margin-top:16px;">
+          <span class="tag" style="background:rgba(168,85,247,0.2); color:#e0b4ff;">送客手数料モデル</span>
+          <span class="tag" style="background:rgba(34,197,94,0.15); color:#86efac;">初期候補折衝中</span>
+        </div>
+      </div>
+      <div class="card dark-card">
+        <div style="font-size:28px;margin-bottom:16px;">🎬</div>
+        <h3 class="light" style="font-size:16px;">医師YouTuberとのコンテンツ連動</h3>
+        <p class="body-text light">口腔・全身健康に関するコンテンツを発信する医師YouTuberとの連携により、アプリへの医療的権威付けと相互送客サイクルを構築する。アプリ結果画面からコンテンツへの動線を設け、エンゲージメントを深める。</p>
+        <div style="margin-top:16px;">
+          <span class="tag" style="background:rgba(168,85,247,0.2); color:#e0b4ff;">コンテンツ連動</span>
+          <span class="tag" style="background:rgba(236,72,153,0.2); color:#f9a8d4;">医療監修</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:32px; padding: 28px 32px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 16px;">
+      <p style="font-size:13px; color:rgba(255,255,255,0.4); margin-bottom:10px;">パートナーエコシステムの循環</p>
+      <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+        <span style="font-size:13px; color:rgba(255,255,255,0.7);">ユーザー獲得（無料）</span>
+        <span style="color:var(--purple); font-size:18px;">→</span>
+        <span style="font-size:13px; color:rgba(255,255,255,0.7);">スコア通知・コンテンツ誘導</span>
+        <span style="color:var(--purple); font-size:18px;">→</span>
+        <span style="font-size:13px; color:rgba(255,255,255,0.7);">提携クリニック予約</span>
+        <span style="color:var(--purple); font-size:18px;">→</span>
+        <span style="font-size:13px; color:rgba(255,255,255,0.7);">送客手数料・継続利用</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ ROADMAP ═════════════════════════════════ -->
+<section>
+  <p class="section-number">07 — ロードマップ</p>
+  <div class="divider"></div>
+  <h2>段階的な<em>価値実証</em></h2>
+  <p class="lead">技術POCから提携歯科での実証実験、スケールへと順を追って進める。各フェーズでの学習を次フェーズの判断材料とするアジャイル型。</p>
+
+  <div class="timeline">
+    <div class="timeline-item active">
+      <p class="timeline-phase">Phase 0 — 完了</p>
+      <p class="timeline-title">技術POC・プロトタイプ</p>
+      <p class="timeline-desc">WebRTCカメラ統合、HSV+RGB肌分析、デンタルスコアリングのPOCを完成。GitHub Pagesにてデモ公開済み。照明正規化の技術的実現を確認。</p>
+      <span class="timeline-tag done">✓ 完了</span>
+    </div>
+    <div class="timeline-item active">
+      <p class="timeline-phase">Phase 1 — 進行中</p>
+      <p class="timeline-title">MVP構築</p>
+      <p class="timeline-desc">Vite + React によるコンポーネント設計、MediaPipe FaceLandmarkerによる精度向上、Capacitorを用いたiOS/Androidラップ。初期提携先候補との折衝も並行して進める。</p>
+      <span class="timeline-tag wip">進行中</span>
+    </div>
+    <div class="timeline-item">
+      <p class="timeline-phase">Phase 2 — 提携導入</p>
+      <p class="timeline-title">提携歯科でのパイロット運用</p>
+      <p class="timeline-desc">提携歯科クリニックとのテスト送客、予約フォーム連携、医師コンテンツとの連動機能の実装。送客コンバージョン率の実測データを取得。</p>
+      <span class="timeline-tag plan">計画中</span>
+    </div>
+    <div class="timeline-item">
+      <p class="timeline-phase">Phase 3 — スケール</p>
+      <p class="timeline-title">KIREI SELECT ／ データレイヤー</p>
+      <p class="timeline-desc">ケアグッズECの立ち上げ、スコア履歴・トレンド分析機能、提携クリニックの多拠点展開、匿名化データ活用モデルの検討。</p>
+      <span class="timeline-tag plan">計画中</span>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ TECH ═════════════════════════════════════ -->
+<section class="tinted">
+  <div class="inner">
+    <p class="section-number">08 — 技術</p>
+    <div class="divider"></div>
+    <h2>医療表現に準拠した<br><em>設計思想</em></h2>
+    <p class="lead">KIREIは「診断」でなく「気づき」を提供するツールとして設計されている。体重計が医療機器でないのと同じポジションを明確に定義することで、薬機法・医師法上のリスクを回避する。</p>
+
+    <div class="card-grid col-2">
+      <div class="card">
+        <div class="card-icon purple">🔬</div>
+        <h3>AI分析の現在地</h3>
+        <p class="body-text">HSV/RGB色空間での肌色分析と照明正規化は技術POCで実証済み。MediaPipe FaceLandmarkerによる顔ランドマーク検出で精度向上を図る（仕様策定済み）。</p>
+        <div style="margin-top:12px;">
+          <span class="tag">WebRTC</span>
+          <span class="tag">MediaPipe</span>
+          <span class="tag">Canvas API</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-icon green">⚖️</div>
+        <h3>医療表現ガイドライン</h3>
+        <p class="body-text">「診断」「治療」「病気」等の医療用語は全面禁止。「チェック」「スコア」「ケアのヒント」「歯科医に相談」の表現に統一し、結果画面に必ず免責事項を表示。</p>
+        <div style="margin-top:12px;">
+          <span class="tag">薬機法対応</span>
+          <span class="tag">医師法対応</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-icon pink">📲</div>
+        <h3>クロスプラットフォーム戦略</h3>
+        <p class="body-text">Phase 1はCapacitorでReact JsをiOS/Androidにラップ。Phase 3でiOSネイティブ（Swift/SwiftUI）へ移行し、TrueDepth Camera等の精密センサーを活用。</p>
+        <div style="margin-top:12px;">
+          <span class="tag">React + Vite</span>
+          <span class="tag">Capacitor</span>
+          <span class="tag">Swift（予定）</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-icon gold">🗄️</div>
+        <h3>バックエンド・データ</h3>
+        <p class="body-text">ユーザースコア履歴の保存にSupabase / Firebase（検討中）。データ収集段階から匿名化フレームワークを設計し、将来的なデータマネタイズに備える。</p>
+        <div style="margin-top:12px;">
+          <span class="tag">Supabase</span>
+          <span class="tag">匿名化設計</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ ASK ══════════════════════════════════════ -->
+<section class="dark">
+  <div class="inner">
+    <p class="section-number light">09 — 資金用途</p>
+    <div class="divider"></div>
+    <h2 class="light">次の<em>マイルストーン</em>へ</h2>
+    <p class="lead light">MVP完成・提携歯科パイロット・ユーザー獲得の初期検証を目的とした資金調達を検討しています。具体的な調達額・条件は別途ご相談ください。</p>
+
+    <div class="card-grid col-3" style="margin-top: 48px;">
+      <div class="card dark-card">
+        <div style="font-size:28px;margin-bottom:16px;">⚙️</div>
+        <h3 class="light" style="font-size:15px;">プロダクト開発</h3>
+        <p class="body-text light">MediaPipe統合・Capacitorビルド・iOS/Androidリリース準備、UI/UXの本格実装。</p>
+      </div>
+      <div class="card dark-card">
+        <div style="font-size:28px;margin-bottom:16px;">🏥</div>
+        <h3 class="light" style="font-size:15px;">提携歯科パイロット</h3>
+        <p class="body-text light">提携歯科クリニックとの送客フロー実装・KPI計測・改善サイクルの確立。</p>
+      </div>
+      <div class="card dark-card">
+        <div style="font-size:28px;margin-bottom:16px;">📢</div>
+        <h3 class="light" style="font-size:15px;">初期ユーザー獲得</h3>
+        <p class="body-text light">医師コンテンツとの連動、SNS施策によるコアターゲット（20〜30代女性）へのリーチ。</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 48px; padding: 36px; background: rgba(168,85,247,0.12); border: 1px solid rgba(168,85,247,0.25); border-radius: 20px;">
+      <p style="font-size:14px; color:rgba(255,255,255,0.6); margin-bottom:16px;">プロトタイプデモ（Phase 0 完了版）</p>
+      <p style="font-size:20px; font-family:'Cormorant Garamond',serif; color:#fff; margin-bottom:8px;">sashibe.github.io/kirei</p>
+      <p style="font-size:13px; color:rgba(255,255,255,0.4);">実際に動作するデモをご確認ください。カメラを使用した肌分析・デンタルチェックを体験できます。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ FOOTER / DISCLAIMER ════════════════════ -->
+<div class="disclaimer">
+  <p><strong style="color:rgba(255,255,255,0.5);">KIREI — 投資家向け企画書</strong></p>
+  <p style="margin-top:16px;">本資料は投資判断の参考を目的として作成されたものであり、将来の業績・市場規模等に関する記述には不確実性を伴います。市場規模等の数値は公開資料に基づく推計であり、保証するものではありません。</p>
+  <p>本アプリは医療診断を行うものではありません。スコア・チェック結果はセルフケアの参考情報であり、医師・歯科医師への相談に代わるものではありません。</p>
+  <p style="margin-top: 24px; font-size: 11px; opacity: 0.4;">Confidential — 無断転載禁止</p>
+</div>
+
+</body>
+</html>
