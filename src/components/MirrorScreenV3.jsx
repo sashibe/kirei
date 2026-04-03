@@ -5,6 +5,7 @@ import Bubble from './Bubble.jsx';
 import GuideFrame from './GuideFrame.jsx';
 import ScoreBadge from './ScoreBadge.jsx';
 import useAutoShutter from '../hooks/useAutoShutter.js';
+import useKirari from '../hooks/useKirari.js';
 import { useFaceLandmarkerCtx } from '../contexts/FaceLandmarkerContext.jsx';
 import { useT } from '../i18n/index.jsx';
 import { SKIN_SCORES } from '../data/scores.js';
@@ -26,6 +27,10 @@ export default function MirrorScreenV3({ onResult }) {
   checkingRef.current = checking;
 
   const faceLandmarker = useFaceLandmarkerCtx();
+
+  // キラリ アンビエント出現（Step 2）
+  // weather は Step 3 で接続する。現時点では null
+  const kirariAmbient = useKirari({ weather: null, isChecking: checking });
 
   const isScanning = stage === STAGE.SCANNING;
   const shutterEnabled = checking && !isScanning && stage !== STAGE.SHUTTER;
@@ -155,9 +160,6 @@ export default function MirrorScreenV3({ onResult }) {
   const analyzing = stage === STAGE.SCANNING;
   const effectiveStatus = stage || (checking ? status : 'idle');
 
-  // --- V3: Minimal UI. Kirari only shows during check or with scores ---
-  const showKirari = checking || skinScores;
-
   const getKirariMsg = () => {
     if (checking && lowLight && !analyzing && stage !== STAGE.SHUTTER) {
       return t("kirari.low_light");
@@ -227,8 +229,33 @@ export default function MirrorScreenV3({ onResult }) {
           />
         )}
 
-        {/* === Kirari (V3: only during check or with scores) === */}
-        {showKirari && getKirariMsg() && (
+        {/* === Kirari ambient (V3: appears briefly at bottom-right) === */}
+        {!checking && !skinScores && kirariAmbient.visible && kirariAmbient.message && (
+          <div
+            style={{
+              position: "absolute", bottom: 72, right: 12, zIndex: 5,
+              display: "flex", alignItems: "flex-end", gap: 6,
+              animation: "kirariV3FadeIn 0.4s ease-out",
+              maxWidth: "80%",
+            }}
+            onClick={(e) => { e.stopPropagation(); kirariAmbient.dismiss(); }}
+          >
+            <div style={{
+              ...glassStyle,
+              borderRadius: 14,
+              padding: "8px 12px",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.12)",
+            }}>
+              <p style={{ fontSize: 12, color: "#334155", margin: 0, lineHeight: 1.5 }}>
+                {kirariAmbient.message}
+              </p>
+            </div>
+            <Kirari size={32} expression="happy" />
+          </div>
+        )}
+
+        {/* === Kirari (during check or with scores — top bar) === */}
+        {(checking || skinScores) && getKirariMsg() && (
           <div style={{
             position: "absolute", top: 36, left: 8, right: 8, zIndex: 3,
             display: "flex", alignItems: "flex-start", gap: 6,
