@@ -1,8 +1,13 @@
 import { useState, useCallback, useRef } from 'react';
 import Kirari from './components/Kirari.jsx';
 import LanguageSwitcher from './components/LanguageSwitcher.jsx';
-import MirrorScreen from './components/MirrorScreen.jsx';
+import MirrorScreenLegacy from './components/MirrorScreen.jsx';
+import MirrorScreenV3 from './components/MirrorScreenV3.jsx';
 import SuggestScreen from './components/SuggestScreen.jsx';
+
+// V3ミラー切替フラグ（false で旧版に戻せる）
+const USE_MIRROR_V3 = true;
+const MirrorScreen = USE_MIRROR_V3 ? MirrorScreenV3 : MirrorScreenLegacy;
 import ArTryOnScreen from './components/ArTryOnScreen.jsx';
 import ResultScreen from './components/ResultScreen.jsx';
 import { FaceLandmarkerProvider } from './contexts/FaceLandmarkerContext.jsx';
