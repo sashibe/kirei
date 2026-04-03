@@ -22,6 +22,7 @@ export default function MirrorScreenV3({ onResult }) {
   const [showScores, setShowScores] = useState(true);
   const [frozenFrame, setFrozenFrame] = useState(null);
   const [ripple, setRipple] = useState(null); // { x, y } for tap ripple
+  const [showTutorial, setShowTutorial] = useState(() => !localStorage.getItem('kirei_launched'));
   const cameraRef = useRef(null);
   const handledReadyRef = useRef(false);
   const checkingRef = useRef(false);
@@ -140,7 +141,11 @@ export default function MirrorScreenV3({ onResult }) {
   const handleTap = useCallback((e) => {
     // Ignore taps on buttons or interactive elements
     if (e.target.closest('button') || e.target.closest('a')) return;
-    // Don't start if already checking or if scores are shown (need to dismiss first)
+
+    // 初回チュートリアル表示中はタップを無視
+    if (showTutorial) return;
+
+    // Don't start if already checking
     if (checking) return;
 
     // Show ripple effect
@@ -151,7 +156,23 @@ export default function MirrorScreenV3({ onResult }) {
 
     // Start analysis
     startCheck();
-  }, [checking, startCheck]);
+  }, [checking, startCheck, showTutorial]);
+
+  // チュートリアルをタップで消す（overlay内のクリック用）
+  const dismissTutorial = useCallback(() => {
+    setShowTutorial(false);
+    localStorage.setItem('kirei_launched', '1');
+  }, []);
+
+  // チュートリアル自動消去（6秒後）
+  useEffect(() => {
+    if (!showTutorial) return;
+    const timer = setTimeout(() => {
+      setShowTutorial(false);
+      localStorage.setItem('kirei_launched', '1');
+    }, 6000);
+    return () => clearTimeout(timer);
+  }, [showTutorial]);
 
   // Clear ripple after animation
   useEffect(() => {
@@ -205,6 +226,15 @@ export default function MirrorScreenV3({ onResult }) {
           from { opacity: 1; transform: translateY(0); }
           to { opacity: 0; transform: translateY(8px); }
         }
+        @keyframes tutorialRipple {
+          0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0.6; }
+          50% { transform: translate(-50%, -50%) scale(1.5); opacity: 0.3; }
+          100% { transform: translate(-50%, -50%) scale(0.5); opacity: 0.6; }
+        }
+        @keyframes tutorialFadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
         @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
         @keyframes shutterFlash{0%{opacity:1}100%{opacity:0}}
         @keyframes scanLine{0%,100%{top:15%}50%{top:70%}}
@@ -230,6 +260,43 @@ export default function MirrorScreenV3({ onResult }) {
               zIndex: 6,
             }}
           />
+        )}
+
+        {/* === 初回チュートリアルオーバーレイ === */}
+        {showTutorial && (
+          <div
+            onClick={(e) => { e.stopPropagation(); dismissTutorial(); }}
+            style={{
+              position: "absolute", inset: 0, zIndex: 20,
+              display: "flex", flexDirection: "column",
+              alignItems: "center", justifyContent: "center",
+              background: "rgba(0,0,0,0.45)",
+              animation: "tutorialFadeIn 0.6s ease-out",
+              cursor: "pointer",
+            }}
+          >
+            {/* 波紋アニメーション */}
+            <div style={{
+              width: 100, height: 100, borderRadius: "50%",
+              border: "3px solid rgba(168,85,247,0.5)",
+              animation: "tutorialRipple 1.5s ease-in-out infinite",
+              marginBottom: 24,
+            }} />
+            {/* キラリ + セリフ */}
+            <div style={{
+              display: "flex", alignItems: "center", gap: 8,
+              background: "rgba(255,255,255,0.92)",
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
+              borderRadius: 16, padding: "10px 16px",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+            }}>
+              <Kirari size={36} expression="sparkle" />
+              <p style={{ fontSize: 13, color: "#334155", margin: 0, lineHeight: 1.5, fontWeight: 500 }}>
+                タップすると今日の肌を<br />チェックするよ♪
+              </p>
+            </div>
+          </div>
         )}
 
         {/* === Kirari ambient (V3: appears briefly at bottom-right) === */}
