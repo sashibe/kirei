@@ -5,7 +5,7 @@ import CameraView from './CameraView.jsx';
 import ScoreBadge from './ScoreBadge.jsx';
 import GuideFrame from './GuideFrame.jsx';
 import useAutoShutter from '../hooks/useAutoShutter.js';
-import useFaceLandmarker from '../hooks/useFaceLandmarker.js';
+import { useFaceLandmarkerCtx } from '../contexts/FaceLandmarkerContext.jsx';
 import { useT } from '../i18n/index.jsx';
 import { SKIN_SCORES } from '../data/scores.js';
 import { analyzeSkin, analyzeSkinWithLandmarks } from '../analysis/skinAnalyzer.js';
@@ -26,7 +26,7 @@ export default function MirrorScreen({ onResult }) {
   checkingRef.current = checking;
 
   // MediaPipe FaceLandmarker
-  const faceLandmarker = useFaceLandmarker();
+  const faceLandmarker = useFaceLandmarkerCtx();
 
   const isScanning = stage === STAGE.SCANNING;
   const shutterEnabled = checking && !isScanning && stage !== STAGE.SHUTTER;

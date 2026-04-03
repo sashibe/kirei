@@ -1,0 +1,397 @@
+/**
+ * makeupRenderer.js — メイクAR描画モジュール
+ *
+ * MediaPipe FaceLandmarker の 478 点ランドマークを使い、
+ * Canvas2D 上にリアルタイムでメイクオーバーレイを描画する。
+ *
+ * lab/facemesh/FaceMeshLab.jsx で実証済みのアルゴリズムを
+ * 本体アプリ用に整理・拡張したもの。
+ */
+
+import { FaceLandmarker } from '@mediapipe/tasks-vision';
+
+// ============================================================
+// ランドマーク定数
+// ============================================================
+
+// 唇（外側・内側）
+const UPPER_LIP_OUTER = [61, 185, 40, 39, 37, 0, 267, 269, 270, 409, 291];
+const LOWER_LIP_OUTER = [291, 375, 321, 405, 314, 17, 84, 181, 91, 146, 61];
+const UPPER_LIP_INNER = [78, 191, 80, 81, 82, 13, 312, 311, 310, 415, 308];
+const LOWER_LIP_INNER = [308, 324, 318, 402, 317, 14, 87, 178, 88, 95, 78];
+
+// アイシャドウ（眉下～上まぶたクリース、白目に被らない）
+const LEFT_EYESHADOW = [
+  263, 466, 388, 387, 386, 385, 384, 398,
+  336, 296, 334, 293, 300, 383, 372, 345, 352, 263,
+];
+const RIGHT_EYESHADOW = [
+  33, 246, 161, 160, 159, 158, 157, 173,
+  107, 66, 105, 63, 70, 156, 143, 116, 123, 33,
+];
+
+// コンシーラー（目の下クマ領域）
+const LEFT_UNDEREYE = [463, 341, 256, 252, 253, 254, 339, 255, 359, 467, 463];
+const RIGHT_UNDEREYE = [243, 112, 26, 22, 23, 24, 110, 25, 130, 247, 243];
+
+// Face Oval / 眉（MediaPipe 静的プロパティ）
+const FACE_OVAL = FaceLandmarker.FACE_LANDMARKS_FACE_OVAL;
+const LEFT_EYEBROW = FaceLandmarker.FACE_LANDMARKS_LEFT_EYEBROW;
+const RIGHT_EYEBROW = FaceLandmarker.FACE_LANDMARKS_RIGHT_EYEBROW;
+
+// ============================================================
+// カラーパース
+// ============================================================
+
+/**
+ * hex('#e8607c') or rgba('rgba(232,96,124,0.25)') → { hex: '#e8607c', alpha: 1 }
+ */
+export function parseColor(str) {
+  if (!str) return { hex: '#888888', alpha: 0 };
+
+  // hex
+  if (str.startsWith('#')) return { hex: str.slice(0, 7), alpha: 1 };
+
+  // rgba(r,g,b,a)
+  const m = str.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\)/);
+  if (m) {
+    const r = Number(m[1]).toString(16).padStart(2, '0');
+    const g = Number(m[2]).toString(16).padStart(2, '0');
+    const b = Number(m[3]).toString(16).padStart(2, '0');
+    return { hex: `#${r}${g}${b}`, alpha: m[4] !== undefined ? Number(m[4]) : 1 };
+  }
+
+  return { hex: str, alpha: 1 };
+}
+
+// ============================================================
+// メイク描画関数
+// ============================================================
+
+/**
+ * リップ — 外唇リングから内唇をくり抜き、口の中は塗らない
+ */
+export function drawLip(ctx, lms, w, h, colorStr, opacity) {
+  const { hex, alpha } = parseColor(colorStr);
+  const opa = opacity * alpha;
+  ctx.save();
+
+  const upperInner = [...UPPER_LIP_INNER].reverse();
+  const lowerInner = [...LOWER_LIP_INNER].reverse();
+
+  const traceLipRing = () => {
+    ctx.beginPath();
+    // 上唇リング
+    ctx.moveTo(lms[UPPER_LIP_OUTER[0]].x * w, lms[UPPER_LIP_OUTER[0]].y * h);
+    for (let i = 1; i < UPPER_LIP_OUTER.length; i++) {
+      ctx.lineTo(lms[UPPER_LIP_OUTER[i]].x * w, lms[UPPER_LIP_OUTER[i]].y * h);
+    }
+    for (const idx of upperInner) {
+      ctx.lineTo(lms[idx].x * w, lms[idx].y * h);
+    }
+    ctx.closePath();
+    // 下唇リング
+    ctx.moveTo(lms[LOWER_LIP_OUTER[0]].x * w, lms[LOWER_LIP_OUTER[0]].y * h);
+    for (let i = 1; i < LOWER_LIP_OUTER.length; i++) {
+      ctx.lineTo(lms[LOWER_LIP_OUTER[i]].x * w, lms[LOWER_LIP_OUTER[i]].y * h);
+    }
+    for (const idx of lowerInner) {
+      ctx.lineTo(lms[idx].x * w, lms[idx].y * h);
+    }
+    ctx.closePath();
+  };
+
+  // ベースカラー
+  ctx.globalAlpha = opa * 0.35;
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.fillStyle = hex;
+  traceLipRing();
+  ctx.fill();
+
+  // ティント
+  ctx.globalCompositeOperation = 'overlay';
+  ctx.globalAlpha = opa * 0.4;
+  ctx.fillStyle = hex;
+  traceLipRing();
+  ctx.fill();
+
+  // ハイライト
+  ctx.globalCompositeOperation = 'screen';
+  ctx.globalAlpha = opa * 0.18;
+  const topLip = lms[13], botLip = lms[14];
+  const cx = (topLip.x * w + botLip.x * w) * 0.5;
+  const cy = botLip.y * h * 0.65 + topLip.y * h * 0.35;
+  const rx = Math.abs(lms[291].x - lms[61].x) * w * 0.25;
+  const ry = Math.abs(botLip.y - topLip.y) * h * 0.25;
+  const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, rx);
+  grad.addColorStop(0, 'rgba(255,255,255,0.5)');
+  grad.addColorStop(0.5, 'rgba(255,255,255,0.15)');
+  grad.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.restore();
+}
+
+/**
+ * アイシャドウ — 眉下～上まぶたクリースにグラデーション + シマー
+ */
+export function drawEyeshadow(ctx, lms, w, h, colorStr, opacity) {
+  const { hex, alpha } = parseColor(colorStr);
+  const opa = opacity * alpha;
+  ctx.save();
+
+  for (const indices of [LEFT_EYESHADOW, RIGHT_EYESHADOW]) {
+    let cx = 0, cy = 0, minY = Infinity, maxY = -Infinity;
+    for (const i of indices) {
+      cx += lms[i].x; cy += lms[i].y;
+      minY = Math.min(minY, lms[i].y);
+      maxY = Math.max(maxY, lms[i].y);
+    }
+    cx = (cx / indices.length) * w;
+    cy = (cy / indices.length) * h;
+
+    const grad = ctx.createLinearGradient(cx, minY * h, cx, maxY * h);
+    grad.addColorStop(0, hex + 'B0');
+    grad.addColorStop(0.6, hex + '60');
+    grad.addColorStop(1, hex + '10');
+
+    ctx.globalAlpha = opa * 0.55;
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.fillStyle = grad;
+
+    traceIndices(ctx, lms, indices, w, h);
+    ctx.fill();
+
+    // シマー
+    ctx.globalCompositeOperation = 'screen';
+    ctx.globalAlpha = opa * 0.12;
+    const shimmer = ctx.createRadialGradient(cx, cy, 0, cx, cy, (maxY - minY) * h * 0.8);
+    shimmer.addColorStop(0, 'rgba(255,255,255,0.5)');
+    shimmer.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = shimmer;
+    traceIndices(ctx, lms, indices, w, h);
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+/**
+ * チーク — 頬骨ランドマーク付近に放射状グラデーション
+ */
+export function drawCheek(ctx, lms, w, h, colorStr, opacity) {
+  const { hex, alpha } = parseColor(colorStr);
+  const opa = opacity * alpha;
+  ctx.save();
+
+  // 左頬: 234, 右頬: 454
+  for (const cheekIdx of [234, 454]) {
+    const cheek = lms[cheekIdx];
+    const cx = cheek.x * w;
+    const cy = cheek.y * h;
+    const r = Math.abs(lms[454].x - lms[234].x) * w * 0.18;
+
+    ctx.globalAlpha = opa * 0.5;
+    ctx.globalCompositeOperation = 'multiply';
+
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+    grad.addColorStop(0, hex + '80');
+    grad.addColorStop(0.5, hex + '40');
+    grad.addColorStop(1, hex + '00');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fill();
+
+    // ソフトハイライト
+    ctx.globalCompositeOperation = 'screen';
+    ctx.globalAlpha = opa * 0.1;
+    const hl = ctx.createRadialGradient(cx, cy - r * 0.2, 0, cx, cy, r * 0.6);
+    hl.addColorStop(0, 'rgba(255,255,255,0.3)');
+    hl.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = hl;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+/**
+ * ファンデーション — Face Oval全体のカバー + Tゾーン&頬ハイライト
+ */
+export function drawFoundation(ctx, lms, w, h, colorStr, opacity) {
+  const { hex, alpha } = parseColor(colorStr);
+  const opa = opacity * alpha;
+  ctx.save();
+
+  const points = buildOrderedPoints(FACE_OVAL, lms, w, h);
+  if (points.length < 3) { ctx.restore(); return; }
+
+  let cx = 0, cy = 0;
+  for (const [px, py] of points) { cx += px; cy += py; }
+  cx /= points.length;
+  cy /= points.length;
+
+  const maxR = Math.max(...points.map(([px, py]) =>
+    Math.sqrt((px - cx) ** 2 + (py - cy) ** 2)
+  ));
+
+  const tracePath = () => {
+    ctx.beginPath();
+    ctx.moveTo(points[0][0], points[0][1]);
+    for (let i = 1; i < points.length; i++) ctx.lineTo(points[i][0], points[i][1]);
+    ctx.closePath();
+  };
+
+  // ベースカバー
+  const base = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR);
+  base.addColorStop(0, hex + '80');
+  base.addColorStop(0.5, hex + '65');
+  base.addColorStop(0.8, hex + '40');
+  base.addColorStop(1, hex + '00');
+  ctx.globalAlpha = opa * 0.5;
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.fillStyle = base;
+  tracePath(); ctx.fill();
+
+  // ティント
+  ctx.globalCompositeOperation = 'overlay';
+  ctx.globalAlpha = opa * 0.3;
+  const tint = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR * 0.9);
+  tint.addColorStop(0, hex + '70');
+  tint.addColorStop(0.7, hex + '30');
+  tint.addColorStop(1, hex + '00');
+  ctx.fillStyle = tint;
+  tracePath(); ctx.fill();
+
+  // Tゾーン + 頬ハイライト
+  ctx.globalCompositeOperation = 'screen';
+  ctx.globalAlpha = opa * 0.2;
+  const nose = lms[4], forehead = lms[10];
+  const tZone = ctx.createLinearGradient(forehead.x * w, forehead.y * h, nose.x * w, nose.y * h);
+  tZone.addColorStop(0, 'rgba(255,255,255,0.35)');
+  tZone.addColorStop(0.5, 'rgba(255,255,255,0.2)');
+  tZone.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = tZone;
+  tracePath(); ctx.fill();
+
+  ctx.globalAlpha = opa * 0.15;
+  for (const cheekIdx of [234, 454]) {
+    const cheek = lms[cheekIdx];
+    const cr = maxR * 0.25;
+    const cheekGrad = ctx.createRadialGradient(cheek.x * w, cheek.y * h, 0, cheek.x * w, cheek.y * h, cr);
+    cheekGrad.addColorStop(0, 'rgba(255,255,255,0.4)');
+    cheekGrad.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = cheekGrad;
+    tracePath(); ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+/**
+ * 眉ティント — 眉のランドマーク接続に沿った太めストローク
+ */
+export function drawBrow(ctx, lms, w, h, colorStr, opacity) {
+  const { hex, alpha } = parseColor(colorStr);
+  const opa = opacity * alpha;
+  ctx.save();
+
+  for (const conns of [LEFT_EYEBROW, RIGHT_EYEBROW]) {
+    ctx.globalAlpha = opa * 0.5;
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.strokeStyle = hex;
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    for (const conn of conns) {
+      const a = lms[conn.start], b = lms[conn.end];
+      ctx.moveTo(a.x * w, a.y * h);
+      ctx.lineTo(b.x * w, b.y * h);
+    }
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+/**
+ * コンシーラー — 目の下の領域に放射状パッチ
+ */
+export function drawConcealer(ctx, lms, w, h, colorStr, opacity) {
+  const { hex, alpha } = parseColor(colorStr);
+  const opa = opacity * alpha;
+  ctx.save();
+
+  for (const indices of [LEFT_UNDEREYE, RIGHT_UNDEREYE]) {
+    ctx.globalAlpha = opa * 0.35;
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.fillStyle = hex + '60';
+
+    traceIndices(ctx, lms, indices, w, h);
+    ctx.fill();
+
+    // 明るさ追加
+    ctx.globalCompositeOperation = 'screen';
+    ctx.globalAlpha = opa * 0.15;
+
+    let cx = 0, cy = 0;
+    for (const i of indices) { cx += lms[i].x; cy += lms[i].y; }
+    cx = (cx / indices.length) * w;
+    cy = (cy / indices.length) * h;
+
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 20);
+    grad.addColorStop(0, 'rgba(255,255,255,0.4)');
+    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = grad;
+    traceIndices(ctx, lms, indices, w, h);
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+// ============================================================
+// ヘルパー
+// ============================================================
+
+function traceIndices(ctx, lms, indices, w, h) {
+  ctx.beginPath();
+  ctx.moveTo(lms[indices[0]].x * w, lms[indices[0]].y * h);
+  for (let i = 1; i < indices.length; i++) {
+    ctx.lineTo(lms[indices[i]].x * w, lms[indices[i]].y * h);
+  }
+  ctx.closePath();
+}
+
+export function buildOrderedPoints(connections, lms, w, h) {
+  if (!connections || connections.length === 0) return [];
+
+  const adj = new Map();
+  for (const conn of connections) {
+    if (!adj.has(conn.start)) adj.set(conn.start, []);
+    if (!adj.has(conn.end)) adj.set(conn.end, []);
+    adj.get(conn.start).push(conn.end);
+    adj.get(conn.end).push(conn.start);
+  }
+
+  const visited = new Set();
+  const ordered = [];
+  let current = connections[0].start;
+
+  while (current !== undefined && !visited.has(current)) {
+    visited.add(current);
+    const p = lms[current];
+    ordered.push([p.x * w, p.y * h]);
+    const neighbors = adj.get(current) || [];
+    current = neighbors.find(n => !visited.has(n));
+  }
+
+  return ordered;
+}

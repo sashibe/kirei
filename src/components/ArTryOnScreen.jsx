@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Kirari from './Kirari.jsx';
 import Bubble from './Bubble.jsx';
+import MakeupCanvas from './MakeupCanvas.jsx';
+import useCamera from '../hooks/useCamera.js';
 import { useT } from '../i18n/index.jsx';
 
 export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
@@ -8,21 +10,29 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
   const [intensity, setIntensity] = useState(70);
   const isColor = styleTab === 0;
 
-  // Color makeup overlays
+  // カメラ
+  const { videoRef, isActive, error: cameraError } = useCamera({ enabled: true });
+
+  // MakeupCanvas に渡す安定した videoRef
+  const stableVideoRef = useRef(null);
+  // videoRef.current が変わるたびに同期
+  stableVideoRef.current = videoRef.current;
+  const canvasVideoRef = useRef({ get current() { return stableVideoRef.current; } });
+
+  // Color makeup overlays (SVGフォールバック用)
   const lipColor = look?.lip || '#e8607c';
   const cheekColor = look?.cheek || 'rgba(232,96,124,0.25)';
   const eyeshadowColor = look?.eyeshadow || 'rgba(232,150,120,0.2)';
-
-  // Base makeup overlays
   const baseColor = look?.base || '#e8d8c8';
   const concealerColor = look?.concealer;
   const browColor = look?.brow;
-
   const opacityFactor = intensity / 100;
 
   const lookName = look?.name
     ? (typeof look.name === 'object' ? t(look.name) : look.name)
     : t('ar.look_fallback');
+
+  const cameraAvailable = isActive && !cameraError;
 
   return (
     <div style={{ padding: '12px 0' }}>
@@ -38,91 +48,111 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
       <div style={{
         position: 'relative', margin: '0 16px 12px',
         borderRadius: 20, overflow: 'hidden',
-        background: '#f8f5ff',
+        background: cameraAvailable ? '#000' : '#f8f5ff',
         aspectRatio: '3/4',
       }}>
-        {/* Face placeholder */}
+        {cameraAvailable ? (
+          /* ライブカメラ + メイクAR */
+          <>
+            <video
+              ref={videoRef}
+              style={{
+                width: '100%', height: '100%',
+                objectFit: 'cover',
+                transform: 'scaleX(-1)',
+              }}
+              playsInline
+              muted
+              autoPlay
+            />
+            <MakeupCanvas
+              videoRef={canvasVideoRef}
+              look={look}
+              styleTab={styleTab}
+              intensity={intensity}
+            />
+          </>
+        ) : (
+          /* SVG フォールバック（カメラ不可時） */
+          <div style={{
+            width: '100%', height: '100%',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'linear-gradient(180deg, #faf5ff 0%, #fdf2f8 100%)',
+            position: 'relative',
+          }}>
+            <svg viewBox="0 0 200 260" style={{ width: '60%', height: '70%' }}>
+              <ellipse cx="100" cy="110" rx="65" ry="80" fill="#f5d0b0"/>
+              <ellipse cx="100" cy="55" rx="70" ry="50" fill="#4a3728"/>
+              <rect x="30" y="55" width="140" height="30" rx="5" fill="#4a3728"/>
+              <ellipse cx="75" cy="105" rx="10" ry="6" fill="#fff"/>
+              <ellipse cx="125" cy="105" rx="10" ry="6" fill="#fff"/>
+              <ellipse cx="75" cy="105" rx="5" ry="5" fill="#3a2a1a"/>
+              <ellipse cx="125" cy="105" rx="5" ry="5" fill="#3a2a1a"/>
+              <path d="M58 90 Q75 82 90 88" stroke={browColor || '#5a4030'} strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+              <path d="M110 88 Q125 82 142 90" stroke={browColor || '#5a4030'} strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+              <path d="M100 108 L96 128 Q100 132 104 128 Z" fill="#e8c0a0" opacity="0.5"/>
+              {isColor ? (
+                <>
+                  <ellipse cx="75" cy="100" rx="16" ry="10" fill={eyeshadowColor} opacity={opacityFactor * 0.8}/>
+                  <ellipse cx="125" cy="100" rx="16" ry="10" fill={eyeshadowColor} opacity={opacityFactor * 0.8}/>
+                  <ellipse cx="60" cy="135" rx="18" ry="14" fill={cheekColor} opacity={opacityFactor}/>
+                  <ellipse cx="140" cy="135" rx="18" ry="14" fill={cheekColor} opacity={opacityFactor}/>
+                  <path d="M85 155 Q100 148 115 155 Q108 165 100 167 Q92 165 85 155 Z" fill={lipColor} opacity={opacityFactor * 0.85}/>
+                </>
+              ) : (
+                <>
+                  <ellipse cx="100" cy="120" rx="60" ry="70" fill={baseColor} opacity={opacityFactor * 0.15} style={{ mixBlendMode: 'softLight' }}/>
+                  {concealerColor && (
+                    <>
+                      <ellipse cx="75" cy="115" rx="12" ry="6" fill={concealerColor} opacity={opacityFactor * 0.3}/>
+                      <ellipse cx="125" cy="115" rx="12" ry="6" fill={concealerColor} opacity={opacityFactor * 0.3}/>
+                    </>
+                  )}
+                  {look?.lip && (
+                    <path d="M85 155 Q100 148 115 155 Q108 165 100 167 Q92 165 85 155 Z" fill={look.lip} opacity={opacityFactor * 0.5}/>
+                  )}
+                </>
+              )}
+            </svg>
+          </div>
+        )}
+
+        {/* Look name badge */}
         <div style={{
-          width: '100%', height: '100%',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: 'linear-gradient(180deg, #faf5ff 0%, #fdf2f8 100%)',
-          position: 'relative',
+          position: 'absolute', top: 12, left: 12,
+          background: cameraAvailable ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.9)',
+          backdropFilter: 'blur(8px)',
+          borderRadius: 12, padding: '6px 12px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
         }}>
-          {/* Face silhouette */}
-          <svg viewBox="0 0 200 260" style={{ width: '60%', height: '70%' }}>
-            {/* Face */}
-            <ellipse cx="100" cy="110" rx="65" ry="80" fill="#f5d0b0"/>
-            {/* Hair */}
-            <ellipse cx="100" cy="55" rx="70" ry="50" fill="#4a3728"/>
-            <rect x="30" y="55" width="140" height="30" rx="5" fill="#4a3728"/>
-            {/* Eyes */}
-            <ellipse cx="75" cy="105" rx="10" ry="6" fill="#fff"/>
-            <ellipse cx="125" cy="105" rx="10" ry="6" fill="#fff"/>
-            <ellipse cx="75" cy="105" rx="5" ry="5" fill="#3a2a1a"/>
-            <ellipse cx="125" cy="105" rx="5" ry="5" fill="#3a2a1a"/>
-            {/* Eyebrows */}
-            <path d="M58 90 Q75 82 90 88" stroke={browColor || '#5a4030'} strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-            <path d="M110 88 Q125 82 142 90" stroke={browColor || '#5a4030'} strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-            {/* Nose */}
-            <path d="M100 108 L96 128 Q100 132 104 128 Z" fill="#e8c0a0" opacity="0.5"/>
-
-            {isColor ? (
-              <>
-                {/* Eyeshadow overlay */}
-                <ellipse cx="75" cy="100" rx="16" ry="10" fill={eyeshadowColor} opacity={opacityFactor * 0.8}/>
-                <ellipse cx="125" cy="100" rx="16" ry="10" fill={eyeshadowColor} opacity={opacityFactor * 0.8}/>
-                {/* Cheek overlay */}
-                <ellipse cx="60" cy="135" rx="18" ry="14" fill={cheekColor} opacity={opacityFactor}/>
-                <ellipse cx="140" cy="135" rx="18" ry="14" fill={cheekColor} opacity={opacityFactor}/>
-                {/* Lip overlay */}
-                <path d="M85 155 Q100 148 115 155 Q108 165 100 167 Q92 165 85 155 Z" fill={lipColor} opacity={opacityFactor * 0.85}/>
-              </>
-            ) : (
-              <>
-                {/* Base makeup: tone-up overlay */}
-                <ellipse cx="100" cy="120" rx="60" ry="70" fill={baseColor} opacity={opacityFactor * 0.15} style={{ mixBlendMode: 'softLight' }}/>
-                {/* Concealer under eyes */}
-                {concealerColor && (
-                  <>
-                    <ellipse cx="75" cy="115" rx="12" ry="6" fill={concealerColor} opacity={opacityFactor * 0.3}/>
-                    <ellipse cx="125" cy="115" rx="12" ry="6" fill={concealerColor} opacity={opacityFactor * 0.3}/>
-                  </>
-                )}
-                {/* Lip (if base look has lip) */}
-                {look?.lip && (
-                  <path d="M85 155 Q100 148 115 155 Q108 165 100 167 Q92 165 85 155 Z" fill={look.lip} opacity={opacityFactor * 0.5}/>
-                )}
-              </>
-            )}
-          </svg>
-
-          {/* Look name badge */}
-          <div style={{
-            position: 'absolute', top: 12, left: 12,
-            background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(8px)',
-            borderRadius: 12, padding: '6px 12px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+          <p style={{
+            fontSize: 11, fontWeight: 700, margin: 0,
+            color: cameraAvailable ? '#fff' : '#a855f7',
           }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: '#a855f7', margin: 0 }}>
-              {lookName}
-            </p>
-          </div>
+            {lookName}
+          </p>
+        </div>
 
-          {/* Product swatches */}
-          <div style={{
-            position: 'absolute', bottom: 12, right: 12,
-            display: 'flex', gap: 6,
-          }}>
-            {look?.products?.map((p, i) => (
-              <div key={i} style={{
-                background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(8px)',
-                borderRadius: 10, padding: '4px 8px',
-                boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+        {/* Product swatches */}
+        <div style={{
+          position: 'absolute', bottom: 12, right: 12,
+          display: 'flex', gap: 6,
+        }}>
+          {look?.products?.map((p, i) => (
+            <div key={i} style={{
+              background: cameraAvailable ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.9)',
+              backdropFilter: 'blur(8px)',
+              borderRadius: 10, padding: '4px 8px',
+              boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+            }}>
+              <p style={{
+                fontSize: 9, margin: 0,
+                color: cameraAvailable ? '#e2e8f0' : '#64748b',
               }}>
-                <p style={{ fontSize: 9, color: '#64748b', margin: 0 }}>{p.emoji} {t(p.name)}</p>
-              </div>
-            ))}
-          </div>
+                {p.emoji} {t(p.name)}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
 

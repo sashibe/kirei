@@ -120,9 +120,16 @@ C:\dev\kirei\
 │   │   ├── ProductCard.jsx    ← ケアグッズカード
 │   │   ├── MirrorScreen.jsx   ← 画面1: ビューティーミラー
 │   │   ├── DentalScreen.jsx   ← 画面2: デンタルチェック
-│   │   └── ResultScreen.jsx   ← 画面3: 結果表示
+│   │   ├── ArTryOnScreen.jsx  ← 画面3: メイクARトライオン（ライブカメラ）
+│   │   ├── MakeupCanvas.jsx   ← メイクAR描画Canvas（rAFループ）
+│   │   └── ResultScreen.jsx   ← 画面4: 結果表示
+│   ├── contexts/
+│   │   └── FaceLandmarkerContext.jsx ← FaceLandmarker共有Context
+│   ├── rendering/
+│   │   └── makeupRenderer.js  ← メイクAR描画関数群（lip/eye/cheek/foundation/brow/concealer）
 │   ├── hooks/
-│   │   └── useCamera.js       ← WebRTCカメラ制御
+│   │   ├── useCamera.js       ← WebRTCカメラ制御
+│   │   └── useFaceLandmarker.js ← MediaPipe FaceLandmarker初期化
 │   ├── analysis/
 │   │   ├── skinAnalyzer.js    ← 肌分析ロジック
 │   │   └── dentalAnalyzer.js  ← 口腔分析ロジック
@@ -131,6 +138,11 @@ C:\dev\kirei\
 │   │   └── clinics.js         ← 提携歯科マスタ
 │   └── styles/
 │       └── theme.js           ← カラーパレット・共通スタイル
+├── lab/
+│   └── facemesh/              ← Face Mesh + Makeup AR 実験ページ
+│       ├── index.html
+│       ├── main.jsx
+│       └── FaceMeshLab.jsx    ← 実験用スタンドアロンコンポーネント
 ├── public/
 │   └── assets/
 └── prototype/
@@ -214,6 +226,9 @@ const colors = {
 - [x] カメラフルスクリーン＋オーバーレイUI
 - [x] PCブラウザ用iPhoneモックアップフレーム
 - [x] GitHub Actions自動デプロイ
+- [x] Face Meshワイヤーフレーム実験（lab/facemesh）
+- [x] メイクARライブ化（リップ・アイシャドウ・チーク・ファンデ・眉・コンシーラー）
+- [x] FaceLandmarker共有Context（MirrorScreen/ArTryOnScreen間で二重ロード回避）
 
 ### Phase 2: 提携歯科導入
 - [ ] 山田兄弟歯科グループとのテスト運用

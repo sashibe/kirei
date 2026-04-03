@@ -5,6 +5,7 @@ import MirrorScreen from './components/MirrorScreen.jsx';
 import SuggestScreen from './components/SuggestScreen.jsx';
 import ArTryOnScreen from './components/ArTryOnScreen.jsx';
 import ResultScreen from './components/ResultScreen.jsx';
+import { FaceLandmarkerProvider } from './contexts/FaceLandmarkerContext.jsx';
 import colors from './styles/theme.js';
 import { useT } from './i18n/index.jsx';
 
@@ -68,7 +69,7 @@ export default function App() {
   const showScrollable = screen === 'suggest' || screen === 'result' || screen === 'ar';
 
   const content = (
-    <>
+    <FaceLandmarkerProvider>
       {showScrollable && <Header />}
       <div key={screen} className="screen-enter" style={{ position: "relative", height: showScrollable ? "auto" : "100%" }}>
         {screen === 'mirror' && (
@@ -101,7 +102,7 @@ export default function App() {
           />
         )}
       </div>
-    </>
+    </FaceLandmarkerProvider>
   );
 
   return (
