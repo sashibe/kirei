@@ -124,11 +124,11 @@ export default function MakeupCanvas({ getVideo, look, styleTab, intensity, show
 // ============================================================
 
 function drawMeshOverlay(ctx, lms, w, h) {
-  ctx.globalAlpha = 0.4;
+  ctx.globalAlpha = 0.85;
 
-  // テッセレーション
-  ctx.strokeStyle = 'rgba(180, 180, 255, 0.25)';
-  ctx.lineWidth = 0.5;
+  // テッセレーション（しっかり見える濃さ）
+  ctx.strokeStyle = 'rgba(160, 170, 255, 0.5)';
+  ctx.lineWidth = 0.8;
   ctx.beginPath();
   for (const conn of TESSELATION) {
     const a = lms[conn.start], b = lms[conn.end];
@@ -137,14 +137,14 @@ function drawMeshOverlay(ctx, lms, w, h) {
   }
   ctx.stroke();
 
-  // 輪郭ライン
+  // 輪郭ライン（太く鮮やか）
   const groups = [
-    { conns: FACE_OVAL, color: '#a855f7', width: 1.5 },
-    { conns: LEFT_EYE,  color: '#22d3ee', width: 1 },
-    { conns: RIGHT_EYE, color: '#22d3ee', width: 1 },
-    { conns: LEFT_BROW,  color: '#facc15', width: 1 },
-    { conns: RIGHT_BROW, color: '#facc15', width: 1 },
-    { conns: LIPS,       color: '#ec4899', width: 1.5 },
+    { conns: FACE_OVAL, color: '#a855f7', width: 3 },
+    { conns: LEFT_EYE,  color: '#22d3ee', width: 2.5 },
+    { conns: RIGHT_EYE, color: '#22d3ee', width: 2.5 },
+    { conns: LEFT_BROW,  color: '#facc15', width: 2.5 },
+    { conns: RIGHT_BROW, color: '#facc15', width: 2.5 },
+    { conns: LIPS,       color: '#ec4899', width: 3 },
   ];
 
   for (const { conns, color, width } of groups) {
