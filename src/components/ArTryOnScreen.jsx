@@ -10,6 +10,7 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
   const [intensity, setIntensity] = useState(70);
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [showMesh, setShowMesh] = useState(false);
+  const [videoAspect, setVideoAspect] = useState(null); // カメラ映像のアスペクト比
   const isColor = styleTab === 0;
 
   // カメラ — useCamera は videoRef.current にストリームを設定する
@@ -20,10 +21,15 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
     const video = videoRef.current;
     if (!video) return;
 
-    const onPlaying = () => setVideoPlaying(true);
+    const onPlaying = () => {
+      setVideoPlaying(true);
+      if (video.videoWidth && video.videoHeight) {
+        setVideoAspect(`${video.videoWidth} / ${video.videoHeight}`);
+      }
+    };
 
     if (video.readyState >= 2) {
-      setVideoPlaying(true);
+      onPlaying();
       return;
     }
 
@@ -65,7 +71,8 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
         position: 'relative', margin: '0 16px 12px',
         borderRadius: 20, overflow: 'hidden',
         background: cameraLive ? '#000' : '#f8f5ff',
-        aspectRatio: '3/4',
+        aspectRatio: cameraLive && videoAspect ? videoAspect : '3/4',
+        maxHeight: '65vh',
       }}>
 
         {/*
@@ -76,7 +83,7 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
           ref={videoRef}
           style={{
             width: '100%', height: '100%',
-            objectFit: 'cover',
+            objectFit: 'contain',
             transform: 'scaleX(-1)',
             display: cameraLive ? 'block' : 'none',
           }}

@@ -30,6 +30,10 @@ export default function MakeupCanvas({ getVideo, look, styleTab, intensity, show
     propsRef.current = { look, styleTab, intensity, showMesh };
   }, [look, styleTab, intensity, showMesh]);
 
+  // 前回の検出結果をキャッシュ（フレームスキップ用）
+  const lastLandmarksRef = useRef(null);
+  const frameCountRef = useRef(0);
+
   useEffect(() => {
     if (!ready) return;
 
@@ -51,13 +55,23 @@ export default function MakeupCanvas({ getVideo, look, styleTab, intensity, show
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const result = detect(video, performance.now());
-      if (!result?.landmarks) {
+      // フレームスキップ: 2フレームに1回だけ検出（描画は毎フレーム）
+      const frame = frameCountRef.current++;
+      let lms = lastLandmarksRef.current;
+
+      if (frame % 2 === 0) {
+        const result = detect(video, performance.now());
+        if (result?.landmarks) {
+          lms = result.landmarks;
+          lastLandmarksRef.current = lms;
+        }
+      }
+
+      if (!lms) {
         rafRef.current = requestAnimationFrame(loop);
         return;
       }
 
-      const lms = result.landmarks;
       const w = canvas.width;
       const h = canvas.height;
       const { look: lk, styleTab: tab, intensity: inten, showMesh: mesh } = propsRef.current;
