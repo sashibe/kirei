@@ -4,6 +4,7 @@ import Bubble from './Bubble.jsx';
 import Score from './Score.jsx';
 import ProductModal from './ProductModal.jsx';
 import CoordinateOverlay from './CoordinateOverlay.jsx';
+import { useT } from '../i18n/index.jsx';
 import { SKIN_SCORES } from '../data/scores.js';
 import { getCoordHint } from '../data/kirariDialogues.js';
 
@@ -15,13 +16,14 @@ function avg(scores) {
 const STYLE_TAB_NAMES = ['Color makeup', 'Base makeup', 'Skin care'];
 const WEATHER = { icon: '\u2600\uFE0F', temp: 22, label: '晴れ' };
 
-function generateLookComment(selectedLook, styleTab) {
-  if (styleTab === 2) return 'スキンケアルーティンで素肌力アップ♪ 毎日続けてキレイをキープしてね！';
-  if (!selectedLook) return 'メイクの仕上がりチェック♪ 今日のあなたにぴったり！';
-  return `${selectedLook.name}で仕上げたよ♪ ${selectedLook.reason || '今日のあなたにぴったり！'}`;
+function generateLookComment(selectedLook, styleTab, t) {
+  if (styleTab === 2) return t("result.skincare_comment");
+  if (!selectedLook) return t("result.makeup_comment");
+  return `${selectedLook.name}${t("result.look_comment_suffix")} ${selectedLook.reason || t("result.look_comment_default")}`;
 }
 
 export default function ResultScreen({ skinScores: propSkin, onRestart, styleTab = 0, selectedLook = null }) {
+  const { t } = useT();
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showCoord, setShowCoord] = useState(false);
   const [showSkinScores, setShowSkinScores] = useState(false);
@@ -84,7 +86,7 @@ export default function ResultScreen({ skinScores: propSkin, onRestart, styleTab
           <Kirari size={36} expression="sparkle" bounce />
           <Bubble>
             <p style={{ fontSize: 12, color: '#334155', margin: 0, lineHeight: 1.6 }}>
-              {generateLookComment(selectedLook, styleTab)}
+              {generateLookComment(selectedLook, styleTab, t)}
             </p>
           </Bubble>
         </div>
@@ -101,7 +103,7 @@ export default function ResultScreen({ skinScores: propSkin, onRestart, styleTab
             }}>
               KIREI SELECT
             </span>
-            <span style={{ fontSize: 11, color: '#64748b' }}>使用アイテム</span>
+            <span style={{ fontSize: 11, color: '#64748b' }}>{t("result.used_items")}</span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {products.map((p, i) => (
@@ -113,7 +115,7 @@ export default function ResultScreen({ skinScores: propSkin, onRestart, styleTab
               }}>
                 <span style={{ fontSize: 22, width: 32, textAlign: 'center' }}>{p.emoji}</span>
                 <div style={{ flex: 1 }}>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: '#334155', margin: 0 }}>{p.name}</p>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: '#334155', margin: 0 }}>{typeof p.name === 'object' ? t(p.name) : p.name}</p>
                   <p style={{ fontSize: 10, color: '#94a3b8', margin: '2px 0 0' }}>{p.shade}</p>
                 </div>
                 <div style={{ textAlign: 'right' }}>
@@ -130,7 +132,7 @@ export default function ResultScreen({ skinScores: propSkin, onRestart, styleTab
             display: 'flex', justifyContent: 'flex-end', alignItems: 'center',
             padding: '8px 4px 0', gap: 8,
           }}>
-            <span style={{ fontSize: 11, color: '#94a3b8' }}>合計</span>
+            <span style={{ fontSize: 11, color: '#94a3b8' }}>{t("result.total")}</span>
             <span style={{ fontSize: 15, fontWeight: 800, color: '#a855f7' }}>
               {'\u00A5'}{products.reduce((s, p) => s + p.price, 0).toLocaleString()}
             </span>
@@ -147,7 +149,7 @@ export default function ResultScreen({ skinScores: propSkin, onRestart, styleTab
           <Kirari size={32} expression="sparkle"/>
           <div>
             <p style={{ fontSize: 12, fontWeight: 600, color: '#92400e', margin: '0 0 4px' }}>
-              {WEATHER.icon} 今日のコーデヒント
+              {WEATHER.icon} {t("result.coord_hint")}
             </p>
             <p style={{ fontSize: 11, color: '#78350f', margin: 0, lineHeight: 1.6 }}>
               {getCoordHint(selectedLook, styleTab, WEATHER)}
@@ -161,7 +163,7 @@ export default function ResultScreen({ skinScores: propSkin, onRestart, styleTab
           color: '#fff', cursor: 'pointer',
           boxShadow: '0 4px 12px rgba(245,158,11,0.3)',
         }}>
-          {'👗'} おすすめコーデを見る {'→'}
+          {'👗'} {t("result.view_coord")} {'→'}
         </button>
       </div>
 
@@ -173,7 +175,7 @@ export default function ResultScreen({ skinScores: propSkin, onRestart, styleTab
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           cursor: 'pointer', fontSize: 12, fontWeight: 600, color: '#64748b',
         }}>
-          <span>肌スコアを確認</span>
+          <span>{t("result.check_skin_score")}</span>
           <span style={{
             fontSize: 10, color: '#a855f7', fontWeight: 700,
             display: 'flex', alignItems: 'center', gap: 4,
@@ -194,7 +196,7 @@ export default function ResultScreen({ skinScores: propSkin, onRestart, styleTab
           }}>
             <div style={{ display: 'flex', justifyContent: 'center', gap: 8 }}>
               {Object.entries(skinScores).map(([k, v], i) => (
-                <Score key={k} score={v.score} size={64} color={v.color} label={v.label} delay={50 + i * 100} />
+                <Score key={k} score={v.score} size={64} color={v.color} label={t(v.labelKey)} delay={50 + i * 100} />
               ))}
             </div>
           </div>
@@ -203,9 +205,9 @@ export default function ResultScreen({ skinScores: propSkin, onRestart, styleTab
 
       {/* ===== 5. Restart / Disclaimer ===== */}
       <div style={{ padding: "0 16px", display: "flex", flexDirection: "column", gap: 8 }}>
-        <button className="btn-secondary" onClick={onRestart} style={{ width: "100%", padding: 11, background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 14, fontSize: 12, fontWeight: 600, color: "#64748b", cursor: "pointer" }}>もう一度ミラーを開く</button>
+        <button className="btn-secondary" onClick={onRestart} style={{ width: "100%", padding: 11, background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 14, fontSize: 12, fontWeight: 600, color: "#64748b", cursor: "pointer" }}>{t("result.restart")}</button>
       </div>
-      <p className="disclaimer" style={{ textAlign: "center", fontSize: 10, color: "#cbd5e1", marginTop: 12, padding: "0 20px" }}>※本アプリは医療診断を行うものではありません。</p>
+      <p className="disclaimer" style={{ textAlign: "center", fontSize: 10, color: "#cbd5e1", marginTop: 12, padding: "0 20px" }}>{t("result.disclaimer")}</p>
 
       {/* Coordinate overlay */}
       {showCoord && (

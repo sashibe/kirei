@@ -6,21 +6,15 @@ import ScoreBadge from './ScoreBadge.jsx';
 import GuideFrame from './GuideFrame.jsx';
 import useAutoShutter from '../hooks/useAutoShutter.js';
 import useFaceLandmarker from '../hooks/useFaceLandmarker.js';
+import { useT } from '../i18n/index.jsx';
 import { SKIN_SCORES } from '../data/scores.js';
 import { analyzeSkin, analyzeSkinWithLandmarks } from '../analysis/skinAnalyzer.js';
-
-const KIRARI_MSGS = {
-  idle: "キラリだよ♪ ミラーに映してチェックしてみてね！",
-  searching: "お顔を枠に合わせてね〜",
-  detected: "いい感じ！そのまま動かないでね♪",
-  analyzing: "肌の状態をチェックしてるよ〜",
-  done: "肌チェック完了♪",
-};
 
 // 演出フェーズ: searching → detected → ready → shutter → scanning → done
 const STAGE = { SEARCHING: 'searching', DETECTED: 'detected', READY: 'ready', SHUTTER: 'shutter', SCANNING: 'scanning' };
 
 export default function MirrorScreen({ onResult }) {
+  const { t } = useT();
   const [checking, setChecking] = useState(false);
   const [stage, setStage] = useState(null);
   const [skinScores, setSkinScores] = useState(null);
@@ -155,16 +149,16 @@ export default function MirrorScreen({ onResult }) {
 
   const getKirariMsg = () => {
     if (checking && lowLight && !analyzing && stage !== STAGE.SHUTTER) {
-      return "ちょっと暗いかも💡 明るい場所で試してみてね！";
+      return t("kirari.low_light");
     }
     if (stage === 'timeout') {
-      return "お顔がうまく映ってないみたい…もう一度試してみてね！";
+      return t("kirari.timeout_face");
     }
-    if (stage === STAGE.SHUTTER) return "📸 パシャ！";
-    if (analyzing) return KIRARI_MSGS.analyzing;
-    if (checking) return KIRARI_MSGS[effectiveStatus] || KIRARI_MSGS.searching;
-    if (skinScores) return KIRARI_MSGS.done;
-    return KIRARI_MSGS.idle;
+    if (stage === STAGE.SHUTTER) return t("kirari.shutter");
+    if (analyzing) return t("kirari.skin_analyzing");
+    if (checking) return t(`kirari.skin_${effectiveStatus}`) || t("kirari.skin_searching");
+    if (skinScores) return t("kirari.skin_done");
+    return t("kirari.idle");
   };
 
   const kirariExpression = (analyzing || stage === STAGE.SHUTTER) ? "thinking"
@@ -206,10 +200,10 @@ export default function MirrorScreen({ onResult }) {
             <style>{`@keyframes lowLightFadeIn{from{opacity:0;transform:translate(-50%,-50%) scale(0.9)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}`}</style>
             <span style={{ fontSize: 28 }}>💡</span>
             <p style={{ fontSize: 13, color: "#fbbf24", fontWeight: 700, margin: 0, textAlign: "center", lineHeight: 1.5 }}>
-              暗すぎます
+              {t("mirror.too_dark")}
             </p>
             <p style={{ fontSize: 11, color: "#e2e8f0", margin: 0, textAlign: "center", lineHeight: 1.5 }}>
-              明るい場所に移動してね
+              {t("mirror.move_bright")}
             </p>
           </div>
         )}
@@ -233,7 +227,7 @@ export default function MirrorScreen({ onResult }) {
         {!checking && !analyzing && skinScores && showScores && (
           <div style={{ position: "absolute", top: 72, right: 12, display: "flex", flexDirection: "column", gap: 8, zIndex: 2 }}>
             {Object.entries(skinScores).map(([k, v], i) => (
-              <ScoreBadge key={`skin-${k}`} label={v.label} score={v.score} color={v.color} delay={i * 600} />
+              <ScoreBadge key={`skin-${k}`} label={t(v.labelKey)} score={v.score} color={v.color} delay={i * 600} />
             ))}
           </div>
         )}
@@ -256,21 +250,21 @@ export default function MirrorScreen({ onResult }) {
                   <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#e879f9", animation: "pulse 1s ease-in-out infinite" }} />
                 )}
                 <span style={{ fontSize: 13, color: stage === 'timeout' ? "#ef4444" : "#a855f7", fontWeight: 600 }}>
-                  {stage === 'timeout' ? "検出できませんでした" : stage === STAGE.SHUTTER ? "📸 シャッター！" : analyzing ? "分析中..." : effectiveStatus === 'ready' ? "撮影準備OK" : effectiveStatus === 'detected' ? "検出中..." : "探しています..."}
+                  {stage === 'timeout' ? t("mirror.not_detected") : stage === STAGE.SHUTTER ? t("mirror.shutter") : analyzing ? t("mirror.analyzing") : effectiveStatus === 'ready' ? t("mirror.capture_ready") : effectiveStatus === 'detected' ? t("mirror.detecting") : t("mirror.searching")}
                 </span>
               </div>
               {stage === 'timeout' ? (
                 <div style={{ display: "flex", gap: 8 }}>
                   <button className="btn-primary" onClick={startCheck} style={{ padding: "8px 20px", background: "linear-gradient(135deg, #a855f7, #c084fc)", border: "none", borderRadius: 12, fontSize: 12, fontWeight: 600, color: "#fff", cursor: "pointer" }}>
-                    もう一度
+                    {t("mirror.retry")}
                   </button>
                   <button className="btn-secondary" onClick={() => { setStage(null); setChecking(false); }} style={{ padding: "8px 20px", background: "rgba(255,255,255,0.9)", border: "1px solid #e2e8f0", borderRadius: 12, fontSize: 12, fontWeight: 600, color: "#94a3b8", cursor: "pointer" }}>
-                    やめる
+                    {t("mirror.quit")}
                   </button>
                 </div>
               ) : (
                 <button className="btn-secondary" onClick={() => { setStage(null); setChecking(false); }} style={{ padding: "8px 24px", background: "rgba(255,255,255,0.9)", border: "1px solid #e2e8f0", borderRadius: 12, fontSize: 12, fontWeight: 600, color: "#94a3b8", cursor: "pointer" }}>
-                  キャンセル
+                  {t("mirror.cancel")}
                 </button>
               )}
             </>
@@ -287,7 +281,7 @@ export default function MirrorScreen({ onResult }) {
                   }}
                 >
                   <span style={{ fontSize: 12 }}>{showScores ? "👁" : "👁‍🗨"}</span>
-                  {showScores ? "スコア非表示" : "スコア表示"}
+                  {showScores ? t("mirror.hide_scores") : t("mirror.show_scores")}
                 </button>
               )}
               {/* 肌チェックボタン */}
@@ -301,7 +295,7 @@ export default function MirrorScreen({ onResult }) {
                   opacity: skinScores ? 0.7 : 1,
                 }}
               >
-                {skinScores ? "✓ もう一度チェック" : "✨ 肌チェック開始"}
+                {skinScores ? t("mirror.recheck") : t("mirror.start_skin")}
               </button>
               {/* 結果を見るボタン */}
               {skinScores && (
@@ -310,12 +304,12 @@ export default function MirrorScreen({ onResult }) {
                   onClick={() => onResult({ skinScores, dentalScores: null })}
                   style={{ width: "100%", padding: 12, background: "linear-gradient(135deg, #a855f7, #ec4899)", border: "none", borderRadius: 14, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer", boxShadow: "0 4px 20px rgba(168,85,247,0.3)" }}
                 >
-                  結果を見る →
+                  {t("mirror.view_result")}
                 </button>
               )}
             </>
           )}
-          <p style={{ fontSize: 8, color: "#94a3b8", margin: 0 }}>※本アプリは医療診断を行うものではありません</p>
+          <p style={{ fontSize: 8, color: "#94a3b8", margin: 0 }}>{t("mirror.disclaimer")}</p>
         </div>
       </CameraView>
     </div>

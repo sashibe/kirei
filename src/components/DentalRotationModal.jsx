@@ -1,8 +1,10 @@
 // DentalRotationModal.jsx
 // デンタルチェック横向き誘導モーダル
 import { useEffect, useState } from 'react';
+import { useT } from '../i18n/index.jsx';
 
 const DentalRotationModal = ({ onReady, onSkip }) => {
+  const { t } = useT();
   const [isLandscape, setIsLandscape] = useState(false);
 
   useEffect(() => {
@@ -25,13 +27,15 @@ const DentalRotationModal = ({ onReady, onSkip }) => {
 
   if (isLandscape) return null;
 
+  const bodyLines = t("rotation.body").split('\n');
+
   return (
     <div style={{
       position: 'fixed', inset: 0, zIndex: 9999,
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
       background: 'linear-gradient(180deg, #faf5ff 0%, #fdf2f8 40%, #fff 100%)',
       padding: '24px 20px',
-      fontFamily: "'Noto Sans JP', sans-serif",
+      fontFamily: "'Noto Sans JP', 'Noto Sans KR', sans-serif",
     }}>
 
       {/* キラリ */}
@@ -67,11 +71,10 @@ const DentalRotationModal = ({ onReady, onSkip }) => {
           background: 'linear-gradient(135deg, #a855f7, #ec4899)',
           WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
         }}>
-          スマホを横向きにしてね！
+          {t("rotation.title")}
         </p>
         <p style={{ fontSize: 13, color: '#64748b', margin: 0, lineHeight: 1.6 }}>
-          口元をしっかり映すために<br />
-          横向きにするときれいに撮れるよ♪
+          {bodyLines.map((line, i) => <span key={i}>{line}{i < bodyLines.length - 1 && <br />}</span>)}
         </p>
       </div>
 
@@ -88,7 +91,7 @@ const DentalRotationModal = ({ onReady, onSkip }) => {
           <circle cx="10" cy="13.5" r="1.5" fill="#a855f7" />
         </svg>
         <span style={{ fontSize: 11, color: '#64748b', lineHeight: 1.5 }}>
-          画面ロック中の場合はコントロールセンターで解除してね
+          {t("rotation.lock_hint")}
         </span>
       </div>
 
@@ -102,7 +105,7 @@ const DentalRotationModal = ({ onReady, onSkip }) => {
           <path d="M5,5 L8,2 L11,5" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
         </svg>
         <span style={{ fontSize: 10, color: '#94a3b8' }}>
-          上からスワイプ →「回転ロック」アイコンをタップ
+          {t("rotation.swipe_hint")}
         </span>
       </div>
 
@@ -113,10 +116,10 @@ const DentalRotationModal = ({ onReady, onSkip }) => {
           background: 'none', border: 'none', cursor: 'pointer',
           fontSize: 12, color: '#94a3b8', textDecoration: 'underline',
           padding: '8px 16px',
-          fontFamily: "'Noto Sans JP', sans-serif",
+          fontFamily: "'Noto Sans JP', 'Noto Sans KR', sans-serif",
         }}
       >
-        スキップ（画質が下がる場合があります）
+        {t("rotation.skip")}
       </button>
 
       {/* アニメーション定義 */}

@@ -1,8 +1,10 @@
 import { forwardRef, useImperativeHandle } from 'react';
 import useCamera from '../hooks/useCamera.js';
+import { useT } from '../i18n/index.jsx';
 import { IMG_FACE, IMG_MOUTH } from '../data/images.js';
 
 const CameraView = forwardRef(function CameraView({ mode = "face", aspectRatio = "3/4", frozenSrc = null, children }, ref) {
+  const { t } = useT();
   const { videoRef, isActive, error, captureFrame } = useCamera();
   const fallbackImg = mode === "face" ? IMG_FACE : IMG_MOUTH;
 
@@ -41,8 +43,8 @@ const CameraView = forwardRef(function CameraView({ mode = "face", aspectRatio =
           <img src={fallbackImg} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.9 }} />
           {error && (
             <div style={{ position: "absolute", bottom: 12, left: 12, right: 12, background: "rgba(0,0,0,0.7)", borderRadius: 10, padding: "6px 10px" }}>
-              <p style={{ fontSize: 10, color: "#fbbf24", margin: 0 }}>{error}</p>
-              <p style={{ fontSize: 9, color: "#94a3b8", margin: "2px 0 0" }}>デモ画像で表示中</p>
+              <p style={{ fontSize: 10, color: "#fbbf24", margin: 0 }}>{t(error)}</p>
+              <p style={{ fontSize: 9, color: "#94a3b8", margin: "2px 0 0" }}>{t("camera.demo")}</p>
             </div>
           )}
         </>

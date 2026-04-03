@@ -4,17 +4,12 @@ import Bubble from './Bubble.jsx';
 import CameraView from './CameraView.jsx';
 import GuideFrame from './GuideFrame.jsx';
 import useAutoShutter from '../hooks/useAutoShutter.js';
+import { useT } from '../i18n/index.jsx';
 import { analyzeDental } from '../analysis/dentalAnalyzer.js';
 import { DENTAL_SCORES } from '../data/scores.js';
 
-const KIRARI_MSGS = {
-  searching: "口を開けて枠に合わせてね♪",
-  detected: "歯と歯茎が見えてるよ！もう少し…",
-  analyzing: "着色チェック中♪",
-  done: "デンタルチェック完了！",
-};
-
 export default function DentalScreen({ onComplete }) {
+  const { t } = useT();
   const [analyzing, setAnalyzing] = useState(false);
   const [done, setDone] = useState(false);
   const cameraRef = useRef(null);
@@ -31,7 +26,7 @@ export default function DentalScreen({ onComplete }) {
     if (status !== 'ready' || done || analyzing) return;
     setAnalyzing(true);
 
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       let result = null;
       if (cameraRef.current?.isActive) {
         const frame = cameraRef.current.captureFrame();
@@ -49,7 +44,7 @@ export default function DentalScreen({ onComplete }) {
       setTimeout(() => onComplete(scores), 500);
     }, 400);
 
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
   }, [status, done, analyzing, onComplete]);
 
   // カメラ不可時のフォールバック（従来のプログレスバー動作）
@@ -71,10 +66,11 @@ export default function DentalScreen({ onComplete }) {
     return () => clearInterval(iv);
   }, [isFallback, done, onComplete]);
 
-  const kirariMsg = done ? KIRARI_MSGS.done
-    : analyzing ? KIRARI_MSGS.analyzing
-    : isFallback ? ["口元を検出したよ！", "歯茎の色を見てるよ〜", "着色チェック中♪", "もう少しで完了！"][Math.min(3, Math.floor(fallbackProg / 25))]
-    : KIRARI_MSGS[status] || KIRARI_MSGS.searching;
+  const fallbackMsgs = [t("dental.fallback_1"), t("dental.fallback_2"), t("dental.fallback_3"), t("dental.fallback_4")];
+  const kirariMsg = done ? t("kirari.dental_done")
+    : analyzing ? t("kirari.dental_analyzing")
+    : isFallback ? fallbackMsgs[Math.min(3, Math.floor(fallbackProg / 25))]
+    : t(`kirari.dental_${status}`) || t("kirari.dental_searching");
 
   const progressValue = isFallback ? fallbackProg : (confidence * 1.2);
 
@@ -110,7 +106,7 @@ export default function DentalScreen({ onComplete }) {
           <div style={{ height: "100%", borderRadius: 10, width: `${Math.min(100, progressValue)}%`, background: "linear-gradient(90deg, #a855f7, #ec4899)", transition: "width 0.2s" }} />
         </div>
         <p style={{ fontSize: 12, color: "#94a3b8", margin: "8px 0 0", textAlign: "center" }}>
-          肌チェック ✓ ・ デンタルチェック {done ? "✓" : analyzing ? "分析中..." : `${Math.min(100, Math.round(progressValue))}%`}
+          {t("dental.progress_skin")} ・ {t("dental.progress_dental")} {done ? "✓" : analyzing ? t("mirror.analyzing") : `${Math.min(100, Math.round(progressValue))}%`}
         </p>
       </div>
     </>

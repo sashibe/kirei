@@ -1,7 +1,17 @@
 import Kirari from './Kirari.jsx';
+import { useT } from '../i18n/index.jsx';
 
 export default function ProductModal({ product, onClose }) {
+  const { t } = useT();
   if (!product) return null;
+
+  const name = typeof product.name === 'object' ? t(product.name) : product.name;
+  const tag = typeof product.tag === 'object' ? t(product.tag) : product.tag;
+  const brand = typeof product.brand === 'object' ? t(product.brand) : product.brand;
+  const kirpicomment = typeof product.kirpicomment === 'object' ? t(product.kirpicomment) : product.kirpicomment;
+  const features = Array.isArray(product.features)
+    ? product.features.map(f => typeof f === 'object' ? t(f) : f)
+    : [];
 
   const isSimple = !product.features;
 
@@ -14,22 +24,22 @@ export default function ProductModal({ product, onClose }) {
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
             <div style={{ width: 56, height: 56, borderRadius: 16, background: "#faf5ff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, flexShrink: 0 }}>{product.emoji}</div>
             <div>
-              <span style={{ fontSize: 16, fontWeight: 800, color: "#1e293b" }}>{product.name}</span>
+              <span style={{ fontSize: 16, fontWeight: 800, color: "#1e293b" }}>{name}</span>
               {product.shade && <p style={{ fontSize: 12, color: "#64748b", margin: '2px 0 0' }}>{product.shade}</p>}
             </div>
           </div>
           <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 14 }}>
             <span style={{ fontSize: 24, fontWeight: 800, color: "#1e293b" }}>{'\u00A5'}{product.price.toLocaleString()}</span>
-            <span style={{ fontSize: 11, color: "#94a3b8" }}>(税込)</span>
+            <span style={{ fontSize: 11, color: "#94a3b8" }}>{t("product.tax_incl")}</span>
           </div>
           <div style={{ display: "flex", alignItems: "flex-start", gap: 8, background: "#faf5ff", borderRadius: 14, padding: "10px 12px", marginBottom: 16 }}>
             <Kirari size={32} expression="sparkle" />
             <p style={{ fontSize: 11, color: "#475569", margin: 0, lineHeight: 1.6, flex: 1 }}>
-              あなたの肌に合わせてセレクトしたアイテムだよ♪
+              {kirpicomment || t("product.simple_kirari")}
             </p>
           </div>
-          <button onClick={() => alert('購入ページは準備中です')} style={{ width: "100%", padding: 14, background: "linear-gradient(135deg, #a855f7, #ec4899)", border: "none", borderRadius: 14, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer", boxShadow: "0 4px 16px rgba(168,85,247,0.25)", marginBottom: 8 }}>購入ページを開く</button>
-          <button onClick={onClose} style={{ width: "100%", padding: 10, background: "transparent", border: "none", fontSize: 12, color: "#94a3b8", cursor: "pointer" }}>閉じる</button>
+          <button onClick={() => { if (product.url) { window.open(product.url, '_blank'); } else { alert(t("product.buy_coming")); } }} style={{ width: "100%", padding: 14, background: "linear-gradient(135deg, #a855f7, #ec4899)", border: "none", borderRadius: 14, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer", boxShadow: "0 4px 16px rgba(168,85,247,0.25)", marginBottom: 8 }}>{t("product.buy")}</button>
+          <button onClick={onClose} style={{ width: "100%", padding: 10, background: "transparent", border: "none", fontSize: 12, color: "#94a3b8", cursor: "pointer" }}>{t("product.close")}</button>
         </div>
       </div>
     );
@@ -44,32 +54,32 @@ export default function ProductModal({ product, onClose }) {
           <div style={{ width: 56, height: 56, borderRadius: 16, background: product.tagColor + "10", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, flexShrink: 0 }}>{product.emoji}</div>
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
-              <span style={{ fontSize: 16, fontWeight: 800, color: "#1e293b" }}>{product.name}</span>
-              <span style={{ fontSize: 9, fontWeight: 700, color: product.tagColor, background: product.tagColor + "15", padding: "2px 7px", borderRadius: 6 }}>{product.tag}</span>
+              <span style={{ fontSize: 16, fontWeight: 800, color: "#1e293b" }}>{name}</span>
+              <span style={{ fontSize: 9, fontWeight: 700, color: product.tagColor, background: product.tagColor + "15", padding: "2px 7px", borderRadius: 6 }}>{tag}</span>
             </div>
-            <p style={{ fontSize: 12, color: "#64748b", margin: 0 }}>{product.brand}</p>
+            <p style={{ fontSize: 12, color: "#64748b", margin: 0 }}>{brand}</p>
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 12 }}>
           <span style={{ fontSize: 24, fontWeight: 800, color: "#1e293b" }}>{'\u00A5'}{product.price.toLocaleString()}</span>
-          <span style={{ fontSize: 11, color: "#94a3b8" }}>(税込)</span>
+          <span style={{ fontSize: 11, color: "#94a3b8" }}>{t("product.tax_incl")}</span>
           {product.size && <span style={{ fontSize: 11, color: "#94a3b8", marginLeft: 4 }}>{product.size}</span>}
         </div>
         <div style={{ display: "flex", alignItems: "flex-start", gap: 8, background: "#faf5ff", borderRadius: 14, padding: "10px 12px", marginBottom: 14 }}>
           <Kirari size={32} expression="sparkle" />
-          <p style={{ fontSize: 11, color: "#475569", margin: 0, lineHeight: 1.6, flex: 1 }}>{product.kirpicomment}</p>
+          <p style={{ fontSize: 11, color: "#475569", margin: 0, lineHeight: 1.6, flex: 1 }}>{kirpicomment}</p>
         </div>
         <div style={{ marginBottom: 16 }}>
-          <p style={{ fontSize: 12, fontWeight: 700, color: "#334155", marginBottom: 6 }}>おすすめポイント</p>
-          {product.features.map((f, i) => (
+          <p style={{ fontSize: 12, fontWeight: 700, color: "#334155", marginBottom: 6 }}>{t("product.points")}</p>
+          {features.map((f, i) => (
             <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 6, marginBottom: 4 }}>
               <span style={{ color: product.tagColor, fontSize: 12, marginTop: 1, flexShrink: 0 }}>✓</span>
               <span style={{ fontSize: 11, color: "#475569", lineHeight: 1.5 }}>{f}</span>
             </div>
           ))}
         </div>
-        <button onClick={() => { if (product.url) { window.open(product.url, '_blank'); } else { alert('購入ページは準備中です'); } }} style={{ width: "100%", padding: 14, background: "linear-gradient(135deg, #a855f7, #ec4899)", border: "none", borderRadius: 14, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer", boxShadow: "0 4px 16px rgba(168,85,247,0.25)", marginBottom: 8 }}>購入ページを開く</button>
-        <button onClick={onClose} style={{ width: "100%", padding: 10, background: "transparent", border: "none", fontSize: 12, color: "#94a3b8", cursor: "pointer" }}>閉じる</button>
+        <button onClick={() => { if (product.url) { window.open(product.url, '_blank'); } else { alert(t("product.buy_coming")); } }} style={{ width: "100%", padding: 14, background: "linear-gradient(135deg, #a855f7, #ec4899)", border: "none", borderRadius: 14, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer", boxShadow: "0 4px 16px rgba(168,85,247,0.25)", marginBottom: 8 }}>{t("product.buy")}</button>
+        <button onClick={onClose} style={{ width: "100%", padding: 10, background: "transparent", border: "none", fontSize: 12, color: "#94a3b8", cursor: "pointer" }}>{t("product.close")}</button>
       </div>
     </div>
   );

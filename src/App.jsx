@@ -1,13 +1,16 @@
 import { useState, useCallback, useRef } from 'react';
 import Kirari from './components/Kirari.jsx';
+import LanguageSwitcher from './components/LanguageSwitcher.jsx';
 import MirrorScreen from './components/MirrorScreen.jsx';
 import SuggestScreen from './components/SuggestScreen.jsx';
 import ArTryOnScreen from './components/ArTryOnScreen.jsx';
 import ResultScreen from './components/ResultScreen.jsx';
 import colors from './styles/theme.js';
+import { useT } from './i18n/index.jsx';
 
 // screen: 'mirror' | 'suggest' | 'ar' | 'result' | 'guide'
 export default function App() {
+  const { t } = useT();
   const [screen, setScreen] = useState('mirror');
   const prevScreenRef = useRef('mirror');
   const scoresRef = useRef({ skinScores: null });
@@ -48,6 +51,7 @@ export default function App() {
       <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
         <Kirari size={overlay ? 22 : 28} expression="happy" />
         <span style={{ fontSize: overlay ? 14 : 17, fontWeight: 800, background: colors.gradient, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>KIREI</span>
+        <LanguageSwitcher size={overlay ? "small" : "normal"} />
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <span style={{ fontSize: 8, color: "#c084fc", background: "rgba(250,245,255,0.8)", padding: "2px 8px", borderRadius: 20, fontWeight: 600 }}>PROTOTYPE</span>
@@ -175,7 +179,7 @@ export default function App() {
           <div className="kirei-phone-screen">
             <div className="kirei-app-container" style={{
               background: colors.bg,
-              fontFamily: "'Noto Sans JP', sans-serif",
+              fontFamily: "'Noto Sans JP', 'Noto Sans KR', sans-serif",
               overflow: showScrollable ? "auto" : "hidden",
               position: "relative",
             }}>
@@ -190,7 +194,7 @@ export default function App() {
       <div className="kirei-mobile-wrapper">
         <div className="kirei-app-container" style={{
           background: colors.bg,
-          fontFamily: "'Noto Sans JP', sans-serif",
+          fontFamily: "'Noto Sans JP', 'Noto Sans KR', sans-serif",
           overflow: showScrollable ? "auto" : "hidden",
           position: "relative",
         }}>
@@ -218,7 +222,7 @@ export default function App() {
               border: 'none', borderRadius: 10, padding: '6px 14px',
               fontSize: 12, fontWeight: 600, color: '#fff', cursor: 'pointer',
             }}>
-              {'<'} アプリに戻る
+              {'<'} {t("guide.back_to_app")}
             </button>
             <span style={{ fontSize: 13, fontWeight: 700, color: '#64748b' }}>KIREI Demo Guide</span>
           </div>
