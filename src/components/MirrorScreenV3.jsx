@@ -6,6 +6,7 @@ import GuideFrame from './GuideFrame.jsx';
 import ScoreBadge from './ScoreBadge.jsx';
 import useAutoShutter from '../hooks/useAutoShutter.js';
 import useKirari from '../hooks/useKirari.js';
+import useWeather from '../hooks/useWeather.js';
 import { useFaceLandmarkerCtx } from '../contexts/FaceLandmarkerContext.jsx';
 import { useT } from '../i18n/index.jsx';
 import { SKIN_SCORES } from '../data/scores.js';
@@ -28,9 +29,11 @@ export default function MirrorScreenV3({ onResult }) {
 
   const faceLandmarker = useFaceLandmarkerCtx();
 
-  // キラリ アンビエント出現（Step 2）
-  // weather は Step 3 で接続する。現時点では null
-  const kirariAmbient = useKirari({ weather: null, isChecking: checking });
+  // 天気データ取得（Step 3）
+  const weather = useWeather();
+
+  // キラリ アンビエント出現（Step 2 + 天気連動 Step 3）
+  const kirariAmbient = useKirari({ weather, isChecking: checking });
 
   const isScanning = stage === STAGE.SCANNING;
   const shutterEnabled = checking && !isScanning && stage !== STAGE.SHUTTER;
