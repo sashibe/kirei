@@ -42,19 +42,19 @@ const UPPER_LIP_INNER = [78, 191, 80, 81, 82, 13, 312, 311, 310, 415, 308];
 const LOWER_LIP_INNER = [308, 324, 318, 402, 317, 14, 87, 178, 88, 95, 78];
 
 // ===========================
-// アイシャドウ用ランドマーク（目の上の領域）
+// アイシャドウ用ランドマーク（眉下～上まぶたクリースのみ、白目に被らない）
 // ===========================
-// 左目の上側 — 眉下～まぶたの領域
+// 左目: 眉の下ラインから上まぶたの折り目(crease)まで
 const LEFT_EYESHADOW = [
-  // 上まぶたのライン（外→内）
+  // 上まぶたクリース（目の上端ライン）外→内
   263, 466, 388, 387, 386, 385, 384, 398,
-  // 眉の下ライン（内→外）に沿って戻る
-  362, 382, 381, 380, 374, 373, 390, 249, 263,
+  // 眉の下端ライン 内→外（より上のポイントを使う）
+  336, 296, 334, 293, 300, 383, 372, 345, 352, 263,
 ];
-// 右目の上側
+// 右目: 同様に上まぶたクリース～眉下
 const RIGHT_EYESHADOW = [
   33, 246, 161, 160, 159, 158, 157, 173,
-  133, 155, 154, 153, 145, 144, 163, 7, 33,
+  107, 66, 105, 63, 70, 156, 143, 116, 123, 33,
 ];
 
 export default function FaceMeshLab() {
@@ -383,29 +383,38 @@ function ColorPicker({ label, colors, selected, onSelect }) {
 
 function drawLip(ctx, lms, w, h, color, opacity) {
   ctx.save();
-  ctx.globalAlpha = opacity * 0.65;
+
+  const outerPath = UPPER_LIP_OUTER.concat(LOWER_LIP_OUTER.slice(1));
+  const innerPath = UPPER_LIP_INNER.concat(LOWER_LIP_INNER.slice(1));
+
+  // 1) ベースカラー — 薄く透かす
+  ctx.globalAlpha = opacity * 0.3;
   ctx.globalCompositeOperation = 'multiply';
+  fillLandmarkPath(ctx, lms, outerPath, w, h, color);
 
-  // 外側唇を塗りつぶし
-  fillLandmarkPath(ctx, lms, UPPER_LIP_OUTER.concat(LOWER_LIP_OUTER.slice(1)), w, h, color);
+  // 2) 内側をやや濃く（グラデーション感）
+  ctx.globalAlpha = opacity * 0.25;
+  fillLandmarkPath(ctx, lms, innerPath, w, h, color);
 
-  // 内側はより濃く
-  ctx.globalAlpha = opacity * 0.4;
-  ctx.globalCompositeOperation = 'multiply';
-  fillLandmarkPath(ctx, lms, UPPER_LIP_INNER.concat(LOWER_LIP_INNER.slice(1)), w, h, color);
+  // 3) カラーティント — overlay で元の唇のテクスチャを活かす
+  ctx.globalCompositeOperation = 'overlay';
+  ctx.globalAlpha = opacity * 0.35;
+  fillLandmarkPath(ctx, lms, outerPath, w, h, color);
 
-  // ハイライト（唇中央の上部に薄い白）
+  // 4) 下唇中央にハイライト（ぷるっと感）
   ctx.globalCompositeOperation = 'screen';
-  ctx.globalAlpha = opacity * 0.15;
-  const centerTop = lms[13]; // 上唇中央
-  const centerBot = lms[14]; // 下唇中央
-  const cx = centerTop.x * w;
-  const cy = (centerTop.y * h + centerBot.y * h) * 0.45; // やや上寄り
-  const rx = Math.abs(lms[291].x - lms[61].x) * w * 0.3;
-  const ry = Math.abs(centerBot.y - centerTop.y) * h * 0.3;
+  ctx.globalAlpha = opacity * 0.18;
+  const topLip = lms[13];
+  const botLip = lms[14];
+  // 下唇の中央やや上
+  const cx = (topLip.x * w + botLip.x * w) * 0.5;
+  const cy = botLip.y * h * 0.65 + topLip.y * h * 0.35;
+  const rx = Math.abs(lms[291].x - lms[61].x) * w * 0.25;
+  const ry = Math.abs(botLip.y - topLip.y) * h * 0.25;
 
   const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, rx);
-  grad.addColorStop(0, 'rgba(255,255,255,0.6)');
+  grad.addColorStop(0, 'rgba(255,255,255,0.5)');
+  grad.addColorStop(0.5, 'rgba(255,255,255,0.15)');
   grad.addColorStop(1, 'rgba(255,255,255,0)');
   ctx.fillStyle = grad;
   ctx.beginPath();
@@ -471,53 +480,85 @@ function drawEyeshadow(ctx, lms, w, h, color, opacity) {
 function drawFoundation(ctx, lms, w, h, color, opacity) {
   ctx.save();
 
-  // Face Oval の接続からポイントリストを構築
   const points = buildOrderedPoints(FACE_LANDMARKS_FACE_OVAL, lms, w, h);
   if (points.length < 3) { ctx.restore(); return; }
 
-  // 中心を計算
   let cx = 0, cy = 0;
   for (const [px, py] of points) { cx += px; cy += py; }
   cx /= points.length;
   cy /= points.length;
 
-  // 放射状グラデーション（中心が濃く、輪郭に向かって薄く）
   const maxR = Math.max(...points.map(([px, py]) =>
     Math.sqrt((px - cx) ** 2 + (py - cy) ** 2)
   ));
 
-  const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR);
-  grad.addColorStop(0, color + '50');
-  grad.addColorStop(0.6, color + '35');
-  grad.addColorStop(0.85, color + '18');
-  grad.addColorStop(1, color + '00');
+  // パスを作るヘルパー
+  const tracePath = () => {
+    ctx.beginPath();
+    ctx.moveTo(points[0][0], points[0][1]);
+    for (let i = 1; i < points.length; i++) {
+      ctx.lineTo(points[i][0], points[i][1]);
+    }
+    ctx.closePath();
+  };
 
-  ctx.globalAlpha = opacity * 0.45;
+  // 1) ベースカバー — 肌色を均一化（しっかり見える濃度）
+  const base = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR);
+  base.addColorStop(0, color + '80');
+  base.addColorStop(0.5, color + '65');
+  base.addColorStop(0.8, color + '40');
+  base.addColorStop(1, color + '00');
+
+  ctx.globalAlpha = opacity * 0.5;
   ctx.globalCompositeOperation = 'multiply';
-  ctx.fillStyle = grad;
-
-  ctx.beginPath();
-  ctx.moveTo(points[0][0], points[0][1]);
-  for (let i = 1; i < points.length; i++) {
-    ctx.lineTo(points[i][0], points[i][1]);
-  }
-  ctx.closePath();
+  ctx.fillStyle = base;
+  tracePath();
   ctx.fill();
 
-  // ソフトフォーカス効果
+  // 2) カラーティント — overlay で肌のテクスチャを残しつつ色味を加える
+  ctx.globalCompositeOperation = 'overlay';
+  ctx.globalAlpha = opacity * 0.3;
+  const tint = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR * 0.9);
+  tint.addColorStop(0, color + '70');
+  tint.addColorStop(0.7, color + '30');
+  tint.addColorStop(1, color + '00');
+  ctx.fillStyle = tint;
+  tracePath();
+  ctx.fill();
+
+  // 3) ソフトフォーカス（美肌効果） — Tゾーン・頬にハイライト
   ctx.globalCompositeOperation = 'screen';
-  ctx.globalAlpha = opacity * 0.08;
-  const soft = ctx.createRadialGradient(cx, cy * 0.95, 0, cx, cy, maxR * 0.7);
-  soft.addColorStop(0, 'rgba(255,255,255,0.3)');
-  soft.addColorStop(1, 'rgba(255,255,255,0)');
-  ctx.fillStyle = soft;
-  ctx.beginPath();
-  ctx.moveTo(points[0][0], points[0][1]);
-  for (let i = 1; i < points.length; i++) {
-    ctx.lineTo(points[i][0], points[i][1]);
-  }
-  ctx.closePath();
+  ctx.globalAlpha = opacity * 0.2;
+
+  // 額〜鼻筋のTゾーン
+  const nose = lms[4]; // 鼻先
+  const forehead = lms[10]; // 額中央
+  const tZone = ctx.createLinearGradient(
+    forehead.x * w, forehead.y * h,
+    nose.x * w, nose.y * h
+  );
+  tZone.addColorStop(0, 'rgba(255,255,255,0.35)');
+  tZone.addColorStop(0.5, 'rgba(255,255,255,0.2)');
+  tZone.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = tZone;
+  tracePath();
   ctx.fill();
+
+  // 左右の頬にハイライト
+  ctx.globalAlpha = opacity * 0.15;
+  for (const cheekIdx of [234, 454]) {
+    const cheek = lms[cheekIdx];
+    const cr = maxR * 0.25;
+    const cheekGrad = ctx.createRadialGradient(
+      cheek.x * w, cheek.y * h, 0,
+      cheek.x * w, cheek.y * h, cr
+    );
+    cheekGrad.addColorStop(0, 'rgba(255,255,255,0.4)');
+    cheekGrad.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = cheekGrad;
+    tracePath();
+    ctx.fill();
+  }
 
   ctx.restore();
 }
