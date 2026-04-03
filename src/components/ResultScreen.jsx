@@ -19,7 +19,9 @@ const WEATHER = { icon: '\u2600\uFE0F', temp: 22, label: '晴れ' };
 function generateLookComment(selectedLook, styleTab, t) {
   if (styleTab === 2) return t("result.skincare_comment");
   if (!selectedLook) return t("result.makeup_comment");
-  return `${selectedLook.name}${t("result.look_comment_suffix")} ${selectedLook.reason || t("result.look_comment_default")}`;
+  const lookName = typeof selectedLook.name === 'object' ? t(selectedLook.name) : selectedLook.name;
+  const lookReason = selectedLook.reason ? (typeof selectedLook.reason === 'object' ? t(selectedLook.reason) : selectedLook.reason) : t("result.look_comment_default");
+  return `${lookName}${t("result.look_comment_suffix")} ${lookReason}`;
 }
 
 export default function ResultScreen({ skinScores: propSkin, onRestart, styleTab = 0, selectedLook = null }) {
@@ -60,7 +62,7 @@ export default function ResultScreen({ skinScores: propSkin, onRestart, styleTab
         {/* Look name + swatches */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
           <p style={{ fontSize: 18, fontWeight: 800, color: '#334155', margin: 0 }}>
-            {selectedLook?.name || 'Today\'s Look'}
+            {selectedLook?.name ? (typeof selectedLook.name === 'object' ? t(selectedLook.name) : selectedLook.name) : 'Today\'s Look'}
           </p>
           {swatches.length > 0 && (
             <div style={{ display: 'flex', gap: 4 }}>
@@ -116,7 +118,7 @@ export default function ResultScreen({ skinScores: propSkin, onRestart, styleTab
                 <span style={{ fontSize: 22, width: 32, textAlign: 'center' }}>{p.emoji}</span>
                 <div style={{ flex: 1 }}>
                   <p style={{ fontSize: 13, fontWeight: 700, color: '#334155', margin: 0 }}>{typeof p.name === 'object' ? t(p.name) : p.name}</p>
-                  <p style={{ fontSize: 10, color: '#94a3b8', margin: '2px 0 0' }}>{p.shade}</p>
+                  <p style={{ fontSize: 10, color: '#94a3b8', margin: '2px 0 0' }}>{typeof p.shade === 'object' ? t(p.shade) : p.shade}</p>
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <p style={{ fontSize: 13, fontWeight: 700, color: '#a855f7', margin: 0 }}>
@@ -152,7 +154,7 @@ export default function ResultScreen({ skinScores: propSkin, onRestart, styleTab
               {WEATHER.icon} {t("result.coord_hint")}
             </p>
             <p style={{ fontSize: 11, color: '#78350f', margin: 0, lineHeight: 1.6 }}>
-              {getCoordHint(selectedLook, styleTab, WEATHER)}
+              {getCoordHint(selectedLook, styleTab, t)}
             </p>
           </div>
         </div>

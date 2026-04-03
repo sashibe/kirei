@@ -3,8 +3,10 @@ import Kirari from './Kirari.jsx';
 import Bubble from './Bubble.jsx';
 import SkincareRoutineView from './SkincareRoutineView.jsx';
 import { COLOR_LOOKS, BASE_LOOKS } from '../data/makeupLooks.js';
+import { useT } from '../i18n/index.jsx';
 
 export default function SuggestScreen({ skinScores, onSelectLook, onSkipToResult }) {
+  const { t } = useT();
   const [styleTab, setStyleTab] = useState(() => {
     const saved = localStorage.getItem('kirei_style_tab');
     return saved !== null ? Number(saved) : 0;
@@ -22,7 +24,7 @@ export default function SuggestScreen({ skinScores, onSelectLook, onSkipToResult
   if (styleTab === 2) {
     return (
       <div style={{ padding: '12px 0', minHeight: '100%' }}>
-        <StyleTabs styleTab={styleTab} setStyleTab={setStyleTab} />
+        <StyleTabs styleTab={styleTab} setStyleTab={setStyleTab} t={t} />
         <SkincareRoutineView onNext={() => onSkipToResult(styleTab)} />
       </div>
     );
@@ -30,7 +32,7 @@ export default function SuggestScreen({ skinScores, onSelectLook, onSkipToResult
 
   return (
     <div style={{ padding: '12px 0' }}>
-      <StyleTabs styleTab={styleTab} setStyleTab={setStyleTab} />
+      <StyleTabs styleTab={styleTab} setStyleTab={setStyleTab} t={t} />
 
       {/* Skin condition summary */}
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '8px 16px 12px' }}>
@@ -38,8 +40,8 @@ export default function SuggestScreen({ skinScores, onSelectLook, onSkipToResult
         <Bubble>
           <p style={{ fontSize: 12, color: '#334155', margin: 0, lineHeight: 1.6 }}>
             {styleTab === 0
-              ? 'あなたの肌色に合ったカラーメイクを提案するよ\u266A 気になるルックをタップしてね！'
-              : 'ベースメイクで清潔感をアップ\u266A 肌タイプに合わせた提案だよ！'}
+              ? t('suggest.color_intro')
+              : t('suggest.base_intro')}
           </p>
         </Bubble>
       </div>
@@ -52,6 +54,7 @@ export default function SuggestScreen({ skinScores, onSelectLook, onSkipToResult
             look={look}
             styleTab={styleTab}
             onSelect={() => onSelectLook(look, styleTab)}
+            t={t}
           />
         ))}
       </div>
@@ -59,8 +62,8 @@ export default function SuggestScreen({ skinScores, onSelectLook, onSkipToResult
   );
 }
 
-function StyleTabs({ styleTab, setStyleTab }) {
-  const tabs = ['Color makeup', 'Base makeup', 'Skin care'];
+function StyleTabs({ styleTab, setStyleTab, t }) {
+  const tabs = [t('suggest.tab_color'), t('suggest.tab_base'), t('suggest.tab_skincare')];
   return (
     <div style={{
       display: 'flex', margin: '0 16px 12px', borderRadius: 12,
@@ -82,7 +85,7 @@ function StyleTabs({ styleTab, setStyleTab }) {
   );
 }
 
-function LookCard({ look, styleTab, onSelect }) {
+function LookCard({ look, styleTab, onSelect, t }) {
   const isColor = styleTab === 0;
 
   // Preview swatches
@@ -102,8 +105,8 @@ function LookCard({ look, styleTab, onSelect }) {
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
         <div>
-          <p style={{ fontSize: 14, fontWeight: 700, color: '#334155', margin: '0 0 2px' }}>{look.name}</p>
-          <p style={{ fontSize: 11, color: '#64748b', margin: 0, lineHeight: 1.5 }}>{look.desc}</p>
+          <p style={{ fontSize: 14, fontWeight: 700, color: '#334155', margin: '0 0 2px' }}>{t(look.name)}</p>
+          <p style={{ fontSize: 11, color: '#64748b', margin: 0, lineHeight: 1.5 }}>{t(look.desc)}</p>
         </div>
         <div style={{ display: 'flex', gap: 4, flexShrink: 0, marginLeft: 8 }}>
           {swatches.map((c, i) => (
@@ -115,7 +118,7 @@ function LookCard({ look, styleTab, onSelect }) {
         </div>
       </div>
 
-      <p style={{ fontSize: 10, color: '#a855f7', margin: '4px 0 8px', fontStyle: 'italic' }}>{look.reason}</p>
+      <p style={{ fontSize: 10, color: '#a855f7', margin: '4px 0 8px', fontStyle: 'italic' }}>{t(look.reason)}</p>
 
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
         {look.products.map((p, i) => (
@@ -123,7 +126,7 @@ function LookCard({ look, styleTab, onSelect }) {
             fontSize: 10, background: '#faf5ff', color: '#7c3aed', padding: '3px 8px',
             borderRadius: 8, border: '1px solid #ede9fe',
           }}>
-            {p.emoji} {p.name} ({p.shade})
+            {p.emoji} {t(p.name)} ({t(p.shade)})
           </span>
         ))}
       </div>
@@ -136,7 +139,7 @@ function LookCard({ look, styleTab, onSelect }) {
           fontSize: 12, fontWeight: 600, color: '#a855f7',
           background: '#faf5ff', padding: '4px 12px', borderRadius: 10,
         }}>
-          {isColor ? 'ARで試す \u2192' : '選ぶ \u2192'}
+          {isColor ? t('suggest.try_ar') : t('suggest.select')}
         </span>
       </div>
     </div>

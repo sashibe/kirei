@@ -127,4 +127,56 @@ export default {
   "score.gums": "잇몸 색상",
   "score.alignment": "치열",
   "score.staining": "착색",
+
+  // === SuggestScreen ===
+  "suggest.tab_color": "컬러 메이크업",
+  "suggest.tab_base": "베이스 메이크업",
+  "suggest.tab_skincare": "스킨 케어",
+  "suggest.color_intro": "당신의 피부색에 맞는 컬러 메이크업을 제안할게♪ 마음에 드는 룩을 탭해 봐!",
+  "suggest.base_intro": "베이스 메이크업으로 청결감 업♪ 피부 타입에 맞춘 제안이야!",
+  "suggest.try_ar": "AR로 체험 →",
+  "suggest.select": "선택 →",
+
+  // === SkincareRoutineView ===
+  "skincare.intro": "당신의 피부 점수에 맞춘 스킨케어 루틴이야♪ 아침과 밤으로 나눠서 사용해!",
+  "skincare.morning_title": "☀️ 모닝 루틴",
+  "skincare.night_title": "🌙 나이트 루틴",
+  "skincare.total": "루틴 합계 ({count}아이템)",
+  "skincare.view_result": "✨ 결과 보기 →",
+
+  // === ArTryOnScreen ===
+  "ar.look_fallback": "룩",
+  "ar.back_to_looks": "룩 선택으로 돌아가기",
+  "ar.color_comment": "{name}을 시도하고 있어♪ 슬라이더로 강도를 조절해 봐!",
+  "ar.base_comment": "{name}으로 내추럴하게 마무리했어♪ 좋은 느낌!",
+  "ar.intensity": "메이크업 강도",
+  "ar.view_result": "이 룩으로 결과 보기 →",
+  "ar.try_another": "다른 룩 시도하기",
+
+  // === CoordinateOverlay ===
+  "coord.title": "Today's Total Look",
+  "coord.tpo_office": "Office",
+  "coord.tpo_casual": "Casual",
+  "coord.tpo_date": "Date",
+  "coord.tpo_formal": "Formal",
+  "coord.total": "코디 합계",
+  "coord.buy_coming": "구매 페이지 준비 중입니다",
+  "coord.buy_all": "🛒 한꺼번에 구매하기",
+  "coord.back_to_result": "결과 화면으로 돌아가기",
+  "coord.price_disclaimer": "※ 가격은 이미지입니다. 실제 판매 가격과 다를 수 있습니다.",
+
+  // === Kirari coord dialogues ===
+  "coord.weather_cold": "꽤 추울 것 같아. 아우터로 따뜻하게 지내자♪",
+  "coord.weather_cool": "좀 쌀쌀한 날이네. 가디건이나 재킷이 있으면 안심♪",
+  "coord.weather_hot": "더운 날! 시원한 소재로 편안하게, 메이크업도 안 번지는 아이템으로♪",
+  "coord.color_office": "오피스에서도 화사함을 유지♪ 메이크업에 맞춘 우아한 코디야~",
+  "coord.color_date": "데이트 코디♪ 메이크업 색감과 맞춰서 토탈로 귀엽게~",
+  "coord.base_office": "클린한 비즈니스 스타일♪ 청결감 완벽해~",
+  "coord.base_casual": "심플하지만 멋진 느낌의 코디♪ 피부가 예쁘게 보여~",
+  "coord.base_date": "은근히 호감 가는 스마트 캐주얼♪ 좋은 느낌~",
+  "coord.default": "메이크업에 맞춘 토탈 코디야♪ 궁금한 아이템은 탭해서 확인해~",
+  "coord.hint_color": "{look}에 맞춘 배색 코디로 전체 인상이 확 올라가♪",
+  "coord.hint_base": "베이스 메이크업의 청결감을 살린 심플 코디 추천♪",
+  "coord.hint_skincare": "맨살을 살린 내추럴 코디로 릴랙스한 분위기♪",
+  "coord.hint_look_fallback": "메이크업",
 };

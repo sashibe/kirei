@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import Kirari from './Kirari.jsx';
 import Bubble from './Bubble.jsx';
+import { useT } from '../i18n/index.jsx';
 
 export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
+  const { t } = useT();
   const [intensity, setIntensity] = useState(70);
   const isColor = styleTab === 0;
 
@@ -18,6 +20,10 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
 
   const opacityFactor = intensity / 100;
 
+  const lookName = look?.name
+    ? (typeof look.name === 'object' ? t(look.name) : look.name)
+    : t('ar.look_fallback');
+
   return (
     <div style={{ padding: '12px 0' }}>
       {/* Back button */}
@@ -25,7 +31,7 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
         background: 'none', border: 'none', fontSize: 13, color: '#94a3b8',
         cursor: 'pointer', padding: '0 16px 8px', fontWeight: 600,
       }}>
-        {'<'} ルック選択に戻る
+        {'<'} {t('ar.back_to_looks')}
       </button>
 
       {/* AR Preview area */}
@@ -98,7 +104,7 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
             boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
           }}>
             <p style={{ fontSize: 11, fontWeight: 700, color: '#a855f7', margin: 0 }}>
-              {look?.name || 'ルック'}
+              {lookName}
             </p>
           </div>
 
@@ -113,7 +119,7 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
                 borderRadius: 10, padding: '4px 8px',
                 boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
               }}>
-                <p style={{ fontSize: 9, color: '#64748b', margin: 0 }}>{p.emoji} {p.name}</p>
+                <p style={{ fontSize: 9, color: '#64748b', margin: 0 }}>{p.emoji} {t(p.name)}</p>
               </div>
             ))}
           </div>
@@ -126,8 +132,8 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
         <Bubble>
           <p style={{ fontSize: 12, color: '#334155', margin: 0, lineHeight: 1.6 }}>
             {isColor
-              ? `${look?.name || 'メイク'}を試してるよ♪ スライダーで強さを調整してみてね！`
-              : `${look?.name || 'ベースメイク'}でナチュラルに仕上げたよ♪ いい感じ！`}
+              ? t('ar.color_comment', { name: lookName })
+              : t('ar.base_comment', { name: lookName })}
           </p>
         </Bubble>
       </div>
@@ -139,7 +145,7 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
           boxShadow: '0 2px 8px rgba(139,92,246,0.06)', border: '1px solid #ede9fe',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-            <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b' }}>メイクの強さ</span>
+            <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b' }}>{t('ar.intensity')}</span>
             <span style={{ fontSize: 12, fontWeight: 700, color: '#a855f7' }}>{intensity}%</span>
           </div>
           <input
@@ -152,7 +158,7 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
 
       {/* Product list */}
       <div style={{ padding: '0 16px', marginBottom: 14 }}>
-        <p style={{ fontSize: 12, fontWeight: 600, color: '#64748b', margin: '0 0 8px' }}>使用アイテム</p>
+        <p style={{ fontSize: 12, fontWeight: 600, color: '#64748b', margin: '0 0 8px' }}>{t('result.used_items')}</p>
         {look?.products?.map((p, i) => (
           <div key={i} style={{
             display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0',
@@ -160,8 +166,8 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
           }}>
             <span style={{ fontSize: 18, width: 28, textAlign: 'center' }}>{p.emoji}</span>
             <div style={{ flex: 1 }}>
-              <p style={{ fontSize: 12, fontWeight: 600, color: '#334155', margin: 0 }}>{p.name}</p>
-              <p style={{ fontSize: 10, color: '#94a3b8', margin: 0 }}>{p.shade}</p>
+              <p style={{ fontSize: 12, fontWeight: 600, color: '#334155', margin: 0 }}>{t(p.name)}</p>
+              <p style={{ fontSize: 10, color: '#94a3b8', margin: 0 }}>{t(p.shade)}</p>
             </div>
             <span style={{ fontSize: 12, fontWeight: 700, color: '#a855f7' }}>
               {'\u00A5'}{p.price.toLocaleString()}
@@ -179,7 +185,7 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
           color: '#fff', cursor: 'pointer',
           boxShadow: '0 4px 16px rgba(168,85,247,0.25)',
         }}>
-          このルックで結果を見る →
+          {t('ar.view_result')}
         </button>
         <button onClick={onBack} style={{
           width: '100%', padding: 11,
@@ -187,7 +193,7 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
           borderRadius: 14, fontSize: 12, fontWeight: 600,
           color: '#64748b', cursor: 'pointer',
         }}>
-          別のルックを試す
+          {t('ar.try_another')}
         </button>
       </div>
     </div>

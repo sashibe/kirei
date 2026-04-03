@@ -127,4 +127,56 @@ export default {
   "score.gums": "Gum Color",
   "score.alignment": "Alignment",
   "score.staining": "Staining",
+
+  // === SuggestScreen ===
+  "suggest.tab_color": "Color Makeup",
+  "suggest.tab_base": "Base Makeup",
+  "suggest.tab_skincare": "Skin Care",
+  "suggest.color_intro": "Here are color makeup looks matched to your skin tone\u266A Tap a look to try it!",
+  "suggest.base_intro": "Boost your clean look with base makeup\u266A Picks matched to your skin type!",
+  "suggest.try_ar": "Try in AR \u2192",
+  "suggest.select": "Select \u2192",
+
+  // === SkincareRoutineView ===
+  "skincare.intro": "Here's a skincare routine matched to your skin score\u266A Use different items for morning and night!",
+  "skincare.morning_title": "\u2600\uFE0F Morning Routine",
+  "skincare.night_title": "\uD83C\uDF19 Night Routine",
+  "skincare.total": "Routine Total ({count} items)",
+  "skincare.view_result": "\u2728 View Results \u2192",
+
+  // === ArTryOnScreen ===
+  "ar.look_fallback": "Look",
+  "ar.back_to_looks": "Back to Looks",
+  "ar.color_comment": "Trying {name}\u266A Adjust the intensity with the slider!",
+  "ar.base_comment": "Finished {name} naturally\u266A Looking great!",
+  "ar.intensity": "Makeup Intensity",
+  "ar.view_result": "View Results with This Look \u2192",
+  "ar.try_another": "Try Another Look",
+
+  // === CoordinateOverlay ===
+  "coord.title": "Today's Total Look",
+  "coord.tpo_office": "Office",
+  "coord.tpo_casual": "Casual",
+  "coord.tpo_date": "Date",
+  "coord.tpo_formal": "Formal",
+  "coord.total": "Coord Total",
+  "coord.buy_coming": "Purchase page coming soon",
+  "coord.buy_all": "\uD83D\uDED2 Buy All Together",
+  "coord.back_to_result": "Back to Results",
+  "coord.price_disclaimer": "* Prices are for illustration. Actual prices may differ.",
+
+  // === Kirari coord dialogues ===
+  "coord.weather_cold": "It looks really cold. Stay warm with a proper outer layer\u266A",
+  "coord.weather_cool": "A bit chilly today. A cardigan or jacket would be perfect\u266A",
+  "coord.weather_hot": "Hot day! Stay cool with breathable fabrics and smudge-proof items\u266A",
+  "coord.color_office": "Stay glamorous even at the office\u266A An elegant coord to match your makeup~",
+  "coord.color_date": "Date coord\u266A Match your makeup colors for a total cute look~",
+  "coord.base_office": "Clean business style\u266A Looking fresh and professional~",
+  "coord.base_casual": "Simple but stylish coord\u266A Your skin will look beautiful~",
+  "coord.base_date": "Subtly impressive smart casual\u266A Looking great~",
+  "coord.default": "A total coord to match your makeup\u266A Tap items to check them out~",
+  "coord.hint_color": "A color-coordinated outfit with {look} will really elevate your overall look\u266A",
+  "coord.hint_base": "A simple coord that highlights the clean feel of your base makeup\u266A",
+  "coord.hint_skincare": "A natural coord that shows off your beautiful skin for a relaxed vibe\u266A",
+  "coord.hint_look_fallback": "Makeup",
 };

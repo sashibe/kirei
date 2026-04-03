@@ -127,4 +127,56 @@ export default {
   "score.gums": "歯茎の色味",
   "score.alignment": "歯並び",
   "score.staining": "着色",
+
+  // === SuggestScreen ===
+  "suggest.tab_color": "Color makeup",
+  "suggest.tab_base": "Base makeup",
+  "suggest.tab_skincare": "Skin care",
+  "suggest.color_intro": "あなたの肌色に合ったカラーメイクを提案するよ♪ 気になるルックをタップしてね！",
+  "suggest.base_intro": "ベースメイクで清潔感をアップ♪ 肌タイプに合わせた提案だよ！",
+  "suggest.try_ar": "ARで試す →",
+  "suggest.select": "選ぶ →",
+
+  // === SkincareRoutineView ===
+  "skincare.intro": "あなたの肌スコアに合わせたスキンケアルーティンだよ♪ 朝と夜で使い分けてね！",
+  "skincare.morning_title": "☀️ 朝のルーティン",
+  "skincare.night_title": "🌙 夜のルーティン",
+  "skincare.total": "ルーティン合計（{count}アイテム）",
+  "skincare.view_result": "✨ 結果を見る →",
+
+  // === ArTryOnScreen ===
+  "ar.look_fallback": "ルック",
+  "ar.back_to_looks": "ルック選択に戻る",
+  "ar.color_comment": "{name}を試してるよ♪ スライダーで強さを調整してみてね！",
+  "ar.base_comment": "{name}でナチュラルに仕上げたよ♪ いい感じ！",
+  "ar.intensity": "メイクの強さ",
+  "ar.view_result": "このルックで結果を見る →",
+  "ar.try_another": "別のルックを試す",
+
+  // === CoordinateOverlay ===
+  "coord.title": "Today's Total Look",
+  "coord.tpo_office": "Office",
+  "coord.tpo_casual": "Casual",
+  "coord.tpo_date": "Date",
+  "coord.tpo_formal": "Formal",
+  "coord.total": "コーデ合計",
+  "coord.buy_coming": "購入ページは準備中です",
+  "coord.buy_all": "🛒 まとめて購入する",
+  "coord.back_to_result": "結果画面に戻る",
+  "coord.price_disclaimer": "※ 価格はイメージです。実際の販売価格とは異なります。",
+
+  // === Kirari coord dialogues ===
+  "coord.weather_cold": "かなり冷え込むみたい。しっかりアウターで暖かく過ごそうね♪",
+  "coord.weather_cool": "少し肌寒い日だね。カーデやジャケットがあると安心♪",
+  "coord.weather_hot": "暑い日！涼しい素材で快適に、メイクも崩れにくいアイテムを♪",
+  "coord.color_office": "オフィスでも華やかさをキープ♪ メイクに合わせた上品コーデだよ〜",
+  "coord.color_date": "デートコーデ♪ メイクの色味と合わせてトータルで可愛く〜",
+  "coord.base_office": "クリーンなビジネススタイル♪ 清潔感バッチリだよ〜",
+  "coord.base_casual": "シンプルだけどこなれ感のあるコーデ♪ 肌がきれいに見えるよ〜",
+  "coord.base_date": "さりげなく好印象なスマートカジュアル♪ いい感じ〜",
+  "coord.default": "メイクに合わせたトータルコーデだよ♪ 気になるアイテムはタップしてチェックしてね〜",
+  "coord.hint_color": "{look}に合わせた配色コーデで、トータルの印象がぐっとアップするよ♪",
+  "coord.hint_base": "ベースメイクの清潔感を活かしたシンプルコーデがおすすめ♪",
+  "coord.hint_skincare": "素肌を活かしたナチュラルコーデで、リラックスした雰囲気に♪",
+  "coord.hint_look_fallback": "メイク",
 };

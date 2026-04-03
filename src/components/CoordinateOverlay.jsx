@@ -4,22 +4,24 @@ import Bubble from './Bubble.jsx';
 import BodySilhouette from './BodySilhouette.jsx';
 import { getCoordItems } from '../data/coordItems.js';
 import { getCoordLine } from '../data/kirariDialogues.js';
+import { useT } from '../i18n/index.jsx';
 
 const TPO_OPTIONS = [
-  { id: 'office',  label: 'Office',  icon: '💼' },
-  { id: 'casual',  label: 'Casual',  icon: '☕' },
-  { id: 'date',    label: 'Date',    icon: '🌙' },
-  { id: 'formal',  label: 'Formal',  icon: '🎩' },
+  { id: 'office',  labelKey: 'coord.tpo_office',  icon: '💼' },
+  { id: 'casual',  labelKey: 'coord.tpo_casual',  icon: '☕' },
+  { id: 'date',    labelKey: 'coord.tpo_date',     icon: '🌙' },
+  { id: 'formal',  labelKey: 'coord.tpo_formal',   icon: '🎩' },
 ];
 
 const TAB_IDS = ['color', 'base', 'skincare'];
 
 export default function CoordinateOverlay({ styleTab, selectedLook, weather, onClose }) {
+  const { t } = useT();
   const [selectedTPO, setSelectedTPO] = useState('casual');
   const tabId = TAB_IDS[styleTab] || 'color';
   const items = getCoordItems(tabId, selectedTPO);
   const total = items.reduce((s, i) => s + i.price, 0);
-  const kirariLine = getCoordLine({ styleTab, tpo: selectedTPO, weather });
+  const kirariLine = getCoordLine({ styleTab, tpo: selectedTPO, weather }, t);
 
   return (
     <div style={{
@@ -33,7 +35,7 @@ export default function CoordinateOverlay({ styleTab, selectedLook, weather, onC
         padding: '14px 16px 8px',
       }}>
         <p style={{ fontSize: 15, fontWeight: 800, color: '#334155', margin: 0 }}>
-          Today's Total Look
+          {t('coord.title')}
         </p>
         <button onClick={onClose} style={{
           width: 32, height: 32, borderRadius: '50%', border: '1px solid #e2e8f0',
@@ -62,7 +64,7 @@ export default function CoordinateOverlay({ styleTab, selectedLook, weather, onC
             color: selectedTPO === tpo.id ? '#d97706' : '#94a3b8',
             cursor: 'pointer',
           }}>
-            {tpo.icon} {tpo.label}
+            {tpo.icon} {t(tpo.labelKey)}
           </button>
         ))}
       </div>
@@ -80,7 +82,7 @@ export default function CoordinateOverlay({ styleTab, selectedLook, weather, onC
           position: 'relative', width: '100%', display: 'flex', justifyContent: 'center',
           minHeight: 280,
         }}>
-          <BodySilhouette items={items} />
+          <BodySilhouette items={items} t={t} />
 
           {/* Floating labels */}
           {items.map((item, i) => (
@@ -92,8 +94,8 @@ export default function CoordinateOverlay({ styleTab, selectedLook, weather, onC
               borderRadius: 10, padding: '4px 8px', maxWidth: '35%',
               boxShadow: '0 1px 4px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.04)',
             }}>
-              <p style={{ fontSize: 9, fontWeight: 600, color: '#a855f7', margin: 0 }}>{item.part}</p>
-              <p style={{ fontSize: 10, fontWeight: 600, color: '#334155', margin: 0 }}>{item.name}</p>
+              <p style={{ fontSize: 9, fontWeight: 600, color: '#a855f7', margin: 0 }}>{t(item.part)}</p>
+              <p style={{ fontSize: 10, fontWeight: 600, color: '#334155', margin: 0 }}>{t(item.name)}</p>
             </div>
           ))}
         </div>
@@ -111,8 +113,8 @@ export default function CoordinateOverlay({ styleTab, selectedLook, weather, onC
               border: '1.5px solid rgba(0,0,0,0.06)', flexShrink: 0,
             }} />
             <div style={{ flex: 1 }}>
-              <p style={{ fontSize: 12, fontWeight: 600, color: '#334155', margin: 0 }}>{item.name}</p>
-              <p style={{ fontSize: 10, color: '#94a3b8', margin: 0 }}>{item.part} / {item.shade}</p>
+              <p style={{ fontSize: 12, fontWeight: 600, color: '#334155', margin: 0 }}>{t(item.name)}</p>
+              <p style={{ fontSize: 10, color: '#94a3b8', margin: 0 }}>{t(item.part)} / {t(item.shade)}</p>
             </div>
             <span style={{ fontSize: 12, fontWeight: 700, color: '#334155', flexShrink: 0 }}>
               {'\u00A5'}{item.price.toLocaleString()}
@@ -128,21 +130,21 @@ export default function CoordinateOverlay({ styleTab, selectedLook, weather, onC
           padding: '10px 0', borderTop: '2px solid #f59e0b', marginBottom: 10,
         }}>
           <span style={{ fontSize: 13, fontWeight: 600, color: '#334155' }}>
-            コーデ合計
+            {t('coord.total')}
           </span>
           <span style={{ fontSize: 18, fontWeight: 800, color: '#d97706' }}>
             {'\u00A5'}{total.toLocaleString()}
           </span>
         </div>
 
-        <button onClick={() => alert('購入ページは準備中です')} style={{
+        <button onClick={() => alert(t('coord.buy_coming'))} style={{
           width: '100%', padding: 14, marginBottom: 8,
           background: 'linear-gradient(135deg, #f59e0b, #f97316)',
           border: 'none', borderRadius: 14, fontSize: 14, fontWeight: 700,
           color: '#fff', cursor: 'pointer',
           boxShadow: '0 4px 12px rgba(245,158,11,0.3)',
         }}>
-          🛒 まとめて購入する
+          {t('coord.buy_all')}
         </button>
 
         <button onClick={onClose} style={{
@@ -151,12 +153,12 @@ export default function CoordinateOverlay({ styleTab, selectedLook, weather, onC
           borderRadius: 14, fontSize: 12, fontWeight: 600,
           color: '#64748b', cursor: 'pointer',
         }}>
-          結果画面に戻る
+          {t('coord.back_to_result')}
         </button>
       </div>
 
       <p style={{ textAlign: 'center', fontSize: 10, color: '#cbd5e1', paddingBottom: 16 }}>
-        ※ 価格はイメージです。実際の販売価格とは異なります。
+        {t('coord.price_disclaimer')}
       </p>
     </div>
   );
