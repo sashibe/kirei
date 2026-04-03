@@ -30,8 +30,8 @@ export default function LanguageSwitcher({ size = 'normal' }) {
               color: '#fff',
               boxShadow: '0 1px 4px rgba(168,85,247,0.3)',
             } : {
-              background: 'transparent',
-              color: '#94a3b8',
+              background: 'rgba(168,85,247,0.12)',
+              color: '#7c3aed',
             }),
           }}
         >
