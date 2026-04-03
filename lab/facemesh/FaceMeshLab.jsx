@@ -18,7 +18,44 @@ const DRAW_MODES = {
   contour:  { label: 'Contours Only', key: 'contour' },
   points:   { label: 'Points',        key: 'points' },
   regions:  { label: 'Regions',       key: 'regions' },
+  off:      { label: 'OFF',           key: 'off' },
 };
+
+// メイクARの定義
+const MAKEUP_ITEMS = {
+  lip:        { label: 'Lip',        emoji: '💋', color: '#e8396b' },
+  eyeshadow:  { label: 'Eye Shadow', emoji: '👁', color: '#b07cd8' },
+  foundation: { label: 'Foundation', emoji: '✨', color: '#e8b87a' },
+};
+
+// メイクARカラープリセット
+const LIP_COLORS = ['#e8396b', '#c2185b', '#d4456a', '#a83250', '#ff6b8a', '#8b2252'];
+const EYESHADOW_COLORS = ['#b07cd8', '#7c5cbf', '#d4a0e8', '#5c4a8a', '#e8a0c8', '#4a6fa0'];
+const FOUNDATION_COLORS = ['#e8b87a', '#d4a06a', '#f0c896', '#c8946a', '#f5d4a8', '#b88a5a'];
+
+// ===========================
+// 唇の内側ランドマーク（上唇内側 + 下唇内側で閉じた領域）
+// ===========================
+const UPPER_LIP_OUTER = [61, 185, 40, 39, 37, 0, 267, 269, 270, 409, 291];
+const LOWER_LIP_OUTER = [291, 375, 321, 405, 314, 17, 84, 181, 91, 146, 61];
+const UPPER_LIP_INNER = [78, 191, 80, 81, 82, 13, 312, 311, 310, 415, 308];
+const LOWER_LIP_INNER = [308, 324, 318, 402, 317, 14, 87, 178, 88, 95, 78];
+
+// ===========================
+// アイシャドウ用ランドマーク（目の上の領域）
+// ===========================
+// 左目の上側 — 眉下～まぶたの領域
+const LEFT_EYESHADOW = [
+  // 上まぶたのライン（外→内）
+  263, 466, 388, 387, 386, 385, 384, 398,
+  // 眉の下ライン（内→外）に沿って戻る
+  362, 382, 381, 380, 374, 373, 390, 249, 263,
+];
+// 右目の上側
+const RIGHT_EYESHADOW = [
+  33, 246, 161, 160, 159, 158, 157, 173,
+  133, 155, 154, 153, 145, 144, 163, 7, 33,
+];
 
 export default function FaceMeshLab() {
   const videoRef = useRef(null);
@@ -27,11 +64,29 @@ export default function FaceMeshLab() {
   const rafRef = useRef(null);
   const streamRef = useRef(null);
 
-  const [status, setStatus] = useState('loading'); // loading | ready | active | error
+  const [status, setStatus] = useState('loading');
   const [drawMode, setDrawMode] = useState('mesh');
   const [showFps, setShowFps] = useState(true);
   const [opacity, setOpacity] = useState(0.6);
   const fpsRef = useRef({ frames: 0, last: performance.now(), value: 0 });
+
+  // メイクAR state
+  const [makeupActive, setMakeupActive] = useState({ lip: false, eyeshadow: false, foundation: false });
+  const [makeupColors, setMakeupColors] = useState({
+    lip: LIP_COLORS[0],
+    eyeshadow: EYESHADOW_COLORS[0],
+    foundation: FOUNDATION_COLORS[0],
+  });
+
+  // メイク設定をrefに保持（ループ内で最新値を参照するため）
+  const makeupRef = useRef({ active: makeupActive, colors: makeupColors });
+  useEffect(() => {
+    makeupRef.current = { active: makeupActive, colors: makeupColors };
+  }, [makeupActive, makeupColors]);
+
+  const toggleMakeup = (key) => {
+    setMakeupActive(prev => ({ ...prev, [key]: !prev[key] }));
+  };
 
   // --- FaceLandmarker 初期化 ---
   useEffect(() => {
@@ -112,7 +167,6 @@ export default function FaceMeshLab() {
         return;
       }
 
-      // Canvas サイズ同期
       if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
@@ -120,12 +174,29 @@ export default function FaceMeshLab() {
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // 検出
       const result = detectorRef.current.detectForVideo(video, performance.now());
 
       if (result.faceLandmarks?.length) {
         const landmarks = result.faceLandmarks[0];
-        drawLandmarks(ctx, landmarks, canvas.width, canvas.height, drawMode, opacity);
+        const w = canvas.width;
+        const h = canvas.height;
+
+        // メッシュ描画（OFFでなければ）
+        if (drawMode !== 'off') {
+          drawLandmarks(ctx, landmarks, w, h, drawMode, opacity);
+        }
+
+        // メイクAR描画
+        const mk = makeupRef.current;
+        if (mk.active.foundation) {
+          drawFoundation(ctx, landmarks, w, h, mk.colors.foundation, opacity);
+        }
+        if (mk.active.eyeshadow) {
+          drawEyeshadow(ctx, landmarks, w, h, mk.colors.eyeshadow, opacity);
+        }
+        if (mk.active.lip) {
+          drawLip(ctx, landmarks, w, h, mk.colors.lip, opacity);
+        }
       }
 
       // FPS
@@ -150,20 +221,17 @@ export default function FaceMeshLab() {
     return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
   }, [status, drawMode, showFps, opacity]);
 
+  const anyMakeupActive = makeupActive.lip || makeupActive.eyeshadow || makeupActive.foundation;
+
   return (
     <div style={styles.container}>
       <header style={styles.header}>
         <h1 style={styles.title}>KIREI Lab</h1>
-        <span style={styles.subtitle}>Face Mesh Experiment</span>
+        <span style={styles.subtitle}>Face Mesh + Makeup AR</span>
       </header>
 
       <div style={styles.viewport}>
-        <video
-          ref={videoRef}
-          style={styles.video}
-          playsInline
-          muted
-        />
+        <video ref={videoRef} style={styles.video} playsInline muted />
         <canvas ref={canvasRef} style={styles.canvas} />
 
         {status === 'loading' && (
@@ -186,10 +254,59 @@ export default function FaceMeshLab() {
         )}
       </div>
 
-      {/* コントロールパネル */}
+      {/* メイクARボタン */}
       <div style={styles.controls}>
         <div style={styles.controlRow}>
-          <label style={styles.label}>Draw Mode</label>
+          <label style={styles.label}>Makeup AR</label>
+          <div style={styles.modeButtons}>
+            {Object.entries(MAKEUP_ITEMS).map(([key, item]) => (
+              <button
+                key={key}
+                style={{
+                  ...styles.makeupBtn,
+                  ...(makeupActive[key] ? {
+                    color: '#fff',
+                    background: item.color + '40',
+                    borderColor: item.color,
+                    boxShadow: `0 0 12px ${item.color}60`,
+                  } : {}),
+                }}
+                onClick={() => toggleMakeup(key)}
+              >
+                {item.emoji} {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* カラーピッカー（アクティブなメイクのみ表示） */}
+        {makeupActive.lip && (
+          <ColorPicker
+            label="Lip Color"
+            colors={LIP_COLORS}
+            selected={makeupColors.lip}
+            onSelect={c => setMakeupColors(p => ({ ...p, lip: c }))}
+          />
+        )}
+        {makeupActive.eyeshadow && (
+          <ColorPicker
+            label="Eye Shadow"
+            colors={EYESHADOW_COLORS}
+            selected={makeupColors.eyeshadow}
+            onSelect={c => setMakeupColors(p => ({ ...p, eyeshadow: c }))}
+          />
+        )}
+        {makeupActive.foundation && (
+          <ColorPicker
+            label="Foundation"
+            colors={FOUNDATION_COLORS}
+            selected={makeupColors.foundation}
+            onSelect={c => setMakeupColors(p => ({ ...p, foundation: c }))}
+          />
+        )}
+
+        <div style={{ ...styles.controlRow, borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 12 }}>
+          <label style={styles.label}>Mesh</label>
           <div style={styles.modeButtons}>
             {Object.values(DRAW_MODES).map(m => (
               <button
@@ -226,17 +343,199 @@ export default function FaceMeshLab() {
           </label>
         </div>
       </div>
+    </div>
+  );
+}
 
-      <div style={styles.info}>
-        <p>478-point MediaPipe FaceLandmarker</p>
-        <p style={{ fontSize: 11, opacity: 0.6 }}>Tesselation / Contour / Points / Region rendering modes</p>
+// ============================
+// カラーピッカーコンポーネント
+// ============================
+
+function ColorPicker({ label, colors, selected, onSelect }) {
+  return (
+    <div style={styles.controlRow}>
+      <label style={{ ...styles.label, fontSize: 11, opacity: 0.7 }}>{label}</label>
+      <div style={{ display: 'flex', gap: 6 }}>
+        {colors.map(c => (
+          <button
+            key={c}
+            onClick={() => onSelect(c)}
+            style={{
+              width: 28,
+              height: 28,
+              borderRadius: '50%',
+              background: c,
+              border: selected === c ? '2px solid #fff' : '2px solid transparent',
+              cursor: 'pointer',
+              boxShadow: selected === c ? `0 0 8px ${c}` : 'none',
+              transition: 'all 0.15s',
+            }}
+          />
+        ))}
       </div>
     </div>
   );
 }
 
 // ============================
-// 描画関数
+// メイクAR描画関数
+// ============================
+
+function drawLip(ctx, lms, w, h, color, opacity) {
+  ctx.save();
+  ctx.globalAlpha = opacity * 0.65;
+  ctx.globalCompositeOperation = 'multiply';
+
+  // 外側唇を塗りつぶし
+  fillLandmarkPath(ctx, lms, UPPER_LIP_OUTER.concat(LOWER_LIP_OUTER.slice(1)), w, h, color);
+
+  // 内側はより濃く
+  ctx.globalAlpha = opacity * 0.4;
+  ctx.globalCompositeOperation = 'multiply';
+  fillLandmarkPath(ctx, lms, UPPER_LIP_INNER.concat(LOWER_LIP_INNER.slice(1)), w, h, color);
+
+  // ハイライト（唇中央の上部に薄い白）
+  ctx.globalCompositeOperation = 'screen';
+  ctx.globalAlpha = opacity * 0.15;
+  const centerTop = lms[13]; // 上唇中央
+  const centerBot = lms[14]; // 下唇中央
+  const cx = centerTop.x * w;
+  const cy = (centerTop.y * h + centerBot.y * h) * 0.45; // やや上寄り
+  const rx = Math.abs(lms[291].x - lms[61].x) * w * 0.3;
+  const ry = Math.abs(centerBot.y - centerTop.y) * h * 0.3;
+
+  const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, rx);
+  grad.addColorStop(0, 'rgba(255,255,255,0.6)');
+  grad.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.restore();
+}
+
+function drawEyeshadow(ctx, lms, w, h, color, opacity) {
+  ctx.save();
+
+  // グラデーションで自然な見た目
+  for (const indices of [LEFT_EYESHADOW, RIGHT_EYESHADOW]) {
+    // 領域の中心と範囲を計算
+    let cx = 0, cy = 0, minY = Infinity, maxY = -Infinity;
+    for (const i of indices) {
+      cx += lms[i].x; cy += lms[i].y;
+      minY = Math.min(minY, lms[i].y);
+      maxY = Math.max(maxY, lms[i].y);
+    }
+    cx = (cx / indices.length) * w;
+    cy = (cy / indices.length) * h;
+
+    // 上方向にグラデーション
+    const grad = ctx.createLinearGradient(cx, minY * h, cx, maxY * h);
+    grad.addColorStop(0, color + 'B0');   // 上は濃い
+    grad.addColorStop(0.6, color + '60'); // 下に向かって薄く
+    grad.addColorStop(1, color + '10');
+
+    ctx.globalAlpha = opacity * 0.55;
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.fillStyle = grad;
+
+    ctx.beginPath();
+    const first = indices[0];
+    ctx.moveTo(lms[first].x * w, lms[first].y * h);
+    for (let i = 1; i < indices.length; i++) {
+      ctx.lineTo(lms[indices[i]].x * w, lms[indices[i]].y * h);
+    }
+    ctx.closePath();
+    ctx.fill();
+
+    // シマー効果（ラメ感）
+    ctx.globalCompositeOperation = 'screen';
+    ctx.globalAlpha = opacity * 0.12;
+    const shimmer = ctx.createRadialGradient(cx, cy, 0, cx, cy, (maxY - minY) * h * 0.8);
+    shimmer.addColorStop(0, 'rgba(255,255,255,0.5)');
+    shimmer.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = shimmer;
+    ctx.beginPath();
+    ctx.moveTo(lms[first].x * w, lms[first].y * h);
+    for (let i = 1; i < indices.length; i++) {
+      ctx.lineTo(lms[indices[i]].x * w, lms[indices[i]].y * h);
+    }
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+function drawFoundation(ctx, lms, w, h, color, opacity) {
+  ctx.save();
+
+  // Face Oval の接続からポイントリストを構築
+  const points = buildOrderedPoints(FACE_LANDMARKS_FACE_OVAL, lms, w, h);
+  if (points.length < 3) { ctx.restore(); return; }
+
+  // 中心を計算
+  let cx = 0, cy = 0;
+  for (const [px, py] of points) { cx += px; cy += py; }
+  cx /= points.length;
+  cy /= points.length;
+
+  // 放射状グラデーション（中心が濃く、輪郭に向かって薄く）
+  const maxR = Math.max(...points.map(([px, py]) =>
+    Math.sqrt((px - cx) ** 2 + (py - cy) ** 2)
+  ));
+
+  const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR);
+  grad.addColorStop(0, color + '50');
+  grad.addColorStop(0.6, color + '35');
+  grad.addColorStop(0.85, color + '18');
+  grad.addColorStop(1, color + '00');
+
+  ctx.globalAlpha = opacity * 0.45;
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.fillStyle = grad;
+
+  ctx.beginPath();
+  ctx.moveTo(points[0][0], points[0][1]);
+  for (let i = 1; i < points.length; i++) {
+    ctx.lineTo(points[i][0], points[i][1]);
+  }
+  ctx.closePath();
+  ctx.fill();
+
+  // ソフトフォーカス効果
+  ctx.globalCompositeOperation = 'screen';
+  ctx.globalAlpha = opacity * 0.08;
+  const soft = ctx.createRadialGradient(cx, cy * 0.95, 0, cx, cy, maxR * 0.7);
+  soft.addColorStop(0, 'rgba(255,255,255,0.3)');
+  soft.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = soft;
+  ctx.beginPath();
+  ctx.moveTo(points[0][0], points[0][1]);
+  for (let i = 1; i < points.length; i++) {
+    ctx.lineTo(points[i][0], points[i][1]);
+  }
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.restore();
+}
+
+// ヘルパー: ランドマークインデックス配列からパスを塗りつぶし
+function fillLandmarkPath(ctx, lms, indices, w, h, color) {
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(lms[indices[0]].x * w, lms[indices[0]].y * h);
+  for (let i = 1; i < indices.length; i++) {
+    ctx.lineTo(lms[indices[i]].x * w, lms[indices[i]].y * h);
+  }
+  ctx.closePath();
+  ctx.fill();
+}
+
+// ============================
+// メッシュ描画関数
 // ============================
 
 function drawLandmarks(ctx, landmarks, w, h, mode, opacity) {
@@ -261,7 +560,6 @@ function drawLandmarks(ctx, landmarks, w, h, mode, opacity) {
   ctx.globalAlpha = 1;
 }
 
-// テッセレーション（三角形メッシュ）
 function drawTesselation(ctx, lms, w, h) {
   ctx.strokeStyle = 'rgba(180, 180, 255, 0.3)';
   ctx.lineWidth = 0.5;
@@ -275,7 +573,6 @@ function drawTesselation(ctx, lms, w, h) {
   ctx.stroke();
 }
 
-// 輪郭ライン（顔・目・眉・唇・虹彩）
 function drawContourLines(ctx, lms, w, h) {
   const groups = [
     { conns: FACE_LANDMARKS_FACE_OVAL, color: '#a855f7', width: 2 },
@@ -302,7 +599,6 @@ function drawContourLines(ctx, lms, w, h) {
   }
 }
 
-// ポイント描画（全478点）
 function drawPoints(ctx, lms, w, h) {
   ctx.fillStyle = '#a855f7';
   for (let i = 0; i < lms.length; i++) {
@@ -313,7 +609,6 @@ function drawPoints(ctx, lms, w, h) {
   }
 }
 
-// リージョン（領域ごとに色分け塗りつぶし）
 function drawRegions(ctx, lms, w, h) {
   const regions = [
     { conns: FACE_LANDMARKS_FACE_OVAL, color: 'rgba(168,85,247,0.15)' },
@@ -325,7 +620,6 @@ function drawRegions(ctx, lms, w, h) {
   ];
 
   for (const { conns, color } of regions) {
-    // 接続リストから順序付きポイントリストを構築
     const points = buildOrderedPoints(conns, lms, w, h);
     if (points.length < 3) continue;
 
@@ -339,15 +633,12 @@ function drawRegions(ctx, lms, w, h) {
     ctx.fill();
   }
 
-  // 輪郭線も重ねる
   drawContourLines(ctx, lms, w, h);
 }
 
-// 接続リストから順序付きポイント列を構築
 function buildOrderedPoints(connections, lms, w, h) {
   if (!connections || connections.length === 0) return [];
 
-  // 隣接リスト構築
   const adj = new Map();
   for (const conn of connections) {
     if (!adj.has(conn.start)) adj.set(conn.start, []);
@@ -356,7 +647,6 @@ function buildOrderedPoints(connections, lms, w, h) {
     adj.get(conn.end).push(conn.start);
   }
 
-  // 最初の接続から辿る
   const visited = new Set();
   const ordered = [];
   let current = connections[0].start;
@@ -496,19 +786,24 @@ const styles = {
     background: 'rgba(168,85,247,0.3)',
     borderColor: '#a855f7',
   },
+  makeupBtn: {
+    padding: '8px 16px',
+    fontSize: 13,
+    fontWeight: 600,
+    color: '#94a3b8',
+    background: 'rgba(255,255,255,0.05)',
+    border: '1px solid rgba(255,255,255,0.15)',
+    borderRadius: 8,
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+  },
   slider: {
     flex: 1,
     accentColor: '#a855f7',
   },
-  info: {
-    marginTop: 16,
-    textAlign: 'center',
-    fontSize: 12,
-    opacity: 0.4,
-  },
 };
 
-// スピナーアニメーション用のグローバルCSS注入
+// グローバルCSS
 if (typeof document !== 'undefined' && !document.getElementById('lab-styles')) {
   const style = document.createElement('style');
   style.id = 'lab-styles';
