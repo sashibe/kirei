@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KIREI v2 Demo Guide</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;800&family=Noto+Sans+KR:wght@300;400;500;700;800&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Noto Sans JP', sans-serif; color: #1e1b2e; background: #faf8ff; line-height: 1.8; }
+body { font-family: 'Noto Sans JP', 'Noto Sans KR', sans-serif; color: #1e1b2e; background: #faf8ff; line-height: 1.8; }
 
 /* Hero */
 .hero {
@@ -166,6 +166,28 @@ body { font-family: 'Noto Sans JP', sans-serif; color: #1e1b2e; background: #faf
   background: #f8fafc;
 }
 
+/* Language switcher */
+.lang-switcher {
+  position: fixed; top: 12px; right: 12px; z-index: 1000;
+  display: flex; gap: 2px;
+  background: rgba(255,255,255,0.75); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-radius: 10px; padding: 3px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+.lang-btn {
+  border: none; border-radius: 8px; padding: 4px 10px;
+  font-size: 11px; font-weight: 700; cursor: pointer;
+  font-family: 'Noto Sans JP', 'Noto Sans KR', sans-serif;
+  transition: all 0.2s;
+}
+.lang-btn.active {
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  color: #fff; box-shadow: 0 1px 4px rgba(168,85,247,0.3);
+}
+.lang-btn:not(.active) {
+  background: rgba(168,85,247,0.12); color: #7c3aed;
+}
+
 /* Responsive */
 @media (max-width: 640px) {
   .showcase { flex-direction: column !important; align-items: center; }
@@ -176,58 +198,65 @@ body { font-family: 'Noto Sans JP', sans-serif; color: #1e1b2e; background: #faf
 </head>
 <body>
 
+<!-- Language Switcher -->
+<div class="lang-switcher">
+  <button class="lang-btn active" onclick="setLanguage('ja')">JA</button>
+  <button class="lang-btn" onclick="setLanguage('en')">EN</button>
+  <button class="lang-btn" onclick="setLanguage('ko')">KO</button>
+</div>
+
 <!-- ========== HERO ========== -->
 <section class="hero">
   <div class="hero-badge">DEMO GUIDE v2</div>
   <h1>KIREI</h1>
-  <p class="sub">AIビューティーミラー ── 肌を分析し、メイクを提案し、その場で試着。さらに今日の天気に合わせたコーディネートまで。</p>
-  <div class="tagline">💡 性別を問わず、すべての人の「なりたい自分」をサポートするアプリ</div>
+  <p class="sub" data-i18n="hero_sub">AIビューティーミラー ── 肌を分析し、メイクを提案し、その場で試着。さらに今日の天気に合わせたコーディネートまで。</p>
+  <div class="tagline" data-i18n="hero_tagline">💡 性別を問わず、すべての人の「なりたい自分」をサポートするアプリ</div>
 </section>
 
 <!-- ========== FLOW ========== -->
 <section class="section">
   <div class="section-num">Overview</div>
-  <h2>4つの画面で「朝の支度」を完結</h2>
-  <p class="lead">KIREIは毎朝の鏡を、AIパワードのスタイリングアシスタントに変えます。</p>
-  
+  <h2 data-i18n="overview_title">4つの画面で「朝の支度」を完結</h2>
+  <p class="lead" data-i18n="overview_lead">KIREIは毎朝の鏡を、AIパワードのスタイリングアシスタントに変えます。</p>
+
   <div class="flow">
-    <span class="flow-step">ミラー</span>
+    <span class="flow-step" data-i18n="flow_mirror">ミラー</span>
     <span class="flow-arrow">→</span>
-    <span class="flow-step">メイク提案</span>
+    <span class="flow-step" data-i18n="flow_suggest">メイク提案</span>
     <span class="flow-arrow">→</span>
-    <span class="flow-step highlight">ARトライオン</span>
+    <span class="flow-step highlight" data-i18n="flow_ar">ARトライオン</span>
     <span class="flow-arrow">→</span>
-    <span class="flow-step">結果＋コーデ</span>
+    <span class="flow-step" data-i18n="flow_result">結果＋コーデ</span>
   </div>
 </section>
 
 <!-- ========== GENDER NEUTRAL ========== -->
 <section class="section" style="padding-top: 0;">
   <div class="gn-banner">
-    <h3>性別を聞かない。スタイルで選ぶ。</h3>
-    <p class="sub">KIREIはUI上のどこにも「男性用」「女性用」の区別がありません。<br>代わりに、3つのスタイルタブで自分に合ったモードを選べます。</p>
-    
+    <h3 data-i18n="gn_title">性別を聞かない。スタイルで選ぶ。</h3>
+    <p class="sub" data-i18n="gn_sub">KIREIはUI上のどこにも「男性用」「女性用」の区別がありません。<br>代わりに、3つのスタイルタブで自分に合ったモードを選べます。</p>
+
     <div class="gn-tabs">
       <div class="gn-tab active">Color makeup</div>
       <div class="gn-tab">Base makeup</div>
       <div class="gn-tab">Skin care</div>
     </div>
-    
+
     <div class="gn-grid">
       <div class="gn-card">
         <div class="label">Color makeup</div>
-        <div class="name">カラーメイクを楽しみたい方に</div>
-        <div class="detail">リップ・チーク・アイシャドウのフルメイク。ARで色を試せます。</div>
+        <div class="name" data-i18n="gn_color_name">カラーメイクを楽しみたい方に</div>
+        <div class="detail" data-i18n="gn_color_detail">リップ・チーク・アイシャドウのフルメイク。ARで色を試せます。</div>
       </div>
       <div class="gn-card">
         <div class="label">Base makeup</div>
-        <div class="name">素肌をきれいに整えたい方に</div>
-        <div class="detail">BBクリーム・コンシーラー・眉マスカラ。清潔感重視のナチュラル仕上げ。</div>
+        <div class="name" data-i18n="gn_base_name">素肌をきれいに整えたい方に</div>
+        <div class="detail" data-i18n="gn_base_detail">BBクリーム・コンシーラー・眉マスカラ。清潔感重視のナチュラル仕上げ。</div>
       </div>
       <div class="gn-card">
         <div class="label">Skin care</div>
-        <div class="name">スキンケアだけ知りたい方に</div>
-        <div class="detail">肌分析に基づくスキンケアルーティン提案。メイクなしでも使えます。</div>
+        <div class="name" data-i18n="gn_skin_name">スキンケアだけ知りたい方に</div>
+        <div class="detail" data-i18n="gn_skin_detail">肌分析に基づくスキンケアルーティン提案。メイクなしでも使えます。</div>
       </div>
     </div>
   </div>
@@ -238,21 +267,21 @@ body { font-family: 'Noto Sans JP', sans-serif; color: #1e1b2e; background: #faf
 <!-- ========== SCREEN 1: MIRROR ========== -->
 <section class="section">
   <div class="section-num">Screen 01</div>
-  <h2>ミラー ── 肌を映すだけでAIが分析</h2>
-  <p class="lead">カメラに顔を映すと、AIが自動で肌コンディションを分析。パーソナルカラーも判定します。</p>
-  
+  <h2 data-i18n="s01_title">ミラー ── 肌を映すだけでAIが分析</h2>
+  <p class="lead" data-i18n="s01_lead">カメラに顔を映すと、AIが自動で肌コンディションを分析。パーソナルカラーも判定します。</p>
+
   <div class="pills">
-    <span class="pill purple">肌トーン</span>
-    <span class="pill pink">毛穴</span>
-    <span class="pill teal">くすみ</span>
-    <span class="pill blue">水分</span>
-    <span class="pill amber">パーソナルカラー</span>
+    <span class="pill purple" data-i18n="pill_tone">肌トーン</span>
+    <span class="pill pink" data-i18n="pill_pores">毛穴</span>
+    <span class="pill teal" data-i18n="pill_dullness">くすみ</span>
+    <span class="pill blue" data-i18n="pill_moisture">水分</span>
+    <span class="pill amber" data-i18n="pill_pcolor">パーソナルカラー</span>
   </div>
-  
-  <p style="font-size: 14px; color: #475569; margin-bottom: 16px;">
+
+  <p style="font-size: 14px; color: #475569; margin-bottom: 16px;" data-i18n="s01_desc">
     スマホのフロントカメラで実際の顔をリアルタイム表示。分析中はキラリ（AIマスコット）がナビゲーションし、スキャンラインのアニメーションで進行状況を伝えます。分析はスタイルタブに関係なく共通 ── 肌は肌です。
   </p>
-  <p style="font-size: 13px; color: #94a3b8;">
+  <p style="font-size: 13px; color: #94a3b8;" data-i18n="s01_note">
     ※カメラを許可しない場合はイラストのフォールバック表示。分析結果はデモ用のシミュレーション値です。
   </p>
 </section>
@@ -262,23 +291,23 @@ body { font-family: 'Noto Sans JP', sans-serif; color: #1e1b2e; background: #faf
 <!-- ========== SCREEN 3: AR TRY-ON ========== -->
 <section class="section">
   <div class="section-num">Screen 02–03</div>
-  <h2>メイク提案＋ARトライオン</h2>
-  <p class="lead">肌スコアとパーソナルカラーに基づいて、今日の肌にぴったりのメイクルックを提案。そのまま顔の上にARで試着できます。</p>
-  
+  <h2 data-i18n="s02_title">メイク提案＋ARトライオン</h2>
+  <p class="lead" data-i18n="s02_lead">肌スコアとパーソナルカラーに基づいて、今日の肌にぴったりのメイクルックを提案。そのまま顔の上にARで試着できます。</p>
+
   <div class="showcase">
     <div class="phone">
-      <img src="img/screen_tryon.png" alt="ARトライオン画面">
+      <img src="img/screen_tryon.png" alt="AR Try-On">
     </div>
     <div class="desc">
-      <h3>色を試して、強さを調整</h3>
+      <h3 data-i18n="s02_sub">色を試して、強さを調整</h3>
       <div class="pills" style="margin-bottom: 12px;">
-        <span class="pill purple">ARオーバーレイ</span>
-        <span class="pill pink">カラーパレット</span>
-        <span class="pill amber">濃さスライダー</span>
+        <span class="pill purple" data-i18n="pill_ar">ARオーバーレイ</span>
+        <span class="pill pink" data-i18n="pill_palette">カラーパレット</span>
+        <span class="pill amber" data-i18n="pill_slider">濃さスライダー</span>
       </div>
-      <p>選んだルックのメイクが顔の上にリアルタイムで重畳表示されます。カラーパレットから色を変えたり、スライダーで濃さを調整したり。</p>
-      <p>「長押しでBefore」機能でメイク前の素顔と比較できます。</p>
-      <p style="font-size: 13px; color: #94a3b8; margin-top: 12px;">
+      <p data-i18n="s02_desc1">選んだルックのメイクが顔の上にリアルタイムで重畳表示されます。カラーパレットから色を変えたり、スライダーで濃さを調整したり。</p>
+      <p data-i18n="s02_desc2">「長押しでBefore」機能でメイク前の素顔と比較できます。</p>
+      <p style="font-size: 13px; color: #94a3b8; margin-top: 12px;" data-i18n="s02_tech">
         デモ版はCSSブレンドモードによるシミュレーション。本番ではMediaPipe Face Mesh（468点ランドマーク）でリップ・チーク・アイシャドウを精密に追従させます。
       </p>
     </div>
@@ -290,22 +319,22 @@ body { font-family: 'Noto Sans JP', sans-serif; color: #1e1b2e; background: #faf
 <!-- ========== SCREEN 4: RESULTS ========== -->
 <section class="section">
   <div class="section-num">Screen 04</div>
-  <h2>結果 ── 今日のトータルルック</h2>
-  <p class="lead">メイクの仕上がりをまとめて、今日の肌にぴったりのコスメを推薦。さらに天気に合わせたコーディネートまで提案します。</p>
-  
+  <h2 data-i18n="s04_title">結果 ── 今日のトータルルック</h2>
+  <p class="lead" data-i18n="s04_lead">メイクの仕上がりをまとめて、今日の肌にぴったりのコスメを推薦。さらに天気に合わせたコーディネートまで提案します。</p>
+
   <div class="showcase reverse">
     <div class="phone">
-      <img src="img/screen_result.png" alt="結果画面">
+      <img src="img/screen_result.png" alt="Results">
     </div>
     <div class="desc">
-      <h3>肌スコア＋ケア提案</h3>
+      <h3 data-i18n="s04_sub">肌スコア＋ケア提案</h3>
       <div class="pills" style="margin-bottom: 12px;">
-        <span class="pill purple">総合スコア</span>
-        <span class="pill teal">個別スコア</span>
-        <span class="pill amber">ケアグッズ推薦</span>
+        <span class="pill purple" data-i18n="pill_overall">総合スコア</span>
+        <span class="pill teal" data-i18n="pill_individual">個別スコア</span>
+        <span class="pill amber" data-i18n="pill_care">ケアグッズ推薦</span>
       </div>
-      <p>肌の総合スコアと個別スコア（肌トーン・毛穴・くすみ）を表示。スコアに基づいたケアグッズをKIREI SELECTから提案します。</p>
-      <p>キラリがスコアに応じたアドバイスを語りかけ。「毛穴は良い感じ♪ くすみケアをプラスするともっと良くなるかも〜」</p>
+      <p data-i18n="s04_desc1">肌の総合スコアと個別スコア（肌トーン・毛穴・くすみ）を表示。スコアに基づいたケアグッズをKIREI SELECTから提案します。</p>
+      <p data-i18n="s04_desc2">キラリがスコアに応じたアドバイスを語りかけ。「毛穴は良い感じ♪ くすみケアをプラスするともっと良くなるかも〜」</p>
     </div>
   </div>
 </section>
@@ -315,30 +344,30 @@ body { font-family: 'Noto Sans JP', sans-serif; color: #1e1b2e; background: #faf
 <!-- ========== COORDINATE ========== -->
 <section class="section">
   <div class="section-num">Coordinate</div>
-  <h2>コーデ提案 ── メイクに合わせたファッション</h2>
-  <p class="lead">結果画面の「おすすめコーデを見る」から、メイクのスタイルに合わせたファッションアイテムを提案。天気も考慮します。</p>
-  
+  <h2 data-i18n="coord_title">コーデ提案 ── メイクに合わせたファッション</h2>
+  <p class="lead" data-i18n="coord_lead">結果画面の「おすすめコーデを見る」から、メイクのスタイルに合わせたファッションアイテムを提案。天気も考慮します。</p>
+
   <div class="showcase">
     <div class="phone">
-      <img src="img/screen_cosme.png" alt="コスメ提案">
+      <img src="img/screen_cosme.png" alt="Cosmetics">
     </div>
     <div class="phone">
-      <img src="img/screen_coord.png" alt="コーデ提案">
+      <img src="img/screen_coord.png" alt="Coordinate">
     </div>
   </div>
-  
+
   <div style="margin-top: 8px;">
-    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">4つのインプットでパーソナルに</h3>
+    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;" data-i18n="coord_sub">4つのインプットでパーソナルに</h3>
     <div class="pills" style="margin-bottom: 12px;">
-      <span class="pill purple">スタイルタブ</span>
+      <span class="pill purple" data-i18n="pill_style">スタイルタブ</span>
       <span class="pill pink">TPO</span>
-      <span class="pill blue">天気</span>
-      <span class="pill amber">パーソナルカラー</span>
+      <span class="pill blue" data-i18n="pill_weather">天気</span>
+      <span class="pill amber" data-i18n="pill_pcolor2">パーソナルカラー</span>
     </div>
-    <p style="font-size: 14px; color: #475569; margin-bottom: 12px;">
+    <p style="font-size: 14px; color: #475569; margin-bottom: 12px;" data-i18n="coord_desc1">
       コーデ提案は、スタイルタブ（Color/Base/Skincare） × TPO（Office/Casual/Date/Formal） × 天気 × パーソナルカラーの4入力で生成。「今日のあなたの肌」から逆算した、世界にひとつだけのコーディネートです。
     </p>
-    <p style="font-size: 14px; color: #475569;">
+    <p style="font-size: 14px; color: #475569;" data-i18n="coord_desc2">
       アイテムはすべてKIREI SELECTから購入可能。「まとめて購入する」ボタンで一括導線。コスメもファッションも、メイクの色味から統一感のあるスタイリングを実現します。
     </p>
   </div>
@@ -349,32 +378,32 @@ body { font-family: 'Noto Sans JP', sans-serif; color: #1e1b2e; background: #faf
 <!-- ========== GENDER NEUTRAL DEEP DIVE ========== -->
 <section class="section">
   <div class="section-num">Design Philosophy</div>
-  <h2>ジェンダーを超えたビューティーミラー</h2>
-  <p class="lead">Z世代の美容意識の変化に対応。KIREIは「男性用」「女性用」の垣根を取り払い、すべての人の美をサポートします。</p>
-  
+  <h2 data-i18n="phil_title">ジェンダーを超えたビューティーミラー</h2>
+  <p class="lead" data-i18n="phil_lead">Z世代の美容意識の変化に対応。KIREIは「男性用」「女性用」の垣根を取り払い、すべての人の美をサポートします。</p>
+
   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 32px;">
     <div style="background: #fff; border-radius: 16px; padding: 20px 22px; border: 1px solid #f1f5f9;">
       <div style="font-size: 28px; margin-bottom: 8px;">🪞</div>
-      <h4 style="font-size: 15px; font-weight: 600; margin-bottom: 6px;">性別を聞かない</h4>
-      <p style="font-size: 13px; color: #64748b;">アプリのフロー全体で一度も性別の質問が出ません。聞くのは「やりたいこと」だけ。</p>
+      <h4 style="font-size: 15px; font-weight: 600; margin-bottom: 6px;" data-i18n="phil_card1_title">性別を聞かない</h4>
+      <p style="font-size: 13px; color: #64748b;" data-i18n="phil_card1_desc">アプリのフロー全体で一度も性別の質問が出ません。聞くのは「やりたいこと」だけ。</p>
     </div>
     <div style="background: #fff; border-radius: 16px; padding: 20px 22px; border: 1px solid #f1f5f9;">
       <div style="font-size: 28px; margin-bottom: 8px;">🎨</div>
-      <h4 style="font-size: 15px; font-weight: 600; margin-bottom: 6px;">肌分析は共通</h4>
-      <p style="font-size: 13px; color: #64748b;">肌トーン・毛穴・くすみ・水分の分析は、どのタブでも同じ。肌は肌です。</p>
+      <h4 style="font-size: 15px; font-weight: 600; margin-bottom: 6px;" data-i18n="phil_card2_title">肌分析は共通</h4>
+      <p style="font-size: 13px; color: #64748b;" data-i18n="phil_card2_desc">肌トーン・毛穴・くすみ・水分の分析は、どのタブでも同じ。肌は肌です。</p>
     </div>
     <div style="background: #fff; border-radius: 16px; padding: 20px 22px; border: 1px solid #f1f5f9;">
       <div style="font-size: 28px; margin-bottom: 8px;">🔄</div>
-      <h4 style="font-size: 15px; font-weight: 600; margin-bottom: 6px;">日によって変えられる</h4>
-      <p style="font-size: 13px; color: #64748b;">今日はフルメイク、明日はBBクリームだけ、休日はスキンケアのみ。タブを切り替えるだけ。</p>
+      <h4 style="font-size: 15px; font-weight: 600; margin-bottom: 6px;" data-i18n="phil_card3_title">日によって変えられる</h4>
+      <p style="font-size: 13px; color: #64748b;" data-i18n="phil_card3_desc">今日はフルメイク、明日はBBクリームだけ、休日はスキンケアのみ。タブを切り替えるだけ。</p>
     </div>
   </div>
-  
+
   <div style="background: linear-gradient(135deg, #faf5ff, #fdf2f8); border-radius: 16px; padding: 24px; border: 1px solid #ede9fe;">
-    <p style="font-size: 14px; color: #475569; margin-bottom: 10px;">
+    <p style="font-size: 14px; color: #475569; margin-bottom: 10px;" data-i18n="phil_data">
       <strong style="color: #7c3aed;">Z世代の美容データ:</strong> 20代男性のスキンケア関心度は75%超。BBクリームの使用経験はZ世代男性の61%に達しています。「美容は自己表現のツール」という価値観を持つ世代に、KIREIは性別の壁なくリーチします。
     </p>
-    <p style="font-size: 13px; color: #94a3b8;">
+    <p style="font-size: 13px; color: #94a3b8;" data-i18n="phil_source">
       出典: ホットペッパービューティーアカデミー男性美容意識調査、集英社MEN'S NON-NO/UOMO世代別メンズ美容調査
     </p>
   </div>
@@ -385,23 +414,23 @@ body { font-family: 'Noto Sans JP', sans-serif; color: #1e1b2e; background: #faf
 <!-- ========== TECH ========== -->
 <section class="section">
   <div class="section-num">Technology</div>
-  <h2>技術ロードマップ</h2>
-  
+  <h2 data-i18n="tech_title">技術ロードマップ</h2>
+
   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
     <div style="background: #dcfce7; border-radius: 14px; padding: 16px 18px;">
       <div style="font-size: 11px; font-weight: 600; color: #16a34a; margin-bottom: 4px;">CURRENT DEMO</div>
       <div style="font-size: 15px; font-weight: 600; color: #15803d; margin-bottom: 6px;">CSS Blend Mode</div>
-      <p style="font-size: 12px; color: #166534;">固定位置のカラーオーバーレイ。顔追従なし。コンセプトの検証用。</p>
+      <p style="font-size: 12px; color: #166534;" data-i18n="tech_demo">固定位置のカラーオーバーレイ。顔追従なし。コンセプトの検証用。</p>
     </div>
     <div style="background: #fef9c3; border-radius: 14px; padding: 16px 18px;">
       <div style="font-size: 11px; font-weight: 600; color: #ca8a04; margin-bottom: 4px;">MVP</div>
       <div style="font-size: 15px; font-weight: 600; color: #a16207; margin-bottom: 6px;">MediaPipe + Canvas2D</div>
-      <p style="font-size: 12px; color: #854d0e;">468点の顔ランドマークでリアルタイム追従。24fps目標。</p>
+      <p style="font-size: 12px; color: #854d0e;" data-i18n="tech_mvp">468点の顔ランドマークでリアルタイム追従。24fps目標。</p>
     </div>
     <div style="background: #dbeafe; border-radius: 14px; padding: 16px 18px;">
       <div style="font-size: 11px; font-weight: 600; color: #2563eb; margin-bottom: 4px;">PRODUCTION</div>
       <div style="font-size: 15px; font-weight: 600; color: #1d4ed8; margin-bottom: 6px;">WebGL Shader</div>
-      <p style="font-size: 12px; color: #1e40af;">GPUベースのピクセル単位ブレンド。60fps。フォトリアリスティック。</p>
+      <p style="font-size: 12px; color: #1e40af;" data-i18n="tech_prod">GPUベースのピクセル単位ブレンド。60fps。フォトリアリスティック。</p>
     </div>
   </div>
 </section>
@@ -410,8 +439,175 @@ body { font-family: 'Noto Sans JP', sans-serif; color: #1e1b2e; background: #faf
 <footer class="footer">
   <p style="font-size: 16px; font-weight: 700; margin-bottom: 4px; background: linear-gradient(135deg, #a855f7, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">KIREI</p>
   <p>AI Beauty Mirror — Demo v2</p>
-  <p style="margin-top: 8px;">※本アプリは医療診断を行うものではありません。パーソナルカラーは傾向を示す参考情報です。</p>
+  <p style="margin-top: 8px;" data-i18n="footer_disclaimer">※本アプリは医療診断を行うものではありません。パーソナルカラーは傾向を示す参考情報です。</p>
 </footer>
+
+<script>
+(function() {
+  var originals = {};
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    originals[el.getAttribute('data-i18n')] = el.innerHTML;
+  });
+
+  var translations = {
+    en: {
+      hero_sub: "AI Beauty Mirror — Analyze your skin, suggest makeup, try it on instantly. Plus weather-matched outfit coordination.",
+      hero_tagline: "💡 An app supporting everyone's ideal self, regardless of gender",
+      overview_title: 'Complete your "morning routine" in 4 screens',
+      overview_lead: "KIREI transforms your daily mirror into an AI-powered styling assistant.",
+      flow_mirror: "Mirror",
+      flow_suggest: "Makeup Suggestion",
+      flow_ar: "AR Try-On",
+      flow_result: "Results + Coord",
+      gn_title: "No gender questions. Choose by style.",
+      gn_sub: "KIREI never distinguishes between \"men's\" and \"women's\" anywhere in the UI.<br>Instead, choose your mode from 3 style tabs.",
+      gn_color_name: "For those who enjoy color makeup",
+      gn_color_detail: "Full makeup with lipstick, blush & eyeshadow. Try colors in AR.",
+      gn_base_name: "For those who want clean, natural skin",
+      gn_base_detail: "BB cream, concealer & brow mascara. A clean, natural finish.",
+      gn_skin_name: "For those interested in skincare only",
+      gn_skin_detail: "Skincare routine suggestions based on skin analysis. Works without makeup.",
+      s01_title: "Mirror — AI analyzes just by showing your skin",
+      s01_lead: "Show your face to the camera and AI automatically analyzes your skin condition and determines your personal color.",
+      pill_tone: "Skin Tone",
+      pill_pores: "Pores",
+      pill_dullness: "Dullness",
+      pill_moisture: "Moisture",
+      pill_pcolor: "Personal Color",
+      s01_desc: "Real-time display using your smartphone's front camera. During analysis, Kirari (AI mascot) navigates and scan-line animations show progress. Analysis is the same across all style tabs — skin is skin.",
+      s01_note: "*If camera access is denied, an illustration fallback is shown. Analysis results are demo simulation values.",
+      s02_title: "Makeup Suggestion + AR Try-On",
+      s02_lead: "Based on your skin score and personal color, suggests the perfect makeup look for today's skin. Try it on your face with AR instantly.",
+      s02_sub: "Try colors, adjust intensity",
+      pill_ar: "AR Overlay",
+      pill_palette: "Color Palette",
+      pill_slider: "Intensity Slider",
+      s02_desc1: "The selected look's makeup is overlaid on your face in real-time. Change colors from the palette or adjust intensity with the slider.",
+      s02_desc2: '"Long-press for Before" lets you compare with your bare face before makeup.',
+      s02_tech: "Demo uses CSS blend mode simulation. Production will use MediaPipe Face Mesh (468-point landmarks) for precise lip, blush & eyeshadow tracking.",
+      s04_title: "Results — Today's total look",
+      s04_lead: "Summarizes your makeup finish, recommends cosmetics perfect for today's skin. Plus weather-matched outfit coordination.",
+      s04_sub: "Skin Score + Care Suggestions",
+      pill_overall: "Overall Score",
+      pill_individual: "Individual Scores",
+      pill_care: "Care Product Picks",
+      s04_desc1: "Displays overall and individual skin scores (tone, pores, dullness). Recommends care products from KIREI SELECT based on scores.",
+      s04_desc2: 'Kirari gives personalized advice based on scores. "Pores look great♪ Adding dullness care could make things even better~"',
+      coord_title: "Coordination — Fashion matched to your makeup",
+      coord_lead: 'From "View recommended coords" on the results screen, suggests fashion items matching your makeup style. Weather is also considered.',
+      coord_sub: "Personalized with 4 inputs",
+      pill_style: "Style Tab",
+      pill_weather: "Weather",
+      pill_pcolor2: "Personal Color",
+      coord_desc1: "Coordination is generated from 4 inputs: Style Tab (Color/Base/Skincare) × TPO (Office/Casual/Date/Formal) × Weather × Personal Color. A one-of-a-kind outfit calculated from \"today's skin.\"",
+      coord_desc2: 'All items available from KIREI SELECT. "Buy all together" button for bundled purchase. Unified styling from cosmetics to fashion, all harmonized with your makeup colors.',
+      phil_title: "A beauty mirror beyond gender",
+      phil_lead: 'Responding to Gen Z\'s evolving beauty consciousness. KIREI removes the barrier between "for men" and "for women," supporting everyone\'s beauty.',
+      phil_card1_title: "Never asks gender",
+      phil_card1_desc: "No gender questions appear anywhere in the app flow. We only ask what you want to do.",
+      phil_card2_title: "Skin analysis is universal",
+      phil_card2_desc: "Skin tone, pores, dullness, and moisture analysis is the same across all tabs. Skin is skin.",
+      phil_card3_title: "Switch it up daily",
+      phil_card3_desc: "Full makeup today, BB cream tomorrow, skincare only on weekends. Just switch tabs.",
+      phil_data: '<strong style="color: #7c3aed;">Gen Z Beauty Data:</strong> Over 75% of men in their 20s are interested in skincare. BB cream usage has reached 61% among Gen Z men. KIREI reaches this generation — who see beauty as a self-expression tool — without gender barriers.',
+      phil_source: "Sources: Hot Pepper Beauty Academy Men's Beauty Survey, Shueisha MEN'S NON-NO/UOMO Generational Men's Beauty Survey",
+      tech_title: "Technology Roadmap",
+      tech_demo: "Fixed-position color overlay. No face tracking. For concept validation.",
+      tech_mvp: "Real-time tracking with 468 facial landmarks. Target 24fps.",
+      tech_prod: "GPU-based pixel-level blending. 60fps. Photorealistic.",
+      footer_disclaimer: "*This app does not provide medical diagnoses. Personal color is reference information indicating tendencies."
+    },
+    ko: {
+      hero_sub: "AI 뷰티 미러 ── 피부를 분석하고, 메이크업을 제안하고, 그 자리에서 시착. 오늘 날씨에 맞는 코디네이션까지.",
+      hero_tagline: "💡 성별에 관계없이, 모든 사람의 '되고 싶은 나'를 서포트하는 앱",
+      overview_title: "4개 화면으로 '아침 준비' 완료",
+      overview_lead: "KIREI는 매일 아침 거울을 AI 파워드 스타일링 어시스턴트로 바꿔줍니다.",
+      flow_mirror: "미러",
+      flow_suggest: "메이크업 제안",
+      flow_ar: "AR 트라이온",
+      flow_result: "결과+코디",
+      gn_title: "성별을 묻지 않는다. 스타일로 선택한다.",
+      gn_sub: "KIREI는 UI 어디에도 '남성용' '여성용' 구분이 없습니다.<br>대신, 3가지 스타일 탭에서 자신에게 맞는 모드를 선택할 수 있습니다.",
+      gn_color_name: "컬러 메이크업을 즐기고 싶은 분에게",
+      gn_color_detail: "립·블러셔·아이섀도우의 풀 메이크업. AR로 색상을 시험해 볼 수 있습니다.",
+      gn_base_name: "맨 피부를 깔끔하게 정리하고 싶은 분에게",
+      gn_base_detail: "BB크림·컨실러·눈썹 마스카라. 청결감 중시의 내추럴 마무리.",
+      gn_skin_name: "스킨케어만 알고 싶은 분에게",
+      gn_skin_detail: "피부 분석에 기반한 스킨케어 루틴 제안. 메이크업 없이도 사용 가능.",
+      s01_title: "미러 ── 피부를 비추기만 하면 AI가 분석",
+      s01_lead: "카메라에 얼굴을 비추면 AI가 자동으로 피부 컨디션을 분석. 퍼스널 컬러도 판정합니다.",
+      pill_tone: "피부 톤",
+      pill_pores: "모공",
+      pill_dullness: "칙칙함",
+      pill_moisture: "수분",
+      pill_pcolor: "퍼스널 컬러",
+      s01_desc: "스마트폰 전면 카메라로 실제 얼굴을 실시간 표시. 분석 중 키라리(AI 마스코트)가 내비게이션하고, 스캔라인 애니메이션으로 진행 상황을 전달합니다. 분석은 스타일 탭에 관계없이 공통 ── 피부는 피부입니다.",
+      s01_note: "※카메라를 허용하지 않으면 일러스트 폴백 표시. 분석 결과는 데모용 시뮬레이션 값입니다.",
+      s02_title: "메이크업 제안 + AR 트라이온",
+      s02_lead: "피부 점수와 퍼스널 컬러에 기반하여 오늘 피부에 딱 맞는 메이크업 룩을 제안. 그대로 얼굴 위에 AR로 시착할 수 있습니다.",
+      s02_sub: "색상을 시험하고 강도를 조절",
+      pill_ar: "AR 오버레이",
+      pill_palette: "컬러 팔레트",
+      pill_slider: "농도 슬라이더",
+      s02_desc1: "선택한 룩의 메이크업이 얼굴 위에 실시간으로 중첩 표시됩니다. 컬러 팔레트에서 색상을 바꾸거나 슬라이더로 농도를 조절할 수 있습니다.",
+      s02_desc2: "'길게 누르면 Before' 기능으로 메이크업 전 맨 얼굴과 비교할 수 있습니다.",
+      s02_tech: "데모판은 CSS 블렌드 모드에 의한 시뮬레이션. 프로덕션에서는 MediaPipe Face Mesh(468포인트 랜드마크)로 립·블러셔·아이섀도우를 정밀하게 추종시킵니다.",
+      s04_title: "결과 ── 오늘의 토탈 룩",
+      s04_lead: "메이크업 마무리를 정리하고, 오늘 피부에 딱 맞는 코스메를 추천. 날씨에 맞춘 코디네이션까지 제안합니다.",
+      s04_sub: "피부 점수 + 케어 제안",
+      pill_overall: "종합 점수",
+      pill_individual: "개별 점수",
+      pill_care: "케어 제품 추천",
+      s04_desc1: "피부 종합 점수와 개별 점수(피부 톤·모공·칙칙함)를 표시. 점수에 기반한 케어 제품을 KIREI SELECT에서 제안합니다.",
+      s04_desc2: "키라리가 점수에 따른 어드바이스를 전달. \"모공은 좋은 편♪ 칙칙함 케어를 추가하면 더 좋아질지도~\"",
+      coord_title: "코디 제안 ── 메이크업에 맞춘 패션",
+      coord_lead: "결과 화면의 '추천 코디 보기'에서 메이크업 스타일에 맞는 패션 아이템을 제안. 날씨도 고려합니다.",
+      coord_sub: "4가지 인풋으로 퍼스널하게",
+      pill_style: "스타일 탭",
+      pill_weather: "날씨",
+      pill_pcolor2: "퍼스널 컬러",
+      coord_desc1: "코디 제안은 스타일 탭(Color/Base/Skincare) × TPO(Office/Casual/Date/Formal) × 날씨 × 퍼스널 컬러의 4가지 입력으로 생성. '오늘의 당신 피부'에서 역산한, 세상에 하나뿐인 코디네이션입니다.",
+      coord_desc2: "아이템은 모두 KIREI SELECT에서 구매 가능. '한꺼번에 구매하기' 버튼으로 일괄 동선. 코스메도 패션도 메이크업 색상에서 통일감 있는 스타일링을 실현합니다.",
+      phil_title: "젠더를 넘은 뷰티 미러",
+      phil_lead: "Z세대의 미용 의식 변화에 대응. KIREI는 '남성용' '여성용'의 경계를 허물고 모든 사람의 아름다움을 서포트합니다.",
+      phil_card1_title: "성별을 묻지 않는다",
+      phil_card1_desc: "앱 플로우 전체에서 한 번도 성별 질문이 나오지 않습니다. 묻는 것은 '하고 싶은 것'뿐.",
+      phil_card2_title: "피부 분석은 공통",
+      phil_card2_desc: "피부 톤·모공·칙칙함·수분 분석은 어떤 탭에서도 동일. 피부는 피부입니다.",
+      phil_card3_title: "날마다 바꿀 수 있다",
+      phil_card3_desc: "오늘은 풀 메이크업, 내일은 BB크림만, 휴일은 스킨케어만. 탭을 전환하기만 하면 됩니다.",
+      phil_data: '<strong style="color: #7c3aed;">Z세대 뷰티 데이터:</strong> 20대 남성의 스킨케어 관심도는 75% 초과. BB크림 사용 경험은 Z세대 남성의 61%에 달합니다. "미용은 자기 표현의 도구"라는 가치관을 가진 세대에게 KIREI는 성별의 벽 없이 다가갑니다.',
+      phil_source: "출처: 핫페퍼 뷰티 아카데미 남성 미용 의식 조사, 슈에이샤 MEN'S NON-NO/UOMO 세대별 남성 미용 조사",
+      tech_title: "기술 로드맵",
+      tech_demo: "고정 위치의 컬러 오버레이. 얼굴 추종 없음. 컨셉 검증용.",
+      tech_mvp: "468포인트 얼굴 랜드마크로 실시간 추종. 24fps 목표.",
+      tech_prod: "GPU 기반의 픽셀 단위 블렌드. 60fps. 포토리얼리스틱.",
+      footer_disclaimer: "※이 앱은 의료 진단을 제공하지 않습니다. 퍼스널 컬러는 경향을 나타내는 참고 정보입니다."
+    }
+  };
+
+  window.setLanguage = function(lang) {
+    document.querySelectorAll('.lang-btn').forEach(function(btn) {
+      btn.classList.toggle('active', btn.textContent === lang.toUpperCase());
+    });
+    document.querySelectorAll('[data-i18n]').forEach(function(el) {
+      var key = el.getAttribute('data-i18n');
+      if (lang === 'ja') {
+        el.innerHTML = originals[key] || el.innerHTML;
+      } else if (translations[lang] && translations[lang][key]) {
+        el.innerHTML = translations[lang][key];
+      }
+    });
+    try { localStorage.setItem('kirei-lang', lang); } catch(e) {}
+  };
+
+  // Auto-apply saved language
+  try {
+    var saved = localStorage.getItem('kirei-lang');
+    if (saved && saved !== 'ja') setLanguage(saved);
+  } catch(e) {}
+})();
+</script>
 
 </body>
 </html>
