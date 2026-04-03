@@ -79,7 +79,7 @@ export default function ResultScreen({ skinScores: propSkin, onRestart, styleTab
 
         {selectedLook?.desc && (
           <p style={{ fontSize: 11, color: '#64748b', margin: '4px 0 0', lineHeight: 1.5 }}>
-            {selectedLook.desc}
+            {typeof selectedLook.desc === 'object' ? t(selectedLook.desc) : selectedLook.desc}
           </p>
         )}
 
