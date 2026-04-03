@@ -6,6 +6,7 @@ import Score from './Score.jsx';
 import ProductCard from './ProductCard.jsx';
 import ProductModal from './ProductModal.jsx';
 import ClinicModal from './ClinicModal.jsx';
+import { useT } from '../i18n/index.jsx';
 import { SKIN_SCORES, DENTAL_SCORES } from '../data/scores.js';
 import { SKIN_PRODUCTS, DENTAL_PRODUCTS, selectAdvice } from '../data/products.js';
 
@@ -14,25 +15,8 @@ function avg(scores) {
   return Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
 }
 
-function generateMessage(tab, skinScores, dentalScores) {
-  const scores = tab === "skin" ? skinScores : dentalScores;
-  if (!scores) return "チェックしてみてね♪";
-  const entries = Object.entries(scores).sort((a, b) => a[1].score - b[1].score);
-  const worst = entries[0];
-  const best = entries[entries.length - 1];
-  const avgScore = entries.reduce((s, [, v]) => s + v.score, 0) / entries.length;
-
-  // スコア帯別メッセージ（高/中/低の3段階）
-  if (avgScore >= 80) {
-    return `すごい！全体的にとっても良い状態♪ ${best[1].label}は特に優秀だよ！この調子をキープしてね〜`;
-  }
-  if (avgScore >= 60) {
-    return `${best[1].label}は良い感じ♪ ${worst[1].label}ケアをプラスするともっと良くなるかも〜`;
-  }
-  return `${worst[1].label}のスコアが気になるかも。でも大丈夫！ケアを続ければ必ず改善するよ♪`;
-}
-
 export default function ResultScreen({ skinScores: propSkin, dentalScores: propDental, onRestart, onDentalCheck }) {
+  const { t } = useT();
   const hasSkin = propSkin !== null;
   const hasDental = propDental !== null;
   const defaultTab = hasSkin ? "skin" : "dental";
@@ -45,24 +29,38 @@ export default function ResultScreen({ skinScores: propSkin, dentalScores: propD
   const items = tab === "skin" ? skinScores : dentalScores;
   const overallSkin = hasSkin ? avg(skinScores) : null;
   const overallDental = hasDental ? avg(dentalScores) : null;
-  const kirariMsg = generateMessage(tab, hasSkin ? skinScores : null, hasDental ? dentalScores : null);
+
+  const generateMessage = () => {
+    const scores = tab === "skin" ? (hasSkin ? skinScores : null) : (hasDental ? dentalScores : null);
+    if (!scores) return t("result.no_score");
+    const entries = Object.entries(scores).sort((a, b) => a[1].score - b[1].score);
+    const worst = entries[0];
+    const best = entries[entries.length - 1];
+    const avgScore = entries.reduce((s, [, v]) => s + v.score, 0) / entries.length;
+
+    if (avgScore >= 80) return t("result.high", { best: t(best[1].labelKey) });
+    if (avgScore >= 60) return t("result.mid", { best: t(best[1].labelKey), worst: t(worst[1].labelKey) });
+    return t("result.low", { worst: t(worst[1].labelKey) });
+  };
+
+  const kirariMsg = generateMessage();
 
   return createPortal(
     <div style={{ position: "fixed", inset: 0, zIndex: 9999, overflowY: "auto", background: "linear-gradient(180deg, #faf5ff 0%, #fdf2f8 35%, #fff 65%, #f0fdf4 100%)" }}>
-      <p style={{ fontSize: 11, color: "#94a3b8", margin: 0, padding: "2px 20px 0" }}>チェック結果</p>
+      <p style={{ fontSize: 11, color: "#94a3b8", margin: 0, padding: "2px 20px 0" }}>{t("result.title")}</p>
 
       <div style={{ display: "flex", justifyContent: "center", gap: 24, padding: "16px 20px 8px" }}>
         {hasSkin && (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
             <Score score={overallSkin} size={hasSkin && hasDental ? 90 : 110} color="#a855f7" delay={0} />
-            <span style={{ fontSize: 12, fontWeight: 700, color: "#a855f7" }}>肌スコア</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: "#a855f7" }}>{t("result.skin_score")}</span>
           </div>
         )}
         <Kirari size={56} expression="happy" bounce />
         {hasDental && (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
             <Score score={overallDental} size={hasSkin && hasDental ? 90 : 110} color="#22c55e" delay={200} />
-            <span style={{ fontSize: 12, fontWeight: 700, color: "#22c55e" }}>デンタル</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: "#22c55e" }}>{t("result.dental_label")}</span>
           </div>
         )}
       </div>
@@ -74,7 +72,7 @@ export default function ResultScreen({ skinScores: propSkin, dentalScores: propD
 
       {hasSkin && hasDental && (
         <div style={{ display: "flex", margin: "0 16px 12px", background: "#f1f5f9", borderRadius: 14, padding: 3 }}>
-          {[["skin", "肌診断", "#a855f7"], ["dental", "デンタル", "#22c55e"]].map(([key, label, color]) => (
+          {[["skin", t("result.tab_skin"), "#a855f7"], ["dental", t("result.tab_dental"), "#22c55e"]].map(([key, label, color]) => (
             <button key={key} onClick={() => setTab(key)} style={{
               flex: 1, padding: "8px 0", border: "none", borderRadius: 12, fontSize: 13, fontWeight: 700, cursor: "pointer",
               background: tab === key ? "#fff" : "transparent",
@@ -88,7 +86,7 @@ export default function ResultScreen({ skinScores: propSkin, dentalScores: propD
       <div className="tab-content" key={tab}>
         <div style={{ padding: "0 16px", display: "flex", justifyContent: "center", gap: 8, marginBottom: 12 }}>
           {Object.entries(items).map(([k, v], i) => (
-            <Score key={k} score={v.score} size={72} color={v.color} label={v.label} delay={100 + i * 200} />
+            <Score key={k} score={v.score} size={72} color={v.color} label={t(v.labelKey)} delay={100 + i * 200} />
           ))}
         </div>
 
@@ -96,7 +94,7 @@ export default function ResultScreen({ skinScores: propSkin, dentalScores: propD
           <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 8 }}>
             <Kirari size={32} expression="sparkle" />
             <p style={{ fontSize: 12, color: "#64748b", margin: 0, paddingTop: 4 }}>
-              {tab === "skin" ? "あなたの肌に合ったケアグッズ♪" : "あなたの口腔スコアに合ったケア♪"}
+              {tab === "skin" ? t("result.advice_skin") : t("result.advice_dental")}
             </p>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -113,14 +111,14 @@ export default function ResultScreen({ skinScores: propSkin, dentalScores: propD
       {tab === "dental" && (
         <div style={{ display: "flex", gap: 10, padding: "0 16px", marginBottom: 14 }}>
           {[
-            { icon: "🦷", title: "ホワイトニング", desc: "着色スコア55→改善", color: "#a855f7", btn: "詳しく見る" },
-            { icon: "😬", title: "歯列矯正", desc: "歯並びスコア62→UP", color: "#f59e0b", btn: "無料相談" },
-          ].map((t, i) => (
-            <div key={i} style={{ flex: 1, background: t.color + "08", borderRadius: 16, padding: "12px 14px", border: `1px solid ${t.color}20` }}>
-              <div style={{ fontSize: 20, marginBottom: 4 }}>{t.icon}</div>
-              <p style={{ fontSize: 13, fontWeight: 700, color: "#334155", margin: "0 0 2px" }}>{t.title}</p>
-              <p style={{ fontSize: 10, color: "#64748b", margin: "0 0 8px" }}>{t.desc}</p>
-              <button className="btn-primary" onClick={() => alert("詳細ページは準備中です")} style={{ width: "100%", padding: "6px 0", background: t.color, border: "none", borderRadius: 8, fontSize: 11, fontWeight: 700, color: "#fff", cursor: "pointer" }}>{t.btn}</button>
+            { icon: "🦷", title: t("result.whitening_title"), desc: t("result.whitening_desc"), color: "#a855f7", btn: t("result.whitening_btn") },
+            { icon: "😬", title: t("result.ortho_title"), desc: t("result.ortho_desc"), color: "#f59e0b", btn: t("result.ortho_btn") },
+          ].map((item, i) => (
+            <div key={i} style={{ flex: 1, background: item.color + "08", borderRadius: 16, padding: "12px 14px", border: `1px solid ${item.color}20` }}>
+              <div style={{ fontSize: 20, marginBottom: 4 }}>{item.icon}</div>
+              <p style={{ fontSize: 13, fontWeight: 700, color: "#334155", margin: "0 0 2px" }}>{item.title}</p>
+              <p style={{ fontSize: 10, color: "#64748b", margin: "0 0 8px" }}>{item.desc}</p>
+              <button className="btn-primary" onClick={() => alert(t("result.detail_coming"))} style={{ width: "100%", padding: "6px 0", background: item.color, border: "none", borderRadius: 8, fontSize: 11, fontWeight: 700, color: "#fff", cursor: "pointer" }}>{item.btn}</button>
             </div>
           ))}
         </div>
@@ -130,9 +128,9 @@ export default function ResultScreen({ skinScores: propSkin, dentalScores: propD
         <div style={{ margin: "0 16px 12px", background: "#fff", borderRadius: 18, padding: "14px 16px", boxShadow: "0 2px 12px rgba(139,92,246,0.08)", border: "1px solid #ede9fe" }}>
           <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 10 }}>
             <Kirari size={36} expression="happy" />
-            <p style={{ fontSize: 11, color: "#475569", margin: 0, lineHeight: 1.6, flex: 1 }}>プロに診てもらうのがいちばん！近くの提携歯科を探してみてね♪</p>
+            <p style={{ fontSize: 11, color: "#475569", margin: 0, lineHeight: 1.6, flex: 1 }}>{t("result.clinic_prompt")}</p>
           </div>
-          <button className="btn-primary" onClick={() => setShowClinicModal(true)} style={{ width: "100%", padding: 12, background: "linear-gradient(135deg, #a855f7, #ec4899)", border: "none", borderRadius: 12, fontSize: 13, fontWeight: 700, color: "#fff", cursor: "pointer", boxShadow: "0 4px 16px rgba(168,85,247,0.25)" }}>近くの提携歯科を探す →</button>
+          <button className="btn-primary" onClick={() => setShowClinicModal(true)} style={{ width: "100%", padding: 12, background: "linear-gradient(135deg, #a855f7, #ec4899)", border: "none", borderRadius: 12, fontSize: 13, fontWeight: 700, color: "#fff", cursor: "pointer", boxShadow: "0 4px 16px rgba(168,85,247,0.25)" }}>{t("result.find_clinic")}</button>
         </div>
       )}
 
@@ -141,25 +139,25 @@ export default function ResultScreen({ skinScores: propSkin, dentalScores: propD
       <a href="https://www.youtube.com/@shichou-doctors" target="_blank" rel="noopener noreferrer" style={{ display: "flex", margin: "0 16px 12px", background: "#fff", borderRadius: 16, padding: "10px 14px", alignItems: "center", gap: 10, cursor: "pointer", boxShadow: "0 1px 6px rgba(0,0,0,0.03)", border: "1px solid #fecaca", textDecoration: "none" }}>
         <div style={{ width: 38, height: 38, borderRadius: 10, background: "linear-gradient(135deg, #ef4444, #f87171)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0, color: "#fff" }}>&#x25B6;</div>
         <div>
-          <p style={{ fontSize: 12, fontWeight: 700, color: "#334155", margin: 0 }}>歯腸ドクターズを見る</p>
-          <p style={{ fontSize: 10, color: "#94a3b8", margin: 0 }}>プロの診察動画をチェック！</p>
+          <p style={{ fontSize: 12, fontWeight: 700, color: "#334155", margin: 0 }}>{t("result.youtube_title")}</p>
+          <p style={{ fontSize: 10, color: "#94a3b8", margin: 0 }}>{t("result.youtube_desc")}</p>
         </div>
       </a>
 
       <div style={{ padding: "0 16px", display: "flex", flexDirection: "column", gap: 8 }}>
         {!hasDental && onDentalCheck && (
           <button className="btn-primary" onClick={onDentalCheck} style={{ width: "100%", padding: 14, background: "linear-gradient(135deg, #22c55e, #10b981)", border: "none", borderRadius: 14, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer", boxShadow: "0 4px 16px rgba(34,197,94,0.25)", textAlign: "center" }}>
-            デンタルチェックも受ける 🦷
+            {t("result.dental_check_btn")}
           </button>
         )}
         {!hasSkin && onDentalCheck && (
           <button className="btn-primary" onClick={onDentalCheck} style={{ width: "100%", padding: 14, background: "linear-gradient(135deg, #a855f7, #c084fc)", border: "none", borderRadius: 14, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer", boxShadow: "0 4px 16px rgba(168,85,247,0.25)", textAlign: "center" }}>
-            肌チェックも受ける ✨
+            {t("result.skin_check_btn")}
           </button>
         )}
-        <button className="btn-secondary" onClick={onRestart} style={{ width: "100%", padding: 11, background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 14, fontSize: 12, fontWeight: 600, color: "#64748b", cursor: "pointer" }}>もう一度ミラーを開く</button>
+        <button className="btn-secondary" onClick={onRestart} style={{ width: "100%", padding: 11, background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 14, fontSize: 12, fontWeight: 600, color: "#64748b", cursor: "pointer" }}>{t("result.restart")}</button>
       </div>
-      <p className="disclaimer" style={{ textAlign: "center", fontSize: 10, color: "#cbd5e1", marginTop: 12, padding: "0 20px" }}>※本アプリは医療診断を行うものではありません。</p>
+      <p className="disclaimer" style={{ textAlign: "center", fontSize: 10, color: "#cbd5e1", marginTop: 12, padding: "0 20px" }}>{t("result.disclaimer")}</p>
     </div>,
     document.body
   );

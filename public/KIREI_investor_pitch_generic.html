@@ -597,70 +597,112 @@
     .stats-row { flex-direction: column; }
     .disclaimer { padding: 40px 24px; }
   }
+
+  /* ── LANGUAGE SWITCHER ─────────────── */
+  .lang-switcher {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 1000;
+    display: flex;
+    gap: 2px;
+    background: rgba(26, 22, 37, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 3px;
+  }
+  .lang-switcher button {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.5);
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .lang-switcher button:hover {
+    color: rgba(255,255,255,0.8);
+  }
+  .lang-switcher button.active {
+    background: linear-gradient(135deg, #a855f7, #ec4899);
+    color: #fff;
+  }
 </style>
 </head>
 <body>
 
+<!-- ── LANGUAGE SWITCHER ── -->
+<div class="lang-switcher">
+  <button class="active" onclick="setLanguage('ja')">JA</button>
+  <button onclick="setLanguage('en')">EN</button>
+  <button onclick="setLanguage('ko')">KO</button>
+</div>
+
 <!-- ════════════════ COVER ══════════════════════════════════ -->
 <div class="cover">
-  <p class="cover-label">Investor Deck — Confidential</p>
+  <p class="cover-label" data-i18n="cover_label">Investor Deck — Confidential</p>
   <h1 class="cover-logo"><span>KIREI</span></h1>
-  <p class="cover-tagline">スマートフォンを、毎日触れる「AI美容鏡」に</p>
+  <p class="cover-tagline" data-i18n="cover_tagline">スマートフォンを、毎日触れる「AI美容鏡」に</p>
   <div class="cover-divider"></div>
   <div class="cover-meta">
     <div class="cover-meta-item">
-      <p class="label">カテゴリ</p>
-      <p class="value">ビューティーテック × ヘルスケア</p>
+      <p class="label" data-i18n="cover_meta_category_label">カテゴリ</p>
+      <p class="value" data-i18n="cover_meta_category_value">ビューティーテック × ヘルスケア</p>
     </div>
     <div class="cover-meta-item">
-      <p class="label">フェーズ</p>
-      <p class="value">Phase 0 完了・MVP 開発中</p>
+      <p class="label" data-i18n="cover_meta_phase_label">フェーズ</p>
+      <p class="value" data-i18n="cover_meta_phase_value">Phase 0 完了・MVP 開発中</p>
     </div>
     <div class="cover-meta-item">
-      <p class="label">プロトタイプ</p>
+      <p class="label" data-i18n="cover_meta_proto_label">プロトタイプ</p>
       <p class="value">sashibe.github.io/kirei</p>
     </div>
   </div>
-  <p class="scroll-hint">↓ スクロール</p>
+  <p class="scroll-hint" data-i18n="scroll_hint">↓ スクロール</p>
 </div>
 
 <!-- ════════════════ PROBLEM ════════════════════════════════ -->
 <section>
-  <p class="section-number">01 — 課題</p>
+  <p class="section-number" data-i18n="s01_number">01 — 課題</p>
   <div class="divider"></div>
-  <h2>女性は一日に何度も<br><em>鏡を確認する</em></h2>
-  <p class="lead">20〜30代の女性にとって「自分の状態を確認する」行為は、生活に深く組み込まれた習慣です。朝の洗面台、オフィスのトイレ、スマートフォンのインカメラ——複数回、複数の場面で行われます。</p>
+  <h2 data-i18n="s01_title">女性は一日に何度も<br><em>鏡を確認する</em></h2>
+  <p class="lead" data-i18n="s01_lead">20〜30代の女性にとって「自分の状態を確認する」行為は、生活に深く組み込まれた習慣です。朝の洗面台、オフィスのトイレ、スマートフォンのインカメラ——複数回、複数の場面で行われます。</p>
 
   <div class="stats-row">
     <div class="stat">
       <p class="number">7+</p>
-      <p class="label">一日の平均的な<br>鏡・自撮り確認回数<br><span style="font-size:10px;opacity:0.6">（推計）</span></p>
+      <p class="label" data-i18n="s01_stat1">一日の平均的な<br>鏡・自撮り確認回数<br><span style="font-size:10px;opacity:0.6">（推計）</span></p>
     </div>
     <div class="stat">
       <p class="number">20s</p>
-      <p class="label">KIREIの<br>コアターゲット層<br>（20〜30代女性）</p>
+      <p class="label" data-i18n="s01_stat2">KIREIの<br>コアターゲット層<br>（20〜30代女性）</p>
     </div>
     <div class="stat">
       <p class="number">∞</p>
-      <p class="label">既存の鏡が<br>提供できなかった<br>「気づき」の蓄積</p>
+      <p class="label" data-i18n="s01_stat3">既存の鏡が<br>提供できなかった<br>「気づき」の蓄積</p>
     </div>
   </div>
 
   <div class="highlight" style="margin-top: 48px;">
-    <p>既存の「歯科アプリ」や「肌診断アプリ」の最大の課題は<strong>リテンション</strong>だ。<br>
-    "チェックのためだけ"に開く習慣は、定着しない。</p>
+    <p data-i18n="s01_highlight">既存の「歯科アプリ」や「肌診断アプリ」の最大の課題は<strong>リテンション</strong>だ。<br>"チェックのためだけ"に開く習慣は、定着しない。</p>
   </div>
 
   <div class="card-grid col-2" style="margin-top: 36px;">
     <div class="card">
       <div class="card-icon purple">🔍</div>
-      <h3>単発利用に留まる</h3>
-      <p class="body-text">「歯科アプリを使ってみた」は起こる。しかし翌週も使う理由がなく、アンインストールされる。</p>
+      <h3 data-i18n="s01_card1_title">単発利用に留まる</h3>
+      <p class="body-text" data-i18n="s01_card1_text">「歯科アプリを使ってみた」は起こる。しかし翌週も使う理由がなく、アンインストールされる。</p>
     </div>
     <div class="card">
       <div class="card-icon pink">📱</div>
-      <h3>インカメラは毎日使われている</h3>
-      <p class="body-text">スマートフォンのカメラは自撮り・ビデオ通話で日常的に使用される。この動線に乗れるアプリだけが残る。</p>
+      <h3 data-i18n="s01_card2_title">インカメラは毎日使われている</h3>
+      <p class="body-text" data-i18n="s01_card2_text">スマートフォンのカメラは自撮り・ビデオ通話で日常的に使用される。この動線に乗れるアプリだけが残る。</p>
     </div>
   </div>
 </section>
@@ -668,44 +710,44 @@
 <!-- ════════════════ SOLUTION ════════════════════════════════ -->
 <section class="dark">
   <div class="inner">
-    <p class="section-number light">02 — ソリューション</p>
+    <p class="section-number light" data-i18n="s02_number">02 — ソリューション</p>
     <div class="divider"></div>
-    <h2 class="light">「鏡の代替」として設計された<br><em>AIビューティーミラー</em></h2>
-    <p class="lead light">KIREIは「歯科アプリ」でも「スキンケアアプリ」でもない。スマートフォンを「毎朝触れる鏡」そのものに置き換えることで、リテンション問題を構造的に解決する。</p>
+    <h2 class="light" data-i18n="s02_title">「鏡の代替」として設計された<br><em>AIビューティーミラー</em></h2>
+    <p class="lead light" data-i18n="s02_lead">KIREIは「歯科アプリ」でも「スキンケアアプリ」でもない。スマートフォンを「毎朝触れる鏡」そのものに置き換えることで、リテンション問題を構造的に解決する。</p>
 
     <div class="flow" style="margin-top: 48px;">
       <div class="flow-step">
         <div class="flow-num">1</div>
-        <div class="flow-title">ミラー画面</div>
-        <div class="flow-desc">カメラを向けると自動で肌分析。トーン・毛穴・くすみをリアルタイム評価。</div>
+        <div class="flow-title" data-i18n="s02_flow1_title">ミラー画面</div>
+        <div class="flow-desc" data-i18n="s02_flow1_desc">カメラを向けると自動で肌分析。トーン・毛穴・くすみをリアルタイム評価。</div>
       </div>
       <div class="flow-step">
         <div class="flow-num">2</div>
-        <div class="flow-title">デンタルチェック</div>
-        <div class="flow-desc">口元を映すと歯茎の色味・着色・歯並びを自動スコアリング。</div>
+        <div class="flow-title" data-i18n="s02_flow2_title">デンタルチェック</div>
+        <div class="flow-desc" data-i18n="s02_flow2_desc">口元を映すと歯茎の色味・着色・歯並びを自動スコアリング。</div>
       </div>
       <div class="flow-step">
         <div class="flow-num">3</div>
-        <div class="flow-title">統合結果</div>
-        <div class="flow-desc">肌スコア＋デンタルスコアを表示。ケア提案・クリニック送客・コンテンツ誘導。</div>
+        <div class="flow-title" data-i18n="s02_flow3_title">統合結果</div>
+        <div class="flow-desc" data-i18n="s02_flow3_desc">肌スコア＋デンタルスコアを表示。ケア提案・クリニック送客・コンテンツ誘導。</div>
       </div>
     </div>
 
     <div class="card-grid col-3" style="margin-top: 16px;">
       <div class="card dark-card">
         <div style="font-size: 28px; margin-bottom: 16px;">✨</div>
-        <h3 class="light" style="font-size:16px;">マスコット「キラリ」</h3>
-        <p class="body-text light">鏡の妖精キャラクターが毎日のチェックをナビゲート。継続使用を感情的に後押しする。</p>
+        <h3 class="light" style="font-size:16px;" data-i18n="s02_card1_title">マスコット「キラリ」</h3>
+        <p class="body-text light" data-i18n="s02_card1_text">鏡の妖精キャラクターが毎日のチェックをナビゲート。継続使用を感情的に後押しする。</p>
       </div>
       <div class="card dark-card">
         <div style="font-size: 28px; margin-bottom: 16px;">📊</div>
-        <h3 class="light" style="font-size:16px;">スコア履歴</h3>
-        <p class="body-text light">日々のチェックが積み重なり「変化がわかる」体験に。ケア継続のモチベーションを生む。</p>
+        <h3 class="light" style="font-size:16px;" data-i18n="s02_card2_title">スコア履歴</h3>
+        <p class="body-text light" data-i18n="s02_card2_text">日々のチェックが積み重なり「変化がわかる」体験に。ケア継続のモチベーションを生む。</p>
       </div>
       <div class="card dark-card">
         <div style="font-size: 28px; margin-bottom: 16px;">🔔</div>
-        <h3 class="light" style="font-size:16px;">定期リマインダー</h3>
-        <p class="body-text light">朝のルーティンにプッシュ通知で組み込み。習慣化レイヤーをアプリ側で担保する。</p>
+        <h3 class="light" style="font-size:16px;" data-i18n="s02_card3_title">定期リマインダー</h3>
+        <p class="body-text light" data-i18n="s02_card3_text">朝のルーティンにプッシュ通知で組み込み。習慣化レイヤーをアプリ側で担保する。</p>
       </div>
     </div>
   </div>
@@ -713,66 +755,66 @@
 
 <!-- ════════════════ BUSINESS MODEL ═════════════════════════ -->
 <section>
-  <p class="section-number">03 — ビジネスモデル</p>
+  <p class="section-number" data-i18n="s03_number">03 — ビジネスモデル</p>
   <div class="divider"></div>
-  <h2>三層収益構造</h2>
-  <p class="lead">無料ユーザー獲得 → 高単価送客 → データマネタイズという三層設計。Cocomiプラットフォームと共通するアーキテクチャを採用し、開発ノウハウを流用する。</p>
+  <h2 data-i18n="s03_title">三層収益構造</h2>
+  <p class="lead" data-i18n="s03_lead">無料ユーザー獲得 → 高単価送客 → データマネタイズという三層設計。Cocomiプラットフォームと共通するアーキテクチャを採用し、開発ノウハウを流用する。</p>
 
   <div class="layer-stack">
     <div class="layer layer-1">
       <div class="layer-badge">Layer 1</div>
       <div class="layer-content">
-        <h4>無料ビューティー / ヘルスチェック</h4>
-        <p>AIスコアリング・キラリのコメント・履歴閲覧は完全無料。ユーザー獲得コストを最小化し、習慣化をまず確立する。</p>
+        <h4 data-i18n="s03_layer1_title">無料ビューティー / ヘルスチェック</h4>
+        <p data-i18n="s03_layer1_text">AIスコアリング・キラリのコメント・履歴閲覧は完全無料。ユーザー獲得コストを最小化し、習慣化をまず確立する。</p>
       </div>
     </div>
     <div class="layer layer-2">
       <div class="layer-badge">Layer 2</div>
       <div class="layer-content">
-        <h4>提携歯科送客 ／ ケアグッズ EC（KIREI SELECT）</h4>
-        <p>デンタルスコアから提携クリニックへの予約誘導。自費診療（ホワイトニング・矯正）の客単価は高く、送客手数料が主要収益源となる。並行してケアグッズのアフィリエイト・直販も展開。</p>
+        <h4 data-i18n="s03_layer2_title">提携歯科送客 ／ ケアグッズ EC（KIREI SELECT）</h4>
+        <p data-i18n="s03_layer2_text">デンタルスコアから提携クリニックへの予約誘導。自費診療（ホワイトニング・矯正）の客単価は高く、送客手数料が主要収益源となる。並行してケアグッズのアフィリエイト・直販も展開。</p>
       </div>
     </div>
     <div class="layer layer-3">
       <div class="layer-badge">Layer 3</div>
       <div class="layer-content">
-        <h4>匿名化データ分析・提供（将来フェーズ）</h4>
-        <p>蓄積された口腔・肌データの匿名化集計値を、製薬・化粧品・医療機器メーカーへ提供。個人情報保護法・倫理ガイドラインに準拠した設計を初期から実装。</p>
+        <h4 data-i18n="s03_layer3_title">匿名化データ分析・提供（将来フェーズ）</h4>
+        <p data-i18n="s03_layer3_text">蓄積された口腔・肌データの匿名化集計値を、製薬・化粧品・医療機器メーカーへ提供。個人情報保護法・倫理ガイドラインに準拠した設計を初期から実装。</p>
       </div>
     </div>
   </div>
 
   <div class="highlight" style="margin-top: 40px;">
-    <p>自費診療（ホワイトニング・矯正・インプラント）に積極的なクリニックへの送客は客単価が高く、<br>送客モデルの収益貢献が大きい。提携先候補との初期折衝を進めている。</p>
+    <p data-i18n="s03_highlight">自費診療（ホワイトニング・矯正・インプラント）に積極的なクリニックへの送客は客単価が高く、<br>送客モデルの収益貢献が大きい。提携先候補との初期折衝を進めている。</p>
   </div>
 </section>
 
 <!-- ════════════════ MARKET ══════════════════════════════════ -->
 <section class="tinted">
   <div class="inner">
-    <p class="section-number">04 — 市場</p>
+    <p class="section-number" data-i18n="s04_number">04 — 市場</p>
     <div class="divider"></div>
-    <h2>口腔ケア × 美容テック<br><em>交差する二大市場</em></h2>
-    <p class="lead">KIREIは単一市場ではなく、口腔ヘルスケアと美容テックの交差点に位置する。どちらの文脈でも訴求でき、タム（TAM）が広い。</p>
+    <h2 data-i18n="s04_title">口腔ケア × 美容テック<br><em>交差する二大市場</em></h2>
+    <p class="lead" data-i18n="s04_lead">KIREIは単一市場ではなく、口腔ヘルスケアと美容テックの交差点に位置する。どちらの文脈でも訴求でき、タム（TAM）が広い。</p>
 
     <div class="card-grid col-3">
       <div class="card">
         <div class="card-icon green" style="margin-bottom:16px;">🦷</div>
-        <h3 style="font-size:15px; margin-bottom:8px;">国内歯科市場</h3>
-        <p class="body-text">約3兆円規模（医療費ベース）。近年は自費診療比率が上昇傾向にあり、ホワイトニング・矯正需要が拡大中。</p>
-        <p style="font-size:11px; color:var(--muted); margin-top:12px;">※ 公的統計に基づく推計</p>
+        <h3 style="font-size:15px; margin-bottom:8px;" data-i18n="s04_card1_title">国内歯科市場</h3>
+        <p class="body-text" data-i18n="s04_card1_text">約3兆円規模（医療費ベース）。近年は自費診療比率が上昇傾向にあり、ホワイトニング・矯正需要が拡大中。</p>
+        <p style="font-size:11px; color:var(--muted); margin-top:12px;" data-i18n="s04_card1_note">※ 公的統計に基づく推計</p>
       </div>
       <div class="card">
         <div class="card-icon purple" style="margin-bottom:16px;">💄</div>
-        <h3 style="font-size:15px; margin-bottom:8px;">国内スキンケア市場</h3>
-        <p class="body-text">化粧品市場は1兆5,000億円超（矢野経済研究所推計）。スキンケアカテゴリが最大の比率を占め、D2Cブランドも急増。</p>
-        <p style="font-size:11px; color:var(--muted); margin-top:12px;">※ 矢野経済研究所等の公開資料より</p>
+        <h3 style="font-size:15px; margin-bottom:8px;" data-i18n="s04_card2_title">国内スキンケア市場</h3>
+        <p class="body-text" data-i18n="s04_card2_text">化粧品市場は1兆5,000億円超（矢野経済研究所推計）。スキンケアカテゴリが最大の比率を占め、D2Cブランドも急増。</p>
+        <p style="font-size:11px; color:var(--muted); margin-top:12px;" data-i18n="s04_card2_note">※ 矢野経済研究所等の公開資料より</p>
       </div>
       <div class="card">
         <div class="card-icon gold" style="margin-bottom:16px;">📱</div>
-        <h3 style="font-size:15px; margin-bottom:8px;">ビューティーテック</h3>
-        <p class="body-text">AI肌診断・パーソナライズ提案のスタートアップが国内外で増加。スマホカメラを活用したノンデバイス型が注目を集める。</p>
-        <p style="font-size:11px; color:var(--muted); margin-top:12px;">※ 参入機会として整理</p>
+        <h3 style="font-size:15px; margin-bottom:8px;" data-i18n="s04_card3_title">ビューティーテック</h3>
+        <p class="body-text" data-i18n="s04_card3_text">AI肌診断・パーソナライズ提案のスタートアップが国内外で増加。スマホカメラを活用したノンデバイス型が注目を集める。</p>
+        <p style="font-size:11px; color:var(--muted); margin-top:12px;" data-i18n="s04_card3_note">※ 参入機会として整理</p>
       </div>
     </div>
   </div>
@@ -780,50 +822,50 @@
 
 <!-- ════════════════ COMPETITIVE ADVANTAGE ══════════════════ -->
 <section>
-  <p class="section-number">05 — 競合優位性</p>
+  <p class="section-number" data-i18n="s05_number">05 — 競合優位性</p>
   <div class="divider"></div>
-  <h2>なぜ、<em>今</em>・<em>ここ</em>か</h2>
-  <p class="lead">単機能アプリとの最大の差別化は「習慣化の構造設計」。機能競合では勝てなくても、ユーザーの朝のルーティンに入ることで離脱を防ぐ。</p>
+  <h2 data-i18n="s05_title">なぜ、<em>今</em>・<em>ここ</em>か</h2>
+  <p class="lead" data-i18n="s05_lead">単機能アプリとの最大の差別化は「習慣化の構造設計」。機能競合では勝てなくても、ユーザーの朝のルーティンに入ることで離脱を防ぐ。</p>
 
   <table>
     <thead>
       <tr>
-        <th>比較軸</th>
-        <th>一般的な歯科アプリ</th>
-        <th>一般的な肌診断アプリ</th>
+        <th data-i18n="s05_th1">比較軸</th>
+        <th data-i18n="s05_th2">一般的な歯科アプリ</th>
+        <th data-i18n="s05_th3">一般的な肌診断アプリ</th>
         <th style="color:var(--purple);">KIREI</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><strong>日常利用動機</strong></td>
-        <td>低い（チェック目的のみ）</td>
-        <td>中程度</td>
-        <td><strong>高い（鏡代替）</strong></td>
+        <td data-i18n="s05_r1c1"><strong>日常利用動機</strong></td>
+        <td data-i18n="s05_r1c2">低い（チェック目的のみ）</td>
+        <td data-i18n="s05_r1c3">中程度</td>
+        <td data-i18n="s05_r1c4"><strong>高い（鏡代替）</strong></td>
       </tr>
       <tr>
-        <td><strong>複数機能統合</strong></td>
+        <td data-i18n="s05_r2c1"><strong>複数機能統合</strong></td>
         <td class="cross">✗</td>
         <td class="cross">✗</td>
-        <td class="check" style="color:var(--purple);">✓ 肌＋口腔</td>
+        <td class="check" style="color:var(--purple);" data-i18n="s05_r2c4">✓ 肌＋口腔</td>
       </tr>
       <tr>
-        <td><strong>医療連携・送客</strong></td>
-        <td>部分的</td>
+        <td data-i18n="s05_r3c1"><strong>医療連携・送客</strong></td>
+        <td data-i18n="s05_r3c2">部分的</td>
         <td class="cross">✗</td>
-        <td class="check" style="color:var(--purple);">✓ 提携歯科</td>
+        <td class="check" style="color:var(--purple);" data-i18n="s05_r3c4">✓ 提携歯科</td>
       </tr>
       <tr>
-        <td><strong>コンテンツ連動</strong></td>
+        <td data-i18n="s05_r4c1"><strong>コンテンツ連動</strong></td>
         <td class="cross">✗</td>
         <td class="cross">✗</td>
-        <td class="check" style="color:var(--purple);">✓ 医師コンテンツ連動</td>
+        <td class="check" style="color:var(--purple);" data-i18n="s05_r4c4">✓ 医師コンテンツ連動</td>
       </tr>
       <tr>
-        <td><strong>キャラクター体験</strong></td>
+        <td data-i18n="s05_r5c1"><strong>キャラクター体験</strong></td>
         <td class="cross">✗</td>
         <td class="cross">✗</td>
-        <td class="check" style="color:var(--purple);">✓ キラリ</td>
+        <td class="check" style="color:var(--purple);" data-i18n="s05_r5c4">✓ キラリ</td>
       </tr>
     </tbody>
   </table>
@@ -832,42 +874,42 @@
 <!-- ════════════════ PARTNERS ════════════════════════════════ -->
 <section class="dark">
   <div class="inner">
-    <p class="section-number light">06 — パートナーシップ戦略</p>
+    <p class="section-number light" data-i18n="s06_number">06 — パートナーシップ戦略</p>
     <div class="divider"></div>
-    <h2 class="light">医療の<em>信頼性</em>と<br><em>コンテンツ</em>の力を組み込む</h2>
-    <p class="lead light">KIREIは単独のアプリではなく、提携クリニック・医師コンテンツとのエコシステムとして設計されている。アプリ単体では生まれない送客サイクルと医療的権威性が、差別化の核となる。</p>
+    <h2 class="light" data-i18n="s06_title">医療の<em>信頼性</em>と<br><em>コンテンツ</em>の力を組み込む</h2>
+    <p class="lead light" data-i18n="s06_lead">KIREIは単独のアプリではなく、提携クリニック・医師コンテンツとのエコシステムとして設計されている。アプリ単体では生まれない送客サイクルと医療的権威性が、差別化の核となる。</p>
 
     <div class="card-grid col-2" style="margin-top: 48px;">
       <div class="card dark-card">
         <div style="font-size:28px;margin-bottom:16px;">🏥</div>
-        <h3 class="light" style="font-size:16px;">自費診療クリニックとの送客連携</h3>
-        <p class="body-text light">ホワイトニング・矯正・インプラント等の自費メニューを持つクリニックを提携先として組み込む。デンタルスコアから自然な流れで予約導線を設け、高単価送客を実現する。クリニック側は新規患者獲得チャネルを得る。</p>
+        <h3 class="light" style="font-size:16px;" data-i18n="s06_card1_title">自費診療クリニックとの送客連携</h3>
+        <p class="body-text light" data-i18n="s06_card1_text">ホワイトニング・矯正・インプラント等の自費メニューを持つクリニックを提携先として組み込む。デンタルスコアから自然な流れで予約導線を設け、高単価送客を実現する。クリニック側は新規患者獲得チャネルを得る。</p>
         <div style="margin-top:16px;">
-          <span class="tag" style="background:rgba(168,85,247,0.2); color:#e0b4ff;">送客手数料モデル</span>
-          <span class="tag" style="background:rgba(34,197,94,0.15); color:#86efac;">初期候補折衝中</span>
+          <span class="tag" style="background:rgba(168,85,247,0.2); color:#e0b4ff;" data-i18n="s06_tag_referral">送客手数料モデル</span>
+          <span class="tag" style="background:rgba(34,197,94,0.15); color:#86efac;" data-i18n="s06_tag_negotiating">初期候補折衝中</span>
         </div>
       </div>
       <div class="card dark-card">
         <div style="font-size:28px;margin-bottom:16px;">🎬</div>
-        <h3 class="light" style="font-size:16px;">医師YouTuberとのコンテンツ連動</h3>
-        <p class="body-text light">口腔・全身健康に関するコンテンツを発信する医師YouTuberとの連携により、アプリへの医療的権威付けと相互送客サイクルを構築する。アプリ結果画面からコンテンツへの動線を設け、エンゲージメントを深める。</p>
+        <h3 class="light" style="font-size:16px;" data-i18n="s06_card2_title">医師YouTuberとのコンテンツ連動</h3>
+        <p class="body-text light" data-i18n="s06_card2_text">口腔・全身健康に関するコンテンツを発信する医師YouTuberとの連携により、アプリへの医療的権威付けと相互送客サイクルを構築する。アプリ結果画面からコンテンツへの動線を設け、エンゲージメントを深める。</p>
         <div style="margin-top:16px;">
-          <span class="tag" style="background:rgba(168,85,247,0.2); color:#e0b4ff;">コンテンツ連動</span>
-          <span class="tag" style="background:rgba(236,72,153,0.2); color:#f9a8d4;">医療監修</span>
+          <span class="tag" style="background:rgba(168,85,247,0.2); color:#e0b4ff;" data-i18n="s06_tag_content">コンテンツ連動</span>
+          <span class="tag" style="background:rgba(236,72,153,0.2); color:#f9a8d4;" data-i18n="s06_tag_medical">医療監修</span>
         </div>
       </div>
     </div>
 
     <div style="margin-top:32px; padding: 28px 32px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 16px;">
-      <p style="font-size:13px; color:rgba(255,255,255,0.4); margin-bottom:10px;">パートナーエコシステムの循環</p>
+      <p style="font-size:13px; color:rgba(255,255,255,0.4); margin-bottom:10px;" data-i18n="s06_eco_label">パートナーエコシステムの循環</p>
       <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
-        <span style="font-size:13px; color:rgba(255,255,255,0.7);">ユーザー獲得（無料）</span>
+        <span style="font-size:13px; color:rgba(255,255,255,0.7);" data-i18n="s06_eco1">ユーザー獲得（無料）</span>
         <span style="color:var(--purple); font-size:18px;">→</span>
-        <span style="font-size:13px; color:rgba(255,255,255,0.7);">スコア通知・コンテンツ誘導</span>
+        <span style="font-size:13px; color:rgba(255,255,255,0.7);" data-i18n="s06_eco2">スコア通知・コンテンツ誘導</span>
         <span style="color:var(--purple); font-size:18px;">→</span>
-        <span style="font-size:13px; color:rgba(255,255,255,0.7);">提携クリニック予約</span>
+        <span style="font-size:13px; color:rgba(255,255,255,0.7);" data-i18n="s06_eco3">提携クリニック予約</span>
         <span style="color:var(--purple); font-size:18px;">→</span>
-        <span style="font-size:13px; color:rgba(255,255,255,0.7);">送客手数料・継続利用</span>
+        <span style="font-size:13px; color:rgba(255,255,255,0.7);" data-i18n="s06_eco4">送客手数料・継続利用</span>
       </div>
     </div>
   </div>
@@ -875,35 +917,35 @@
 
 <!-- ════════════════ ROADMAP ═════════════════════════════════ -->
 <section>
-  <p class="section-number">07 — ロードマップ</p>
+  <p class="section-number" data-i18n="s07_number">07 — ロードマップ</p>
   <div class="divider"></div>
-  <h2>段階的な<em>価値実証</em></h2>
-  <p class="lead">技術POCから提携歯科での実証実験、スケールへと順を追って進める。各フェーズでの学習を次フェーズの判断材料とするアジャイル型。</p>
+  <h2 data-i18n="s07_title">段階的な<em>価値実証</em></h2>
+  <p class="lead" data-i18n="s07_lead">技術POCから提携歯科での実証実験、スケールへと順を追って進める。各フェーズでの学習を次フェーズの判断材料とするアジャイル型。</p>
 
   <div class="timeline">
     <div class="timeline-item active">
-      <p class="timeline-phase">Phase 0 — 完了</p>
-      <p class="timeline-title">技術POC・プロトタイプ</p>
-      <p class="timeline-desc">WebRTCカメラ統合、HSV+RGB肌分析、デンタルスコアリングのPOCを完成。GitHub Pagesにてデモ公開済み。照明正規化の技術的実現を確認。</p>
-      <span class="timeline-tag done">✓ 完了</span>
+      <p class="timeline-phase" data-i18n="s07_phase0_label">Phase 0 — 完了</p>
+      <p class="timeline-title" data-i18n="s07_phase0_title">技術POC・プロトタイプ</p>
+      <p class="timeline-desc" data-i18n="s07_phase0_desc">WebRTCカメラ統合、HSV+RGB肌分析、デンタルスコアリングのPOCを完成。GitHub Pagesにてデモ公開済み。照明正規化の技術的実現を確認。</p>
+      <span class="timeline-tag done" data-i18n="s07_tag_done">✓ 完了</span>
     </div>
     <div class="timeline-item active">
-      <p class="timeline-phase">Phase 1 — 進行中</p>
-      <p class="timeline-title">MVP構築</p>
-      <p class="timeline-desc">Vite + React によるコンポーネント設計、MediaPipe FaceLandmarkerによる精度向上、Capacitorを用いたiOS/Androidラップ。初期提携先候補との折衝も並行して進める。</p>
-      <span class="timeline-tag wip">進行中</span>
+      <p class="timeline-phase" data-i18n="s07_phase1_label">Phase 1 — 進行中</p>
+      <p class="timeline-title" data-i18n="s07_phase1_title">MVP構築</p>
+      <p class="timeline-desc" data-i18n="s07_phase1_desc">Vite + React によるコンポーネント設計、MediaPipe FaceLandmarkerによる精度向上、Capacitorを用いたiOS/Androidラップ。初期提携先候補との折衝も並行して進める。</p>
+      <span class="timeline-tag wip" data-i18n="s07_tag_wip">進行中</span>
     </div>
     <div class="timeline-item">
-      <p class="timeline-phase">Phase 2 — 提携導入</p>
-      <p class="timeline-title">提携歯科でのパイロット運用</p>
-      <p class="timeline-desc">提携歯科クリニックとのテスト送客、予約フォーム連携、医師コンテンツとの連動機能の実装。送客コンバージョン率の実測データを取得。</p>
-      <span class="timeline-tag plan">計画中</span>
+      <p class="timeline-phase" data-i18n="s07_phase2_label">Phase 2 — 提携導入</p>
+      <p class="timeline-title" data-i18n="s07_phase2_title">提携歯科でのパイロット運用</p>
+      <p class="timeline-desc" data-i18n="s07_phase2_desc">提携歯科クリニックとのテスト送客、予約フォーム連携、医師コンテンツとの連動機能の実装。送客コンバージョン率の実測データを取得。</p>
+      <span class="timeline-tag plan" data-i18n="s07_tag_plan">計画中</span>
     </div>
     <div class="timeline-item">
-      <p class="timeline-phase">Phase 3 — スケール</p>
-      <p class="timeline-title">KIREI SELECT ／ データレイヤー</p>
-      <p class="timeline-desc">ケアグッズECの立ち上げ、スコア履歴・トレンド分析機能、提携クリニックの多拠点展開、匿名化データ活用モデルの検討。</p>
-      <span class="timeline-tag plan">計画中</span>
+      <p class="timeline-phase" data-i18n="s07_phase3_label">Phase 3 — スケール</p>
+      <p class="timeline-title" data-i18n="s07_phase3_title">KIREI SELECT ／ データレイヤー</p>
+      <p class="timeline-desc" data-i18n="s07_phase3_desc">ケアグッズECの立ち上げ、スコア履歴・トレンド分析機能、提携クリニックの多拠点展開、匿名化データ活用モデルの検討。</p>
+      <span class="timeline-tag plan" data-i18n="s07_tag_plan2">計画中</span>
     </div>
   </div>
 </section>
@@ -911,16 +953,16 @@
 <!-- ════════════════ TECH ═════════════════════════════════════ -->
 <section class="tinted">
   <div class="inner">
-    <p class="section-number">08 — 技術</p>
+    <p class="section-number" data-i18n="s08_number">08 — 技術</p>
     <div class="divider"></div>
-    <h2>医療表現に準拠した<br><em>設計思想</em></h2>
-    <p class="lead">KIREIは「診断」でなく「気づき」を提供するツールとして設計されている。体重計が医療機器でないのと同じポジションを明確に定義することで、薬機法・医師法上のリスクを回避する。</p>
+    <h2 data-i18n="s08_title">医療表現に準拠した<br><em>設計思想</em></h2>
+    <p class="lead" data-i18n="s08_lead">KIREIは「診断」でなく「気づき」を提供するツールとして設計されている。体重計が医療機器でないのと同じポジションを明確に定義することで、薬機法・医師法上のリスクを回避する。</p>
 
     <div class="card-grid col-2">
       <div class="card">
         <div class="card-icon purple">🔬</div>
-        <h3>AI分析の現在地</h3>
-        <p class="body-text">HSV/RGB色空間での肌色分析と照明正規化は技術POCで実証済み。MediaPipe FaceLandmarkerによる顔ランドマーク検出で精度向上を図る（仕様策定済み）。</p>
+        <h3 data-i18n="s08_card1_title">AI分析の現在地</h3>
+        <p class="body-text" data-i18n="s08_card1_text">HSV/RGB色空間での肌色分析と照明正規化は技術POCで実証済み。MediaPipe FaceLandmarkerによる顔ランドマーク検出で精度向上を図る（仕様策定済み）。</p>
         <div style="margin-top:12px;">
           <span class="tag">WebRTC</span>
           <span class="tag">MediaPipe</span>
@@ -929,30 +971,30 @@
       </div>
       <div class="card">
         <div class="card-icon green">⚖️</div>
-        <h3>医療表現ガイドライン</h3>
-        <p class="body-text">「診断」「治療」「病気」等の医療用語は全面禁止。「チェック」「スコア」「ケアのヒント」「歯科医に相談」の表現に統一し、結果画面に必ず免責事項を表示。</p>
+        <h3 data-i18n="s08_card2_title">医療表現ガイドライン</h3>
+        <p class="body-text" data-i18n="s08_card2_text">「診断」「治療」「病気」等の医療用語は全面禁止。「チェック」「スコア」「ケアのヒント」「歯科医に相談」の表現に統一し、結果画面に必ず免責事項を表示。</p>
         <div style="margin-top:12px;">
-          <span class="tag">薬機法対応</span>
-          <span class="tag">医師法対応</span>
+          <span class="tag" data-i18n="s08_tag_pmd">薬機法対応</span>
+          <span class="tag" data-i18n="s08_tag_med">医師法対応</span>
         </div>
       </div>
       <div class="card">
         <div class="card-icon pink">📲</div>
-        <h3>クロスプラットフォーム戦略</h3>
-        <p class="body-text">Phase 1はCapacitorでReact JsをiOS/Androidにラップ。Phase 3でiOSネイティブ（Swift/SwiftUI）へ移行し、TrueDepth Camera等の精密センサーを活用。</p>
+        <h3 data-i18n="s08_card3_title">クロスプラットフォーム戦略</h3>
+        <p class="body-text" data-i18n="s08_card3_text">Phase 1はCapacitorでReact JsをiOS/Androidにラップ。Phase 3でiOSネイティブ（Swift/SwiftUI）へ移行し、TrueDepth Camera等の精密センサーを活用。</p>
         <div style="margin-top:12px;">
           <span class="tag">React + Vite</span>
           <span class="tag">Capacitor</span>
-          <span class="tag">Swift（予定）</span>
+          <span class="tag" data-i18n="s08_tag_swift">Swift（予定）</span>
         </div>
       </div>
       <div class="card">
         <div class="card-icon gold">🗄️</div>
-        <h3>バックエンド・データ</h3>
-        <p class="body-text">ユーザースコア履歴の保存にSupabase / Firebase（検討中）。データ収集段階から匿名化フレームワークを設計し、将来的なデータマネタイズに備える。</p>
+        <h3 data-i18n="s08_card4_title">バックエンド・データ</h3>
+        <p class="body-text" data-i18n="s08_card4_text">ユーザースコア履歴の保存にSupabase / Firebase（検討中）。データ収集段階から匿名化フレームワークを設計し、将来的なデータマネタイズに備える。</p>
         <div style="margin-top:12px;">
           <span class="tag">Supabase</span>
-          <span class="tag">匿名化設計</span>
+          <span class="tag" data-i18n="s08_tag_anon">匿名化設計</span>
         </div>
       </div>
     </div>
@@ -962,44 +1004,369 @@
 <!-- ════════════════ ASK ══════════════════════════════════════ -->
 <section class="dark">
   <div class="inner">
-    <p class="section-number light">09 — 資金用途</p>
+    <p class="section-number light" data-i18n="s09_number">09 — 資金用途</p>
     <div class="divider"></div>
-    <h2 class="light">次の<em>マイルストーン</em>へ</h2>
-    <p class="lead light">MVP完成・提携歯科パイロット・ユーザー獲得の初期検証を目的とした資金調達を検討しています。具体的な調達額・条件は別途ご相談ください。</p>
+    <h2 class="light" data-i18n="s09_title">次の<em>マイルストーン</em>へ</h2>
+    <p class="lead light" data-i18n="s09_lead">MVP完成・提携歯科パイロット・ユーザー獲得の初期検証を目的とした資金調達を検討しています。具体的な調達額・条件は別途ご相談ください。</p>
 
     <div class="card-grid col-3" style="margin-top: 48px;">
       <div class="card dark-card">
         <div style="font-size:28px;margin-bottom:16px;">⚙️</div>
-        <h3 class="light" style="font-size:15px;">プロダクト開発</h3>
-        <p class="body-text light">MediaPipe統合・Capacitorビルド・iOS/Androidリリース準備、UI/UXの本格実装。</p>
+        <h3 class="light" style="font-size:15px;" data-i18n="s09_card1_title">プロダクト開発</h3>
+        <p class="body-text light" data-i18n="s09_card1_text">MediaPipe統合・Capacitorビルド・iOS/Androidリリース準備、UI/UXの本格実装。</p>
       </div>
       <div class="card dark-card">
         <div style="font-size:28px;margin-bottom:16px;">🏥</div>
-        <h3 class="light" style="font-size:15px;">提携歯科パイロット</h3>
-        <p class="body-text light">提携歯科クリニックとの送客フロー実装・KPI計測・改善サイクルの確立。</p>
+        <h3 class="light" style="font-size:15px;" data-i18n="s09_card2_title">提携歯科パイロット</h3>
+        <p class="body-text light" data-i18n="s09_card2_text">提携歯科クリニックとの送客フロー実装・KPI計測・改善サイクルの確立。</p>
       </div>
       <div class="card dark-card">
         <div style="font-size:28px;margin-bottom:16px;">📢</div>
-        <h3 class="light" style="font-size:15px;">初期ユーザー獲得</h3>
-        <p class="body-text light">医師コンテンツとの連動、SNS施策によるコアターゲット（20〜30代女性）へのリーチ。</p>
+        <h3 class="light" style="font-size:15px;" data-i18n="s09_card3_title">初期ユーザー獲得</h3>
+        <p class="body-text light" data-i18n="s09_card3_text">医師コンテンツとの連動、SNS施策によるコアターゲット（20〜30代女性）へのリーチ。</p>
       </div>
     </div>
 
     <div style="margin-top: 48px; padding: 36px; background: rgba(168,85,247,0.12); border: 1px solid rgba(168,85,247,0.25); border-radius: 20px;">
-      <p style="font-size:14px; color:rgba(255,255,255,0.6); margin-bottom:16px;">プロトタイプデモ（Phase 0 完了版）</p>
+      <p style="font-size:14px; color:rgba(255,255,255,0.6); margin-bottom:16px;" data-i18n="s09_demo_label">プロトタイプデモ（Phase 0 完了版）</p>
       <p style="font-size:20px; font-family:'Cormorant Garamond',serif; color:#fff; margin-bottom:8px;">sashibe.github.io/kirei</p>
-      <p style="font-size:13px; color:rgba(255,255,255,0.4);">実際に動作するデモをご確認ください。カメラを使用した肌分析・デンタルチェックを体験できます。</p>
+      <p style="font-size:13px; color:rgba(255,255,255,0.4);" data-i18n="s09_demo_desc">実際に動作するデモをご確認ください。カメラを使用した肌分析・デンタルチェックを体験できます。</p>
     </div>
   </div>
 </section>
 
 <!-- ════════════════ FOOTER / DISCLAIMER ════════════════════ -->
 <div class="disclaimer">
-  <p><strong style="color:rgba(255,255,255,0.5);">KIREI — 投資家向け企画書</strong></p>
-  <p style="margin-top:16px;">本資料は投資判断の参考を目的として作成されたものであり、将来の業績・市場規模等に関する記述には不確実性を伴います。市場規模等の数値は公開資料に基づく推計であり、保証するものではありません。</p>
-  <p>本アプリは医療診断を行うものではありません。スコア・チェック結果はセルフケアの参考情報であり、医師・歯科医師への相談に代わるものではありません。</p>
-  <p style="margin-top: 24px; font-size: 11px; opacity: 0.4;">Confidential — 無断転載禁止</p>
+  <p data-i18n="footer_title"><strong style="color:rgba(255,255,255,0.5);">KIREI — 投資家向け企画書</strong></p>
+  <p style="margin-top:16px;" data-i18n="footer_disclaimer1">本資料は投資判断の参考を目的として作成されたものであり、将来の業績・市場規模等に関する記述には不確実性を伴います。市場規模等の数値は公開資料に基づく推計であり、保証するものではありません。</p>
+  <p data-i18n="footer_disclaimer2">本アプリは医療診断を行うものではありません。スコア・チェック結果はセルフケアの参考情報であり、医師・歯科医師への相談に代わるものではありません。</p>
+  <p style="margin-top: 24px; font-size: 11px; opacity: 0.4;" data-i18n="footer_confidential">Confidential — 無断転載禁止</p>
 </div>
+
+<script>
+(function() {
+  var jaTexts = {};
+  var translations = {
+    en: {
+      cover_label: 'Investor Deck — Confidential',
+      cover_tagline: 'Turn your smartphone into a daily AI beauty mirror',
+      cover_meta_category_label: 'CATEGORY',
+      cover_meta_category_value: 'Beauty Tech x Healthcare',
+      cover_meta_phase_label: 'PHASE',
+      cover_meta_phase_value: 'Phase 0 Complete / MVP In Progress',
+      cover_meta_proto_label: 'PROTOTYPE',
+      scroll_hint: '↓ Scroll',
+      s01_number: '01 — Problem',
+      s01_title: 'Women check their reflection<br>multiple times <em>every day</em>',
+      s01_lead: 'For women in their 20s and 30s, checking their appearance is a deeply embedded daily habit. From the bathroom mirror to the office restroom to the smartphone front camera — it happens multiple times across multiple contexts.',
+      s01_stat1: 'Average daily<br>mirror / selfie checks<br><span style="font-size:10px;opacity:0.6">(estimated)</span>',
+      s01_stat2: 'KIREI\'s<br>core target segment<br>(women in their 20s-30s)',
+      s01_stat3: 'Accumulated "insights"<br>that existing mirrors<br>could never provide',
+      s01_highlight: 'The biggest challenge for existing dental apps and skin analysis apps is <strong>retention</strong>.<br>A habit of opening an app "just for a check" does not stick.',
+      s01_card1_title: 'One-time use only',
+      s01_card1_text: 'Users may try a dental app once, but there is no reason to return the following week — leading to uninstalls.',
+      s01_card2_title: 'The front camera is used every day',
+      s01_card2_text: 'The smartphone camera is used daily for selfies and video calls. Only apps that integrate into this existing behavior will survive.',
+      s02_number: '02 — Solution',
+      s02_title: 'Designed as a <em>mirror replacement</em>:<br>an <em>AI Beauty Mirror</em>',
+      s02_lead: 'KIREI is neither a "dental app" nor a "skincare app." By replacing the smartphone itself as the "mirror you touch every morning," it structurally solves the retention problem.',
+      s02_flow1_title: 'Mirror Screen',
+      s02_flow1_desc: 'Point the camera and get automatic skin analysis. Real-time evaluation of tone, pores, and dullness.',
+      s02_flow2_title: 'Dental Check',
+      s02_flow2_desc: 'Show your mouth for automatic scoring of gum color, staining, and alignment.',
+      s02_flow3_title: 'Integrated Results',
+      s02_flow3_desc: 'Displays skin score + dental score. Care suggestions, clinic referrals, and content recommendations.',
+      s02_card1_title: 'Mascot "Kirari"',
+      s02_card1_text: 'A mirror fairy character navigates daily checks, emotionally encouraging continued usage.',
+      s02_card2_title: 'Score History',
+      s02_card2_text: 'Daily checks accumulate into a "see the change" experience, motivating ongoing care.',
+      s02_card3_title: 'Regular Reminders',
+      s02_card3_text: 'Push notifications integrate into the morning routine, ensuring habit formation at the app level.',
+      s03_number: '03 — Business Model',
+      s03_title: 'Three-Layer Revenue Structure',
+      s03_lead: 'A three-layer design: free user acquisition, high-value clinic referrals, and data monetization. Leveraging a shared architecture with the Cocomi platform and reusing development know-how.',
+      s03_layer1_title: 'Free Beauty / Health Check',
+      s03_layer1_text: 'AI scoring, Kirari\'s comments, and history viewing are completely free. Minimizes user acquisition cost and establishes habitual usage first.',
+      s03_layer2_title: 'Partner Clinic Referrals / Care Goods EC (KIREI SELECT)',
+      s03_layer2_text: 'Booking referrals from dental scores to partner clinics. High-ticket self-pay treatments (whitening, orthodontics) ensure strong referral fees as the primary revenue source. Care goods affiliate and direct sales run in parallel.',
+      s03_layer3_title: 'Anonymized Data Analytics & Provision (Future Phase)',
+      s03_layer3_text: 'Providing anonymized aggregate oral and skin data to pharmaceutical, cosmetics, and medical device manufacturers. Privacy-compliant design built in from day one.',
+      s03_highlight: 'Referrals to clinics with high-ticket self-pay treatments (whitening, orthodontics, implants)<br>deliver strong revenue contribution. Initial discussions with partner candidates are underway.',
+      s04_number: '04 — Market',
+      s04_title: 'Oral Care x Beauty Tech:<br><em>Two Major Markets Converging</em>',
+      s04_lead: 'KIREI sits at the intersection of oral healthcare and beauty tech — not in a single market. It can appeal in either context, offering a broad TAM.',
+      s04_card1_title: 'Japan Dental Market',
+      s04_card1_text: 'Approximately 3 trillion yen (medical expense basis). Self-pay treatment ratios are trending upward, with growing demand for whitening and orthodontics.',
+      s04_card1_note: '* Based on public statistical estimates',
+      s04_card2_title: 'Japan Skincare Market',
+      s04_card2_text: 'The cosmetics market exceeds 1.5 trillion yen (Yano Research estimate). Skincare holds the largest category share, with a surge in D2C brands.',
+      s04_card2_note: '* Based on Yano Research and other public sources',
+      s04_card3_title: 'Beauty Tech',
+      s04_card3_text: 'AI skin analysis and personalized recommendation startups are growing globally. Non-device, smartphone-camera-based solutions are drawing attention.',
+      s04_card3_note: '* Analyzed as a market entry opportunity',
+      s05_number: '05 — Competitive Advantage',
+      s05_title: 'Why <em>now</em>, why <em>us</em>',
+      s05_lead: 'The key differentiator from single-function apps is "structurally designed habit formation." Even without winning on features, becoming part of the user\'s morning routine prevents churn.',
+      s05_th1: 'Comparison',
+      s05_th2: 'Typical Dental App',
+      s05_th3: 'Typical Skin Analysis App',
+      s05_r1c1: '<strong>Daily usage motivation</strong>',
+      s05_r1c2: 'Low (check-only purpose)',
+      s05_r1c3: 'Moderate',
+      s05_r1c4: '<strong>High (mirror replacement)</strong>',
+      s05_r2c1: '<strong>Multi-function integration</strong>',
+      s05_r2c4: '✓ Skin + Oral',
+      s05_r3c1: '<strong>Medical partnership / referral</strong>',
+      s05_r3c2: 'Partial',
+      s05_r3c4: '✓ Partner clinics',
+      s05_r4c1: '<strong>Content integration</strong>',
+      s05_r4c4: '✓ Physician content integration',
+      s05_r5c1: '<strong>Character experience</strong>',
+      s05_r5c4: '✓ Kirari',
+      s06_number: '06 — Partnership Strategy',
+      s06_title: 'Embedding medical <em>credibility</em><br>and the power of <em>content</em>',
+      s06_lead: 'KIREI is designed not as a standalone app, but as an ecosystem with partner clinics and physician content. The referral cycle and medical authority that cannot be created by the app alone form the core differentiation.',
+      s06_card1_title: 'Referral Partnership with Self-Pay Clinics',
+      s06_card1_text: 'Integrating clinics offering self-pay services such as whitening, orthodontics, and implants as partners. Creating a natural booking flow from dental scores to achieve high-value referrals. Clinics gain a new patient acquisition channel.',
+      s06_tag_referral: 'Referral Fee Model',
+      s06_tag_negotiating: 'Initial Candidates In Discussion',
+      s06_card2_title: 'Content Integration with Physician YouTubers',
+      s06_card2_text: 'Building medical authority and a cross-referral cycle through partnerships with physician YouTubers who create oral and overall health content. Linking from the app results screen to content deepens engagement.',
+      s06_tag_content: 'Content Integration',
+      s06_tag_medical: 'Medical Advisor',
+      s06_eco_label: 'Partner Ecosystem Cycle',
+      s06_eco1: 'User Acquisition (Free)',
+      s06_eco2: 'Score Alerts / Content Referral',
+      s06_eco3: 'Partner Clinic Booking',
+      s06_eco4: 'Referral Fees / Retention',
+      s07_number: '07 — Roadmap',
+      s07_title: 'Incremental <em>Value Validation</em>',
+      s07_lead: 'Progressing step by step from technical POC to partner clinic pilot to scale. An agile approach where learnings from each phase inform the next.',
+      s07_phase0_label: 'Phase 0 — Complete',
+      s07_phase0_title: 'Technical POC / Prototype',
+      s07_phase0_desc: 'Completed POC for WebRTC camera integration, HSV+RGB skin analysis, and dental scoring. Demo published on GitHub Pages. Lighting normalization technically validated.',
+      s07_tag_done: '✓ Complete',
+      s07_phase1_label: 'Phase 1 — In Progress',
+      s07_phase1_title: 'MVP Development',
+      s07_phase1_desc: 'Vite + React component architecture, accuracy improvements via MediaPipe FaceLandmarker, iOS/Android wrapping with Capacitor. Initial partner candidate discussions running in parallel.',
+      s07_tag_wip: 'In Progress',
+      s07_phase2_label: 'Phase 2 — Partner Onboarding',
+      s07_phase2_title: 'Partner Clinic Pilot',
+      s07_phase2_desc: 'Test referrals with partner dental clinics, booking form integration, physician content integration. Measuring actual referral conversion rates.',
+      s07_tag_plan: 'Planned',
+      s07_phase3_label: 'Phase 3 — Scale',
+      s07_phase3_title: 'KIREI SELECT / Data Layer',
+      s07_phase3_desc: 'Launch of care goods EC, score history and trend analysis features, multi-location clinic expansion, and anonymized data monetization model exploration.',
+      s07_tag_plan2: 'Planned',
+      s08_number: '08 — Technology',
+      s08_title: 'Design philosophy aligned with<br><em>medical expression compliance</em>',
+      s08_lead: 'KIREI is designed as a tool that provides "awareness," not "diagnosis." By clearly defining its position — like a bathroom scale that is not a medical device — it avoids risks under Japan\'s Pharmaceutical and Medical Device Act and Medical Practitioners Act.',
+      s08_card1_title: 'Current State of AI Analysis',
+      s08_card1_text: 'Skin color analysis using HSV/RGB color spaces and lighting normalization have been validated in the technical POC. Accuracy improvements via MediaPipe FaceLandmarker facial landmark detection are spec\'d out.',
+      s08_card2_title: 'Medical Expression Guidelines',
+      s08_card2_text: 'Medical terminology such as "diagnosis," "treatment," and "disease" is strictly prohibited. Unified to expressions like "check," "score," "care tips," and "consult a dentist," with mandatory disclaimers on the results screen.',
+      s08_tag_pmd: 'PMD Act Compliance',
+      s08_tag_med: 'Medical Act Compliance',
+      s08_card3_title: 'Cross-Platform Strategy',
+      s08_card3_text: 'Phase 1 wraps React JS for iOS/Android via Capacitor. Phase 3 transitions to iOS native (Swift/SwiftUI) to leverage TrueDepth Camera and precision sensors.',
+      s08_tag_swift: 'Swift (Planned)',
+      s08_card4_title: 'Backend & Data',
+      s08_card4_text: 'User score history storage via Supabase / Firebase (under evaluation). Anonymization framework designed from the data collection stage for future data monetization.',
+      s08_tag_anon: 'Anonymization Design',
+      s09_number: '09 — Use of Funds',
+      s09_title: 'Toward the Next <em>Milestone</em>',
+      s09_lead: 'We are considering fundraising to complete MVP development, run a partner clinic pilot, and validate initial user acquisition. Specific amounts and terms are available upon request.',
+      s09_card1_title: 'Product Development',
+      s09_card1_text: 'MediaPipe integration, Capacitor build, iOS/Android release preparation, and full-scale UI/UX implementation.',
+      s09_card2_title: 'Partner Clinic Pilot',
+      s09_card2_text: 'Referral flow implementation with partner dental clinics, KPI measurement, and improvement cycle establishment.',
+      s09_card3_title: 'Initial User Acquisition',
+      s09_card3_text: 'Physician content integration, SNS campaigns targeting core demographic (women in their 20s-30s).',
+      s09_demo_label: 'Prototype Demo (Phase 0 Complete)',
+      s09_demo_desc: 'Try the working demo. Experience skin analysis and dental check using your camera.',
+      footer_title: '<strong style="color:rgba(255,255,255,0.5);">KIREI — Investor Deck</strong>',
+      footer_disclaimer1: 'This document is prepared for reference purposes in investment decisions. Statements regarding future performance and market size involve uncertainty. Market figures are estimates based on public sources and are not guaranteed.',
+      footer_disclaimer2: 'This app does not provide medical diagnosis. Scores and check results are reference information for self-care and do not replace consultation with a physician or dentist.',
+      footer_confidential: 'Confidential — Unauthorized reproduction prohibited'
+    },
+    ko: {
+      cover_label: 'Investor Deck — Confidential',
+      cover_tagline: '스마트폰을 매일 사용하는 "AI 뷰티 미러"로',
+      cover_meta_category_label: '카테고리',
+      cover_meta_category_value: '뷰티테크 x 헬스케어',
+      cover_meta_phase_label: '단계',
+      cover_meta_phase_value: 'Phase 0 완료 / MVP 개발 중',
+      cover_meta_proto_label: '프로토타입',
+      scroll_hint: '↓ 스크롤',
+      s01_number: '01 — 과제',
+      s01_title: '여성은 하루에 여러 번<br><em>거울을 확인합니다</em>',
+      s01_lead: '20~30대 여성에게 "자신의 상태를 확인하는" 행위는 일상에 깊이 뿌리내린 습관입니다. 아침 세면대, 사무실 화장실, 스마트폰 전면 카메라 — 하루에 여러 번, 다양한 상황에서 이루어집니다.',
+      s01_stat1: '하루 평균<br>거울/셀카 확인 횟수<br><span style="font-size:10px;opacity:0.6">(추정치)</span>',
+      s01_stat2: 'KIREI의<br>핵심 타겟층<br>(20~30대 여성)',
+      s01_stat3: '기존 거울이<br>제공하지 못했던<br>"인사이트"의 축적',
+      s01_highlight: '기존 "치과 앱"이나 "피부 진단 앱"의 가장 큰 과제는 <strong>리텐션</strong>입니다.<br>"체크만을 위해" 여는 습관은 정착되지 않습니다.',
+      s01_card1_title: '일회성 사용에 그침',
+      s01_card1_text: '"치과 앱을 써봤다"는 경험은 생기지만, 다음 주에도 사용할 이유가 없어 삭제됩니다.',
+      s01_card2_title: '전면 카메라는 매일 사용됩니다',
+      s01_card2_text: '스마트폰 카메라는 셀카와 영상 통화에 일상적으로 사용됩니다. 이 동선에 올라탈 수 있는 앱만이 살아남습니다.',
+      s02_number: '02 — 솔루션',
+      s02_title: '"거울 대체"로 설계된<br><em>AI 뷰티 미러</em>',
+      s02_lead: 'KIREI는 "치과 앱"도 "스킨케어 앱"도 아닙니다. 스마트폰을 "매일 아침 만지는 거울" 자체로 대체함으로써 리텐션 문제를 구조적으로 해결합니다.',
+      s02_flow1_title: '미러 화면',
+      s02_flow1_desc: '카메라를 향하면 자동으로 피부 분석. 톤, 모공, 칙칙함을 실시간 평가.',
+      s02_flow2_title: '덴탈 체크',
+      s02_flow2_desc: '입을 비추면 잇몸 색상, 착색, 치열을 자동 스코어링.',
+      s02_flow3_title: '통합 결과',
+      s02_flow3_desc: '피부 스코어 + 덴탈 스코어를 표시. 케어 제안, 클리닉 연계, 콘텐츠 안내.',
+      s02_card1_title: '마스코트 "키라리"',
+      s02_card1_text: '거울 요정 캐릭터가 매일 체크를 내비게이트하며 지속 사용을 감성적으로 응원합니다.',
+      s02_card2_title: '스코어 히스토리',
+      s02_card2_text: '매일의 체크가 쌓여 "변화를 알 수 있는" 경험으로. 케어 지속의 동기를 부여합니다.',
+      s02_card3_title: '정기 리마인더',
+      s02_card3_text: '아침 루틴에 푸시 알림으로 통합. 앱 측에서 습관화 레이어를 보장합니다.',
+      s03_number: '03 — 비즈니스 모델',
+      s03_title: '3층 수익 구조',
+      s03_lead: '무료 사용자 확보 → 고단가 클리닉 연계 → 데이터 수익화라는 3층 설계. Cocomi 플랫폼과 공통 아키텍처를 채택하고 개발 노하우를 공유합니다.',
+      s03_layer1_title: '무료 뷰티 / 헬스 체크',
+      s03_layer1_text: 'AI 스코어링, 키라리의 코멘트, 히스토리 열람은 완전 무료. 사용자 확보 비용을 최소화하고 습관화를 먼저 정착시킵니다.',
+      s03_layer2_title: '제휴 치과 연계 / 케어 용품 EC (KIREI SELECT)',
+      s03_layer2_text: '덴탈 스코어에서 제휴 클리닉으로의 예약 유도. 자비 진료(화이트닝, 교정)의 객단가가 높아 연계 수수료가 주요 수익원이 됩니다. 케어 용품 제휴 판매도 병행합니다.',
+      s03_layer3_title: '익명화 데이터 분석 및 제공 (향후 단계)',
+      s03_layer3_text: '축적된 구강/피부 데이터의 익명화 집계값을 제약, 화장품, 의료기기 제조사에 제공. 개인정보보호법 및 윤리 가이드라인을 준수하는 설계를 초기부터 구현합니다.',
+      s03_highlight: '자비 진료(화이트닝, 교정, 임플란트)에 적극적인 클리닉으로의 환자 연계는 객단가가 높아<br>연계 모델의 수익 기여가 큽니다. 제휴 후보와의 초기 협의를 진행 중입니다.',
+      s04_number: '04 — 시장',
+      s04_title: '구강 케어 x 뷰티 테크:<br><em>교차하는 두 대형 시장</em>',
+      s04_lead: 'KIREI는 단일 시장이 아닌 구강 헬스케어와 뷰티테크의 교차점에 위치합니다. 어느 쪽 맥락에서도 어필할 수 있으며, TAM이 넓습니다.',
+      s04_card1_title: '일본 치과 시장',
+      s04_card1_text: '약 3조 엔 규모(의료비 기준). 최근 자비 진료 비율이 상승 추세이며, 화이트닝 및 교정 수요가 확대 중입니다.',
+      s04_card1_note: '※ 공공 통계에 기반한 추정치',
+      s04_card2_title: '일본 스킨케어 시장',
+      s04_card2_text: '화장품 시장은 1조 5,000억 엔 이상(야노경제연구소 추정). 스킨케어 카테고리가 가장 큰 비율을 차지하며 D2C 브랜드도 급증하고 있습니다.',
+      s04_card2_note: '※ 야노경제연구소 등 공개 자료 기반',
+      s04_card3_title: '뷰티테크',
+      s04_card3_text: 'AI 피부 분석 및 개인화 제안 스타트업이 국내외에서 증가 중. 스마트폰 카메라를 활용한 비디바이스형이 주목받고 있습니다.',
+      s04_card3_note: '※ 시장 진입 기회로 정리',
+      s05_number: '05 — 경쟁 우위',
+      s05_title: '왜 <em>지금</em>, 왜 <em>우리</em>인가',
+      s05_lead: '단일 기능 앱과의 최대 차별화는 "습관화의 구조 설계"입니다. 기능 경쟁에서 이기지 못하더라도 사용자의 아침 루틴에 들어감으로써 이탈을 방지합니다.',
+      s05_th1: '비교 축',
+      s05_th2: '일반적인 치과 앱',
+      s05_th3: '일반적인 피부 진단 앱',
+      s05_r1c1: '<strong>일상 사용 동기</strong>',
+      s05_r1c2: '낮음 (체크 목적만)',
+      s05_r1c3: '보통',
+      s05_r1c4: '<strong>높음 (거울 대체)</strong>',
+      s05_r2c1: '<strong>복수 기능 통합</strong>',
+      s05_r2c4: '✓ 피부 + 구강',
+      s05_r3c1: '<strong>의료 연계 / 환자 연계</strong>',
+      s05_r3c2: '부분적',
+      s05_r3c4: '✓ 제휴 치과',
+      s05_r4c1: '<strong>콘텐츠 연동</strong>',
+      s05_r4c4: '✓ 의사 콘텐츠 연동',
+      s05_r5c1: '<strong>캐릭터 경험</strong>',
+      s05_r5c4: '✓ 키라리',
+      s06_number: '06 — 파트너십 전략',
+      s06_title: '의료의 <em>신뢰성</em>과<br><em>콘텐츠</em>의 힘을 내재화하다',
+      s06_lead: 'KIREI는 단독 앱이 아닌, 제휴 클리닉과 의사 콘텐츠와의 에코시스템으로 설계되어 있습니다. 앱 단독으로는 만들 수 없는 환자 연계 사이클과 의료적 권위가 차별화의 핵심입니다.',
+      s06_card1_title: '자비 진료 클리닉과의 환자 연계',
+      s06_card1_text: '화이트닝, 교정, 임플란트 등 자비 메뉴를 보유한 클리닉을 제휴처로 편입합니다. 덴탈 스코어에서 자연스러운 예약 동선을 마련하여 고단가 연계를 실현합니다. 클리닉 측은 신규 환자 확보 채널을 얻게 됩니다.',
+      s06_tag_referral: '연계 수수료 모델',
+      s06_tag_negotiating: '초기 후보 협의 중',
+      s06_card2_title: '의사 YouTuber와의 콘텐츠 연동',
+      s06_card2_text: '구강 및 전신 건강에 관한 콘텐츠를 발신하는 의사 YouTuber와의 연계를 통해 앱에 의료적 권위 부여와 상호 연계 사이클을 구축합니다. 앱 결과 화면에서 콘텐츠로의 동선을 마련하여 인게이지먼트를 심화시킵니다.',
+      s06_tag_content: '콘텐츠 연동',
+      s06_tag_medical: '의료 감수',
+      s06_eco_label: '파트너 에코시스템의 순환',
+      s06_eco1: '사용자 확보 (무료)',
+      s06_eco2: '스코어 알림 / 콘텐츠 유도',
+      s06_eco3: '제휴 클리닉 예약',
+      s06_eco4: '연계 수수료 / 지속 이용',
+      s07_number: '07 — 로드맵',
+      s07_title: '단계적 <em>가치 검증</em>',
+      s07_lead: '기술 POC에서 제휴 치과 실증 실험, 스케일까지 순서대로 진행합니다. 각 단계에서의 학습을 다음 단계의 판단 자료로 활용하는 애자일 방식입니다.',
+      s07_phase0_label: 'Phase 0 — 완료',
+      s07_phase0_title: '기술 POC / 프로토타입',
+      s07_phase0_desc: 'WebRTC 카메라 통합, HSV+RGB 피부 분석, 덴탈 스코어링 POC를 완성. GitHub Pages에 데모 공개 완료. 조명 정규화의 기술적 실현을 확인.',
+      s07_tag_done: '✓ 완료',
+      s07_phase1_label: 'Phase 1 — 진행 중',
+      s07_phase1_title: 'MVP 구축',
+      s07_phase1_desc: 'Vite + React에 의한 컴포넌트 설계, MediaPipe FaceLandmarker에 의한 정확도 향상, Capacitor를 이용한 iOS/Android 래핑. 초기 제휴 후보와의 협의도 병행하여 진행.',
+      s07_tag_wip: '진행 중',
+      s07_phase2_label: 'Phase 2 — 제휴 도입',
+      s07_phase2_title: '제휴 치과 파일럿 운영',
+      s07_phase2_desc: '제휴 치과 클리닉과의 테스트 연계, 예약 폼 연동, 의사 콘텐츠와의 연동 기능 구현. 연계 전환율의 실측 데이터 취득.',
+      s07_tag_plan: '계획 중',
+      s07_phase3_label: 'Phase 3 — 스케일',
+      s07_phase3_title: 'KIREI SELECT / 데이터 레이어',
+      s07_phase3_desc: '케어 용품 EC 런칭, 스코어 히스토리 및 트렌드 분석 기능, 제휴 클리닉 다거점 전개, 익명화 데이터 활용 모델 검토.',
+      s07_tag_plan2: '계획 중',
+      s08_number: '08 — 기술',
+      s08_title: '의료 표현에 준거한<br><em>설계 사상</em>',
+      s08_lead: 'KIREI는 "진단"이 아닌 "인식"을 제공하는 도구로 설계되어 있습니다. 체중계가 의료기기가 아닌 것과 같은 포지션을 명확히 정의함으로써 약사법 및 의사법상의 리스크를 회피합니다.',
+      s08_card1_title: 'AI 분석의 현재',
+      s08_card1_text: 'HSV/RGB 색공간에서의 피부색 분석과 조명 정규화는 기술 POC에서 실증 완료. MediaPipe FaceLandmarker에 의한 얼굴 랜드마크 검출로 정확도 향상 예정(사양 확정).',
+      s08_card2_title: '의료 표현 가이드라인',
+      s08_card2_text: '"진단", "치료", "질병" 등의 의료 용어는 전면 금지. "체크", "스코어", "케어 힌트", "치과 상담"의 표현으로 통일하며, 결과 화면에 반드시 면책 사항을 표시합니다.',
+      s08_tag_pmd: '약사법 대응',
+      s08_tag_med: '의사법 대응',
+      s08_card3_title: '크로스 플랫폼 전략',
+      s08_card3_text: 'Phase 1에서는 Capacitor로 React JS를 iOS/Android에 래핑. Phase 3에서 iOS 네이티브(Swift/SwiftUI)로 전환하여 TrueDepth Camera 등의 정밀 센서를 활용합니다.',
+      s08_tag_swift: 'Swift (예정)',
+      s08_card4_title: '백엔드 및 데이터',
+      s08_card4_text: '사용자 스코어 히스토리 저장에 Supabase / Firebase(검토 중). 데이터 수집 단계부터 익명화 프레임워크를 설계하여 향후 데이터 수익화에 대비합니다.',
+      s08_tag_anon: '익명화 설계',
+      s09_number: '09 — 자금 용도',
+      s09_title: '다음 <em>마일스톤</em>으로',
+      s09_lead: 'MVP 완성, 제휴 치과 파일럿, 사용자 확보의 초기 검증을 목적으로 한 자금 조달을 검토하고 있습니다. 구체적인 금액과 조건은 별도 상담 부탁드립니다.',
+      s09_card1_title: '프로덕트 개발',
+      s09_card1_text: 'MediaPipe 통합, Capacitor 빌드, iOS/Android 릴리스 준비, UI/UX 본격 구현.',
+      s09_card2_title: '제휴 치과 파일럿',
+      s09_card2_text: '제휴 치과 클리닉과의 연계 플로우 구현, KPI 측정, 개선 사이클 확립.',
+      s09_card3_title: '초기 사용자 확보',
+      s09_card3_text: '의사 콘텐츠와의 연동, SNS 시책을 통한 핵심 타겟(20~30대 여성)에 대한 도달.',
+      s09_demo_label: '프로토타입 데모 (Phase 0 완료 버전)',
+      s09_demo_desc: '실제 작동하는 데모를 확인해 보세요. 카메라를 사용한 피부 분석 및 덴탈 체크를 체험할 수 있습니다.',
+      footer_title: '<strong style="color:rgba(255,255,255,0.5);">KIREI — 투자자용 기획서</strong>',
+      footer_disclaimer1: '본 자료는 투자 판단의 참고를 목적으로 작성된 것이며, 향후 실적 및 시장 규모 등에 관한 기술에는 불확실성이 수반됩니다. 시장 규모 등의 수치는 공개 자료에 기반한 추정치이며 보증하는 것이 아닙니다.',
+      footer_disclaimer2: '본 앱은 의료 진단을 수행하는 것이 아닙니다. 스코어 및 체크 결과는 셀프 케어의 참고 정보이며, 의사 및 치과 의사와의 상담을 대체하는 것이 아닙니다.',
+      footer_confidential: 'Confidential — 무단 전재 금지'
+    }
+  };
+
+  // Save Japanese originals on first load
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    jaTexts[el.getAttribute('data-i18n')] = el.innerHTML;
+  });
+
+  window.setLanguage = function(lang) {
+    // Update buttons
+    document.querySelectorAll('.lang-switcher button').forEach(function(btn) {
+      btn.classList.toggle('active', btn.textContent === lang.toUpperCase());
+    });
+
+    // Apply translations
+    document.querySelectorAll('[data-i18n]').forEach(function(el) {
+      var key = el.getAttribute('data-i18n');
+      if (lang === 'ja') {
+        el.innerHTML = jaTexts[key];
+      } else if (translations[lang] && translations[lang][key]) {
+        el.innerHTML = translations[lang][key];
+      }
+    });
+
+    // Persist preference
+    try { localStorage.setItem('kirei-lang', lang); } catch(e) {}
+  };
+
+  // On load, check saved preference
+  try {
+    var saved = localStorage.getItem('kirei-lang');
+    if (saved && saved !== 'ja') {
+      setLanguage(saved);
+    }
+  } catch(e) {}
+})();
+</script>
 
 </body>
 </html>

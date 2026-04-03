@@ -8,29 +8,18 @@ import GuideFrame from './GuideFrame.jsx';
 import DentalRotationModal from './DentalRotationModal';
 import useAutoShutter from '../hooks/useAutoShutter.js';
 import useFaceLandmarker from '../hooks/useFaceLandmarker.js';
+import { useT } from '../i18n/index.jsx';
 import { SKIN_SCORES, DENTAL_SCORES } from '../data/scores.js';
 import { analyzeSkin, analyzeSkinWithLandmarks } from '../analysis/skinAnalyzer.js';
 import { analyzeDental, analyzeDentalWithLandmarks } from '../analysis/dentalAnalyzer.js';
 
 const MODE = { IDLE: 'idle', SKIN: 'skin', DENTAL: 'dental' };
 
-const KIRARI_MSGS = {
-  idle: "キラリだよ♪ ミラーに映してチェックしてみてね！",
-  skin_searching: "お顔を枠に合わせてね〜",
-  skin_detected: "いい感じ！そのまま動かないでね♪",
-  skin_analyzing: "肌の状態をチェックしてるよ〜",
-  skin_done: "肌チェック完了♪",
-  dental_searching: "口を開けて枠に合わせてね♪",
-  dental_detected: "歯と歯茎が見えてるよ！もう少し…",
-  dental_analyzing: "着色チェック中♪",
-  dental_done: "デンタルチェック完了♪",
-  both_done: "肌もデンタルもチェック完了！結果を見てみよう♪",
-};
-
 // 演出フェーズ: searching → detected → ready → shutter → scanning → done
 const STAGE = { SEARCHING: 'searching', DETECTED: 'detected', READY: 'ready', SHUTTER: 'shutter', SCANNING: 'scanning' };
 
 export default function MirrorScreen({ onResult }) {
+  const { t } = useT();
   const [mode, setMode] = useState(MODE.IDLE);
   const [stage, setStage] = useState(null); // 演出ステージ
   const [skinScores, setSkinScores] = useState(null);
@@ -221,24 +210,22 @@ export default function MirrorScreen({ onResult }) {
 
   const getKirariMsg = () => {
     if (isChecking && lowLight && !analyzing && stage !== STAGE.SHUTTER) {
-      return "ちょっと暗いかも💡 明るい場所で試してみてね！";
+      return t("kirari.low_light");
     }
     if (stage === 'timeout') {
-      return mode === MODE.DENTAL
-        ? "口元がうまく映ってないみたい…もう一度試してみてね！"
-        : "お顔がうまく映ってないみたい…もう一度試して��てね！";
+      return mode === MODE.DENTAL ? t("kirari.timeout_dental") : t("kirari.timeout_face");
     }
-    if (stage === STAGE.SHUTTER) return "📸 パシャ！";
+    if (stage === STAGE.SHUTTER) return t("kirari.shutter");
     if (analyzing) {
       const prefix = mode === MODE.DENTAL ? 'dental' : 'skin';
-      return KIRARI_MSGS[`${prefix}_analyzing`];
+      return t(`kirari.${prefix}_analyzing`);
     }
-    if (mode === MODE.SKIN) return KIRARI_MSGS[`skin_${effectiveStatus}`] || KIRARI_MSGS.skin_searching;
-    if (mode === MODE.DENTAL) return KIRARI_MSGS[`dental_${effectiveStatus}`] || KIRARI_MSGS.dental_searching;
-    if (skinScores && dentalScores) return KIRARI_MSGS.both_done;
-    if (skinScores) return KIRARI_MSGS.skin_done;
-    if (dentalScores) return KIRARI_MSGS.dental_done;
-    return KIRARI_MSGS.idle;
+    if (mode === MODE.SKIN) return t(`kirari.skin_${effectiveStatus}`) || t("kirari.skin_searching");
+    if (mode === MODE.DENTAL) return t(`kirari.dental_${effectiveStatus}`) || t("kirari.dental_searching");
+    if (skinScores && dentalScores) return t("kirari.both_done");
+    if (skinScores) return t("kirari.skin_done");
+    if (dentalScores) return t("kirari.dental_done");
+    return t("kirari.idle");
   };
 
   const kirariExpression = (analyzing || stage === STAGE.SHUTTER) ? "thinking"
@@ -282,7 +269,7 @@ export default function MirrorScreen({ onResult }) {
               background: "linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%)",
             }}>
               <span style={{ fontSize: 11, color: "rgba(255,255,255,0.85)", fontWeight: 600 }}>
-                🦷 デンタルチェック
+                {t("mirror.dental_check")}
               </span>
             </div>
 
@@ -348,10 +335,10 @@ export default function MirrorScreen({ onResult }) {
                 <style>{`@keyframes lowLightFadeIn{from{opacity:0;transform:translate(-50%,-50%) scale(0.9)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}`}</style>
                 <span style={{ fontSize: 28 }}>💡</span>
                 <p style={{ fontSize: 13, color: "#fbbf24", fontWeight: 700, margin: 0, textAlign: "center", lineHeight: 1.5 }}>
-                  暗すぎます
+                  {t("mirror.too_dark")}
                 </p>
                 <p style={{ fontSize: 11, color: "#e2e8f0", margin: 0, textAlign: "center", lineHeight: 1.5 }}>
-                  明るい場所に移動してね
+                  {t("mirror.move_bright")}
                 </p>
               </div>
             )}
@@ -388,7 +375,7 @@ export default function MirrorScreen({ onResult }) {
                   <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#22c55e", animation: "pulse 1s ease-in-out infinite" }} />
                 )}
                 <span style={{ fontSize: 12, color: stage === 'timeout' ? "#ef4444" : "#22c55e", fontWeight: 600 }}>
-                  {stage === 'timeout' ? "検出できませんでした" : stage === STAGE.SHUTTER ? "📸 シャッター！" : analyzing ? "分析中..." : effectiveStatus === 'ready' ? "撮影準備OK" : effectiveStatus === 'detected' ? "検出中..." : "探しています..."}
+                  {stage === 'timeout' ? t("mirror.not_detected") : stage === STAGE.SHUTTER ? t("mirror.shutter") : analyzing ? t("mirror.analyzing") : effectiveStatus === 'ready' ? t("mirror.capture_ready") : effectiveStatus === 'detected' ? t("mirror.detecting") : t("mirror.searching")}
                 </span>
               </div>
 
@@ -396,15 +383,15 @@ export default function MirrorScreen({ onResult }) {
               {stage === 'timeout' ? (
                 <div style={{ display: "flex", gap: 8 }}>
                   <button className="btn-primary" onClick={() => startCheck(mode)} style={{ padding: "8px 20px", background: "rgba(34,197,94,0.85)", backdropFilter: "blur(8px)", border: "none", borderRadius: 12, fontSize: 12, fontWeight: 600, color: "#fff", cursor: "pointer" }}>
-                    もう一度
+                    {t("mirror.retry")}
                   </button>
                   <button className="btn-secondary" onClick={() => { setStage(null); setMode(MODE.IDLE); }} style={{ padding: "8px 20px", background: "rgba(255,255,255,0.2)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 12, fontSize: 12, fontWeight: 600, color: "#fff", cursor: "pointer" }}>
-                    やめる
+                    {t("mirror.quit")}
                   </button>
                 </div>
               ) : (
                 <button className="btn-secondary" onClick={() => { setStage(null); setMode(MODE.IDLE); }} style={{ padding: "8px 24px", background: "rgba(255,255,255,0.2)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 12, fontSize: 12, fontWeight: 600, color: "#fff", cursor: "pointer" }}>
-                  キャンセル
+                  {t("mirror.cancel")}
                 </button>
               )}
             </div>
@@ -469,10 +456,10 @@ export default function MirrorScreen({ onResult }) {
         {!isChecking && !analyzing && hasAnyScore && showScores && (
           <div style={{ position: "absolute", top: 72, right: 12, display: "flex", flexDirection: "column", gap: 8, zIndex: 2 }}>
             {lastCheck === MODE.SKIN && skinScores && Object.entries(skinScores).map(([k, v], i) => (
-              <ScoreBadge key={`skin-${k}`} label={v.label} score={v.score} color={v.color} delay={i * 600} />
+              <ScoreBadge key={`skin-${k}`} label={t(v.labelKey)} score={v.score} color={v.color} delay={i * 600} />
             ))}
             {lastCheck === MODE.DENTAL && dentalScores && Object.entries(dentalScores).map(([k, v], i) => (
-              <ScoreBadge key={`dental-${k}`} label={v.label} score={v.score} color={v.color} delay={i * 600} />
+              <ScoreBadge key={`dental-${k}`} label={t(v.labelKey)} score={v.score} color={v.color} delay={i * 600} />
             ))}
           </div>
         )}
@@ -495,21 +482,21 @@ export default function MirrorScreen({ onResult }) {
                   <div style={{ width: 8, height: 8, borderRadius: "50%", background: mode === MODE.DENTAL ? "#22c55e" : "#e879f9", animation: "pulse 1s ease-in-out infinite" }} />
                 )}
                 <span style={{ fontSize: 13, color: stage === 'timeout' ? "#ef4444" : (mode === MODE.DENTAL ? "#22c55e" : "#a855f7"), fontWeight: 600 }}>
-                  {stage === 'timeout' ? "検出できませんでした" : stage === STAGE.SHUTTER ? "📸 シャッター！" : analyzing ? "分析中..." : effectiveStatus === 'ready' ? "撮影準備OK" : effectiveStatus === 'detected' ? "検出中..." : "探しています..."}
+                  {stage === 'timeout' ? t("mirror.not_detected") : stage === STAGE.SHUTTER ? t("mirror.shutter") : analyzing ? t("mirror.analyzing") : effectiveStatus === 'ready' ? t("mirror.capture_ready") : effectiveStatus === 'detected' ? t("mirror.detecting") : t("mirror.searching")}
                 </span>
               </div>
               {stage === 'timeout' ? (
                 <div style={{ display: "flex", gap: 8 }}>
                   <button className="btn-primary" onClick={() => startCheck(mode)} style={{ padding: "8px 20px", background: "linear-gradient(135deg, #a855f7, #c084fc)", border: "none", borderRadius: 12, fontSize: 12, fontWeight: 600, color: "#fff", cursor: "pointer" }}>
-                    もう一度
+                    {t("mirror.retry")}
                   </button>
                   <button className="btn-secondary" onClick={() => { setStage(null); setMode(MODE.IDLE); }} style={{ padding: "8px 20px", background: "rgba(255,255,255,0.9)", border: "1px solid #e2e8f0", borderRadius: 12, fontSize: 12, fontWeight: 600, color: "#94a3b8", cursor: "pointer" }}>
-                    やめる
+                    {t("mirror.quit")}
                   </button>
                 </div>
               ) : (
                 <button className="btn-secondary" onClick={() => { setStage(null); setMode(MODE.IDLE); }} style={{ padding: "8px 24px", background: "rgba(255,255,255,0.9)", border: "1px solid #e2e8f0", borderRadius: 12, fontSize: 12, fontWeight: 600, color: "#94a3b8", cursor: "pointer" }}>
-                  キャンセル
+                  {t("mirror.cancel")}
                 </button>
               )}
             </>
@@ -526,7 +513,7 @@ export default function MirrorScreen({ onResult }) {
                   }}
                 >
                   <span style={{ fontSize: 12 }}>{showScores ? "👁" : "👁‍🗨"}</span>
-                  {showScores ? "スコア非表示" : "スコア表示"}
+                  {showScores ? t("mirror.hide_scores") : t("mirror.show_scores")}
                 </button>
               )}
               {/* チェックボタン */}
@@ -542,7 +529,7 @@ export default function MirrorScreen({ onResult }) {
                     display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
                   }}
                 >
-                  <span>{skinScores ? "✓" : "✨"}</span>肌
+                  <span>{skinScores ? "✓" : "✨"}</span>{t("mirror.btn_skin")}
                 </button>
                 <button
                   className="btn-primary"
@@ -555,7 +542,7 @@ export default function MirrorScreen({ onResult }) {
                     display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
                   }}
                 >
-                  <span>{dentalScores ? "✓" : "🦷"}</span>デンタル
+                  <span>{dentalScores ? "✓" : "🦷"}</span>{t("mirror.btn_dental")}
                 </button>
               </div>
               {/* 結果を見るボタン */}
@@ -565,12 +552,12 @@ export default function MirrorScreen({ onResult }) {
                   onClick={() => onResult({ skinScores, dentalScores })}
                   style={{ width: "100%", padding: 12, background: "linear-gradient(135deg, #a855f7, #ec4899)", border: "none", borderRadius: 14, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer", boxShadow: "0 4px 20px rgba(168,85,247,0.3)" }}
                 >
-                  結果を見る →
+                  {t("mirror.view_result")}
                 </button>
               )}
             </>
           )}
-          <p style={{ fontSize: 8, color: "#94a3b8", margin: 0 }}>※本アプリは医療診断を行うものではありません</p>
+          <p style={{ fontSize: 8, color: "#94a3b8", margin: 0 }}>{t("mirror.disclaimer")}</p>
         </div>
       </CameraView>
     </div>

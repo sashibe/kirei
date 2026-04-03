@@ -19,7 +19,10 @@ const STATUS_STYLES = {
   },
 };
 
+import { useT } from '../i18n/index.jsx';
+
 export default function GuideFrame({ mode = 'face', status = 'searching', confidence = 0 }) {
+  const { t } = useT();
   const s = STATUS_STYLES[status] || STATUS_STYLES.searching;
   const isReady = status === 'ready';
 
@@ -168,8 +171,8 @@ export default function GuideFrame({ mode = 'face', status = 'searching', confid
           <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}`}</style>
           <span style={{ fontSize: 10, color: '#fff', fontWeight: 600, whiteSpace: 'nowrap' }}>
             {status === 'searching'
-              ? (mode === 'face' ? '枠に顔を合わせてね' : '口を開けて枠に合わせてね')
-              : 'そのまま…'}
+              ? (mode === 'face' ? t("guide.face") : t("guide.mouth"))
+              : t("guide.hold")}
           </span>
         </div>
       )}

@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import Kirari from './components/Kirari.jsx';
+import LanguageSwitcher from './components/LanguageSwitcher.jsx';
 import MirrorScreen from './components/MirrorScreen.jsx';
 import ResultScreen from './components/ResultScreen.jsx';
 import colors from './styles/theme.js';
@@ -33,6 +34,7 @@ export default function App() {
       <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
         <Kirari size={overlay ? 22 : 28} expression="happy" />
         <span style={{ fontSize: overlay ? 14 : 17, fontWeight: 800, background: colors.gradient, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>KIREI</span>
+        <LanguageSwitcher size={overlay ? "small" : "normal"} />
       </div>
       <span style={{ fontSize: 8, color: "#c084fc", background: "rgba(250,245,255,0.8)", padding: "2px 8px", borderRadius: 20, fontWeight: 600 }}>PROTOTYPE</span>
     </div>
@@ -133,7 +135,7 @@ export default function App() {
           <div className="kirei-phone-screen">
             <div className="kirei-app-container" style={{
               background: colors.bg,
-              fontFamily: "'Noto Sans JP', sans-serif",
+              fontFamily: "'Noto Sans JP', 'Noto Sans KR', sans-serif",
               overflow: showResult ? "auto" : "hidden",
               position: "relative",
             }}>
@@ -148,7 +150,7 @@ export default function App() {
       <div className="kirei-mobile-wrapper">
         <div className="kirei-app-container" style={{
           background: colors.bg,
-          fontFamily: "'Noto Sans JP', sans-serif",
+          fontFamily: "'Noto Sans JP', 'Noto Sans KR', sans-serif",
           overflow: showResult ? "auto" : "hidden",
           position: "relative",
         }}>

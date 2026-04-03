@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useT } from '../i18n/index.jsx';
 
 const BASELINE = 70;
 
 export default function ScoreBadge({ label, score, color, delay = 0 }) {
+  const { t } = useT();
   const [visible, setVisible] = useState(false);
   const [counting, setCounting] = useState(false);
   const [displayScore, setDisplayScore] = useState(0);
@@ -32,7 +34,7 @@ export default function ScoreBadge({ label, score, color, delay = 0 }) {
   const isHigh = score >= BASELINE;
   const indicator = isHigh ? "▲" : "▼";
   const indicatorColor = isHigh ? "#22c55e" : "#f97316";
-  const indicatorLabel = isHigh ? "Good" : "Care";
+  const indicatorLabel = isHigh ? t("badge.good") : t("badge.care");
 
   if (!visible) return null;
 

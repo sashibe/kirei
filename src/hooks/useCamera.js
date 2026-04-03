@@ -63,10 +63,10 @@ export default function useCamera({ enabled = true, facingMode = "user" } = {}) 
       } catch (err) {
         if (!cancelled) {
           setError(err.name === 'NotAllowedError'
-            ? 'カメラへのアクセスが許可されていません'
+            ? 'camera.not_allowed'
             : err.name === 'NotFoundError'
-              ? 'カメラが見つかりません'
-              : `カメラエラー: ${err.message}`
+              ? 'camera.not_found'
+              : 'camera.error'
           );
           setIsActive(false);
         }
