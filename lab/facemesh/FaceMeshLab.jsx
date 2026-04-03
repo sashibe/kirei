@@ -384,29 +384,55 @@ function ColorPicker({ label, colors, selected, onSelect }) {
 function drawLip(ctx, lms, w, h, color, opacity) {
   ctx.save();
 
-  const outerPath = UPPER_LIP_OUTER.concat(LOWER_LIP_OUTER.slice(1));
-  const innerPath = UPPER_LIP_INNER.concat(LOWER_LIP_INNER.slice(1));
+  // 上唇リング: 外側上唇 → 内側上唇を逆順でくり抜き
+  const upperOuter = UPPER_LIP_OUTER;
+  const upperInner = [...UPPER_LIP_INNER].reverse();
+  // 下唇リング: 外側下唇 → 内側下唇を逆順でくり抜き
+  const lowerOuter = LOWER_LIP_OUTER;
+  const lowerInner = [...LOWER_LIP_INNER].reverse();
 
-  // 1) ベースカラー — 薄く透かす
-  ctx.globalAlpha = opacity * 0.3;
-  ctx.globalCompositeOperation = 'multiply';
-  fillLandmarkPath(ctx, lms, outerPath, w, h, color);
+  // 唇リングパスを描く（外側を時計回り → 内側を反時計回りで穴を開ける）
+  const traceLipRing = () => {
+    ctx.beginPath();
+    // 上唇リング
+    ctx.moveTo(lms[upperOuter[0]].x * w, lms[upperOuter[0]].y * h);
+    for (let i = 1; i < upperOuter.length; i++) {
+      ctx.lineTo(lms[upperOuter[i]].x * w, lms[upperOuter[i]].y * h);
+    }
+    for (const idx of upperInner) {
+      ctx.lineTo(lms[idx].x * w, lms[idx].y * h);
+    }
+    ctx.closePath();
+    // 下唇リング
+    ctx.moveTo(lms[lowerOuter[0]].x * w, lms[lowerOuter[0]].y * h);
+    for (let i = 1; i < lowerOuter.length; i++) {
+      ctx.lineTo(lms[lowerOuter[i]].x * w, lms[lowerOuter[i]].y * h);
+    }
+    for (const idx of lowerInner) {
+      ctx.lineTo(lms[idx].x * w, lms[idx].y * h);
+    }
+    ctx.closePath();
+  };
 
-  // 2) 内側をやや濃く（グラデーション感）
-  ctx.globalAlpha = opacity * 0.25;
-  fillLandmarkPath(ctx, lms, innerPath, w, h, color);
-
-  // 3) カラーティント — overlay で元の唇のテクスチャを活かす
-  ctx.globalCompositeOperation = 'overlay';
+  // 1) ベースカラー
   ctx.globalAlpha = opacity * 0.35;
-  fillLandmarkPath(ctx, lms, outerPath, w, h, color);
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.fillStyle = color;
+  traceLipRing();
+  ctx.fill();
 
-  // 4) 下唇中央にハイライト（ぷるっと感）
+  // 2) カラーティント — overlay で元の唇テクスチャを活かす
+  ctx.globalCompositeOperation = 'overlay';
+  ctx.globalAlpha = opacity * 0.4;
+  ctx.fillStyle = color;
+  traceLipRing();
+  ctx.fill();
+
+  // 3) 下唇中央にハイライト（ぷるっと感）
   ctx.globalCompositeOperation = 'screen';
   ctx.globalAlpha = opacity * 0.18;
   const topLip = lms[13];
   const botLip = lms[14];
-  // 下唇の中央やや上
   const cx = (topLip.x * w + botLip.x * w) * 0.5;
   const cy = botLip.y * h * 0.65 + topLip.y * h * 0.35;
   const rx = Math.abs(lms[291].x - lms[61].x) * w * 0.25;
