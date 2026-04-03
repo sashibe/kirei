@@ -26,7 +26,7 @@ export default function Score({ score, size = 80, color = "#a78bfa", label, dela
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#f1f5f9" strokeWidth="6" />
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth="6" strokeDasharray={c} strokeDashoffset={o} strokeLinecap="round" style={{ transition: "stroke-dashoffset 0.08s" }} />
       </svg>
-      <div style={{ position: "relative", marginTop: -size + 2, height: size, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ position: "relative", marginTop: -size, height: size, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
         <span style={{ fontSize: size * 0.3, fontWeight: 800, color }}>{cur}</span>
       </div>
       {label && <span style={{ fontSize: 10, color: "#64748b", marginTop: 1, fontWeight: 600 }}>{label}</span>}

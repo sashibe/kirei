@@ -1,24 +1,38 @@
 import { useState, useCallback, useRef } from 'react';
 import Kirari from './components/Kirari.jsx';
 import MirrorScreen from './components/MirrorScreen.jsx';
+import SuggestScreen from './components/SuggestScreen.jsx';
+import ArTryOnScreen from './components/ArTryOnScreen.jsx';
 import ResultScreen from './components/ResultScreen.jsx';
 import colors from './styles/theme.js';
 
+// screen: 'mirror' | 'suggest' | 'ar' | 'result'
 export default function App() {
-  const [showResult, setShowResult] = useState(false);
-  const scoresRef = useRef({ skinScores: null, dentalScores: null });
+  const [screen, setScreen] = useState('mirror');
+  const scoresRef = useRef({ skinScores: null });
+  const lookRef = useRef({ selectedLook: null, styleTab: 0 });
 
-  const handleResult = useCallback(({ skinScores, dentalScores }) => {
-    scoresRef.current = { skinScores, dentalScores };
-    setShowResult(true);
+  const handleResult = useCallback(({ skinScores }) => {
+    scoresRef.current = { skinScores };
+    setScreen('suggest');
+  }, []);
+
+  const handleSelectLook = useCallback((look, styleTab) => {
+    lookRef.current = { selectedLook: look, styleTab };
+    setScreen('ar');
+  }, []);
+
+  const handleArDone = useCallback(() => {
+    setScreen('result');
+  }, []);
+
+  const handleSkipToResult = useCallback((styleTab) => {
+    lookRef.current = { selectedLook: null, styleTab };
+    setScreen('result');
   }, []);
 
   const handleRestart = useCallback(() => {
-    setShowResult(false);
-  }, []);
-
-  const handleDentalCheck = useCallback(() => {
-    setShowResult(false);
+    setScreen('mirror');
   }, []);
 
   const Header = ({ overlay = false }) => (
@@ -38,21 +52,39 @@ export default function App() {
     </div>
   );
 
+  const showScrollable = screen === 'suggest' || screen === 'result' || screen === 'ar';
+
   const content = (
     <>
-      {showResult && <Header />}
-      <div key={showResult ? 'result' : 'mirror'} className="screen-enter" style={{ position: "relative", height: showResult ? "auto" : "100%" }}>
-        {!showResult ? (
+      {showScrollable && <Header />}
+      <div key={screen} className="screen-enter" style={{ position: "relative", height: showScrollable ? "auto" : "100%" }}>
+        {screen === 'mirror' && (
           <>
             <Header overlay />
             <MirrorScreen onResult={handleResult} />
           </>
-        ) : (
+        )}
+        {screen === 'suggest' && (
+          <SuggestScreen
+            skinScores={scoresRef.current.skinScores}
+            onSelectLook={handleSelectLook}
+            onSkipToResult={handleSkipToResult}
+          />
+        )}
+        {screen === 'ar' && (
+          <ArTryOnScreen
+            look={lookRef.current.selectedLook}
+            styleTab={lookRef.current.styleTab}
+            onNext={handleArDone}
+            onBack={() => setScreen('suggest')}
+          />
+        )}
+        {screen === 'result' && (
           <ResultScreen
             skinScores={scoresRef.current.skinScores}
-            dentalScores={scoresRef.current.dentalScores}
             onRestart={handleRestart}
-            onDentalCheck={handleDentalCheck}
+            styleTab={lookRef.current.styleTab}
+            selectedLook={lookRef.current.selectedLook}
           />
         )}
       </div>
@@ -134,7 +166,7 @@ export default function App() {
             <div className="kirei-app-container" style={{
               background: colors.bg,
               fontFamily: "'Noto Sans JP', sans-serif",
-              overflow: showResult ? "auto" : "hidden",
+              overflow: showScrollable ? "auto" : "hidden",
               position: "relative",
             }}>
               {content}
@@ -149,7 +181,7 @@ export default function App() {
         <div className="kirei-app-container" style={{
           background: colors.bg,
           fontFamily: "'Noto Sans JP', sans-serif",
-          overflow: showResult ? "auto" : "hidden",
+          overflow: showScrollable ? "auto" : "hidden",
           position: "relative",
         }}>
           {content}

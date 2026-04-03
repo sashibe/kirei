@@ -1,166 +1,221 @@
 import { useState } from 'react';
-import { createPortal } from 'react-dom';
 import Kirari from './Kirari.jsx';
 import Bubble from './Bubble.jsx';
 import Score from './Score.jsx';
-import ProductCard from './ProductCard.jsx';
 import ProductModal from './ProductModal.jsx';
-import ClinicModal from './ClinicModal.jsx';
-import { SKIN_SCORES, DENTAL_SCORES } from '../data/scores.js';
-import { SKIN_PRODUCTS, DENTAL_PRODUCTS, selectAdvice } from '../data/products.js';
+import CoordinateOverlay from './CoordinateOverlay.jsx';
+import { SKIN_SCORES } from '../data/scores.js';
+import { getCoordHint } from '../data/kirariDialogues.js';
 
 function avg(scores) {
   const vals = Object.values(scores).map(v => v.score);
   return Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
 }
 
-function generateMessage(tab, skinScores, dentalScores) {
-  const scores = tab === "skin" ? skinScores : dentalScores;
-  if (!scores) return "チェックしてみてね♪";
-  const entries = Object.entries(scores).sort((a, b) => a[1].score - b[1].score);
-  const worst = entries[0];
-  const best = entries[entries.length - 1];
-  const avgScore = entries.reduce((s, [, v]) => s + v.score, 0) / entries.length;
+const STYLE_TAB_NAMES = ['Color makeup', 'Base makeup', 'Skin care'];
+const WEATHER = { icon: '\u2600\uFE0F', temp: 22, label: '晴れ' };
 
-  // スコア帯別メッセージ（高/中/低の3段階）
-  if (avgScore >= 80) {
-    return `すごい！全体的にとっても良い状態♪ ${best[1].label}は特に優秀だよ！この調子をキープしてね〜`;
-  }
-  if (avgScore >= 60) {
-    return `${best[1].label}は良い感じ♪ ${worst[1].label}ケアをプラスするともっと良くなるかも〜`;
-  }
-  return `${worst[1].label}のスコアが気になるかも。でも大丈夫！ケアを続ければ必ず改善するよ♪`;
+function generateLookComment(selectedLook, styleTab) {
+  if (styleTab === 2) return 'スキンケアルーティンで素肌力アップ♪ 毎日続けてキレイをキープしてね！';
+  if (!selectedLook) return 'メイクの仕上がりチェック♪ 今日のあなたにぴったり！';
+  return `${selectedLook.name}で仕上げたよ♪ ${selectedLook.reason || '今日のあなたにぴったり！'}`;
 }
 
-export default function ResultScreen({ skinScores: propSkin, dentalScores: propDental, onRestart, onDentalCheck }) {
-  const hasSkin = propSkin !== null;
-  const hasDental = propDental !== null;
-  const defaultTab = hasSkin ? "skin" : "dental";
-  const [tab, setTab] = useState(defaultTab);
+export default function ResultScreen({ skinScores: propSkin, onRestart, styleTab = 0, selectedLook = null }) {
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [showClinicModal, setShowClinicModal] = useState(false);
+  const [showCoord, setShowCoord] = useState(false);
+  const [showSkinScores, setShowSkinScores] = useState(false);
 
   const skinScores = propSkin || SKIN_SCORES;
-  const dentalScores = propDental || DENTAL_SCORES;
-  const items = tab === "skin" ? skinScores : dentalScores;
-  const overallSkin = hasSkin ? avg(skinScores) : null;
-  const overallDental = hasDental ? avg(dentalScores) : null;
-  const kirariMsg = generateMessage(tab, hasSkin ? skinScores : null, hasDental ? dentalScores : null);
+  const overallSkin = avg(skinScores);
+  const products = selectedLook?.products || [];
+  const isColor = styleTab === 0;
 
-  return createPortal(
-    <div style={{ position: "fixed", inset: 0, zIndex: 9999, overflowY: "auto", background: "linear-gradient(180deg, #faf5ff 0%, #fdf2f8 35%, #fff 65%, #f0fdf4 100%)" }}>
-      <p style={{ fontSize: 11, color: "#94a3b8", margin: 0, padding: "2px 20px 0" }}>チェック結果</p>
+  // Color swatches from the look
+  const swatches = selectedLook
+    ? (isColor
+        ? [selectedLook.lip, selectedLook.cheek, selectedLook.eyeshadow].filter(Boolean)
+        : [selectedLook.base, selectedLook.concealer, selectedLook.brow, selectedLook.lip].filter(Boolean))
+    : [];
 
-      <div style={{ display: "flex", justifyContent: "center", gap: 24, padding: "16px 20px 8px" }}>
-        {hasSkin && (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-            <Score score={overallSkin} size={hasSkin && hasDental ? 90 : 110} color="#a855f7" delay={0} />
-            <span style={{ fontSize: 12, fontWeight: 700, color: "#a855f7" }}>肌スコア</span>
-          </div>
+  return (
+    <div style={{ position: 'relative', paddingBottom: 16, minHeight: '100%' }}>
+
+      {/* ===== 1. Hero: Look name + swatches + Kirari comment ===== */}
+      <div style={{
+        margin: '8px 16px 12px', padding: '16px',
+        background: 'linear-gradient(135deg, #faf5ff, #fdf2f8)',
+        borderRadius: 20, border: '1px solid #ede9fe',
+      }}>
+        {/* Category badge */}
+        <span style={{
+          fontSize: 10, fontWeight: 600, color: '#a855f7',
+          background: '#f3e8ff', padding: '3px 10px', borderRadius: 8,
+        }}>
+          {STYLE_TAB_NAMES[styleTab] || 'Color makeup'}
+        </span>
+
+        {/* Look name + swatches */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+          <p style={{ fontSize: 18, fontWeight: 800, color: '#334155', margin: 0 }}>
+            {selectedLook?.name || 'Today\'s Look'}
+          </p>
+          {swatches.length > 0 && (
+            <div style={{ display: 'flex', gap: 4 }}>
+              {swatches.map((c, i) => (
+                <div key={i} style={{
+                  width: 24, height: 24, borderRadius: '50%', background: c,
+                  border: '2px solid rgba(255,255,255,0.8)',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+                }} />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {selectedLook?.desc && (
+          <p style={{ fontSize: 11, color: '#64748b', margin: '4px 0 0', lineHeight: 1.5 }}>
+            {selectedLook.desc}
+          </p>
         )}
-        <Kirari size={56} expression="happy" bounce />
-        {hasDental && (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-            <Score score={overallDental} size={hasSkin && hasDental ? 90 : 110} color="#22c55e" delay={200} />
-            <span style={{ fontSize: 12, fontWeight: 700, color: "#22c55e" }}>デンタル</span>
-          </div>
-        )}
+
+        {/* Kirari comment */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginTop: 12 }}>
+          <Kirari size={36} expression="sparkle" bounce />
+          <Bubble>
+            <p style={{ fontSize: 12, color: '#334155', margin: 0, lineHeight: 1.6 }}>
+              {generateLookComment(selectedLook, styleTab)}
+            </p>
+          </Bubble>
+        </div>
       </div>
 
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 8, padding: "6px 16px 12px" }}>
-        <Kirari size={36} expression="wink" />
-        <Bubble><p style={{ fontSize: 12, color: "#334155", margin: 0, lineHeight: 1.6 }}>{kirariMsg}</p></Bubble>
-      </div>
-
-      {hasSkin && hasDental && (
-        <div style={{ display: "flex", margin: "0 16px 12px", background: "#f1f5f9", borderRadius: 14, padding: 3 }}>
-          {[["skin", "肌診断", "#a855f7"], ["dental", "デンタル", "#22c55e"]].map(([key, label, color]) => (
-            <button key={key} onClick={() => setTab(key)} style={{
-              flex: 1, padding: "8px 0", border: "none", borderRadius: 12, fontSize: 13, fontWeight: 700, cursor: "pointer",
-              background: tab === key ? "#fff" : "transparent",
-              color: tab === key ? color : "#94a3b8",
-              boxShadow: tab === key ? "0 1px 4px rgba(0,0,0,0.06)" : "none",
-            }}>{label}</button>
-          ))}
+      {/* ===== 2. KIREI SELECT: Product cards ===== */}
+      {products.length > 0 && (
+        <div style={{ padding: '0 16px', marginBottom: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+            <span style={{
+              fontSize: 10, fontWeight: 700, color: '#a855f7', letterSpacing: 1,
+              background: 'linear-gradient(135deg, #faf5ff, #f3e8ff)',
+              padding: '3px 10px', borderRadius: 8, border: '1px solid #ede9fe',
+            }}>
+              KIREI SELECT
+            </span>
+            <span style={{ fontSize: 11, color: '#64748b' }}>使用アイテム</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {products.map((p, i) => (
+              <div key={i} onClick={() => setSelectedProduct(p)} style={{
+                display: 'flex', alignItems: 'center', gap: 12,
+                background: '#fff', borderRadius: 14, padding: '12px 14px',
+                boxShadow: '0 2px 8px rgba(139,92,246,0.06)',
+                border: '1px solid #ede9fe', cursor: 'pointer',
+              }}>
+                <span style={{ fontSize: 22, width: 32, textAlign: 'center' }}>{p.emoji}</span>
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: '#334155', margin: 0 }}>{p.name}</p>
+                  <p style={{ fontSize: 10, color: '#94a3b8', margin: '2px 0 0' }}>{p.shade}</p>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: '#a855f7', margin: 0 }}>
+                    {'\u00A5'}{p.price.toLocaleString()}
+                  </p>
+                  <span style={{ fontSize: 9, color: '#c084fc' }}>KIREI SELECT</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Total */}
+          <div style={{
+            display: 'flex', justifyContent: 'flex-end', alignItems: 'center',
+            padding: '8px 4px 0', gap: 8,
+          }}>
+            <span style={{ fontSize: 11, color: '#94a3b8' }}>合計</span>
+            <span style={{ fontSize: 15, fontWeight: 800, color: '#a855f7' }}>
+              {'\u00A5'}{products.reduce((s, p) => s + p.price, 0).toLocaleString()}
+            </span>
+          </div>
         </div>
       )}
-
-      <div className="tab-content" key={tab}>
-        <div style={{ padding: "0 16px", display: "flex", justifyContent: "center", gap: 8, marginBottom: 12 }}>
-          {Object.entries(items).map(([k, v], i) => (
-            <Score key={k} score={v.score} size={72} color={v.color} label={v.label} delay={100 + i * 200} />
-          ))}
-        </div>
-
-        <div style={{ padding: "0 16px", marginBottom: 14 }}>
-          <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 8 }}>
-            <Kirari size={32} expression="sparkle" />
-            <p style={{ fontSize: 12, color: "#64748b", margin: 0, paddingTop: 4 }}>
-              {tab === "skin" ? "あなたの肌に合ったケアグッズ♪" : "あなたの口腔スコアに合ったケア♪"}
-            </p>
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {selectAdvice(
-              tab === "skin" ? skinScores : dentalScores,
-              tab === "skin" ? SKIN_PRODUCTS : DENTAL_PRODUCTS
-            ).map((p, i) => <ProductCard key={i} {...p} onClick={() => setSelectedProduct(p)} />)}
-          </div>
-        </div>
-      </div>
 
       <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
 
-      {tab === "dental" && (
-        <div style={{ display: "flex", gap: 10, padding: "0 16px", marginBottom: 14 }}>
-          {[
-            { icon: "🦷", title: "ホワイトニング", desc: "着色スコア55→改善", color: "#a855f7", btn: "詳しく見る" },
-            { icon: "😬", title: "歯列矯正", desc: "歯並びスコア62→UP", color: "#f59e0b", btn: "無料相談" },
-          ].map((t, i) => (
-            <div key={i} style={{ flex: 1, background: t.color + "08", borderRadius: 16, padding: "12px 14px", border: `1px solid ${t.color}20` }}>
-              <div style={{ fontSize: 20, marginBottom: 4 }}>{t.icon}</div>
-              <p style={{ fontSize: 13, fontWeight: 700, color: "#334155", margin: "0 0 2px" }}>{t.title}</p>
-              <p style={{ fontSize: 10, color: "#64748b", margin: "0 0 8px" }}>{t.desc}</p>
-              <button className="btn-primary" onClick={() => alert("詳細ページは準備中です")} style={{ width: "100%", padding: "6px 0", background: t.color, border: "none", borderRadius: 8, fontSize: 11, fontWeight: 700, color: "#fff", cursor: "pointer" }}>{t.btn}</button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {tab === "dental" && (
-        <div style={{ margin: "0 16px 12px", background: "#fff", borderRadius: 18, padding: "14px 16px", boxShadow: "0 2px 12px rgba(139,92,246,0.08)", border: "1px solid #ede9fe" }}>
-          <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 10 }}>
-            <Kirari size={36} expression="happy" />
-            <p style={{ fontSize: 11, color: "#475569", margin: 0, lineHeight: 1.6, flex: 1 }}>プロに診てもらうのがいちばん！近くの提携歯科を探してみてね♪</p>
+      {/* ===== 3. Coord hint + CTA ===== */}
+      <div style={{ margin: '0 16px 12px', background: 'linear-gradient(135deg, #fffbeb, #fef3c7)',
+        borderRadius: 18, padding: '14px 16px', border: '1px solid #fde68a' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 10 }}>
+          <Kirari size={32} expression="sparkle"/>
+          <div>
+            <p style={{ fontSize: 12, fontWeight: 600, color: '#92400e', margin: '0 0 4px' }}>
+              {WEATHER.icon} 今日のコーデヒント
+            </p>
+            <p style={{ fontSize: 11, color: '#78350f', margin: 0, lineHeight: 1.6 }}>
+              {getCoordHint(selectedLook, styleTab, WEATHER)}
+            </p>
           </div>
-          <button className="btn-primary" onClick={() => setShowClinicModal(true)} style={{ width: "100%", padding: 12, background: "linear-gradient(135deg, #a855f7, #ec4899)", border: "none", borderRadius: 12, fontSize: 13, fontWeight: 700, color: "#fff", cursor: "pointer", boxShadow: "0 4px 16px rgba(168,85,247,0.25)" }}>近くの提携歯科を探す →</button>
         </div>
-      )}
+        <button onClick={() => setShowCoord(true)} style={{
+          width: '100%', padding: 12,
+          background: 'linear-gradient(135deg, #f59e0b, #f97316)',
+          border: 'none', borderRadius: 12, fontSize: 13, fontWeight: 700,
+          color: '#fff', cursor: 'pointer',
+          boxShadow: '0 4px 12px rgba(245,158,11,0.3)',
+        }}>
+          {'👗'} おすすめコーデを見る {'→'}
+        </button>
+      </div>
 
-      <ClinicModal show={showClinicModal} onClose={() => setShowClinicModal(false)} />
+      {/* ===== 4. Skin score accordion ===== */}
+      <div style={{ margin: '0 16px 12px' }}>
+        <button onClick={() => setShowSkinScores(s => !s)} style={{
+          width: '100%', padding: '10px 14px',
+          background: '#fff', border: '1px solid #ede9fe', borderRadius: showSkinScores ? '14px 14px 0 0' : 14,
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          cursor: 'pointer', fontSize: 12, fontWeight: 600, color: '#64748b',
+        }}>
+          <span>肌スコアを確認</span>
+          <span style={{
+            fontSize: 10, color: '#a855f7', fontWeight: 700,
+            display: 'flex', alignItems: 'center', gap: 4,
+          }}>
+            <span style={{
+              background: '#faf5ff', borderRadius: 6, padding: '2px 8px',
+              fontSize: 12, fontWeight: 800, color: '#a855f7',
+            }}>
+              {overallSkin}
+            </span>
+            {showSkinScores ? '\u25B2' : '\u25BC'}
+          </span>
+        </button>
+        {showSkinScores && (
+          <div style={{
+            background: '#fff', border: '1px solid #ede9fe', borderTop: 'none',
+            borderRadius: '0 0 14px 14px', padding: '12px 14px',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 8 }}>
+              {Object.entries(skinScores).map(([k, v], i) => (
+                <Score key={k} score={v.score} size={64} color={v.color} label={v.label} delay={50 + i * 100} />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
 
-      <a href="https://www.youtube.com/@shichou-doctors" target="_blank" rel="noopener noreferrer" style={{ display: "flex", margin: "0 16px 12px", background: "#fff", borderRadius: 16, padding: "10px 14px", alignItems: "center", gap: 10, cursor: "pointer", boxShadow: "0 1px 6px rgba(0,0,0,0.03)", border: "1px solid #fecaca", textDecoration: "none" }}>
-        <div style={{ width: 38, height: 38, borderRadius: 10, background: "linear-gradient(135deg, #ef4444, #f87171)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0, color: "#fff" }}>&#x25B6;</div>
-        <div>
-          <p style={{ fontSize: 12, fontWeight: 700, color: "#334155", margin: 0 }}>歯腸ドクターズを見る</p>
-          <p style={{ fontSize: 10, color: "#94a3b8", margin: 0 }}>プロの診察動画をチェック！</p>
-        </div>
-      </a>
-
+      {/* ===== 5. Restart / Disclaimer ===== */}
       <div style={{ padding: "0 16px", display: "flex", flexDirection: "column", gap: 8 }}>
-        {!hasDental && onDentalCheck && (
-          <button className="btn-primary" onClick={onDentalCheck} style={{ width: "100%", padding: 14, background: "linear-gradient(135deg, #22c55e, #10b981)", border: "none", borderRadius: 14, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer", boxShadow: "0 4px 16px rgba(34,197,94,0.25)", textAlign: "center" }}>
-            デンタルチェックも受ける 🦷
-          </button>
-        )}
-        {!hasSkin && onDentalCheck && (
-          <button className="btn-primary" onClick={onDentalCheck} style={{ width: "100%", padding: 14, background: "linear-gradient(135deg, #a855f7, #c084fc)", border: "none", borderRadius: 14, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer", boxShadow: "0 4px 16px rgba(168,85,247,0.25)", textAlign: "center" }}>
-            肌チェックも受ける ✨
-          </button>
-        )}
         <button className="btn-secondary" onClick={onRestart} style={{ width: "100%", padding: 11, background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 14, fontSize: 12, fontWeight: 600, color: "#64748b", cursor: "pointer" }}>もう一度ミラーを開く</button>
       </div>
       <p className="disclaimer" style={{ textAlign: "center", fontSize: 10, color: "#cbd5e1", marginTop: 12, padding: "0 20px" }}>※本アプリは医療診断を行うものではありません。</p>
-    </div>,
-    document.body
+
+      {/* Coordinate overlay */}
+      {showCoord && (
+        <CoordinateOverlay
+          styleTab={styleTab}
+          selectedLook={selectedLook}
+          weather={WEATHER}
+          onClose={() => setShowCoord(false)}
+        />
+      )}
+    </div>
   );
 }
