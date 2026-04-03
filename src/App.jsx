@@ -49,9 +49,8 @@ export default function App() {
       } : {}),
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-        <Kirari size={overlay ? 22 : 28} expression="happy" />
-        <span style={{ fontSize: overlay ? 14 : 17, fontWeight: 800, background: colors.gradient, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>KIREI</span>
         <LanguageSwitcher size={overlay ? "small" : "normal"} />
+        <span style={{ fontSize: overlay ? 14 : 17, fontWeight: 800, background: colors.gradient, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>KIREI</span>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <span style={{ fontSize: 8, color: "#c084fc", background: "rgba(250,245,255,0.8)", padding: "2px 8px", borderRadius: 20, fontWeight: 600 }}>PROTOTYPE</span>
