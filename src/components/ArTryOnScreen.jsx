@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import Kirari from './Kirari.jsx';
 import Bubble from './Bubble.jsx';
 import MakeupCanvas from './MakeupCanvas.jsx';
@@ -8,16 +8,48 @@ import { useT } from '../i18n/index.jsx';
 export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
   const { t } = useT();
   const [intensity, setIntensity] = useState(70);
+  const [videoReady, setVideoReady] = useState(false);
   const isColor = styleTab === 0;
 
   // カメラ
   const { videoRef, isActive, error: cameraError } = useCamera({ enabled: true });
 
-  // MakeupCanvas に渡す安定した videoRef
-  const stableVideoRef = useRef(null);
-  // videoRef.current が変わるたびに同期
-  stableVideoRef.current = videoRef.current;
-  const canvasVideoRef = useRef({ get current() { return stableVideoRef.current; } });
+  // video要素のref callback — useCamera のvideoRefとDOM要素を確実に繋ぐ
+  const localVideoRef = useRef(null);
+  const videoCallbackRef = useCallback((el) => {
+    localVideoRef.current = el;
+    // useCamera の videoRef にも設定
+    videoRef.current = el;
+    // ストリームが既にある場合は設定
+    if (el && el.srcObject) {
+      setVideoReady(true);
+    }
+  }, [videoRef]);
+
+  // isActive が true になったらストリームをvideo要素に再適用
+  useEffect(() => {
+    const el = localVideoRef.current;
+    if (isActive && el) {
+      // srcObject が既に設定されていれば再生確認
+      if (el.srcObject) {
+        el.play().catch(() => {});
+        setVideoReady(true);
+      } else {
+        // videoRef.current が設定されてなかった場合のフォールバック
+        // useCamera の次のレンダリングで解決されるので少し待つ
+        const timer = setTimeout(() => {
+          if (el.srcObject) {
+            el.play().catch(() => {});
+            setVideoReady(true);
+          }
+        }, 200);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [isActive]);
+
+  // MakeupCanvas 用の安定した videoRef（getter で常に最新を返す）
+  const canvasVideoRef = useRef({ get current() { return localVideoRef.current; } });
 
   // Color makeup overlays (SVGフォールバック用)
   const lipColor = look?.lip || '#e8607c';
@@ -32,7 +64,7 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
     ? (typeof look.name === 'object' ? t(look.name) : look.name)
     : t('ar.look_fallback');
 
-  const cameraAvailable = isActive && !cameraError;
+  const cameraAvailable = isActive && !cameraError && videoReady;
 
   return (
     <div style={{ padding: '12px 0' }}>
@@ -55,7 +87,7 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
           /* ライブカメラ + メイクAR */
           <>
             <video
-              ref={videoRef}
+              ref={videoCallbackRef}
               style={{
                 width: '100%', height: '100%',
                 objectFit: 'cover',
