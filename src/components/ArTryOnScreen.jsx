@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Kirari from './Kirari.jsx';
 import Bubble from './Bubble.jsx';
 import MakeupCanvas from './MakeupCanvas.jsx';
@@ -8,48 +8,34 @@ import { useT } from '../i18n/index.jsx';
 export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
   const { t } = useT();
   const [intensity, setIntensity] = useState(70);
-  const [videoReady, setVideoReady] = useState(false);
+  const [videoPlaying, setVideoPlaying] = useState(false);
   const isColor = styleTab === 0;
 
-  // カメラ
+  // カメラ — useCamera は videoRef.current にストリームを設定する
   const { videoRef, isActive, error: cameraError } = useCamera({ enabled: true });
 
-  // video要素のref callback — useCamera のvideoRefとDOM要素を確実に繋ぐ
-  const localVideoRef = useRef(null);
-  const videoCallbackRef = useCallback((el) => {
-    localVideoRef.current = el;
-    // useCamera の videoRef にも設定
-    videoRef.current = el;
-    // ストリームが既にある場合は設定
-    if (el && el.srcObject) {
-      setVideoReady(true);
-    }
-  }, [videoRef]);
-
-  // isActive が true になったらストリームをvideo要素に再適用
+  // video の loadeddata イベントで映像が実際に流れ始めたことを検知
   useEffect(() => {
-    const el = localVideoRef.current;
-    if (isActive && el) {
-      // srcObject が既に設定されていれば再生確認
-      if (el.srcObject) {
-        el.play().catch(() => {});
-        setVideoReady(true);
-      } else {
-        // videoRef.current が設定されてなかった場合のフォールバック
-        // useCamera の次のレンダリングで解決されるので少し待つ
-        const timer = setTimeout(() => {
-          if (el.srcObject) {
-            el.play().catch(() => {});
-            setVideoReady(true);
-          }
-        }, 200);
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [isActive]);
+    const video = videoRef.current;
+    if (!video) return;
 
-  // MakeupCanvas 用の安定した videoRef（getter で常に最新を返す）
-  const canvasVideoRef = useRef({ get current() { return localVideoRef.current; } });
+    const onPlaying = () => setVideoPlaying(true);
+
+    // 既に再生中ならすぐ設定
+    if (video.readyState >= 2) {
+      setVideoPlaying(true);
+      return;
+    }
+
+    video.addEventListener('loadeddata', onPlaying);
+    return () => video.removeEventListener('loadeddata', onPlaying);
+  }, [isActive, videoRef]);
+
+  // MakeupCanvas 用の videoRef（常に useCamera の videoRef を参照）
+  const canvasVideoRef = useRef({ get current() { return videoRef.current; } });
+
+  // カメラが使えて映像が流れている
+  const cameraLive = isActive && !cameraError && videoPlaying;
 
   // Color makeup overlays (SVGフォールバック用)
   const lipColor = look?.lip || '#e8607c';
@@ -63,8 +49,6 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
   const lookName = look?.name
     ? (typeof look.name === 'object' ? t(look.name) : look.name)
     : t('ar.look_fallback');
-
-  const cameraAvailable = isActive && !cameraError && videoReady;
 
   return (
     <div style={{ padding: '12px 0' }}>
@@ -80,32 +64,39 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
       <div style={{
         position: 'relative', margin: '0 16px 12px',
         borderRadius: 20, overflow: 'hidden',
-        background: cameraAvailable ? '#000' : '#f8f5ff',
+        background: cameraLive ? '#000' : '#f8f5ff',
         aspectRatio: '3/4',
       }}>
-        {cameraAvailable ? (
-          /* ライブカメラ + メイクAR */
-          <>
-            <video
-              ref={videoCallbackRef}
-              style={{
-                width: '100%', height: '100%',
-                objectFit: 'cover',
-                transform: 'scaleX(-1)',
-              }}
-              playsInline
-              muted
-              autoPlay
-            />
-            <MakeupCanvas
-              videoRef={canvasVideoRef}
-              look={look}
-              styleTab={styleTab}
-              intensity={intensity}
-            />
-          </>
-        ) : (
-          /* SVG フォールバック（カメラ不可時） */
+
+        {/*
+          video要素は常にDOMに存在させる（useCameraがrefに stream を設定するため）。
+          カメラが準備できるまでは非表示。
+        */}
+        <video
+          ref={videoRef}
+          style={{
+            width: '100%', height: '100%',
+            objectFit: 'cover',
+            transform: 'scaleX(-1)',
+            display: cameraLive ? 'block' : 'none',
+          }}
+          playsInline
+          muted
+          autoPlay
+        />
+
+        {/* メイクAR Canvas（カメラ映像が流れている時だけ描画） */}
+        {cameraLive && (
+          <MakeupCanvas
+            videoRef={canvasVideoRef}
+            look={look}
+            styleTab={styleTab}
+            intensity={intensity}
+          />
+        )}
+
+        {/* SVG フォールバック（カメラ不可 or 準備中） */}
+        {!cameraLive && (
           <div style={{
             width: '100%', height: '100%',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -152,14 +143,14 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
         {/* Look name badge */}
         <div style={{
           position: 'absolute', top: 12, left: 12,
-          background: cameraAvailable ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.9)',
+          background: cameraLive ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.9)',
           backdropFilter: 'blur(8px)',
           borderRadius: 12, padding: '6px 12px',
           boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
         }}>
           <p style={{
             fontSize: 11, fontWeight: 700, margin: 0,
-            color: cameraAvailable ? '#fff' : '#a855f7',
+            color: cameraLive ? '#fff' : '#a855f7',
           }}>
             {lookName}
           </p>
@@ -172,14 +163,14 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
         }}>
           {look?.products?.map((p, i) => (
             <div key={i} style={{
-              background: cameraAvailable ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.9)',
+              background: cameraLive ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.9)',
               backdropFilter: 'blur(8px)',
               borderRadius: 10, padding: '4px 8px',
               boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
             }}>
               <p style={{
                 fontSize: 9, margin: 0,
-                color: cameraAvailable ? '#e2e8f0' : '#64748b',
+                color: cameraLive ? '#e2e8f0' : '#64748b',
               }}>
                 {p.emoji} {t(p.name)}
               </p>
