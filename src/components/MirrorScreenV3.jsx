@@ -7,12 +7,29 @@ import ScoreBadge from './ScoreBadge.jsx';
 import useAutoShutter from '../hooks/useAutoShutter.js';
 import useKirari from '../hooks/useKirari.js';
 import useWeather from '../hooks/useWeather.js';
+import useNightMode from '../hooks/useNightMode.js';
 import { useFaceLandmarkerCtx } from '../contexts/FaceLandmarkerContext.jsx';
 import { useT } from '../i18n/index.jsx';
 import { SKIN_SCORES } from '../data/scores.js';
 import { analyzeSkin, analyzeSkinWithLandmarks } from '../analysis/skinAnalyzer.js';
 
 const STAGE = { SEARCHING: 'searching', DETECTED: 'detected', READY: 'ready', SHUTTER: 'shutter', SCANNING: 'scanning' };
+
+// ナイトモードスタイル切替フラグ
+const NIGHT_MODE_STYLE = 'vanity'; // 'vanity' | 'ring'
+
+// 電球コンポーネント（バニティライト用）
+function Bulb({ delay }) {
+  return (
+    <div style={{
+      width: 14, height: 14,
+      borderRadius: '50%',
+      background: 'radial-gradient(circle at 40% 35%, #fff8e0, #f5c842 40%, #e89b10)',
+      boxShadow: '0 0 6px 3px rgba(245,200,66,0.8), 0 0 16px 6px rgba(245,180,30,0.4)',
+      animation: `bulbPulse 2.4s ease-in-out ${delay}s infinite`,
+    }} />
+  );
+}
 
 export default function MirrorScreenV3({ onResult }) {
   const { t } = useT();
@@ -44,6 +61,9 @@ export default function MirrorScreenV3({ onResult }) {
     get: () => cameraRef.current?.videoEl || null,
     configurable: true,
   });
+
+  // ナイトモード検知（Step 5）
+  const isNight = useNightMode(videoRef);
 
   const { status, confidence, lastLandmarks, lowLight, reset: resetShutter } = useAutoShutter({
     cameraRef,
@@ -235,6 +255,14 @@ export default function MirrorScreenV3({ onResult }) {
           from { opacity: 0; }
           to { opacity: 1; }
         }
+        @keyframes bulbPulse {
+          0%, 100% { opacity: 0.8; filter: brightness(1); }
+          50% { opacity: 1; filter: brightness(1.2); }
+        }
+        @keyframes nightFadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
         @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
         @keyframes shutterFlash{0%{opacity:1}100%{opacity:0}}
         @keyframes scanLine{0%,100%{top:15%}50%{top:70%}}
@@ -260,6 +288,34 @@ export default function MirrorScreenV3({ onResult }) {
               zIndex: 6,
             }}
           />
+        )}
+
+        {/* === ナイトモード: バニティライト（案A） === */}
+        {isNight && NIGHT_MODE_STYLE === 'vanity' && (
+          <>
+            {/* 上部電球バー */}
+            <div style={{
+              position: 'absolute', top: 0, left: 0, right: 0,
+              height: 32, zIndex: 12,
+              background: 'rgba(0,0,0,0.9)',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-around',
+              padding: '0 12px',
+              animation: 'nightFadeIn 0.6s ease-out',
+            }}>
+              {[...Array(7)].map((_, i) => <Bulb key={`t${i}`} delay={i * 0.3} />)}
+            </div>
+            {/* 下部電球バー */}
+            <div style={{
+              position: 'absolute', bottom: 0, left: 0, right: 0,
+              height: 32, zIndex: 12,
+              background: 'rgba(0,0,0,0.9)',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-around',
+              padding: '0 12px',
+              animation: 'nightFadeIn 0.6s ease-out',
+            }}>
+              {[...Array(7)].map((_, i) => <Bulb key={`b${i}`} delay={i * 0.3 + 0.15} />)}
+            </div>
+          </>
         )}
 
         {/* === 初回チュートリアルオーバーレイ === */}
