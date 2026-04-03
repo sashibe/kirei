@@ -2,10 +2,43 @@ import Kirari from './Kirari.jsx';
 
 export default function ProductModal({ product, onClose }) {
   if (!product) return null;
+
+  const isSimple = !product.features;
+
+  if (isSimple) {
+    return (
+      <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 10001, display: "flex", alignItems: "flex-end", justifyContent: "center", animation: "modalBg 0.2s ease" }}>
+        <style>{`@keyframes modalBg{from{opacity:0}to{opacity:1}} @keyframes modalSlide{from{transform:translateY(100%)}to{transform:translateY(0)}}`}</style>
+        <div onClick={e => e.stopPropagation()} style={{ background: "#fff", borderRadius: "24px 24px 0 0", width: "100%", padding: "20px 20px 32px", animation: "modalSlide 0.3s ease" }}>
+          <div style={{ width: 36, height: 4, borderRadius: 2, background: "#e2e8f0", margin: "0 auto 16px" }} />
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
+            <div style={{ width: 56, height: 56, borderRadius: 16, background: "#faf5ff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, flexShrink: 0 }}>{product.emoji}</div>
+            <div>
+              <span style={{ fontSize: 16, fontWeight: 800, color: "#1e293b" }}>{product.name}</span>
+              {product.shade && <p style={{ fontSize: 12, color: "#64748b", margin: '2px 0 0' }}>{product.shade}</p>}
+            </div>
+          </div>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 14 }}>
+            <span style={{ fontSize: 24, fontWeight: 800, color: "#1e293b" }}>{'\u00A5'}{product.price.toLocaleString()}</span>
+            <span style={{ fontSize: 11, color: "#94a3b8" }}>(税込)</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 8, background: "#faf5ff", borderRadius: 14, padding: "10px 12px", marginBottom: 16 }}>
+            <Kirari size={32} expression="sparkle" />
+            <p style={{ fontSize: 11, color: "#475569", margin: 0, lineHeight: 1.6, flex: 1 }}>
+              あなたの肌に合わせてセレクトしたアイテムだよ♪
+            </p>
+          </div>
+          <button onClick={() => alert('購入ページは準備中です')} style={{ width: "100%", padding: 14, background: "linear-gradient(135deg, #a855f7, #ec4899)", border: "none", borderRadius: 14, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer", boxShadow: "0 4px 16px rgba(168,85,247,0.25)", marginBottom: 8 }}>購入ページを開く</button>
+          <button onClick={onClose} style={{ width: "100%", padding: 10, background: "transparent", border: "none", fontSize: 12, color: "#94a3b8", cursor: "pointer" }}>閉じる</button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 100, display: "flex", alignItems: "flex-end", justifyContent: "center", animation: "modalBg 0.2s ease" }}>
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 10001, display: "flex", alignItems: "flex-end", justifyContent: "center", animation: "modalBg 0.2s ease" }}>
       <style>{`@keyframes modalBg{from{opacity:0}to{opacity:1}} @keyframes modalSlide{from{transform:translateY(100%)}to{transform:translateY(0)}}`}</style>
-      <div onClick={e => e.stopPropagation()} style={{ background: "#fff", borderRadius: "24px 24px 0 0", width: "100%", maxWidth: 390, padding: "20px 20px 32px", animation: "modalSlide 0.3s ease" }}>
+      <div onClick={e => e.stopPropagation()} style={{ background: "#fff", borderRadius: "24px 24px 0 0", width: "100%", padding: "20px 20px 32px", animation: "modalSlide 0.3s ease" }}>
         <div style={{ width: 36, height: 4, borderRadius: 2, background: "#e2e8f0", margin: "0 auto 16px" }} />
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
           <div style={{ width: 56, height: 56, borderRadius: 16, background: product.tagColor + "10", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, flexShrink: 0 }}>{product.emoji}</div>
@@ -18,7 +51,7 @@ export default function ProductModal({ product, onClose }) {
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 12 }}>
-          <span style={{ fontSize: 24, fontWeight: 800, color: "#1e293b" }}>¥{product.price.toLocaleString()}</span>
+          <span style={{ fontSize: 24, fontWeight: 800, color: "#1e293b" }}>{'\u00A5'}{product.price.toLocaleString()}</span>
           <span style={{ fontSize: 11, color: "#94a3b8" }}>(税込)</span>
           {product.size && <span style={{ fontSize: 11, color: "#94a3b8", marginLeft: 4 }}>{product.size}</span>}
         </div>
