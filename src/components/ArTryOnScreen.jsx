@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import Kirari from './Kirari.jsx';
 import Bubble from './Bubble.jsx';
 import MakeupCanvas from './MakeupCanvas.jsx';
@@ -9,6 +9,7 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
   const { t } = useT();
   const [intensity, setIntensity] = useState(70);
   const [videoPlaying, setVideoPlaying] = useState(false);
+  const [showMesh, setShowMesh] = useState(false);
   const isColor = styleTab === 0;
 
   // カメラ — useCamera は videoRef.current にストリームを設定する
@@ -21,7 +22,6 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
 
     const onPlaying = () => setVideoPlaying(true);
 
-    // 既に再生中ならすぐ設定
     if (video.readyState >= 2) {
       setVideoPlaying(true);
       return;
@@ -31,8 +31,8 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
     return () => video.removeEventListener('loadeddata', onPlaying);
   }, [isActive, videoRef]);
 
-  // MakeupCanvas 用の videoRef（常に useCamera の videoRef を参照）
-  const canvasVideoRef = useRef({ get current() { return videoRef.current; } });
+  // MakeupCanvas 用: video要素を直接返すコールバック
+  const getVideo = useCallback(() => videoRef.current, [videoRef]);
 
   // カメラが使えて映像が流れている
   const cameraLive = isActive && !cameraError && videoPlaying;
@@ -85,14 +85,34 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
           autoPlay
         />
 
-        {/* メイクAR Canvas（カメラ映像が流れている時だけ描画） */}
+        {/* メイクAR + メッシュ Canvas */}
         {cameraLive && (
           <MakeupCanvas
-            videoRef={canvasVideoRef}
+            getVideo={getVideo}
             look={look}
             styleTab={styleTab}
             intensity={intensity}
+            showMesh={showMesh}
           />
+        )}
+
+        {/* メッシュ表示トグル */}
+        {cameraLive && (
+          <button
+            onClick={() => setShowMesh(v => !v)}
+            style={{
+              position: 'absolute', top: 12, right: 12,
+              background: showMesh ? 'rgba(168,85,247,0.7)' : 'rgba(0,0,0,0.4)',
+              backdropFilter: 'blur(8px)',
+              border: showMesh ? '1px solid #a855f7' : '1px solid rgba(255,255,255,0.2)',
+              borderRadius: 10, padding: '5px 10px',
+              fontSize: 10, fontWeight: 600,
+              color: '#fff', cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
+          >
+            {showMesh ? '◉ Mesh ON' : '○ Mesh'}
+          </button>
         )}
 
         {/* SVG フォールバック（カメラ不可 or 準備中） */}

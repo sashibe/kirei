@@ -1,28 +1,34 @@
 /**
- * MakeupCanvas — カメラ映像上にリアルタイムメイクARを描画するCanvas
- *
- * requestAnimationFrame ループで FaceLandmarker → メイク描画を実行。
- * look/intensity/styleTab は useRef でループ内参照し、
- * state 変更でループ再起動を避ける。
+ * MakeupCanvas — カメラ映像上にリアルタイムメイクAR + メッシュを描画するCanvas
  */
 
 import { useEffect, useRef } from 'react';
+import { FaceLandmarker } from '@mediapipe/tasks-vision';
 import { useFaceLandmarkerCtx } from '../contexts/FaceLandmarkerContext.jsx';
 import {
   drawLip, drawEyeshadow, drawCheek,
   drawFoundation, drawConcealer, drawBrow,
 } from '../rendering/makeupRenderer.js';
 
-export default function MakeupCanvas({ videoRef, look, styleTab, intensity }) {
+// メッシュ描画用の接続定義
+const FACE_OVAL    = FaceLandmarker.FACE_LANDMARKS_FACE_OVAL;
+const LEFT_EYE     = FaceLandmarker.FACE_LANDMARKS_LEFT_EYE;
+const RIGHT_EYE    = FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE;
+const LEFT_BROW    = FaceLandmarker.FACE_LANDMARKS_LEFT_EYEBROW;
+const RIGHT_BROW   = FaceLandmarker.FACE_LANDMARKS_RIGHT_EYEBROW;
+const LIPS         = FaceLandmarker.FACE_LANDMARKS_LIPS;
+const TESSELATION  = FaceLandmarker.FACE_LANDMARKS_TESSELATION;
+
+export default function MakeupCanvas({ getVideo, look, styleTab, intensity, showMesh }) {
   const canvasRef = useRef(null);
   const rafRef = useRef(null);
   const { ready, detect } = useFaceLandmarkerCtx();
 
   // props を ref に同期（ループ内で最新値参照）
-  const propsRef = useRef({ look, styleTab, intensity });
+  const propsRef = useRef({ look, styleTab, intensity, showMesh });
   useEffect(() => {
-    propsRef.current = { look, styleTab, intensity };
-  }, [look, styleTab, intensity]);
+    propsRef.current = { look, styleTab, intensity, showMesh };
+  }, [look, styleTab, intensity, showMesh]);
 
   useEffect(() => {
     if (!ready) return;
@@ -32,13 +38,12 @@ export default function MakeupCanvas({ videoRef, look, styleTab, intensity }) {
     const ctx = canvas.getContext('2d');
 
     function loop() {
-      const video = videoRef.current;
+      const video = getVideo();
       if (!video || !video.videoWidth) {
         rafRef.current = requestAnimationFrame(loop);
         return;
       }
 
-      // Canvas サイズ同期
       if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
@@ -46,7 +51,6 @@ export default function MakeupCanvas({ videoRef, look, styleTab, intensity }) {
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // 検出
       const result = detect(video, performance.now());
       if (!result?.landmarks) {
         rafRef.current = requestAnimationFrame(loop);
@@ -56,25 +60,26 @@ export default function MakeupCanvas({ videoRef, look, styleTab, intensity }) {
       const lms = result.landmarks;
       const w = canvas.width;
       const h = canvas.height;
-      const { look: lk, styleTab: tab, intensity: inten } = propsRef.current;
+      const { look: lk, styleTab: tab, intensity: inten, showMesh: mesh } = propsRef.current;
       const opacity = (inten || 70) / 100;
 
-      if (!lk) {
-        rafRef.current = requestAnimationFrame(loop);
-        return;
+      // メイク描画
+      if (lk) {
+        if (tab === 0) {
+          if (lk.cheek)     drawCheek(ctx, lms, w, h, lk.cheek, opacity);
+          if (lk.eyeshadow) drawEyeshadow(ctx, lms, w, h, lk.eyeshadow, opacity);
+          if (lk.lip)       drawLip(ctx, lms, w, h, lk.lip, opacity);
+        } else {
+          if (lk.base)      drawFoundation(ctx, lms, w, h, lk.base, opacity);
+          if (lk.concealer) drawConcealer(ctx, lms, w, h, lk.concealer, opacity);
+          if (lk.brow)      drawBrow(ctx, lms, w, h, lk.brow, opacity);
+          if (lk.lip)       drawLip(ctx, lms, w, h, lk.lip, opacity);
+        }
       }
 
-      if (tab === 0) {
-        // Color メイク: lip + cheek + eyeshadow
-        if (lk.cheek)     drawCheek(ctx, lms, w, h, lk.cheek, opacity);
-        if (lk.eyeshadow) drawEyeshadow(ctx, lms, w, h, lk.eyeshadow, opacity);
-        if (lk.lip)       drawLip(ctx, lms, w, h, lk.lip, opacity);
-      } else {
-        // Base メイク: foundation + concealer + brow (+ lip)
-        if (lk.base)      drawFoundation(ctx, lms, w, h, lk.base, opacity);
-        if (lk.concealer) drawConcealer(ctx, lms, w, h, lk.concealer, opacity);
-        if (lk.brow)      drawBrow(ctx, lms, w, h, lk.brow, opacity);
-        if (lk.lip)       drawLip(ctx, lms, w, h, lk.lip, opacity);
+      // メッシュ描画
+      if (mesh) {
+        drawMeshOverlay(ctx, lms, w, h);
       }
 
       rafRef.current = requestAnimationFrame(loop);
@@ -84,7 +89,7 @@ export default function MakeupCanvas({ videoRef, look, styleTab, intensity }) {
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [ready, detect, videoRef]);
+  }, [ready, detect, getVideo]);
 
   return (
     <canvas
@@ -98,4 +103,47 @@ export default function MakeupCanvas({ videoRef, look, styleTab, intensity }) {
       }}
     />
   );
+}
+
+// ============================================================
+// メッシュ描画（テッセレーション + 輪郭ライン）
+// ============================================================
+
+function drawMeshOverlay(ctx, lms, w, h) {
+  ctx.globalAlpha = 0.4;
+
+  // テッセレーション
+  ctx.strokeStyle = 'rgba(180, 180, 255, 0.25)';
+  ctx.lineWidth = 0.5;
+  ctx.beginPath();
+  for (const conn of TESSELATION) {
+    const a = lms[conn.start], b = lms[conn.end];
+    ctx.moveTo(a.x * w, a.y * h);
+    ctx.lineTo(b.x * w, b.y * h);
+  }
+  ctx.stroke();
+
+  // 輪郭ライン
+  const groups = [
+    { conns: FACE_OVAL, color: '#a855f7', width: 1.5 },
+    { conns: LEFT_EYE,  color: '#22d3ee', width: 1 },
+    { conns: RIGHT_EYE, color: '#22d3ee', width: 1 },
+    { conns: LEFT_BROW,  color: '#facc15', width: 1 },
+    { conns: RIGHT_BROW, color: '#facc15', width: 1 },
+    { conns: LIPS,       color: '#ec4899', width: 1.5 },
+  ];
+
+  for (const { conns, color, width } of groups) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.beginPath();
+    for (const conn of conns) {
+      const a = lms[conn.start], b = lms[conn.end];
+      ctx.moveTo(a.x * w, a.y * h);
+      ctx.lineTo(b.x * w, b.y * h);
+    }
+    ctx.stroke();
+  }
+
+  ctx.globalAlpha = 1;
 }
