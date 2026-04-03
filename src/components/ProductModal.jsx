@@ -25,7 +25,7 @@ export default function ProductModal({ product, onClose }) {
             <div style={{ width: 56, height: 56, borderRadius: 16, background: "#faf5ff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, flexShrink: 0 }}>{product.emoji}</div>
             <div>
               <span style={{ fontSize: 16, fontWeight: 800, color: "#1e293b" }}>{name}</span>
-              {product.shade && <p style={{ fontSize: 12, color: "#64748b", margin: '2px 0 0' }}>{product.shade}</p>}
+              {product.shade && <p style={{ fontSize: 12, color: "#64748b", margin: '2px 0 0' }}>{typeof product.shade === 'object' ? t(product.shade) : product.shade}</p>}
             </div>
           </div>
           <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 14 }}>
@@ -63,7 +63,7 @@ export default function ProductModal({ product, onClose }) {
         <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 12 }}>
           <span style={{ fontSize: 24, fontWeight: 800, color: "#1e293b" }}>{'\u00A5'}{product.price.toLocaleString()}</span>
           <span style={{ fontSize: 11, color: "#94a3b8" }}>{t("product.tax_incl")}</span>
-          {product.size && <span style={{ fontSize: 11, color: "#94a3b8", marginLeft: 4 }}>{product.size}</span>}
+          {product.size && <span style={{ fontSize: 11, color: "#94a3b8", marginLeft: 4 }}>{typeof product.size === 'object' ? t(product.size) : product.size}</span>}
         </div>
         <div style={{ display: "flex", alignItems: "flex-start", gap: 8, background: "#faf5ff", borderRadius: 14, padding: "10px 12px", marginBottom: 14 }}>
           <Kirari size={32} expression="sparkle" />
