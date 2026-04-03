@@ -263,6 +263,10 @@ export default function MirrorScreenV3({ onResult }) {
           from { opacity: 0; }
           to { opacity: 1; }
         }
+        @keyframes ringRotate {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
         @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
         @keyframes shutterFlash{0%{opacity:1}100%{opacity:0}}
         @keyframes scanLine{0%,100%{top:15%}50%{top:70%}}
@@ -316,6 +320,35 @@ export default function MirrorScreenV3({ onResult }) {
               {[...Array(7)].map((_, i) => <Bulb key={`b${i}`} delay={i * 0.3 + 0.15} />)}
             </div>
           </>
+        )}
+
+        {/* === ナイトモード: リングライト（案B） === */}
+        {isNight && NIGHT_MODE_STYLE === 'ring' && (
+          <div style={{
+            position: 'absolute', inset: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            pointerEvents: 'none', zIndex: 12,
+            animation: 'nightFadeIn 0.6s ease-out',
+          }}>
+            <div style={{
+              width: '75vw', height: '75vw',
+              maxWidth: 320, maxHeight: 320,
+              borderRadius: '50%',
+              border: '6px solid transparent',
+              background: `
+                linear-gradient(#000, #000) padding-box,
+                conic-gradient(
+                  rgba(255,240,200,0.9),
+                  rgba(255,245,215,1) 90deg,
+                  rgba(255,200,100,0.7) 180deg,
+                  rgba(255,245,215,1) 270deg,
+                  rgba(255,240,200,0.9) 360deg
+                ) border-box
+              `,
+              animation: 'ringRotate 8s linear infinite',
+              filter: 'drop-shadow(0 0 8px rgba(255,220,140,0.4))',
+            }} />
+          </div>
         )}
 
         {/* === 初回チュートリアルオーバーレイ === */}
