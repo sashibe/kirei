@@ -6,9 +6,10 @@ import ArTryOnScreen from './components/ArTryOnScreen.jsx';
 import ResultScreen from './components/ResultScreen.jsx';
 import colors from './styles/theme.js';
 
-// screen: 'mirror' | 'suggest' | 'ar' | 'result'
+// screen: 'mirror' | 'suggest' | 'ar' | 'result' | 'guide'
 export default function App() {
   const [screen, setScreen] = useState('mirror');
+  const prevScreenRef = useRef('mirror');
   const scoresRef = useRef({ skinScores: null });
   const lookRef = useRef({ selectedLook: null, styleTab: 0 });
 
@@ -48,7 +49,16 @@ export default function App() {
         <Kirari size={overlay ? 22 : 28} expression="happy" />
         <span style={{ fontSize: overlay ? 14 : 17, fontWeight: 800, background: colors.gradient, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>KIREI</span>
       </div>
-      <span style={{ fontSize: 8, color: "#c084fc", background: "rgba(250,245,255,0.8)", padding: "2px 8px", borderRadius: 20, fontWeight: 600 }}>PROTOTYPE</span>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <span style={{ fontSize: 8, color: "#c084fc", background: "rgba(250,245,255,0.8)", padding: "2px 8px", borderRadius: 20, fontWeight: 600 }}>PROTOTYPE</span>
+        <button onClick={() => { prevScreenRef.current = screen; setScreen('guide'); }} style={{
+          display: 'flex', alignItems: 'center', gap: 3,
+          background: 'linear-gradient(135deg, #a855f7, #ec4899)',
+          border: 'none', borderRadius: 14, padding: '4px 10px',
+          fontSize: 10, fontWeight: 700, color: '#fff', cursor: 'pointer',
+          boxShadow: '0 2px 8px rgba(168,85,247,0.3)',
+        }}>📖 Guide</button>
+      </div>
     </div>
   );
 
@@ -187,6 +197,38 @@ export default function App() {
           {content}
         </div>
       </div>
+
+      {/* 説明書オーバーレイ */}
+      {screen === 'guide' && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 99999,
+          background: '#fff',
+          display: 'flex', flexDirection: 'column',
+        }}>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            padding: '10px 16px',
+            borderBottom: '1px solid #e2e8f0',
+            background: '#faf5ff',
+            flexShrink: 0,
+          }}>
+            <button onClick={() => setScreen(prevScreenRef.current)} style={{
+              display: 'flex', alignItems: 'center', gap: 4,
+              background: 'linear-gradient(135deg, #a855f7, #ec4899)',
+              border: 'none', borderRadius: 10, padding: '6px 14px',
+              fontSize: 12, fontWeight: 600, color: '#fff', cursor: 'pointer',
+            }}>
+              {'<'} アプリに戻る
+            </button>
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#64748b' }}>KIREI Demo Guide</span>
+          </div>
+          <iframe
+            src={import.meta.env.BASE_URL + 'guide/index.html'}
+            style={{ flex: 1, width: '100%', border: 'none' }}
+            title="KIREI Demo Guide"
+          />
+        </div>
+      )}
     </>
   );
 }
