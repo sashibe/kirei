@@ -24,7 +24,7 @@ function generateLookComment(selectedLook, styleTab, t) {
   return `${lookName}${t("result.look_comment_suffix")} ${lookReason}`;
 }
 
-export default function ResultScreen({ skinScores: propSkin, onRestart, styleTab = 0, selectedLook = null }) {
+export default function ResultScreen({ skinScores: propSkin, onRestart, styleTab = 0, selectedLook = null, capturedImage = null, products: productsProp = null }) {
   const { t } = useT();
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showCoord, setShowCoord] = useState(false);
@@ -32,7 +32,8 @@ export default function ResultScreen({ skinScores: propSkin, onRestart, styleTab
 
   const skinScores = propSkin || SKIN_SCORES;
   const overallSkin = avg(skinScores);
-  const products = selectedLook?.products || [];
+  // products prop（AR決定時）があればそちら優先、なければlookから取得
+  const products = (productsProp && productsProp.length > 0) ? productsProp : (selectedLook?.products || []);
   const isColor = styleTab === 0;
 
   // Color swatches from the look
@@ -44,6 +45,26 @@ export default function ResultScreen({ skinScores: propSkin, onRestart, styleTab
 
   return (
     <div style={{ position: 'relative', paddingBottom: 16, minHeight: '100%' }}>
+
+      {/* ===== 0. Captured AR photo ===== */}
+      {capturedImage && (
+        <div style={{ position: 'relative' }}>
+          <img
+            src={capturedImage}
+            style={{ width: '100%', display: 'block', borderRadius: '0 0 24px 24px' }}
+            alt="Today's makeup"
+          />
+          <button style={{
+            position: 'absolute', bottom: 12, right: 12,
+            background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)',
+            border: '1px solid rgba(255,255,255,0.3)',
+            borderRadius: 20, padding: '6px 14px',
+            color: '#fff', fontSize: 11, fontWeight: 600, cursor: 'pointer',
+          }}>
+            {'\uD83D\uDCF8'} {t('result.share') || 'シェアする'}
+          </button>
+        </div>
+      )}
 
       {/* ===== 1. Hero: Look name + swatches + Kirari comment ===== */}
       <div style={{

@@ -21,6 +21,7 @@ export default function App() {
   const prevScreenRef = useRef('mirror');
   const scoresRef = useRef({ skinScores: null });
   const lookRef = useRef({ selectedLook: null, styleTab: 0 });
+  const captureRef = useRef({ capturedImage: null, finalProducts: [] });
 
   const handleResult = useCallback(({ skinScores }) => {
     scoresRef.current = { skinScores };
@@ -32,7 +33,9 @@ export default function App() {
     setScreen('ar');
   }, []);
 
-  const handleArDone = useCallback(() => {
+  const handleArDecide = useCallback(({ capturedImage, look, products }) => {
+    captureRef.current = { capturedImage, finalProducts: products };
+    if (look) lookRef.current = { ...lookRef.current, selectedLook: look };
     setScreen('result');
   }, []);
 
@@ -94,7 +97,7 @@ export default function App() {
           <ArTryOnScreen
             look={lookRef.current.selectedLook}
             styleTab={lookRef.current.styleTab}
-            onNext={handleArDone}
+            onDecide={handleArDecide}
             onBack={() => setScreen('suggest')}
           />
         )}
@@ -104,6 +107,8 @@ export default function App() {
             onRestart={handleRestart}
             styleTab={lookRef.current.styleTab}
             selectedLook={lookRef.current.selectedLook}
+            capturedImage={captureRef.current.capturedImage}
+            products={captureRef.current.finalProducts}
           />
         )}
       </div>
