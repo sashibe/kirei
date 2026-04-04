@@ -56,7 +56,7 @@
 docs/
   MIRROR_UX_SPEC.md     ← ミラーUX刷新仕様（実装完了）
   STEP2_SPEC.md         ← ステップ2仕様（実装完了）
-  STEP3_SPEC.md         ← ステップ3仕様（未実装・次のターゲット）
+  STEP3_SPEC.md         ← ステップ3仕様（実装完了）
 ```
 - 仕様書は実装指示書。完了後はCLAUDE.mdに要約を反映してアーカイブ
 - CLAUDE.mdには**実装済みの事実**のみ記録する
@@ -165,11 +165,15 @@ docs: CLAUDE.md更新
 - パーツ: リップ・アイシャドウ・チーク・ファンデ・眉・コンシーラー（実装済み）
 - 濃さスライダー、カラーパレット、ビフォーアフター長押し（実装済み）
 - styleTab に応じたメイクオーバーレイ切替（Color/Base）実装済み
-- **未実装（STEP3）**: カテゴリパネル（リップ/チーク/メガネ/イヤリング）、メガネ・イヤリングARレイヤー、「このメイクで決定」キャプチャ
+- カテゴリパネル（リップ/チーク/メガネ/イヤリング）4タブ切替（実装済み）
+- メガネARレイヤー: 4形状（round/square/oval/wayfarer）、ランドマーク#6/#234/#454（実装済み）
+- イヤリングARレイヤー: 4タイプ（stud/drop/hoop/chain）、ランドマーク#132/#361（実装済み）
+- 「このメイクで決定」キャプチャ: video+canvas合成 → JPEG dataURL（実装済み）
 
 ### Screen 4: 結果画面（ResultScreen）
 - 肌スコアサマリー、選んだメイクルックの記録
-- コスメ推薦（KIREI SELECT）、スコア履歴、SNSシェア
+- キャプチャ写真表示（ARメイク+アクセサリー合成済み、シェアボタン付き）
+- コスメ+アクセサリー統合商品リスト（KIREI SELECT）、合計金額、スコア履歴、SNSシェア
 
 ---
 
@@ -181,12 +185,16 @@ docs: CLAUDE.md更新
 - **アイシャドウ**: 目周囲ランドマークでベジェ曲線領域、overlayブレンド
 - **ファンデーション**: 顔全体メッシュ、softlightブレンド
 - **眉・コンシーラー**: 実装済み
+- **メガネ**: ランドマーク #6（鼻梁）/#234（左耳）/#454（右耳）、4形状（round/square/oval/wayfarer）、source-overブレンド
+- **イヤリング**: ランドマーク #132（左耳珠）/#361（右耳珠）、4タイプ（stud/drop/hoop/chain）、source-overブレンド
 
 ### レンダリングパイプライン
 ```
 カメラフレーム取得 (30fps目標)
   → MediaPipe FaceLandmarker推論 (468点)
   → ランドマーク座標 → パーツ領域ポリゴン生成
+  → Layer 1-2: メイク描画（Canvas2D）
+  → Layer 3: アクセサリー描画（メガネ・イヤリング）
   → Canvas2D描画（現在）/ WebGL（将来）
 ```
 
@@ -232,7 +240,7 @@ C:\dev\kirei\
 ├── docs/
 │   ├── MIRROR_UX_SPEC.md      ← ミラーUX刷新仕様（実装完了）
 │   ├── STEP2_SPEC.md          ← ステップ2仕様（実装完了）
-│   └── STEP3_SPEC.md          ← ステップ3仕様（未実装・次のターゲット）
+│   └── STEP3_SPEC.md          ← ステップ3仕様（実装完了）
 ├── src/
 │   ├── App.jsx                ← USE_MIRROR_V3フラグで画面切替
 │   ├── components/
@@ -273,6 +281,7 @@ C:\dev\kirei\
 │   ├── data/
 │   │   ├── products.js
 │   │   ├── makeupLooks.js         ← COLOR_LOOKS / BASE_LOOKS / SKINCARE_ROUTINE 定義済み
+│   │   ├── accessories.js         ← GLASSES_ITEMS / EARRING_ITEMS 定義済み
 │   │   ├── coordItems.js          ← COORD_DATA（styleTab×TPOマトリクス）/ getCoordItems() 定義済み
 │   │   ├── kirariDialogues.js     ← getCoordLine() / getCoordHint() 定義済み
 │   │   ├── scores.js
@@ -370,7 +379,7 @@ const colors = {
 - [x] 天気API連動（useWeather・メイク提案・キラリセリフ連動）
 - [x] KIREI SELECT（コスメ商品リスト・合計金額・購入CTA）
 - [x] i18n対応（JA/EN/KO 三言語）
-- [ ] ARトライオン：カテゴリパネル（メガネ/イヤリング）+ キャプチャ → 結果写真表示（STEP3）
+- [x] ARトライオン：カテゴリパネル（メガネ/イヤリング）+ キャプチャ → 結果写真表示（STEP3完了）
 - [ ] パーソナルカラー判定（`personalColor.js`）
 - [ ] ナイトモードUI（Vanity Bulb / Ring Light演出）
 - [ ] スコア履歴（Supabase or Firebase）
