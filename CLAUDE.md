@@ -149,10 +149,7 @@ docs: CLAUDE.md更新
 **新版（MirrorScreenV3.jsx）— 実装予定**:
 - **ピュアミラー設計**: フルスクリームカメラ。UIゼロが基本
 - **タップで診断開始**（ボタン廃止）
-- **ナイトモード自動切替**: 輝度検知（2秒ごと）でUI自動調整
-  - 案A: バニティライト（上下に電球バー）
-  - 案B: リングライト（顔周囲の環状グロー）
-  - 両案を実装し `NIGHT_MODE_STYLE` フラグで切替比較
+- **低照度検知**: 暗い環境ではアラート表示（`useNightMode.js` は実装済み、ネイティブ化Phase 2でナイトモードUI再検討）
 - **広告ゼロ**（ミラー画面はクリーンな鏡体験を最優先）
 - `USE_MIRROR_V3` フラグで旧版と切替可能
 - 詳細: `docs/MIRROR_UX_SPEC.md` 参照
@@ -252,9 +249,9 @@ C:\dev\kirei\
 │   ├── hooks/
 │   │   ├── useCamera.js
 │   │   ├── useFaceLandmarker.js
-│   │   ├── useKirari.js           ★実装予定
-│   │   ├── useNightMode.js        ★実装予定
-│   │   └── useWeather.js          ★実装予定
+│   │   ├── useKirari.js           ★実装済み
+│   │   ├── useNightMode.js        ★実装済み（ナイトモードUIはPhase 2で再検討）
+│   │   └── useWeather.js          ★実装済み
 │   ├── analysis/
 │   │   ├── skinAnalyzer.js
 │   │   ├── personalColor.js       ★実装予定
@@ -340,7 +337,7 @@ const colors = {
 ### Phase 1.5: ミラーUX刷新（現在）
 - [ ] MirrorScreenV3実装（ピュアミラー・タップ診断）
 - [ ] useKirari.js（アンビエント出現・天気連動セリフ）
-- [ ] useNightMode.js（輝度自動検知・案A/B両方実装）
+- [x] useNightMode.js（輝度自動検知・実装済み。ナイトモードUIはデモ版では未実装、ネイティブ化Phase 2で再検討）
 - [ ] useWeather.js（Open-Meteo連携）
 - [ ] 初回チュートリアル（タップ波紋アニメーション）
 - [ ] USE_MIRROR_V3フラグで旧版と並行稼働

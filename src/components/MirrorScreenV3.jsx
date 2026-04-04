@@ -7,7 +7,6 @@ import ScoreBadge from './ScoreBadge.jsx';
 import useAutoShutter from '../hooks/useAutoShutter.js';
 import useKirari from '../hooks/useKirari.js';
 import useWeather from '../hooks/useWeather.js';
-import useNightMode from '../hooks/useNightMode.js';
 import { useFaceLandmarkerCtx } from '../contexts/FaceLandmarkerContext.jsx';
 import { useT } from '../i18n/index.jsx';
 import { SKIN_SCORES } from '../data/scores.js';
@@ -46,15 +45,6 @@ export default function MirrorScreenV3({ onResult }) {
     get: () => cameraRef.current?.videoEl || null,
     configurable: true,
   });
-
-  // ナイトモード検知（画面フラッシュライト方式）
-  const isNightDetected = useNightMode(videoRef);
-  const [nightOverride, setNightOverride] = useState(false);
-  const isNight = isNightDetected && !nightOverride;
-  // 明るくなったらオーバーライドをリセット
-  useEffect(() => {
-    if (!isNightDetected) setNightOverride(false);
-  }, [isNightDetected]);
 
   const { status, confidence, lastLandmarks, lowLight, reset: resetShutter } = useAutoShutter({
     cameraRef,
@@ -246,10 +236,6 @@ export default function MirrorScreenV3({ onResult }) {
           from { opacity: 0; }
           to { opacity: 1; }
         }
-        @keyframes nightFadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
         @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
         @keyframes shutterFlash{0%{opacity:1}100%{opacity:0}}
         @keyframes scanLine{0%,100%{top:15%}50%{top:70%}}
@@ -275,35 +261,6 @@ export default function MirrorScreenV3({ onResult }) {
               zIndex: 6,
             }}
           />
-        )}
-
-        {/* === ナイトモード: 画面フラッシュライト === */}
-        {isNight && (
-          <div
-            onClick={(e) => { e.stopPropagation(); setNightOverride(true); }}
-            style={{
-              position: 'absolute', inset: 0, zIndex: 20,
-              background: '#fff8e0',
-              display: 'flex', flexDirection: 'column',
-              alignItems: 'center', justifyContent: 'center',
-              gap: 16,
-              animation: 'nightFadeIn 0.6s ease-out',
-              cursor: 'pointer',
-            }}
-          >
-            <Kirari size={48} expression="sparkle" />
-            <p style={{
-              fontSize: 14, color: '#78716c', fontWeight: 500,
-              margin: 0, textAlign: 'center', lineHeight: 1.6,
-            }}>
-              {t("kirari.night_on")}
-            </p>
-            <p style={{
-              fontSize: 11, color: '#a8a29e', margin: '24px 0 0',
-            }}>
-              {t("mirror.night_tap_back")}
-            </p>
-          </div>
         )}
 
         {/* === 初回チュートリアルオーバーレイ === */}

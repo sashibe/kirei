@@ -196,124 +196,7 @@ export function useKirari({ weather, streak }) {
 
 ## 4. ナイトモード設計
 
-### 自動検知ロジック
-
-```js
-// hooks/useNightMode.js
-
-const NIGHT_THRESHOLD = 30; // 輝度スコア（0-255）がこれ以下でナイトモード
-
-function measureBrightness(videoElement) {
-  // カメラ映像から中央領域（顔があるはずの部分）をサンプリング
-  const ctx = offscreenCanvas.getContext('2d');
-  ctx.drawImage(videoElement, 0, 0, 64, 64); // 64x64にダウンサンプル
-  const data = ctx.getImageData(0, 0, 64, 64).data;
-  let sum = 0;
-  for (let i = 0; i < data.length; i += 4) {
-    // 輝度 = 0.299R + 0.587G + 0.114B（ITU-R BT.601）
-    sum += 0.299 * data[i] + 0.587 * data[i+1] + 0.114 * data[i+2];
-  }
-  return sum / (64 * 64);
-}
-
-export function useNightMode(videoRef) {
-  const [isNight, setIsNight] = useState(false);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (!videoRef.current) return;
-      const brightness = measureBrightness(videoRef.current);
-      setIsNight(brightness < NIGHT_THRESHOLD);
-    }, 2000); // 2秒ごとにチェック（バッテリー配慮）
-    return () => clearInterval(interval);
-  }, []);
-
-  return isNight;
-}
-```
-
-### ナイトモードUI: 案A（バニティライト）
-
-```jsx
-// 電球バー: 上下に7個ずつ配置
-// カメラ映像エリアは上下バーの間に収まる
-
-<div style={{
-  position: 'fixed', top: 0, left: 0, right: 0,
-  height: 32,
-  background: 'rgba(0,0,0,0.9)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-around',
-  padding: '0 12px',
-}}>
-  {[...Array(7)].map((_, i) => <Bulb key={i} delay={i * 0.3} />)}
-</div>
-
-// 電球コンポーネント
-const Bulb = ({ delay }) => (
-  <div style={{
-    width: 14, height: 14,
-    borderRadius: '50%',
-    background: 'radial-gradient(circle at 40% 35%, #fff8e0, #f5c842 40%, #e89b10)',
-    boxShadow: '0 0 6px 3px rgba(245,200,66,0.8), 0 0 16px 6px rgba(245,180,30,0.4)',
-    animation: `bulbPulse 2.4s ease-in-out ${delay}s infinite`,
-  }} />
-);
-```
-
-### ナイトモードUI: 案B（リングライト）
-
-```jsx
-// カメラ映像はフルスクリーンを維持
-// 顔の周囲を囲む円形グロー
-
-<div style={{
-  position: 'fixed',
-  inset: 0,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  pointerEvents: 'none',
-  zIndex: 10,
-}}>
-  <div style={{
-    width: '75vw',
-    height: '75vw',
-    maxWidth: 320,
-    maxHeight: 320,
-    borderRadius: '50%',
-    border: '6px solid transparent',
-    background: `
-      linear-gradient(#000, #000) padding-box,
-      conic-gradient(
-        rgba(255,240,200,0.9),
-        rgba(255,245,215,1) 90deg,
-        rgba(255,200,100,0.7) 180deg,
-        rgba(255,245,215,1) 270deg,
-        rgba(255,240,200,0.9) 360deg
-      ) border-box
-    `,
-    animation: 'ringRotate 8s linear infinite',
-    filter: 'drop-shadow(0 0 8px rgba(255,220,140,0.4))',
-  }} />
-</div>
-```
-
-### ナイトモード切替時の挙動
-
-```
-暗い環境を検知（2秒間隔の輝度チェックでNIGHT_THRESHOLD以下が3回連続）
-  → ナイトモード開始
-  → 案AまたはBのUIをフェードイン（0.6s）
-  → 同時にUI要素（キラリ等）があれば消去
-  → キャリバ（キラリ）が短いセリフで通知:
-    「暗いね、ライトつけたよ✨」
-
-明るい環境に戻った場合
-  → 通常モードへフェードアウト（0.6s）
-  → キラリは何も言わない（静かに切り替わる）
-```
+> **デモ版では未実装。** `useNightMode.js`（輝度検知ロジック）は実装済みだが、ナイトモード専用UIはデモ版では提供しない。暗い環境では既存の低照度アラート（「ちょっと暗いかも💡 明るい場所で試してみてね！」）を表示する。ナイトモードUI（バニティライト/リングライト/画面フラッシュライト等）はネイティブ化（Phase 2）で再検討する。
 
 ---
 
@@ -328,7 +211,7 @@ src/components/
 
 src/hooks/
   ├── useKirari.js             ← 新規
-  ├── useNightMode.js          ← 新規
+  ├── useNightMode.js          ← 実装済み（UIはPhase 2で再検討）
   └── useCamera.js             ← 既存（変更なし）
 ```
 
@@ -413,16 +296,10 @@ export async function fetchWeather(lat, lon) {
 - チュートリアル終了後の通常遷移確認
 - コミット: `feat: 初回チュートリアル`
 
-### Step 5: ナイトモード（案A）
-- `useNightMode.js` を実装
-- 輝度測定ロジック（OffscreenCanvas）
-- 電球バーUI実装（案A）
-- コミット: `feat: ナイトモード 案A バニティライト`
-
-### Step 6: ナイトモード（案B）＆比較
-- リングライトUIを実装（案B）
-- `NIGHT_MODE_STYLE = 'vanity' | 'ring'` のフラグで切替可能にする
-- コミット: `feat: ナイトモード 案B リングライト`
+### Step 5〜6: ナイトモード
+- `useNightMode.js` は実装済み（輝度検知ロジック）
+- **ナイトモードUIはデモ版では未実装**。低照度時は既存アラートで対応
+- ネイティブ化（Phase 2）でUI方式を再検討
 
 ---
 
@@ -432,7 +309,6 @@ export async function fetchWeather(lat, lon) {
 
 | 項目 | 選択肢 | 現在の仮設定 |
 |---|---|---|
-| ナイトモードデザイン | 案A（バニティ）/ 案B（リング） | 両方実装してから決定 |
-| キラリの出現頻度 | ランダム率 10% / 20% | 10% |
-| 輝度閾値 | 20 / 30 / 40 | 30（実機調整要） |
-| 天気API | Open-Meteo / OpenWeatherMap | Open-Meteo（無料・キー不要） |
+| キラリの出現頻度 | 適応型インターバル（15s→30s→45s） | 実装済み |
+| 天気API | Open-Meteo / OpenWeatherMap | Open-Meteo（無料・キー不要）実装済み |
+| ナイトモードUI | Phase 2で再検討 | デモ版では低照度アラートのみ |
