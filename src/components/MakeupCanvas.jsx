@@ -2,12 +2,13 @@
  * MakeupCanvas — カメラ映像上にリアルタイムメイクAR + メッシュを描画するCanvas
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { FaceLandmarker } from '@mediapipe/tasks-vision';
 import { useFaceLandmarkerCtx } from '../contexts/FaceLandmarkerContext.jsx';
 import {
   drawLip, drawEyeshadow, drawCheek,
   drawFoundation, drawConcealer, drawBrow,
+  drawGlasses, drawEarrings,
 } from '../rendering/makeupRenderer.js';
 
 // メッシュ描画用の接続定義
@@ -19,16 +20,17 @@ const RIGHT_BROW   = FaceLandmarker.FACE_LANDMARKS_RIGHT_EYEBROW;
 const LIPS         = FaceLandmarker.FACE_LANDMARKS_LIPS;
 const TESSELATION  = FaceLandmarker.FACE_LANDMARKS_TESSELATION;
 
-export default function MakeupCanvas({ getVideo, look, styleTab, intensity, showMesh }) {
+const MakeupCanvas = forwardRef(function MakeupCanvas({ getVideo, look, styleTab, intensity, showMesh, glassesItem, earringItem }, ref) {
   const canvasRef = useRef(null);
+  useImperativeHandle(ref, () => canvasRef.current);
   const rafRef = useRef(null);
   const { ready, detect } = useFaceLandmarkerCtx();
 
   // props を ref に同期（ループ内で最新値参照）
-  const propsRef = useRef({ look, styleTab, intensity, showMesh });
+  const propsRef = useRef({ look, styleTab, intensity, showMesh, glassesItem, earringItem });
   useEffect(() => {
-    propsRef.current = { look, styleTab, intensity, showMesh };
-  }, [look, styleTab, intensity, showMesh]);
+    propsRef.current = { look, styleTab, intensity, showMesh, glassesItem, earringItem };
+  }, [look, styleTab, intensity, showMesh, glassesItem, earringItem]);
 
   // 前回の検出結果をキャッシュ（フレームスキップ用）
   const lastLandmarksRef = useRef(null);
@@ -74,10 +76,11 @@ export default function MakeupCanvas({ getVideo, look, styleTab, intensity, show
 
       const w = canvas.width;
       const h = canvas.height;
-      const { look: lk, styleTab: tab, intensity: inten, showMesh: mesh } = propsRef.current;
+      const { look: lk, styleTab: tab, intensity: inten, showMesh: mesh,
+              glassesItem: glasses, earringItem: earring } = propsRef.current;
       const opacity = (inten || 70) / 100;
 
-      // メイク描画
+      // Layer 1-2: メイク描画
       if (lk) {
         if (tab === 0) {
           if (lk.cheek)     drawCheek(ctx, lms, w, h, lk.cheek, opacity);
@@ -90,6 +93,12 @@ export default function MakeupCanvas({ getVideo, look, styleTab, intensity, show
           if (lk.lip)       drawLip(ctx, lms, w, h, lk.lip, opacity);
         }
       }
+
+      // Layer 3: アクセサリー描画
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = 1;
+      drawGlasses(ctx, lms, glasses, w, h);
+      drawEarrings(ctx, lms, earring, w, h);
 
       // メッシュ描画
       if (mesh) {
@@ -117,7 +126,9 @@ export default function MakeupCanvas({ getVideo, look, styleTab, intensity, show
       }}
     />
   );
-}
+});
+
+export default MakeupCanvas;
 
 // ============================================================
 // メッシュ描画（テッセレーション + 輪郭ライン）

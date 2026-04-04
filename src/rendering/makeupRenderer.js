@@ -358,6 +358,150 @@ export function drawConcealer(ctx, lms, w, h, colorStr, opacity) {
 }
 
 // ============================================================
+// アクセサリー描画関数
+// ============================================================
+
+/**
+ * メガネ — 鼻梁 #6, 左耳 #234, 右耳 #454
+ */
+export function drawGlasses(ctx, landmarks, item, canvasW, canvasH) {
+  if (!item || item.id === 'none') return;
+
+  const nose    = landmarks[6];
+  const leftEar = landmarks[234];
+  const rightEar = landmarks[454];
+
+  const cx = nose.x * canvasW;
+  const cy = nose.y * canvasH;
+  const frameWidth  = Math.abs(rightEar.x - leftEar.x) * canvasW * 1.1;
+  const frameHeight = frameWidth * 0.38;
+  const lw = frameWidth * 0.03;
+
+  ctx.save();
+  ctx.strokeStyle = item.color;
+  ctx.lineWidth = lw;
+
+  const lensR = frameWidth * 0.23;
+  const lensW = frameWidth * 0.43;
+  const lensH = frameHeight * 0.92;
+
+  // テンプル（つる）
+  ctx.beginPath();
+  ctx.moveTo(cx - frameWidth * 0.5 + lw, cy);
+  ctx.lineTo(leftEar.x * canvasW, leftEar.y * canvasH);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(cx + frameWidth * 0.5 - lw, cy);
+  ctx.lineTo(rightEar.x * canvasW, rightEar.y * canvasH);
+  ctx.stroke();
+
+  // ブリッジ
+  ctx.beginPath();
+  ctx.moveTo(cx - frameWidth * 0.07, cy);
+  ctx.lineTo(cx + frameWidth * 0.07, cy);
+  ctx.stroke();
+
+  // レンズ描画
+  const drawLens = (lx, ly) => {
+    if (item.shape === 'round') {
+      ctx.beginPath();
+      ctx.arc(lx, ly, lensR, 0, Math.PI * 2);
+    } else if (item.shape === 'oval') {
+      ctx.beginPath();
+      ctx.ellipse(lx, ly, lensR * 1.15, lensR * 0.75, 0, 0, Math.PI * 2);
+    } else {
+      // square / wayfarer: 角丸矩形
+      const r = item.shape === 'wayfarer' ? lensH * 0.15 : lensH * 0.08;
+      const x0 = lx - lensW / 2, y0 = ly - lensH / 2;
+      ctx.beginPath();
+      ctx.moveTo(x0 + r, y0);
+      ctx.lineTo(x0 + lensW - r, y0);
+      ctx.quadraticCurveTo(x0 + lensW, y0, x0 + lensW, y0 + r);
+      ctx.lineTo(x0 + lensW, y0 + lensH - r);
+      ctx.quadraticCurveTo(x0 + lensW, y0 + lensH, x0 + lensW - r, y0 + lensH);
+      ctx.lineTo(x0 + r, y0 + lensH);
+      ctx.quadraticCurveTo(x0, y0 + lensH, x0, y0 + lensH - r);
+      ctx.lineTo(x0, y0 + r);
+      ctx.quadraticCurveTo(x0, y0, x0 + r, y0);
+      ctx.closePath();
+    }
+
+    if (item.lensColor) {
+      ctx.fillStyle = item.lensColor;
+      ctx.fill();
+    }
+    ctx.stroke();
+  };
+
+  const lOffset = frameWidth * 0.28;
+  drawLens(cx - lOffset, cy);
+  drawLens(cx + lOffset, cy);
+
+  ctx.restore();
+}
+
+/**
+ * イヤリング — 左耳珠 #132, 右耳珠 #361
+ */
+export function drawEarrings(ctx, landmarks, item, canvasW, canvasH) {
+  if (!item || item.id === 'none') return;
+
+  const positions = [
+    { x: landmarks[132].x * canvasW, y: landmarks[132].y * canvasH },
+    { x: landmarks[361].x * canvasW, y: landmarks[361].y * canvasH },
+  ];
+
+  positions.forEach(pos => {
+    ctx.save();
+    ctx.fillStyle = item.color;
+    ctx.strokeStyle = item.color;
+
+    switch (item.type) {
+      case 'stud':
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+        break;
+
+      case 'drop':
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(pos.x, pos.y + 16, 5, 9, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+        break;
+
+      case 'hoop':
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y + 10, 11, 0, Math.PI * 2);
+        ctx.strokeStyle = item.color;
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        break;
+
+      case 'chain':
+        ctx.lineWidth = 2;
+        for (let i = 0; i < 4; i++) {
+          ctx.beginPath();
+          ctx.arc(pos.x, pos.y + 6 + i * 7, 3, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+        break;
+    }
+
+    ctx.restore();
+  });
+}
+
+// ============================================================
 // ヘルパー
 // ============================================================
 
