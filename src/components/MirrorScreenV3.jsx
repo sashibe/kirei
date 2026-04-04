@@ -436,7 +436,7 @@ export default function MirrorScreenV3({ onResult }) {
               </button>
               <button
                 className="btn-primary"
-                onClick={startCheck}
+                onClick={() => { setSkinScores(null); setStage(null); setChecking(false); setFrozenFrame(null); }}
                 style={{
                   width: "100%", padding: "12px 0", border: "none", borderRadius: 14, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer",
                   background: "#a855f7", opacity: 0.7,
