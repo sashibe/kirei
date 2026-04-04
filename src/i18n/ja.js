@@ -34,7 +34,7 @@ export default {
   "mirror.btn_skin": "肌",
   "mirror.btn_dental": "デンタル",
   "mirror.view_result": "結果を見る →",
-  "mirror.recheck": "✓ もう一度チェック",
+  "mirror.recheck": "🪞 ミラーに戻る",
   "mirror.start_skin": "✨ 肌チェック開始",
   "mirror.disclaimer": "※本アプリは医療診断を行うものではありません",
 

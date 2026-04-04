@@ -34,7 +34,7 @@ export default {
   "mirror.btn_skin": "피부",
   "mirror.btn_dental": "덴탈",
   "mirror.view_result": "결과 보기 →",
-  "mirror.recheck": "✓ 다시 체크",
+  "mirror.recheck": "🪞 거울로 돌아가기",
   "mirror.start_skin": "✨ 피부 체크 시작",
   "mirror.disclaimer": "※이 앱은 의료 진단을 제공하지 않습니다",
 

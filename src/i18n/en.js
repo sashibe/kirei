@@ -34,7 +34,7 @@ export default {
   "mirror.btn_skin": "Skin",
   "mirror.btn_dental": "Dental",
   "mirror.view_result": "View Results →",
-  "mirror.recheck": "✓ Check again",
+  "mirror.recheck": "🪞 Back to mirror",
   "mirror.start_skin": "✨ Start Skin Check",
   "mirror.disclaimer": "*This app does not provide medical diagnoses.",
 
