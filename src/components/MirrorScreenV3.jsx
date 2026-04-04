@@ -51,7 +51,7 @@ export default function MirrorScreenV3({ onResult }) {
   const weather = useWeather();
 
   // キラリ アンビエント出現（Step 2 + 天気連動 Step 3）
-  const kirariAmbient = useKirari({ weather, isChecking: checking });
+  const kirariAmbient = useKirari({ weather, isChecking: checking, t });
 
   const isScanning = stage === STAGE.SCANNING;
   const shutterEnabled = checking && !isScanning && stage !== STAGE.SHUTTER;
@@ -382,7 +382,7 @@ export default function MirrorScreenV3({ onResult }) {
             }}>
               <Kirari size={36} expression="sparkle" />
               <p style={{ fontSize: 13, color: "#334155", margin: 0, lineHeight: 1.5, fontWeight: 500 }}>
-                タップすると今日の肌を<br />チェックするよ♪
+                {t("kirari.tutorial")}
               </p>
             </div>
           </div>

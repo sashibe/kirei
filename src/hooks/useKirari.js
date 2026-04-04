@@ -1,42 +1,39 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-// --- セリフパターン定義 ---
+// --- セリフパターン定義（翻訳キー） ---
 
 // B. ヒント系
-const HINT_IDLE = 'タップすると肌チェックできるよ✨';
-const HINT_LONG_PRESS = 'タップして、今日のコンディション確認してみて♪';
+const HINT_IDLE_KEY = 'kirari.hint_idle';
+const HINT_LONG_PRESS_KEY = 'kirari.hint_long_press';
 
 // C. 継続応援系
-const STREAK_LINES = {
-  3: '3日連続チェック！コツコツが一番きれいへの近道だよ',
-  7: '1週間続けてる！肌の変化、気づいてきた？',
-  30: '1ヶ月続けてること、すごいよ。肌記録、確実に積み重なってるよ',
+const STREAK_KEYS = {
+  3: 'kirari.streak_3',
+  7: 'kirari.streak_7',
+  30: 'kirari.streak_30',
 };
 
 // D. ランダム（ふとした一言）
-const RANDOM_LINES = [
-  'おはよ♪ 今日もいい顔してるよ',
-  '昨日と今日、肌の調子どう？',
-  '鏡に映る自分、毎日少しずつ変わってるんだよ',
-  '今日は何色のリップにする？',
-  'ちょっとくすんでる日でも、大丈夫。チェックしてみて',
+const RANDOM_KEYS = [
+  'kirari.random_morning',
+  'kirari.random_condition',
+  'kirari.random_change',
+  'kirari.random_lip',
+  'kirari.random_dull',
 ];
 
-// A. 天気・環境連動（weather オブジェクトから判定）
-function getWeatherLine(weather) {
+// A. 天気・環境連動（weather オブジェクトから判定）→ 翻訳キーを返す
+function getWeatherKey(weather) {
   if (!weather) return null;
   const { temp, humidity, uvIndex, rainProb } = weather;
-  // 花粉シーズン（3〜5月）
   const month = new Date().getMonth() + 1;
-  if (month >= 3 && month <= 5 && rainProb < 50) {
-    return '花粉の季節。肌が敏感になってる人も多いよ';
-  }
-  if (humidity > 70) return '今日は湿気多めだって。崩れにくいメイクがいいかも';
-  if (humidity < 40) return '今日は乾燥注意日。肌の水分、確認してみて';
-  if (uvIndex >= 6) return 'UV強めの日だよ。日焼け止め忘れずに！';
-  if (temp <= 10) return '寒い日は肌が敏感になりやすいよ。やさしくチェックしてみて';
-  if (temp >= 30) return '今日は暑くなりそう。皮脂多めの日かも';
-  if (rainProb >= 70) return '雨の予報だよ。ウォータープルーフのアイテム、チェックしてみて';
+  if (month >= 3 && month <= 5 && rainProb < 50) return 'kirari.weather_pollen';
+  if (humidity > 70) return 'kirari.weather_humid';
+  if (humidity < 40) return 'kirari.weather_dry';
+  if (uvIndex >= 6) return 'kirari.weather_uv';
+  if (temp <= 10) return 'kirari.weather_cold';
+  if (temp >= 30) return 'kirari.weather_hot';
+  if (rainProb >= 70) return 'kirari.weather_rain';
   return null;
 }
 
@@ -83,9 +80,10 @@ function markShownToday() {
  * @param {Object} options
  * @param {Object|null} options.weather - 天気データ { temp, humidity, uvIndex, rainProb }
  * @param {boolean} options.isChecking - 肌チェック中かどうか
+ * @param {Function} options.t - 翻訳関数 (key) => string
  * @returns {{ message: string|null, visible: boolean, dismiss: () => void }}
  */
-export default function useKirari({ weather = null, isChecking = false } = {}) {
+export default function useKirari({ weather = null, isChecking = false, t = (k) => k } = {}) {
   const [message, setMessage] = useState(null);
   const [visible, setVisible] = useState(false);
   const hideTimerRef = useRef(null);
@@ -126,36 +124,36 @@ export default function useKirari({ weather = null, isChecking = false } = {}) {
 
     // 優先度1: 天気連動（起動後3秒）
     if (weather) {
-      const line = getWeatherLine(weather);
-      if (line) {
-        const timer = setTimeout(() => show(line, 6000), 3000);
+      const key = getWeatherKey(weather);
+      if (key) {
+        const timer = setTimeout(() => show(t(key), 6000), 3000);
         return () => clearTimeout(timer);
       }
     }
 
     // 優先度2: 連続日数
     if (streak === 3 || streak === 7 || streak === 30) {
-      const timer = setTimeout(() => show(STREAK_LINES[streak], 6000), 3000);
+      const timer = setTimeout(() => show(t(STREAK_KEYS[streak]), 6000), 3000);
       return () => clearTimeout(timer);
     }
 
     // 優先度3: ランダム（10回に1回）
     if (Math.random() < 0.1) {
-      const timer = setTimeout(() => show(randomPick(RANDOM_LINES), 5000), 3000);
+      const timer = setTimeout(() => show(t(randomPick(RANDOM_KEYS)), 5000), 3000);
       return () => clearTimeout(timer);
     }
 
     // 優先度4: 5秒放置でヒント
     idleTimerRef.current = setTimeout(() => {
       if (!shownRef.current) {
-        show(HINT_IDLE, 5000);
+        show(t(HINT_IDLE_KEY), 5000);
       }
     }, 5000);
 
     return () => {
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
     };
-  }, [weather, isChecking, show]);
+  }, [weather, isChecking, show, t]);
 
   // クリーンアップ
   useEffect(() => {
@@ -168,4 +166,4 @@ export default function useKirari({ weather = null, isChecking = false } = {}) {
   return { message, visible, dismiss };
 }
 
-export { getWeatherLine, STREAK_LINES, RANDOM_LINES, HINT_IDLE, HINT_LONG_PRESS };
+export { getWeatherKey, STREAK_KEYS, RANDOM_KEYS, HINT_IDLE_KEY, HINT_LONG_PRESS_KEY };
