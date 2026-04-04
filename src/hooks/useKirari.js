@@ -2,18 +2,15 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 
 // --- セリフパターン定義（翻訳キー） ---
 
-// B. ヒント系
 const HINT_IDLE_KEY = 'kirari.hint_idle';
 const HINT_LONG_PRESS_KEY = 'kirari.hint_long_press';
 
-// C. 継続応援系
 const STREAK_KEYS = {
   3: 'kirari.streak_3',
   7: 'kirari.streak_7',
   30: 'kirari.streak_30',
 };
 
-// D. ランダム（ふとした一言）
 const RANDOM_KEYS = [
   'kirari.random_morning',
   'kirari.random_condition',
@@ -22,7 +19,7 @@ const RANDOM_KEYS = [
   'kirari.random_dull',
 ];
 
-// A. 天気・環境連動（weather オブジェクトから判定）→ 翻訳キーを返す
+// 天気連動 → 翻訳キー
 function getWeatherKey(weather) {
   if (!weather) return null;
   const { temp, humidity, uvIndex, rainProb } = weather;
@@ -37,68 +34,71 @@ function getWeatherKey(weather) {
   return null;
 }
 
-function randomPick(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
 // 連続起動日数の取得・更新
 function getAndUpdateStreak() {
   const today = new Date().toISOString().slice(0, 10);
   const lastDate = localStorage.getItem('kirei_last_date');
   const streak = parseInt(localStorage.getItem('kirei_streak') || '0', 10);
 
-  if (lastDate === today) {
-    return streak; // 今日は既にカウント済み
-  }
+  if (lastDate === today) return streak;
 
   const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-  let newStreak;
-  if (lastDate === yesterday) {
-    newStreak = streak + 1;
-  } else {
-    newStreak = 1; // 連続途切れ or 初回
-  }
-
+  const newStreak = lastDate === yesterday ? streak + 1 : 1;
   localStorage.setItem('kirei_last_date', today);
   localStorage.setItem('kirei_streak', String(newStreak));
   return newStreak;
 }
 
-// 1日1回制限チェック
-function hasShownToday() {
-  const today = new Date().toISOString().slice(0, 10);
-  return localStorage.getItem('kirei_kirari_shown') === today;
+// セリフプールを構築（天気キーがあれば含む）
+function buildPool(weatherKey) {
+  const pool = [HINT_IDLE_KEY, ...RANDOM_KEYS];
+  if (weatherKey) pool.push(weatherKey);
+  return pool;
 }
-function markShownToday() {
-  const today = new Date().toISOString().slice(0, 10);
-  localStorage.setItem('kirei_kirari_shown', today);
+
+// シャッフルして同じセリフが連続しないようにする
+function shuffleAvoid(pool, lastKey) {
+  const filtered = pool.filter(k => k !== lastKey);
+  if (filtered.length === 0) return pool[0];
+  return filtered[Math.floor(Math.random() * filtered.length)];
+}
+
+// 適応型インターバル: 経過時間に応じて間隔を広げる
+const DISPLAY_DURATION = 4000; // 表示時間 4秒
+function getInterval(elapsedMs) {
+  if (elapsedMs < 30000) return 15000;   // 0〜30秒: 15秒間隔
+  if (elapsedMs < 120000) return 30000;  // 30秒〜2分: 30秒間隔
+  return 45000;                          // 2分以降: 45秒間隔
 }
 
 /**
- * useKirari - キラリのアンビエント出現を管理するフック
+ * useKirari - キラリの適応型リピート出現を管理するフック
+ *
+ * ミラーモード起動中、適応型の間隔でセリフをリピート表示する。
+ * - 0〜30秒: 15秒間隔
+ * - 30秒〜2分: 30秒間隔
+ * - 2分以降: 45秒間隔
+ * 表示時間は一律4秒。同じセリフが連続しない。
  *
  * @param {Object} options
- * @param {Object|null} options.weather - 天気データ { temp, humidity, uvIndex, rainProb }
+ * @param {Object|null} options.weather - 天気データ
  * @param {boolean} options.isChecking - 肌チェック中かどうか
- * @param {Function} options.t - 翻訳関数 (key) => string
+ * @param {Function} options.t - 翻訳関数
  * @returns {{ message: string|null, visible: boolean, dismiss: () => void }}
  */
 export default function useKirari({ weather = null, isChecking = false, t = (k) => k } = {}) {
   const [message, setMessage] = useState(null);
   const [visible, setVisible] = useState(false);
   const hideTimerRef = useRef(null);
-  const shownRef = useRef(false); // この起動で既に表示したか
-  const idleTimerRef = useRef(null);
+  const repeatTimerRef = useRef(null);
+  const lastKeyRef = useRef(null);
+  const startTimeRef = useRef(Date.now());
 
-  const show = useCallback((text, duration = 5000) => {
+  const show = useCallback((text, duration = DISPLAY_DURATION) => {
     setMessage(text);
     setVisible(true);
-    markShownToday();
-    shownRef.current = true;
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
-    hideTimerRef.current = setTimeout(() => {
-      setVisible(false);
-    }, duration);
+    hideTimerRef.current = setTimeout(() => setVisible(false), duration);
   }, []);
 
   const dismiss = useCallback(() => {
@@ -108,50 +108,52 @@ export default function useKirari({ weather = null, isChecking = false, t = (k) 
 
   // チェック中はキラリを非表示にする
   useEffect(() => {
-    if (isChecking) {
-      dismiss();
-    }
+    if (isChecking) dismiss();
   }, [isChecking, dismiss]);
 
-  // メイン出現ロジック（マウント時 + weather変更時）
+  // 適応型リピートループ
   useEffect(() => {
-    // チェック中またはこの起動で既に表示済み
-    if (isChecking || shownRef.current) {
-      return;
-    }
+    if (isChecking) return;
 
-    const streak = getAndUpdateStreak();
+    getAndUpdateStreak();
+    const weatherKey = getWeatherKey(weather);
+    const pool = buildPool(weatherKey);
+    startTimeRef.current = Date.now();
 
-    // 優先度1: 天気連動（起動後3秒）
-    if (weather) {
-      const key = getWeatherKey(weather);
-      if (key) {
-        const timer = setTimeout(() => show(t(key), 6000), 3000);
-        return () => clearTimeout(timer);
-      }
-    }
-
-    // 優先度2: 連続日数
+    // 初回表示: 連続日数メッセージ or 通常プール
+    const streak = parseInt(localStorage.getItem('kirei_streak') || '0', 10);
+    let firstKey;
     if (streak === 3 || streak === 7 || streak === 30) {
-      const timer = setTimeout(() => show(t(STREAK_KEYS[streak]), 6000), 3000);
-      return () => clearTimeout(timer);
+      firstKey = STREAK_KEYS[streak];
+    } else if (weatherKey) {
+      firstKey = weatherKey;
+    } else {
+      firstKey = HINT_IDLE_KEY;
     }
 
-    // 優先度3: ランダム（10回に1回）
-    if (Math.random() < 0.1) {
-      const timer = setTimeout(() => show(t(randomPick(RANDOM_KEYS)), 5000), 3000);
-      return () => clearTimeout(timer);
-    }
+    // 初回は3秒後に表示
+    const firstTimer = setTimeout(() => {
+      show(t(firstKey));
+      lastKeyRef.current = firstKey;
+      scheduleNext();
+    }, 3000);
 
-    // 優先度4: 5秒放置でヒント
-    idleTimerRef.current = setTimeout(() => {
-      if (!shownRef.current) {
-        show(t(HINT_IDLE_KEY), 5000);
-      }
-    }, 5000);
+    function scheduleNext() {
+      const elapsed = Date.now() - startTimeRef.current;
+      const interval = getInterval(elapsed);
+
+      repeatTimerRef.current = setTimeout(() => {
+        const key = shuffleAvoid(pool, lastKeyRef.current);
+        show(t(key));
+        lastKeyRef.current = key;
+        scheduleNext(); // 再帰的に次をスケジュール
+      }, interval);
+    }
 
     return () => {
-      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+      clearTimeout(firstTimer);
+      if (repeatTimerRef.current) clearTimeout(repeatTimerRef.current);
+      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
     };
   }, [weather, isChecking, show, t]);
 
@@ -159,7 +161,7 @@ export default function useKirari({ weather = null, isChecking = false, t = (k) 
   useEffect(() => {
     return () => {
       if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
-      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+      if (repeatTimerRef.current) clearTimeout(repeatTimerRef.current);
     };
   }, []);
 
