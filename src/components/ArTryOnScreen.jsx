@@ -4,57 +4,125 @@ import Bubble from './Bubble.jsx';
 import MakeupCanvas from './MakeupCanvas.jsx';
 import useCamera from '../hooks/useCamera.js';
 import { useT } from '../i18n/index.jsx';
+import { GLASSES_ITEMS, EARRING_ITEMS } from '../data/accessories.js';
 
-export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
+const CATEGORIES = [
+  { id: 'lip',     label: 'リップ',    icon: '💄' },
+  { id: 'cheek',   label: 'チーク',    icon: '🌸' },
+  { id: 'glasses', label: 'メガネ',    icon: '👓' },
+  { id: 'earring', label: 'イヤリング', icon: '💍' },
+];
+
+export default function ArTryOnScreen({ look, styleTab, onDecide, onBack }) {
   const { t } = useT();
   const [intensity, setIntensity] = useState(70);
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [showMesh, setShowMesh] = useState(false);
-  const [videoAspect, setVideoAspect] = useState(null); // カメラ映像のアスペクト比
+  const [videoAspect, setVideoAspect] = useState(null);
+  const [activeCategory, setActiveCategory] = useState('lip');
+  const [lipColor, setLipColor] = useState(look?.lip || '#e8607c');
+  const [cheekColor, setCheekColor] = useState(look?.cheek || 'rgba(232,96,124,0.4)');
+  const [selectedGlasses, setSelectedGlasses] = useState('none');
+  const [selectedEarring, setSelectedEarring] = useState('none');
   const isColor = styleTab === 0;
 
-  // カメラ — useCamera は videoRef.current にストリームを設定する
+  const canvasRef = useRef(null);
   const { videoRef, isActive, error: cameraError } = useCamera({ enabled: true });
 
-  // video の loadeddata イベントで映像が実際に流れ始めたことを検知
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-
     const onPlaying = () => {
       setVideoPlaying(true);
       if (video.videoWidth && video.videoHeight) {
         setVideoAspect(`${video.videoWidth} / ${video.videoHeight}`);
       }
     };
-
-    if (video.readyState >= 2) {
-      onPlaying();
-      return;
-    }
-
+    if (video.readyState >= 2) { onPlaying(); return; }
     video.addEventListener('loadeddata', onPlaying);
     return () => video.removeEventListener('loadeddata', onPlaying);
   }, [isActive, videoRef]);
 
-  // MakeupCanvas 用: video要素を直接返すコールバック
   const getVideo = useCallback(() => videoRef.current, [videoRef]);
-
-  // カメラが使えて映像が流れている
   const cameraLive = isActive && !cameraError && videoPlaying;
 
-  // Color makeup overlays (SVGフォールバック用)
-  const lipColor = look?.lip || '#e8607c';
-  const cheekColor = look?.cheek || 'rgba(232,96,124,0.25)';
+  // 現在のlookにリップ/チークの選択を反映
+  const activeLook = { ...look, lip: lipColor, cheek: cheekColor };
+
+  const opacityFactor = intensity / 100;
   const eyeshadowColor = look?.eyeshadow || 'rgba(232,150,120,0.2)';
   const baseColor = look?.base || '#e8d8c8';
   const concealerColor = look?.concealer;
   const browColor = look?.brow;
-  const opacityFactor = intensity / 100;
+
+  const glassesItem = GLASSES_ITEMS.find(i => i.id === selectedGlasses);
+  const earringItem = EARRING_ITEMS.find(i => i.id === selectedEarring);
 
   const lookName = look?.name
     ? (typeof look.name === 'object' ? t(look.name) : look.name)
     : t('ar.look_fallback');
+
+  // キャプチャ → 結果画面へ
+  const handleDecide = () => {
+    // video + canvas を合成してキャプチャ
+    const video = videoRef.current;
+    const arCanvas = canvasRef.current;
+
+    const captureCanvas = document.createElement('canvas');
+    captureCanvas.width = video.videoWidth || 640;
+    captureCanvas.height = video.videoHeight || 480;
+    const cctx = captureCanvas.getContext('2d');
+
+    // video描画（ミラー反転）
+    cctx.save();
+    cctx.translate(captureCanvas.width, 0);
+    cctx.scale(-1, 1);
+    cctx.drawImage(video, 0, 0, captureCanvas.width, captureCanvas.height);
+    cctx.restore();
+
+    // ARオーバーレイ描画（ミラー反転）
+    if (arCanvas) {
+      cctx.save();
+      cctx.translate(captureCanvas.width, 0);
+      cctx.scale(-1, 1);
+      cctx.drawImage(arCanvas, 0, 0, captureCanvas.width, captureCanvas.height);
+      cctx.restore();
+    }
+
+    const dataUrl = captureCanvas.toDataURL('image/jpeg', 0.92);
+
+    const accessoryProducts = [
+      ...(glassesItem && glassesItem.id !== 'none'
+        ? [{ emoji: glassesItem.emoji, name: glassesItem.name,
+             shade: glassesItem.shape || '', price: glassesItem.price,
+             category: 'glasses' }]
+        : []),
+      ...(earringItem && earringItem.id !== 'none'
+        ? [{ emoji: earringItem.emoji, name: earringItem.name,
+             shade: earringItem.type || '', price: earringItem.price,
+             category: 'earring' }]
+        : []),
+    ];
+
+    onDecide({
+      capturedImage: dataUrl,
+      look: activeLook,
+      products: [
+        ...(look?.products || []),
+        ...accessoryProducts,
+      ],
+    });
+  };
+
+  // リップカラーパレット
+  const LIP_COLORS = ['#e8607c','#c05070','#d4826a','#b85050','#cf6080','#e07070'];
+  // チークカラーパレット
+  const CHEEK_COLORS = [
+    'rgba(232,96,124,0.4)',
+    'rgba(255,150,100,0.4)',
+    'rgba(200,160,200,0.4)',
+    'rgba(255,180,120,0.4)',
+  ];
 
   return (
     <div style={{ padding: '12px 0' }}>
@@ -72,13 +140,8 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
         borderRadius: 20, overflow: 'hidden',
         background: cameraLive ? '#000' : '#f8f5ff',
         aspectRatio: cameraLive && videoAspect ? videoAspect : '3/4',
-        maxHeight: '65vh',
+        maxHeight: '55vh',
       }}>
-
-        {/*
-          video要素は常にDOMに存在させる（useCameraがrefに stream を設定するため）。
-          カメラが準備できるまでは非表示。
-        */}
         <video
           ref={videoRef}
           style={{
@@ -87,19 +150,19 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
             transform: 'scaleX(-1)',
             display: cameraLive ? 'block' : 'none',
           }}
-          playsInline
-          muted
-          autoPlay
+          playsInline muted autoPlay
         />
 
-        {/* メイクAR + メッシュ Canvas */}
         {cameraLive && (
           <MakeupCanvas
+            ref={canvasRef}
             getVideo={getVideo}
-            look={look}
+            look={activeLook}
             styleTab={styleTab}
             intensity={intensity}
             showMesh={showMesh}
+            glassesItem={glassesItem}
+            earringItem={earringItem}
           />
         )}
 
@@ -122,7 +185,7 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
           </button>
         )}
 
-        {/* SVG フォールバック（カメラ不可 or 準備中） */}
+        {/* SVG フォールバック */}
         {!cameraLive && (
           <div style={{
             width: '100%', height: '100%',
@@ -182,28 +245,6 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
             {lookName}
           </p>
         </div>
-
-        {/* Product swatches */}
-        <div style={{
-          position: 'absolute', bottom: 12, right: 12,
-          display: 'flex', gap: 6,
-        }}>
-          {look?.products?.map((p, i) => (
-            <div key={i} style={{
-              background: cameraLive ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.9)',
-              backdropFilter: 'blur(8px)',
-              borderRadius: 10, padding: '4px 8px',
-              boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-            }}>
-              <p style={{
-                fontSize: 9, margin: 0,
-                color: cameraLive ? '#e2e8f0' : '#64748b',
-              }}>
-                {p.emoji} {t(p.name)}
-              </p>
-            </div>
-          ))}
-        </div>
       </div>
 
       {/* Kirari comment */}
@@ -218,62 +259,138 @@ export default function ArTryOnScreen({ look, styleTab, onNext, onBack }) {
         </Bubble>
       </div>
 
-      {/* Intensity slider */}
-      <div style={{ padding: '0 16px', marginBottom: 14 }}>
+      {/* Category tabs + selection panel */}
+      <div style={{ padding: '0 16px', marginBottom: 10 }}>
         <div style={{
-          background: '#fff', borderRadius: 14, padding: '12px 16px',
+          background: '#fff', borderRadius: 16, padding: '10px 12px',
           boxShadow: '0 2px 8px rgba(139,92,246,0.06)', border: '1px solid #ede9fe',
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-            <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b' }}>{t('ar.intensity')}</span>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#a855f7' }}>{intensity}%</span>
+          {/* Category tab bar */}
+          <div style={{
+            display: 'flex', gap: 0,
+            background: 'rgba(139,92,246,0.06)', borderRadius: 12,
+            overflow: 'hidden', marginBottom: 10,
+          }}>
+            {CATEGORIES.map(cat => (
+              <button key={cat.id} onClick={() => setActiveCategory(cat.id)} style={{
+                flex: 1, padding: '8px 0',
+                background: activeCategory === cat.id
+                  ? 'rgba(168,85,247,0.15)' : 'transparent',
+                border: 'none',
+                borderBottom: activeCategory === cat.id
+                  ? '2px solid #a855f7' : '2px solid transparent',
+                color: activeCategory === cat.id ? '#a855f7' : '#94a3b8',
+                fontSize: 10, fontWeight: activeCategory === cat.id ? 700 : 400,
+                cursor: 'pointer', transition: 'all 0.2s',
+              }}>
+                <div style={{ fontSize: 16 }}>{cat.icon}</div>
+                <div>{cat.label}</div>
+              </button>
+            ))}
           </div>
-          <input
-            type="range" min="0" max="100" value={intensity}
-            onChange={e => setIntensity(Number(e.target.value))}
-            style={{ width: '100%', accentColor: '#a855f7' }}
-          />
+
+          {/* Lip palette */}
+          {activeCategory === 'lip' && (
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
+              {LIP_COLORS.map(c => (
+                <div key={c} onClick={() => setLipColor(c)} style={{
+                  width: 32, height: 32, borderRadius: '50%', background: c, cursor: 'pointer',
+                  border: lipColor === c ? '3px solid #a855f7' : '2px solid rgba(139,92,246,0.15)',
+                  boxShadow: lipColor === c ? '0 0 10px rgba(168,85,247,0.3)' : 'none',
+                  transition: 'all 0.2s',
+                }}/>
+              ))}
+            </div>
+          )}
+
+          {/* Cheek palette */}
+          {activeCategory === 'cheek' && (
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+              {CHEEK_COLORS.map(c => (
+                <div key={c} onClick={() => setCheekColor(c)} style={{
+                  width: 32, height: 32, borderRadius: '50%', background: c, cursor: 'pointer',
+                  border: cheekColor === c ? '3px solid #a855f7' : '2px solid rgba(139,92,246,0.15)',
+                  transition: 'all 0.2s',
+                }}/>
+              ))}
+            </div>
+          )}
+
+          {/* Glasses items */}
+          {activeCategory === 'glasses' && (
+            <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
+              {GLASSES_ITEMS.map(item => (
+                <button key={item.id} onClick={() => setSelectedGlasses(item.id)} style={{
+                  padding: '6px 10px', borderRadius: 10, fontSize: 11, fontWeight: 600,
+                  background: selectedGlasses === item.id
+                    ? 'rgba(168,85,247,0.15)' : 'rgba(139,92,246,0.04)',
+                  border: selectedGlasses === item.id
+                    ? '2px solid #a855f7' : '1px solid #ede9fe',
+                  color: selectedGlasses === item.id ? '#a855f7' : '#64748b',
+                  cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
+                  transition: 'all 0.2s',
+                }}>
+                  {item.emoji} {item.name}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Earring items */}
+          {activeCategory === 'earring' && (
+            <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
+              {EARRING_ITEMS.map(item => (
+                <button key={item.id} onClick={() => setSelectedEarring(item.id)} style={{
+                  padding: '6px 10px', borderRadius: 10, fontSize: 11, fontWeight: 600,
+                  background: selectedEarring === item.id
+                    ? 'rgba(168,85,247,0.15)' : 'rgba(139,92,246,0.04)',
+                  border: selectedEarring === item.id
+                    ? '2px solid #a855f7' : '1px solid #ede9fe',
+                  color: selectedEarring === item.id ? '#a855f7' : '#64748b',
+                  cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
+                  transition: 'all 0.2s',
+                }}>
+                  {item.emoji} {item.name}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Intensity slider (lip/cheek only) */}
+          {(activeCategory === 'lip' || activeCategory === 'cheek') && (
+            <div style={{ marginTop: 10 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b' }}>{t('ar.intensity')}</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: '#a855f7' }}>{intensity}%</span>
+              </div>
+              <input
+                type="range" min="0" max="100" value={intensity}
+                onChange={e => setIntensity(Number(e.target.value))}
+                style={{ width: '100%', accentColor: '#a855f7' }}
+              />
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Product list */}
-      <div style={{ padding: '0 16px', marginBottom: 14 }}>
-        <p style={{ fontSize: 12, fontWeight: 600, color: '#64748b', margin: '0 0 8px' }}>{t('result.used_items')}</p>
-        {look?.products?.map((p, i) => (
-          <div key={i} style={{
-            display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0',
-            borderBottom: i < look.products.length - 1 ? '1px solid #f1f5f9' : 'none',
-          }}>
-            <span style={{ fontSize: 18, width: 28, textAlign: 'center' }}>{p.emoji}</span>
-            <div style={{ flex: 1 }}>
-              <p style={{ fontSize: 12, fontWeight: 600, color: '#334155', margin: 0 }}>{t(p.name)}</p>
-              <p style={{ fontSize: 10, color: '#94a3b8', margin: 0 }}>{t(p.shade)}</p>
-            </div>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#a855f7' }}>
-              {'\u00A5'}{p.price.toLocaleString()}
-            </span>
-          </div>
-        ))}
-      </div>
-
       {/* CTA */}
-      <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 8 }}>
-        <button onClick={onNext} style={{
-          width: '100%', padding: 14,
-          background: 'linear-gradient(135deg, #a855f7, #ec4899)',
-          border: 'none', borderRadius: 14, fontSize: 14, fontWeight: 700,
-          color: '#fff', cursor: 'pointer',
-          boxShadow: '0 4px 16px rgba(168,85,247,0.25)',
-        }}>
-          {t('ar.view_result')}
-        </button>
+      <div style={{ padding: '0 16px', display: 'flex', gap: 8, marginBottom: 8 }}>
         <button onClick={onBack} style={{
-          width: '100%', padding: 11,
+          flex: 0.4, padding: 12,
           background: '#f8fafc', border: '1px solid #e2e8f0',
           borderRadius: 14, fontSize: 12, fontWeight: 600,
           color: '#64748b', cursor: 'pointer',
         }}>
           {t('ar.try_another')}
+        </button>
+        <button onClick={handleDecide} style={{
+          flex: 1, padding: 12,
+          background: 'linear-gradient(135deg, #a855f7, #ec4899)',
+          border: 'none', borderRadius: 14, fontSize: 13, fontWeight: 700,
+          color: '#fff', cursor: 'pointer',
+          boxShadow: '0 4px 16px rgba(168,85,247,0.25)',
+        }}>
+          このメイクで決定 ✓
         </button>
       </div>
     </div>
