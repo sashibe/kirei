@@ -199,5 +199,6 @@ export default {
   "kirari.weather_cold": "Cold weather can make skin sensitive. Check gently",
   "kirari.weather_hot": "It's going to be hot today. Your skin might be oilier",
   "kirari.weather_rain": "Rain forecast! Check out waterproof items",
-  "kirari.night_on": "It's dark \u2014 I turned on the light\u2728",
+  "kirari.night_on": "Using the screen as a light\u2728 Bring your face closer",
+  "mirror.night_tap_back": "Tap to return to mirror",
 };

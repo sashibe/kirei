@@ -15,21 +15,6 @@ import { analyzeSkin, analyzeSkinWithLandmarks } from '../analysis/skinAnalyzer.
 
 const STAGE = { SEARCHING: 'searching', DETECTED: 'detected', READY: 'ready', SHUTTER: 'shutter', SCANNING: 'scanning' };
 
-// ナイトモードスタイル切替フラグ
-const NIGHT_MODE_STYLE = 'vanity'; // 'vanity' | 'ring'
-
-// 電球コンポーネント（バニティライト用）
-function Bulb({ delay }) {
-  return (
-    <div style={{
-      width: 14, height: 14,
-      borderRadius: '50%',
-      background: 'radial-gradient(circle at 40% 35%, #fff8e0, #f5c842 40%, #e89b10)',
-      boxShadow: '0 0 6px 3px rgba(245,200,66,0.8), 0 0 16px 6px rgba(245,180,30,0.4)',
-      animation: `bulbPulse 2.4s ease-in-out ${delay}s infinite`,
-    }} />
-  );
-}
 
 export default function MirrorScreenV3({ onResult }) {
   const { t } = useT();
@@ -62,8 +47,14 @@ export default function MirrorScreenV3({ onResult }) {
     configurable: true,
   });
 
-  // ナイトモード検知（Step 5）
-  const isNight = useNightMode(videoRef);
+  // ナイトモード検知（画面フラッシュライト方式）
+  const isNightDetected = useNightMode(videoRef);
+  const [nightOverride, setNightOverride] = useState(false);
+  const isNight = isNightDetected && !nightOverride;
+  // 明るくなったらオーバーライドをリセット
+  useEffect(() => {
+    if (!isNightDetected) setNightOverride(false);
+  }, [isNightDetected]);
 
   const { status, confidence, lastLandmarks, lowLight, reset: resetShutter } = useAutoShutter({
     cameraRef,
@@ -255,17 +246,9 @@ export default function MirrorScreenV3({ onResult }) {
           from { opacity: 0; }
           to { opacity: 1; }
         }
-        @keyframes bulbPulse {
-          0%, 100% { opacity: 0.8; filter: brightness(1); }
-          50% { opacity: 1; filter: brightness(1.2); }
-        }
         @keyframes nightFadeIn {
           from { opacity: 0; }
           to { opacity: 1; }
-        }
-        @keyframes ringRotate {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
         }
         @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
         @keyframes shutterFlash{0%{opacity:1}100%{opacity:0}}
@@ -294,60 +277,32 @@ export default function MirrorScreenV3({ onResult }) {
           />
         )}
 
-        {/* === ナイトモード: バニティライト（案A） === */}
-        {isNight && NIGHT_MODE_STYLE === 'vanity' && (
-          <>
-            {/* 上部電球バー */}
-            <div style={{
-              position: 'absolute', top: 0, left: 0, right: 0,
-              height: 32, zIndex: 12,
-              background: 'rgba(0,0,0,0.9)',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-around',
-              padding: '0 12px',
+        {/* === ナイトモード: 画面フラッシュライト === */}
+        {isNight && (
+          <div
+            onClick={(e) => { e.stopPropagation(); setNightOverride(true); }}
+            style={{
+              position: 'absolute', inset: 0, zIndex: 20,
+              background: '#fff8e0',
+              display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center',
+              gap: 16,
               animation: 'nightFadeIn 0.6s ease-out',
+              cursor: 'pointer',
+            }}
+          >
+            <Kirari size={48} expression="sparkle" />
+            <p style={{
+              fontSize: 14, color: '#78716c', fontWeight: 500,
+              margin: 0, textAlign: 'center', lineHeight: 1.6,
             }}>
-              {[...Array(7)].map((_, i) => <Bulb key={`t${i}`} delay={i * 0.3} />)}
-            </div>
-            {/* 下部電球バー */}
-            <div style={{
-              position: 'absolute', bottom: 0, left: 0, right: 0,
-              height: 32, zIndex: 12,
-              background: 'rgba(0,0,0,0.9)',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-around',
-              padding: '0 12px',
-              animation: 'nightFadeIn 0.6s ease-out',
+              {t("kirari.night_on")}
+            </p>
+            <p style={{
+              fontSize: 11, color: '#a8a29e', margin: '24px 0 0',
             }}>
-              {[...Array(7)].map((_, i) => <Bulb key={`b${i}`} delay={i * 0.3 + 0.15} />)}
-            </div>
-          </>
-        )}
-
-        {/* === ナイトモード: リングライト（案B） === */}
-        {isNight && NIGHT_MODE_STYLE === 'ring' && (
-          <div style={{
-            position: 'absolute', inset: 0,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            pointerEvents: 'none', zIndex: 12,
-            animation: 'nightFadeIn 0.6s ease-out',
-          }}>
-            <div style={{
-              width: '75vw', height: '75vw',
-              maxWidth: 320, maxHeight: 320,
-              borderRadius: '50%',
-              border: '6px solid transparent',
-              background: `
-                linear-gradient(#000, #000) padding-box,
-                conic-gradient(
-                  rgba(255,240,200,0.9),
-                  rgba(255,245,215,1) 90deg,
-                  rgba(255,200,100,0.7) 180deg,
-                  rgba(255,245,215,1) 270deg,
-                  rgba(255,240,200,0.9) 360deg
-                ) border-box
-              `,
-              animation: 'ringRotate 8s linear infinite',
-              filter: 'drop-shadow(0 0 8px rgba(255,220,140,0.4))',
-            }} />
+              {t("mirror.night_tap_back")}
+            </p>
           </div>
         )}
 

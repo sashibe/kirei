@@ -199,5 +199,6 @@ export default {
   "kirari.weather_cold": "추운 날은 피부가 예민해지기 쉬워. 부드럽게 체크해 봐",
   "kirari.weather_hot": "오늘은 더워질 것 같아. 피지가 많은 날일지도",
   "kirari.weather_rain": "비 예보야! 워터프루프 아이템 확인해 봐",
-  "kirari.night_on": "어둡네, 조명 켰어✨",
+  "kirari.night_on": "화면을 조명 대신 쓰고 있어✨ 얼굴을 가까이 해 봐",
+  "mirror.night_tap_back": "탭하면 거울로 돌아가",
 };

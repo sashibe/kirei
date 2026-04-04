@@ -199,5 +199,6 @@ export default {
   "kirari.weather_cold": "寒い日は肌が敏感になりやすいよ。やさしくチェックしてみて",
   "kirari.weather_hot": "今日は暑くなりそう。皮脂多めの日かも",
   "kirari.weather_rain": "雨の予報だよ。ウォータープルーフのアイテム、チェックしてみて",
-  "kirari.night_on": "暗いね、ライトつけたよ✨",
+  "kirari.night_on": "画面をライト代わりにしてるよ✨ 顔を近づけてみて",
+  "mirror.night_tap_back": "タップで鏡に戻る",
 };
