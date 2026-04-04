@@ -63,6 +63,7 @@ export default {
   "result.youtube_desc": "プロの診察動画をチェック！",
   "result.dental_check_btn": "デンタルチェックも受ける 🦷",
   "result.skin_check_btn": "肌チェックも受ける ✨",
+  "result.share": "シェアする",
   "result.restart": "もう一度ミラーを開く",
   "result.skincare_comment": "スキンケアルーティンで素肌力アップ♪ 毎日続けてキレイをキープしてね！",
   "result.makeup_comment": "メイクの仕上がりチェック♪ 今日のあなたにぴったり！",

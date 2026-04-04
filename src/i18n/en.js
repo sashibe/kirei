@@ -63,6 +63,7 @@ export default {
   "result.youtube_desc": "Check out professional dental videos!",
   "result.dental_check_btn": "Take a Dental Check too 🦷",
   "result.skin_check_btn": "Take a Skin Check too ✨",
+  "result.share": "Share",
   "result.restart": "Open mirror again",
   "result.skincare_comment": "Boost your natural skin with a skincare routine♪ Keep it up every day!",
   "result.makeup_comment": "Makeup check♪ Perfect for you today!",

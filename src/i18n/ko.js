@@ -63,6 +63,7 @@ export default {
   "result.youtube_desc": "전문 진료 영상을 확인!",
   "result.dental_check_btn": "덴탈 체크도 받기 🦷",
   "result.skin_check_btn": "피부 체크도 받기 ✨",
+  "result.share": "공유하기",
   "result.restart": "다시 거울 열기",
   "result.skincare_comment": "스킨케어 루틴으로 맨살 파워 업♪ 매일 계속해서 예쁘게 유지하자!",
   "result.makeup_comment": "메이크업 마무리 체크♪ 오늘의 당신에게 딱!",
