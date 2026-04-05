@@ -381,7 +381,7 @@ const colors = {
 - [x] i18n対応（JA/EN/KO 三言語）
 - [x] ARトライオン：カテゴリパネル（メガネ/イヤリング）+ キャプチャ → 結果写真表示（STEP3完了）
 - [ ] パーソナルカラー判定（`personalColor.js`）
-- [ ] ナイトモードUI（Vanity Bulb / Ring Light演出）
+- [~] ナイトモードUI — デモ版では中止（ブラウザ輝度推定の精度不足）。Capacitor移行後に再実装
 - [ ] スコア履歴（Supabase or Firebase）
 - [ ] Capacitor移行（iOS/Androidネイティブラッパー）
 
@@ -428,6 +428,15 @@ const colors = {
 ### その他
 - `position: fixed` + `transform` の罠 → `createPortal` で回避（既知）
 - iOS Safari: `screen.orientation.lock()` 非対応 → v2でデンタル廃止により問題解消
+
+### ナイトモードUI（検証済み・デモ版では中止）
+- **検証結果**: `useNightMode.js`（輝度自動検知）は実装済みだが、
+  WebRTC映像からのブラウザ内輝度推定では精度・応答速度ともに不十分と判断
+- **デモ版**: Vanity Bulb / Ring Light演出は実装中止。低照度時はキラリの
+  警告メッセージ表示のみ（`lowLight` フラグ連動）
+- **ネイティブ化時の課題**: Capacitor移行後に AVFoundation（iOS）/
+  Camera2 API（Android）の輝度データを直接取得することで解決見込み。
+  UIコンセプト（Vanity Bulb温球 / Ring Light回転グロー）は `MIRROR_UX_SPEC.md` に保存済み
 
 ---
 
