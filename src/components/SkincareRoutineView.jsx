@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Kirari from './Kirari.jsx';
 import Bubble from './Bubble.jsx';
+import PurchaseModal from './PurchaseModal.jsx';
 import { SKINCARE_ROUTINE } from '../data/makeupLooks.js';
 import { useT } from '../i18n/index.jsx';
 
@@ -22,10 +23,26 @@ function getStepIcon(step, t) {
 
 export default function SkincareRoutineView({ onNext, skinScores }) {
   const { t } = useT();
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const morningTotal = SKINCARE_ROUTINE.morning.reduce((s, r) => s + r.price, 0);
   const nightTotal = SKINCARE_ROUTINE.night.reduce((s, r) => s + r.price, 0);
   const total = morningTotal + nightTotal;
   const itemCount = SKINCARE_ROUTINE.morning.length + SKINCARE_ROUTINE.night.length;
+
+  const allProducts = [
+    ...SKINCARE_ROUTINE.morning.map(item => ({
+      emoji: getStepIcon(item.step, t),
+      name:  item.product,
+      shade: item.step,
+      price: item.price,
+    })),
+    ...SKINCARE_ROUTINE.night.map(item => ({
+      emoji: getStepIcon(item.step, t),
+      name:  item.product,
+      shade: item.step,
+      price: item.price,
+    })),
+  ];
 
   return (
     <div style={{ padding: '0 16px' }}>
@@ -96,6 +113,21 @@ export default function SkincareRoutineView({ onNext, skinScores }) {
         <span style={{ fontSize: 16, fontWeight: 800, color: '#a855f7' }}>{'\u00A5'}{total.toLocaleString()}</span>
       </div>
 
+      {/* まとめて購入 */}
+      <button
+        onClick={() => setShowPurchaseModal(true)}
+        style={{
+          width: '100%', padding: 13, marginBottom: 14,
+          background: 'linear-gradient(135deg, #a855f7, #ec4899)',
+          border: 'none', borderRadius: 14,
+          fontSize: 13, fontWeight: 700, color: '#fff',
+          cursor: 'pointer',
+          boxShadow: '0 4px 16px rgba(168,85,247,0.25)',
+        }}
+      >
+        🛒 {t('result.purchase_btn')}
+      </button>
+
       {/* ③ なぜ2週間？ セクション */}
       <WhyTwoWeeksSection skinScores={skinScores} t={t} />
 
@@ -109,6 +141,13 @@ export default function SkincareRoutineView({ onNext, skinScores }) {
       }}>
         {t('skincare.view_result')}
       </button>
+
+      {showPurchaseModal && (
+        <PurchaseModal
+          products={allProducts}
+          onClose={() => setShowPurchaseModal(false)}
+        />
+      )}
     </div>
   );
 }
