@@ -34,17 +34,21 @@ export default function SuggestScreen({ skinScores, personalColor, onSelectLook 
         t={t}
       />
 
-      <button
-        onClick={() => setExplorerOpen(v => !v)}
-        style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          gap: 6, width: '100%', padding: '10px 0',
-          background: 'none', border: 'none',
-          fontSize: 12, fontWeight: 600, color: '#94a3b8', cursor: 'pointer',
-        }}
-      >
-        {explorerOpen ? '▲' : '▼'} {t('suggest.see_other_looks')}
-      </button>
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 0' }}>
+        <button
+          onClick={() => setExplorerOpen(v => !v)}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 5,
+            background: explorerOpen ? '#f3e8ff' : '#faf5ff',
+            border: '1px solid #e9d5ff',
+            borderRadius: 20, padding: '7px 18px',
+            fontSize: 12, fontWeight: 600,
+            color: '#a855f7', cursor: 'pointer',
+          }}
+        >
+          {explorerOpen ? '▲' : '▼'} {t('suggest.see_other_looks')}
+        </button>
+      </div>
 
       {explorerOpen && (
         <div style={{ padding: '0 16px' }}>
