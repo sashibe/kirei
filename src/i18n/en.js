@@ -191,6 +191,12 @@ export default {
   "ar.intensity": "Makeup Intensity",
   "ar.view_result": "View Results with This Look \u2192",
   "ar.try_another": "Try Another Look",
+  "ar.cat_base":    "Base",
+  "ar.cat_lip":     "Lip",
+  "ar.cat_cheek":   "Cheek",
+  "ar.cat_glasses": "Glasses",
+  "ar.cat_earring": "Earring",
+  "ar.decide":      "Decide this look \u2713",
 
   // === CoordinateOverlay ===
   "coord.title": "Today's Total Look",

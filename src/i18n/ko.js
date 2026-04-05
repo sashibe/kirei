@@ -191,6 +191,12 @@ export default {
   "ar.intensity": "메이크업 강도",
   "ar.view_result": "이 룩으로 결과 보기 →",
   "ar.try_another": "다른 룩 시도하기",
+  "ar.cat_base":    "베이스",
+  "ar.cat_lip":     "립",
+  "ar.cat_cheek":   "치크",
+  "ar.cat_glasses": "안경",
+  "ar.cat_earring": "귀걸이",
+  "ar.decide":      "이 메이크업으로 결정 ✓",
 
   // === CoordinateOverlay ===
   "coord.title": "Today's Total Look",

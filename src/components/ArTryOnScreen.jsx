@@ -8,11 +8,11 @@ import { GLASSES_ITEMS, EARRING_ITEMS } from '../data/accessories.js';
 import { BASE_LOOKS } from '../data/makeupLooks.js';
 
 const CATEGORIES = [
-  { id: 'base',    label: 'ベース',    icon: '🧴' },
-  { id: 'lip',     label: 'リップ',    icon: '💄' },
-  { id: 'cheek',   label: 'チーク',    icon: '🌸' },
-  { id: 'glasses', label: 'メガネ',    icon: '👓' },
-  { id: 'earring', label: 'イヤリング', icon: '💍' },
+  { id: 'base',    labelKey: 'ar.cat_base',    icon: '🧴' },
+  { id: 'lip',     labelKey: 'ar.cat_lip',     icon: '💄' },
+  { id: 'cheek',   labelKey: 'ar.cat_cheek',   icon: '🌸' },
+  { id: 'glasses', labelKey: 'ar.cat_glasses', icon: '👓' },
+  { id: 'earring', labelKey: 'ar.cat_earring', icon: '💍' },
 ];
 
 export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack }) {
@@ -281,7 +281,7 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
                 cursor: 'pointer', transition: 'all 0.2s',
               }}>
                 <div style={{ fontSize: 16 }}>{cat.icon}</div>
-                <div>{cat.label}</div>
+                <div>{t(cat.labelKey)}</div>
               </button>
             ))}
           </div>
@@ -418,7 +418,7 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
           color: '#fff', cursor: 'pointer',
           boxShadow: '0 4px 16px rgba(168,85,247,0.25)',
         }}>
-          このメイクで決定 ✓
+          {t('ar.decide')}
         </button>
       </div>
     </div>
