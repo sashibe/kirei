@@ -29,6 +29,34 @@ export default function SkincareRoutineView({ onNext, skinScores }) {
 
   return (
     <div style={{ padding: '0 16px' }}>
+      {/* 肌スコアサマリー */}
+      {skinScores && (
+        <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+          {Object.entries(skinScores).map(([key, val]) => {
+            const isLow = val.score < 60;
+            const color = isLow ? '#f59e0b' : '#22c55e';
+            return (
+              <div key={key} style={{
+                flex: 1, background: '#fff', borderRadius: 12,
+                padding: '8px 6px', textAlign: 'center',
+                border: `1px solid ${isLow ? '#fde68a' : '#d1fae5'}`,
+                boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+              }}>
+                <p style={{ fontSize: 9, color: '#94a3b8', margin: '0 0 2px', fontWeight: 600 }}>
+                  {t(val.labelKey)}
+                </p>
+                <p style={{ fontSize: 18, fontWeight: 800, color, margin: 0, lineHeight: 1 }}>
+                  {val.score}
+                </p>
+                <p style={{ fontSize: 8, color, margin: '2px 0 0', fontWeight: 600 }}>
+                  {isLow ? '▼ Care' : '▲ Good'}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 14 }}>
         <Kirari size={36} expression="happy" />
         <Bubble>
@@ -44,6 +72,7 @@ export default function SkincareRoutineView({ onNext, skinScores }) {
         items={SKINCARE_ROUTINE.morning}
         gradient="linear-gradient(135deg, #fffbeb, #fef3c7)"
         borderColor="#fde68a"
+        skinScores={skinScores}
         t={t}
       />
 
@@ -53,6 +82,7 @@ export default function SkincareRoutineView({ onNext, skinScores }) {
         items={SKINCARE_ROUTINE.night}
         gradient="linear-gradient(135deg, #ede9fe, #e0e7ff)"
         borderColor="#c4b5fd"
+        skinScores={skinScores}
         t={t}
       />
 
@@ -150,7 +180,7 @@ function WhyTwoWeeksSection({ skinScores, t }) {
   );
 }
 
-function RoutineSection({ title, items, gradient, borderColor, t }) {
+function RoutineSection({ title, items, gradient, borderColor, skinScores, t }) {
   return (
     <div style={{
       background: gradient, borderRadius: 16, padding: '14px 16px', marginBottom: 10,
@@ -158,23 +188,36 @@ function RoutineSection({ title, items, gradient, borderColor, t }) {
     }}>
       <p style={{ fontSize: 13, fontWeight: 700, color: '#334155', margin: '0 0 10px' }}>{title}</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {items.map((item, i) => (
-          <div key={i} style={{
-            display: 'flex', alignItems: 'center', gap: 10,
-            background: 'rgba(255,255,255,0.8)', borderRadius: 10, padding: '8px 12px',
-          }}>
-            <span style={{ fontSize: 16, width: 24, textAlign: 'center' }}>
-              {getStepIcon(item.step, t)}
-            </span>
-            <div style={{ flex: 1 }}>
-              <p style={{ fontSize: 10, fontWeight: 600, color: '#94a3b8', margin: '0 0 1px' }}>STEP {i + 1}: {t(item.step)}</p>
-              <p style={{ fontSize: 12, fontWeight: 600, color: '#334155', margin: 0 }}>{t(item.product)}</p>
+        {items.map((item, i) => {
+          const score = skinScores?.[item.targetScore]?.score ?? 100;
+          const isCare = score < 65;
+          return (
+            <div key={i} style={{
+              display: 'flex', alignItems: 'flex-start', gap: 10,
+              background: 'rgba(255,255,255,0.8)', borderRadius: 10, padding: '8px 12px',
+            }}>
+              <span style={{ fontSize: 16, width: 24, textAlign: 'center', paddingTop: 2 }}>
+                {getStepIcon(item.step, t)}
+              </span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontSize: 10, fontWeight: 600, color: '#94a3b8', margin: '0 0 1px' }}>STEP {i + 1}: {t(item.step)}</p>
+                <p style={{ fontSize: 12, fontWeight: 600, color: '#334155', margin: 0 }}>{t(item.product)}</p>
+                {item.effect && (
+                  <p style={{
+                    fontSize: 10, margin: '3px 0 0', lineHeight: 1.5,
+                    color: isCare ? '#d97706' : '#64748b',
+                    fontWeight: isCare ? 600 : 400,
+                  }}>
+                    {isCare && '⚡ '}{t(item.effect)}
+                  </p>
+                )}
+              </div>
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#a855f7', flexShrink: 0, paddingTop: 2 }}>
+                {'\u00A5'}{item.price.toLocaleString()}
+              </span>
             </div>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#a855f7', flexShrink: 0 }}>
-              {'\u00A5'}{item.price.toLocaleString()}
-            </span>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
