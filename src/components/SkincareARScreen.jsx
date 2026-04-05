@@ -15,16 +15,29 @@ function computeFilter(skinScores, t) {
   const tone     = skinScores?.tone?.score     ?? 70;
   const pores    = skinScores?.pores?.score    ?? 70;
 
-  const dullnessGain   = ((100 - dullness) / 100) * 0.22;
-  const saturationGain = ((100 - dullness) / 100) * 0.18;
-  const contrastGain   = ((100 - tone) / 100)     * 0.12;
-  const poresGain      = ((100 - pores) / 100)    * 0.08;
+  // スコア連動（デモ用強調値）
+  const dullnessGain   = ((100 - dullness) / 100) * 0.55;
+  const saturationGain = ((100 - dullness) / 100) * 0.40;
+  const contrastGain   = ((100 - tone)     / 100) * 0.25;
+  const poresGain      = ((100 - pores)    / 100) * 0.20;
+
+  // たるみ引き締め演出（固定値）
+  // contrast強化 → 輪郭シャープ・フェイスラインが締まって見える
+  // hue-rotate微量 → 血色感UP・若返り印象
+  const liftContrast  = 0.18;
+  const liftHueRotate = 5; // 度
 
   const brightness = 1 + (dullnessGain + poresGain) * t;
-  const contrast   = 1 + contrastGain * t;
+  const contrast   = 1 + (contrastGain + liftContrast) * t;
   const saturate   = 1 + saturationGain * t;
+  const hue        = liftHueRotate * t;
 
-  return `brightness(${brightness.toFixed(3)}) contrast(${contrast.toFixed(3)}) saturate(${saturate.toFixed(3)})`;
+  return [
+    `brightness(${brightness.toFixed(3)})`,
+    `contrast(${contrast.toFixed(3)})`,
+    `saturate(${saturate.toFixed(3)})`,
+    `hue-rotate(${hue.toFixed(1)}deg)`,
+  ].join(' ');
 }
 
 export default function SkincareARScreen({ skinScores, onNext, onBack }) {
