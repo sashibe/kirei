@@ -29,7 +29,8 @@ function computeFilter(skinScores, t) {
 
 export default function SkincareARScreen({ skinScores, onNext, onBack }) {
   const { t } = useT();
-  const [sliderValue, setSliderValue] = useState(100);
+  const [sliderValue, setSliderValue] = useState(0);
+  const [userInteracted, setUserInteracted] = useState(false);
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [whyOpen, setWhyOpen] = useState(false);
   const { videoRef, isActive, error: cameraError } = useCamera({ enabled: true });
@@ -52,6 +53,27 @@ export default function SkincareARScreen({ skinScores, onNext, onBack }) {
     video.style.filter = computeFilter(skinScores, t_val);
     video.style.transition = 'filter 0.15s ease';
   }, [sliderValue, skinScores, videoRef]);
+
+  // 自動アニメーション: 1秒待機→5秒かけて0→100
+  useEffect(() => {
+    if (userInteracted) return;
+
+    const delay = setTimeout(() => {
+      const interval = setInterval(() => {
+        setSliderValue(v => {
+          if (v >= 100) {
+            clearInterval(interval);
+            return 100;
+          }
+          return v + 1;
+        });
+      }, 50);
+
+      return () => clearInterval(interval);
+    }, 1000);
+
+    return () => clearTimeout(delay);
+  }, [userInteracted]);
 
   const sliderLabel = sliderValue === 0
     ? t('skincare_ar.label_now')
@@ -122,7 +144,10 @@ export default function SkincareARScreen({ skinScores, onNext, onBack }) {
           <input
             type="range" min="0" max="100" step="1"
             value={sliderValue}
-            onChange={e => setSliderValue(Number(e.target.value))}
+            onChange={e => {
+              setUserInteracted(true);
+              setSliderValue(Number(e.target.value));
+            }}
             style={{ width: '100%', accentColor: '#a855f7' }}
           />
         </div>
@@ -135,11 +160,12 @@ export default function SkincareARScreen({ skinScores, onNext, onBack }) {
         <Kirari size={36} expression="sparkle" />
         <Bubble>
           <p style={{ fontSize: 12, color: '#334155', margin: 0, lineHeight: 1.6 }}>
-            {sliderValue >= 80
-              ? t('skincare_ar.kirari_future')
-              : sliderValue >= 40
-                ? t('skincare_ar.kirari_mid')
-                : t('skincare_ar.kirari_now')}
+            {sliderValue >= 90 ? t('skincare_ar.kirari_future')
+              : sliderValue >= 70 ? t('skincare_ar.kirari_almost')
+              : sliderValue >= 50 ? t('skincare_ar.kirari_week2')
+              : sliderValue >= 30 ? t('skincare_ar.kirari_week1')
+              : sliderValue >= 10 ? t('skincare_ar.kirari_starting')
+              : t('skincare_ar.kirari_now')}
           </p>
         </Bubble>
       </div>
