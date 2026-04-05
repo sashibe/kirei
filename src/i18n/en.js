@@ -179,6 +179,9 @@ export default {
   "result.skincare_cta_title":     "See your skin after 2 weeks of care",
   "result.skincare_cta_desc":      "Simulated based on your dullness and pore scores♪",
   "result.skincare_cta_btn":       "See Yourself in 2 Weeks →",
+  "result.skincare_cta_btn_again": "See again",
+  "result.no_makeup_kirari":       "Now that your skin is cared for, why not try some makeup next?\u266A",
+  "result.try_makeup_btn":         "\uD83D\uDC84 See makeup looks for you",
 
   // === ArTryOnScreen ===
   "ar.look_fallback": "Look",
@@ -240,6 +243,7 @@ export default {
 
   // === Personal color ===
   "pc.reference": "(reference)",
+  "pc.your_type": "Your Personal Color",
   "pc.look_match": "Matches your personal color",
   "kirari.pc_bright_spring": "You're a luminous Bright Spring! Pastel coral looks amazing on you\u2728",
   "kirari.pc_true_spring":   "You're a golden True Spring! Coral and gold make you shine\u2728",
