@@ -83,16 +83,64 @@ export const BASE_LOOKS = [
 // タブ 2: Skin care
 export const SKINCARE_ROUTINE = {
   morning: [
-    { step: { ja: '洗顔', en: 'Cleanser', ko: '세안' }, product: { ja: 'アミノ酸洗顔フォーム', en: 'Amino Acid Facial Foam', ko: '아미노산 세안 폼' }, price: 1480 },
-    { step: { ja: '化粧水', en: 'Toner', ko: '토너' }, product: { ja: 'トーニングローション', en: 'Toning Lotion', ko: '토닝 로션' }, price: 1980 },
-    { step: { ja: '乳液', en: 'Emulsion', ko: '유액' }, product: { ja: 'モイスチャーミルク', en: 'Moisture Milk', ko: '모이스처 밀크' }, price: 2280 },
-    { step: { ja: '日焼け止め', en: 'Sunscreen', ko: '자외선 차단제' }, product: { ja: 'UVプロテクトジェル SPF50+', en: 'UV Protect Gel SPF50+', ko: 'UV 프로텍트 젤 SPF50+' }, price: 1680 },
+    {
+      step: { ja: '洗顔', en: 'Cleanser', ko: '세안' },
+      product: { ja: 'アミノ酸洗顔フォーム', en: 'Amino Acid Facial Foam', ko: '아미노산 세안 폼' },
+      price: 1480,
+      targetScore: 'tone',
+      effect: { ja: '余分な皮脂を落として肌トーンを整える', en: 'Removes excess sebum and evens skin tone', ko: '과잉 피지를 제거하고 피부 톤을 정돈' },
+    },
+    {
+      step: { ja: '化粧水', en: 'Toner', ko: '토너' },
+      product: { ja: 'トーニングローション', en: 'Toning Lotion', ko: '토닝 로션' },
+      price: 1980,
+      targetScore: 'dullness',
+      effect: { ja: 'くすみを解消し、透明感のある肌へ', en: 'Brightens dullness for a luminous complexion', ko: '칙칙함을 해소하고 투명한 피부로' },
+    },
+    {
+      step: { ja: '乳液', en: 'Emulsion', ko: '유액' },
+      product: { ja: 'モイスチャーミルク', en: 'Moisture Milk', ko: '모이스처 밀크' },
+      price: 2280,
+      targetScore: 'tone',
+      effect: { ja: '潤いをキープして乾燥による色ムラを防ぐ', en: 'Locks in moisture to prevent uneven tone', ko: '수분을 유지해 건조에 의한 색 얼룩 방지' },
+    },
+    {
+      step: { ja: '日焼け止め', en: 'Sunscreen', ko: '자외선 차단제' },
+      product: { ja: 'UVプロテクトジェル SPF50+', en: 'UV Protect Gel SPF50+', ko: 'UV 프로텍트 젤 SPF50+' },
+      price: 1680,
+      targetScore: 'dullness',
+      effect: { ja: 'UVカットでくすみ・シミの原因を防ぐ', en: 'UV protection prevents dullness and dark spots', ko: 'UV 차단으로 칙칙함·잡티 원인 예방' },
+    },
   ],
   night: [
-    { step: { ja: 'クレンジング', en: 'Cleansing', ko: '클렌징' }, product: { ja: 'ジェルクレンジング', en: 'Gel Cleansing', ko: '젤 클렌징' }, price: 1580 },
-    { step: { ja: '洗顔', en: 'Cleanser', ko: '세안' }, product: { ja: 'アミノ酸洗顔フォーム', en: 'Amino Acid Facial Foam', ko: '아미노산 세안 폼' }, price: 1480 },
-    { step: { ja: '美容液', en: 'Serum', ko: '세럼' }, product: { ja: 'ビタミンC美容液', en: 'Vitamin C Serum', ko: '비타민C 세럼' }, price: 3280 },
-    { step: { ja: 'クリーム', en: 'Cream', ko: '크림' }, product: { ja: 'バリアリペアクリーム', en: 'Barrier Repair Cream', ko: '배리어 리페어 크림' }, price: 2480 },
+    {
+      step: { ja: 'クレンジング', en: 'Cleansing', ko: '클렌징' },
+      product: { ja: 'ジェルクレンジング', en: 'Gel Cleansing', ko: '젤 클렌징' },
+      price: 1580,
+      targetScore: 'pores',
+      effect: { ja: '毛穴の汚れを丁寧に落として詰まりを防ぐ', en: 'Gently removes pore-clogging impurities', ko: '모공 속 노폐물을 꼼꼼히 제거' },
+    },
+    {
+      step: { ja: '洗顔', en: 'Cleanser', ko: '세안' },
+      product: { ja: 'アミノ酸洗顔フォーム', en: 'Amino Acid Facial Foam', ko: '아미노산 세안 폼' },
+      price: 1480,
+      targetScore: 'tone',
+      effect: { ja: '肌を傷めず毛穴汚れをすっきり落とす', en: 'Thoroughly cleanses without damaging skin', ko: '피부 손상 없이 모공 오염을 말끔히 제거' },
+    },
+    {
+      step: { ja: '美容液', en: 'Serum', ko: '세럼' },
+      product: { ja: 'ビタミンC美容液', en: 'Vitamin C Serum', ko: '비타민C 세럼' },
+      price: 3280,
+      targetScore: 'dullness',
+      effect: { ja: 'ビタミンCがくすみを集中ケア。寝ている間に透明感を高める', en: 'Vitamin C intensively targets dullness overnight', ko: '비타민C가 칙칙함을 집중 케어. 자는 동안 투명감 향상' },
+    },
+    {
+      step: { ja: 'クリーム', en: 'Cream', ko: '크림' },
+      product: { ja: 'バリアリペアクリーム', en: 'Barrier Repair Cream', ko: '배리어 리페어 크림' },
+      price: 2480,
+      targetScore: 'pores',
+      effect: { ja: '肌バリアを修復。毛穴が目立ちにくいなめらかな肌へ', en: 'Repairs skin barrier for smoother, less visible pores', ko: '피부 장벽 회복. 모공이 덜 눈에 띄는 매끄러운 피부로' },
+    },
   ],
 };
 
