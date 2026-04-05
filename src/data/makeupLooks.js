@@ -95,3 +95,36 @@ export const SKINCARE_ROUTINE = {
     { step: { ja: 'クリーム', en: 'Cream', ko: '크림' }, product: { ja: 'バリアリペアクリーム', en: 'Barrier Repair Cream', ko: '배리어 리페어 크림' }, price: 2480 },
   ],
 };
+
+/**
+ * PC×スコアからベース＋カラーの組み合わせを1つ推薦する。
+ *
+ * @param {object|null} personalColor  analyzePersonalColor() の戻り値
+ * @param {object|null} skinScores     { tone, pores, dullness } スコアオブジェクト
+ * @returns {{ baseLook, colorLook }}
+ */
+export function recommendLooks(personalColor, skinScores) {
+  const season      = personalColor?.season ?? null;
+  const dullness    = skinScores?.dullness?.score ?? 70;
+  const tone        = skinScores?.tone?.score    ?? 70;
+  const needsCoverage = dullness < 60 || tone < 60;
+
+  const baseCandidates = season
+    ? BASE_LOOKS.filter(l => l.pcSeasons.includes(season))
+    : BASE_LOOKS;
+
+  let baseLook;
+  if (needsCoverage) {
+    baseLook = baseCandidates.find(l => l.id !== 'weekend-fresh')
+            ?? BASE_LOOKS.find(l => l.id !== 'weekend-fresh')
+            ?? BASE_LOOKS[0];
+  } else {
+    baseLook = baseCandidates[0] ?? BASE_LOOKS[0];
+  }
+
+  const colorLook = (season
+    ? COLOR_LOOKS.find(l => l.pcSeasons.includes(season))
+    : null) ?? COLOR_LOOKS[0];
+
+  return { baseLook, colorLook };
+}

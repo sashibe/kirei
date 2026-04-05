@@ -10,42 +10,45 @@ const USE_MIRROR_V3 = true;
 const MirrorScreen = USE_MIRROR_V3 ? MirrorScreenV3 : MirrorScreenLegacy;
 import ArTryOnScreen from './components/ArTryOnScreen.jsx';
 import ResultScreen from './components/ResultScreen.jsx';
+import SkincareARScreen from './components/SkincareARScreen.jsx';
+import SkincareRoutineView from './components/SkincareRoutineView.jsx';
 import { FaceLandmarkerProvider } from './contexts/FaceLandmarkerContext.jsx';
 import colors from './styles/theme.js';
 import { useT } from './i18n/index.jsx';
 
-// screen: 'mirror' | 'suggest' | 'ar' | 'result' | 'guide'
+// screen: 'mirror' | 'suggest' | 'ar' | 'result' | 'skincare-ar' | 'skincare-routine' | 'guide'
 export default function App() {
   const { t } = useT();
   const [screen, setScreen] = useState('mirror');
   const prevScreenRef = useRef('mirror');
   const scoresRef = useRef({ skinScores: null, personalColor: null });
-  const lookRef = useRef({ selectedLook: null, styleTab: 0 });
-  const captureRef = useRef({ capturedImage: null, finalProducts: [] });
+  const lookRef = useRef({ baseLook: null, colorLook: null, capturedImage: null, products: null });
 
-  const handleResult = useCallback(({ skinScores, personalColor }) => {
+  const handleResult = useCallback(({ skinScores, personalColor, mode }) => {
     scoresRef.current = { skinScores, personalColor };
-    setScreen('suggest');
+    if (mode === 'skincare') {
+      setScreen('skincare-ar');
+    } else {
+      setScreen('suggest');
+    }
   }, []);
 
-  const handleSelectLook = useCallback((look, styleTab) => {
-    lookRef.current = { selectedLook: look, styleTab };
+  const handleSelectLook = useCallback(({ baseLook, colorLook }) => {
+    lookRef.current = { ...lookRef.current, baseLook, colorLook };
     setScreen('ar');
   }, []);
 
-  const handleArDecide = useCallback(({ capturedImage, look, products }) => {
-    captureRef.current = { capturedImage, finalProducts: products };
-    if (look) lookRef.current = { ...lookRef.current, selectedLook: look };
-    setScreen('result');
-  }, []);
-
-  const handleSkipToResult = useCallback((styleTab) => {
-    lookRef.current = { selectedLook: null, styleTab };
+  const handleArDecide = useCallback(({ capturedImage, baseLook, colorLook, products }) => {
+    lookRef.current = { ...lookRef.current, baseLook, colorLook, capturedImage, products };
     setScreen('result');
   }, []);
 
   const handleRestart = useCallback(() => {
     setScreen('mirror');
+  }, []);
+
+  const handleOpenSkincareAR = useCallback(() => {
+    setScreen('skincare-ar');
   }, []);
 
   const Header = ({ overlay = false }) => (
@@ -74,7 +77,8 @@ export default function App() {
     </div>
   );
 
-  const showScrollable = screen === 'suggest' || screen === 'result' || screen === 'ar';
+  const showScrollable = screen === 'suggest' || screen === 'result' || screen === 'ar'
+                      || screen === 'skincare-ar' || screen === 'skincare-routine';
 
   const content = (
     <FaceLandmarkerProvider>
@@ -91,13 +95,12 @@ export default function App() {
             skinScores={scoresRef.current.skinScores}
             personalColor={scoresRef.current.personalColor}
             onSelectLook={handleSelectLook}
-            onSkipToResult={handleSkipToResult}
           />
         )}
         {screen === 'ar' && (
           <ArTryOnScreen
-            look={lookRef.current.selectedLook}
-            styleTab={lookRef.current.styleTab}
+            baseLook={lookRef.current.baseLook}
+            colorLook={lookRef.current.colorLook}
             personalColor={scoresRef.current.personalColor}
             onDecide={handleArDecide}
             onBack={() => setScreen('suggest')}
@@ -108,11 +111,34 @@ export default function App() {
             skinScores={scoresRef.current.skinScores}
             personalColor={scoresRef.current.personalColor}
             onRestart={handleRestart}
-            styleTab={lookRef.current.styleTab}
-            selectedLook={lookRef.current.selectedLook}
-            capturedImage={captureRef.current.capturedImage}
-            products={captureRef.current.finalProducts}
+            onSkincareAR={handleOpenSkincareAR}
+            baseLook={lookRef.current.baseLook}
+            colorLook={lookRef.current.colorLook}
+            capturedImage={lookRef.current.capturedImage}
+            products={lookRef.current.products}
           />
+        )}
+        {screen === 'skincare-ar' && (
+          <SkincareARScreen
+            skinScores={scoresRef.current.skinScores}
+            onNext={() => setScreen('skincare-routine')}
+            onBack={() => setScreen('result')}
+          />
+        )}
+        {screen === 'skincare-routine' && (
+          <div style={{ padding: '12px 0' }}>
+            <button onClick={() => setScreen('skincare-ar')} style={{
+              background: 'none', border: 'none', fontSize: 13,
+              color: '#94a3b8', cursor: 'pointer',
+              padding: '0 16px 8px', fontWeight: 600,
+            }}>
+              {'<'} {t('skincare_ar.back_to_ar')}
+            </button>
+            <SkincareRoutineView
+              skinScores={scoresRef.current.skinScores}
+              onNext={() => setScreen('result')}
+            />
+          </div>
         )}
       </div>
     </FaceLandmarkerProvider>

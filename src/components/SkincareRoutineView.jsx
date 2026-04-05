@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Kirari from './Kirari.jsx';
 import Bubble from './Bubble.jsx';
 import { SKINCARE_ROUTINE } from '../data/makeupLooks.js';
@@ -19,7 +20,7 @@ function getStepIcon(step, t) {
   return STEP_ICONS[en] || '🧴';
 }
 
-export default function SkincareRoutineView({ onNext }) {
+export default function SkincareRoutineView({ onNext, skinScores }) {
   const { t } = useT();
   const morningTotal = SKINCARE_ROUTINE.morning.reduce((s, r) => s + r.price, 0);
   const nightTotal = SKINCARE_ROUTINE.night.reduce((s, r) => s + r.price, 0);
@@ -65,6 +66,9 @@ export default function SkincareRoutineView({ onNext }) {
         <span style={{ fontSize: 16, fontWeight: 800, color: '#a855f7' }}>{'\u00A5'}{total.toLocaleString()}</span>
       </div>
 
+      {/* ③ なぜ2週間？ セクション */}
+      <WhyTwoWeeksSection skinScores={skinScores} t={t} />
+
       {/* CTA */}
       <button onClick={onNext} style={{
         width: '100%', padding: 14, marginBottom: 12,
@@ -75,6 +79,73 @@ export default function SkincareRoutineView({ onNext }) {
       }}>
         {t('skincare.view_result')}
       </button>
+    </div>
+  );
+}
+
+function WhyTwoWeeksSection({ skinScores, t }) {
+  const [open, setOpen] = useState(false);
+  const dullness = skinScores?.dullness?.score ?? 70;
+  const pores    = skinScores?.pores?.score    ?? 70;
+
+  return (
+    <div style={{
+      marginBottom: 14,
+      background: '#faf5ff', borderRadius: 14,
+      border: '1px solid #e9d5ff', overflow: 'hidden',
+    }}>
+      <button
+        onClick={() => setOpen(v => !v)}
+        style={{
+          width: '100%', padding: '12px 16px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          background: 'none', border: 'none', cursor: 'pointer',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{
+            width: 18, height: 18, borderRadius: '50%',
+            background: '#a855f7', color: '#fff',
+            fontSize: 11, fontWeight: 700,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>?</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: '#7c3aed' }}>
+            {t('skincare_ar.why_title')}
+          </span>
+        </div>
+        <span style={{
+          fontSize: 11, color: '#a78bfa',
+          transform: open ? 'rotate(180deg)' : 'none',
+          transition: 'transform 0.2s',
+        }}>▼</span>
+      </button>
+
+      {open && (
+        <div style={{ padding: '0 16px 14px', fontSize: 12, color: '#475569', lineHeight: 1.8 }}>
+          <p style={{ margin: '0 0 10px' }}>{t('skincare_ar.why_p1')}</p>
+          <p style={{ margin: '0 0 10px' }}>{t('skincare_ar.why_p2')}</p>
+
+          <div style={{
+            background: 'rgba(168,85,247,0.06)',
+            borderRadius: 10, padding: '10px 12px',
+            border: '1px solid rgba(168,85,247,0.12)',
+          }}>
+            {dullness < 65 && (
+              <p style={{ fontSize: 11, color: '#7c3aed', margin: '0 0 4px', lineHeight: 1.6 }}>
+                {t('skincare_ar.why_personal_dullness', { score: String(dullness) })}
+              </p>
+            )}
+            {pores < 65 && (
+              <p style={{ fontSize: 11, color: '#7c3aed', margin: '0 0 4px', lineHeight: 1.6 }}>
+                {t('skincare_ar.why_personal_pores', { score: String(pores) })}
+              </p>
+            )}
+            <p style={{ fontSize: 11, color: '#7c3aed', margin: 0, lineHeight: 1.6 }}>
+              {t('skincare_ar.why_encouragement')}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

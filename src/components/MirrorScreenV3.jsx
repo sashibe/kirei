@@ -493,11 +493,31 @@ export default function MirrorScreenV3({ onResult }) {
                 {t("mirror.recheck")}
               </button>
               <button
-                className="btn-primary"
-                onClick={() => onResult({ skinScores, personalColor, dentalScores: null })}
-                style={{ width: "100%", padding: 12, background: "linear-gradient(135deg, #a855f7, #ec4899)", border: "none", borderRadius: 14, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer", boxShadow: "0 4px 20px rgba(168,85,247,0.3)" }}
+                onClick={() => onResult({ skinScores, personalColor, mode: 'skincare' })}
+                style={{
+                  width: "100%", padding: 14,
+                  background: "linear-gradient(135deg, #22c55e, #16a34a)",
+                  border: "none", borderRadius: 14,
+                  fontSize: 14, fontWeight: 700, color: "#fff",
+                  cursor: "pointer",
+                  boxShadow: "0 4px 20px rgba(34,197,94,0.3)",
+                  marginBottom: 4,
+                }}
               >
-                {t("mirror.view_result")}
+                {'\u2728'} {t("mirror.start_skincare")}
+              </button>
+              <button
+                onClick={() => onResult({ skinScores, personalColor, mode: 'makeup' })}
+                style={{
+                  width: "100%", padding: 11,
+                  background: "rgba(255,255,255,0.85)",
+                  border: "1px solid rgba(168,85,247,0.3)",
+                  borderRadius: 14,
+                  fontSize: 13, fontWeight: 600,
+                  color: "#a855f7", cursor: "pointer",
+                }}
+              >
+                {'\uD83D\uDC84'} {t("mirror.try_makeup")}
               </button>
               <p style={{ fontSize: 8, color: "#94a3b8", margin: 0 }}>{t("mirror.disclaimer")}</p>
             </>

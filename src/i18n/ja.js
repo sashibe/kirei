@@ -34,6 +34,8 @@ export default {
   "mirror.btn_skin": "肌",
   "mirror.btn_dental": "デンタル",
   "mirror.view_result": "結果を見る →",
+  "mirror.start_skincare": "肌ケアを始める →",
+  "mirror.try_makeup": "メイクを試す",
   "mirror.recheck": "🪞 ミラーに戻る",
   "mirror.start_skin": "✨ 肌チェック開始",
   "mirror.disclaimer": "※本アプリは医療診断を行うものではありません",
@@ -137,6 +139,13 @@ export default {
   "suggest.base_intro": "ベースメイクで清潔感をアップ♪ 肌タイプに合わせた提案だよ！",
   "suggest.try_ar": "ARで試す →",
   "suggest.select": "選ぶ →",
+  "suggest.see_other_looks": "他のルックも見る",
+  "suggest.recommended": "おすすめ",
+  "suggest.try_this": "これで試す",
+  "suggest.hero_base": "ベース",
+  "suggest.hero_reason_dullness": "{pc}タイプのあなたに、{base}でくすみをカバーして{color}で仕上げる組み合わせだよ♪",
+  "suggest.hero_reason_pc": "{pc}タイプにぴったりな{color}をチョイスしたよ♪",
+  "suggest.hero_reason_default": "あなたの肌に合わせて{color}を選んだよ♪",
 
   // === SkincareRoutineView ===
   "skincare.intro": "あなたの肌スコアに合わせたスキンケアルーティンだよ♪ 朝と夜で使い分けてね！",
@@ -144,6 +153,29 @@ export default {
   "skincare.night_title": "🌙 夜のルーティン",
   "skincare.total": "ルーティン合計（{count}アイテム）",
   "skincare.view_result": "✨ 結果を見る →",
+
+  // === SkincareARScreen ===
+  "skincare_ar.back":              "結果に戻る",
+  "skincare_ar.back_to_ar":        "2週間後プレビューに戻る",
+  "skincare_ar.label_now":         "今",
+  "skincare_ar.label_future":      "2週間後",
+  "skincare_ar.kirari_now":        "今の肌の状態だよ♪ スライダーを動かして2週間後を見てみて！",
+  "skincare_ar.kirari_mid":        "ちょっと変わってきたでしょ♪ もう少しスライダーを動かしてみて！",
+  "skincare_ar.kirari_future":     "これは2週間ケアを続けた後のあなたの肌♪ 今日から始めよう！",
+  "skincare_ar.why_title":         "なぜ2週間後なの？",
+  "skincare_ar.why_p1":            "肌は約28日周期で新しい細胞に生まれ変わる「ターンオーバー」を繰り返しています。",
+  "skincare_ar.why_p2":            "ケアを始めて約2週間（半サイクル）経つと、新しく生まれた細胞が肌の表面に出てき始め、くすみや毛穴の目立ちにくさが変わりはじめます。",
+  "skincare_ar.why_personal_dullness": "あなたのくすみスコアは{score}点。集中ケアで2週間後に差が出やすいポイントです。",
+  "skincare_ar.why_personal_pores":    "あなたの毛穴スコアは{score}点。保湿ケアを続けると毛穴が引き締まってきますよ。",
+  "skincare_ar.why_encouragement": "上のルーティンを2週間続けることで、肌の変化を実感しやすくなりますよ♪",
+  "skincare_ar.cta":               "このルーティンを始める →",
+  "skincare_ar.day":               "日",
+  "skincare_ar.two_weeks":         "2週間後",
+  "skincare_ar.turnover_label":    "肌のターンオーバー（約28日）",
+
+  "result.skincare_cta_title":     "ケアを続けた2週間後の肌を見てみよう",
+  "result.skincare_cta_desc":      "あなたのくすみ・毛穴スコアをもとにシミュレーションするよ♪",
+  "result.skincare_cta_btn":       "2週間後の自分を見てみる →",
 
   // === ArTryOnScreen ===
   "ar.look_fallback": "ルック",

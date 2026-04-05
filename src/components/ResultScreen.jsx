@@ -14,18 +14,17 @@ function avg(scores) {
   return Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
 }
 
-const STYLE_TAB_NAMES = ['Color makeup', 'Base makeup', 'Skin care'];
 const WEATHER = { icon: '\u2600\uFE0F', temp: 22, label: '晴れ' };
 
-function generateLookComment(selectedLook, styleTab, t) {
-  if (styleTab === 2) return t("result.skincare_comment");
-  if (!selectedLook) return t("result.makeup_comment");
-  const lookName = typeof selectedLook.name === 'object' ? t(selectedLook.name) : selectedLook.name;
-  const lookReason = selectedLook.reason ? (typeof selectedLook.reason === 'object' ? t(selectedLook.reason) : selectedLook.reason) : t("result.look_comment_default");
+function generateLookComment(colorLook, baseLook, t) {
+  const displayLook = colorLook || baseLook;
+  if (!displayLook) return t("result.makeup_comment");
+  const lookName = typeof displayLook.name === 'object' ? t(displayLook.name) : displayLook.name;
+  const lookReason = displayLook.reason ? (typeof displayLook.reason === 'object' ? t(displayLook.reason) : displayLook.reason) : t("result.look_comment_default");
   return `${lookName}${t("result.look_comment_suffix")} ${lookReason}`;
 }
 
-export default function ResultScreen({ skinScores: propSkin, personalColor = null, onRestart, styleTab = 0, selectedLook = null, capturedImage = null, products: productsProp = null }) {
+export default function ResultScreen({ skinScores: propSkin, personalColor = null, onRestart, onSkincareAR, baseLook = null, colorLook = null, capturedImage = null, products: productsProp = null }) {
   const { t } = useT();
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showCoord, setShowCoord] = useState(false);
@@ -33,16 +32,26 @@ export default function ResultScreen({ skinScores: propSkin, personalColor = nul
 
   const skinScores = propSkin || SKIN_SCORES;
   const overallSkin = avg(skinScores);
-  // products prop（AR決定時）があればそちら優先、なければlookから取得
-  const products = (productsProp && productsProp.length > 0) ? productsProp : (selectedLook?.products || []);
-  const isColor = styleTab === 0;
+  const products = (productsProp && productsProp.length > 0)
+    ? productsProp
+    : [...(baseLook?.products || []), ...(colorLook?.products || [])];
 
-  // Color swatches from the look
-  const swatches = selectedLook
-    ? (isColor
-        ? [selectedLook.lip, selectedLook.cheek, selectedLook.eyeshadow].filter(Boolean)
-        : [selectedLook.base, selectedLook.concealer, selectedLook.brow, selectedLook.lip].filter(Boolean))
-    : [];
+  // Color swatches from colorLook preferred
+  const swatches = colorLook
+    ? [colorLook.lip, colorLook.cheek, colorLook.eyeshadow].filter(Boolean)
+    : baseLook
+      ? [baseLook.base, baseLook.concealer, baseLook.brow].filter(Boolean)
+      : [];
+
+  const displayLookName = colorLook?.name
+    ? (typeof colorLook.name === 'object' ? t(colorLook.name) : colorLook.name)
+    : baseLook?.name
+      ? (typeof baseLook.name === 'object' ? t(baseLook.name) : baseLook.name)
+      : "Today's Look";
+
+  const categoryLabel = baseLook && colorLook
+    ? 'Base + Color makeup'
+    : baseLook ? 'Base makeup' : 'Color makeup';
 
   const pcBg = personalColor ? getPcColors(personalColor.season) : null;
 
@@ -113,13 +122,13 @@ export default function ResultScreen({ skinScores: propSkin, personalColor = nul
           fontSize: 10, fontWeight: 600, color: '#a855f7',
           background: '#f3e8ff', padding: '3px 10px', borderRadius: 8,
         }}>
-          {STYLE_TAB_NAMES[styleTab] || 'Color makeup'}
+          {categoryLabel}
         </span>
 
         {/* Look name + swatches */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
           <p style={{ fontSize: 18, fontWeight: 800, color: '#334155', margin: 0 }}>
-            {selectedLook?.name ? (typeof selectedLook.name === 'object' ? t(selectedLook.name) : selectedLook.name) : 'Today\'s Look'}
+            {displayLookName}
           </p>
           {swatches.length > 0 && (
             <div style={{ display: 'flex', gap: 4 }}>
@@ -134,9 +143,12 @@ export default function ResultScreen({ skinScores: propSkin, personalColor = nul
           )}
         </div>
 
-        {selectedLook?.desc && (
+        {(colorLook?.desc || baseLook?.desc) && (
           <p style={{ fontSize: 11, color: '#64748b', margin: '4px 0 0', lineHeight: 1.5 }}>
-            {typeof selectedLook.desc === 'object' ? t(selectedLook.desc) : selectedLook.desc}
+            {(() => {
+              const d = colorLook?.desc || baseLook?.desc;
+              return typeof d === 'object' ? t(d) : d;
+            })()}
           </p>
         )}
 
@@ -145,7 +157,7 @@ export default function ResultScreen({ skinScores: propSkin, personalColor = nul
           <Kirari size={36} expression="sparkle" bounce />
           <Bubble>
             <p style={{ fontSize: 12, color: '#334155', margin: 0, lineHeight: 1.6 }}>
-              {generateLookComment(selectedLook, styleTab, t)}
+              {generateLookComment(colorLook, baseLook, t)}
             </p>
           </Bubble>
         </div>
@@ -211,7 +223,7 @@ export default function ResultScreen({ skinScores: propSkin, personalColor = nul
               {WEATHER.icon} {t("result.coord_hint")}
             </p>
             <p style={{ fontSize: 11, color: '#78350f', margin: 0, lineHeight: 1.6 }}>
-              {getCoordHint(selectedLook, styleTab, t)}
+              {getCoordHint(colorLook || baseLook, colorLook ? 0 : 1, t)}
             </p>
           </div>
         </div>
@@ -225,6 +237,36 @@ export default function ResultScreen({ skinScores: propSkin, personalColor = nul
           {'👗'} {t("result.view_coord")} {'→'}
         </button>
       </div>
+
+      {/* ===== 3.5. スキンケアAR CTA ===== */}
+      {propSkin && onSkincareAR && (
+        <div style={{ margin: '0 16px 12px', padding: '14px 16px',
+          background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)',
+          borderRadius: 18, border: '1px solid #bbf7d0',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 10 }}>
+            <Kirari size={28} expression="sparkle" />
+            <div>
+              <p style={{ fontSize: 12, fontWeight: 600, color: '#15803d', margin: '0 0 3px' }}>
+                {t('result.skincare_cta_title')}
+              </p>
+              <p style={{ fontSize: 11, color: '#166534', margin: 0, lineHeight: 1.5 }}>
+                {t('result.skincare_cta_desc')}
+              </p>
+            </div>
+          </div>
+          <button onClick={onSkincareAR} style={{
+            width: '100%', padding: 12,
+            background: 'linear-gradient(135deg, #22c55e, #16a34a)',
+            border: 'none', borderRadius: 12,
+            fontSize: 13, fontWeight: 700, color: '#fff',
+            cursor: 'pointer',
+            boxShadow: '0 4px 12px rgba(34,197,94,0.3)',
+          }}>
+            {'✨'} {t('result.skincare_cta_btn')}
+          </button>
+        </div>
+      )}
 
       {/* ===== 4. Skin score accordion ===== */}
       <div style={{ margin: '0 16px 12px' }}>
@@ -271,8 +313,8 @@ export default function ResultScreen({ skinScores: propSkin, personalColor = nul
       {/* Coordinate overlay */}
       {showCoord && (
         <CoordinateOverlay
-          styleTab={styleTab}
-          selectedLook={selectedLook}
+          styleTab={colorLook ? 0 : 1}
+          selectedLook={colorLook || baseLook}
           weather={WEATHER}
           onClose={() => setShowCoord(false)}
         />

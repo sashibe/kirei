@@ -20,17 +20,17 @@ const RIGHT_BROW   = FaceLandmarker.FACE_LANDMARKS_RIGHT_EYEBROW;
 const LIPS         = FaceLandmarker.FACE_LANDMARKS_LIPS;
 const TESSELATION  = FaceLandmarker.FACE_LANDMARKS_TESSELATION;
 
-const MakeupCanvas = forwardRef(function MakeupCanvas({ getVideo, look, styleTab, intensity, showMesh, glassesItem, earringItem }, ref) {
+const MakeupCanvas = forwardRef(function MakeupCanvas({ getVideo, baseLook, colorLook, intensity, showMesh, glassesItem, earringItem }, ref) {
   const canvasRef = useRef(null);
   useImperativeHandle(ref, () => canvasRef.current);
   const rafRef = useRef(null);
   const { ready, detect } = useFaceLandmarkerCtx();
 
   // props を ref に同期（ループ内で最新値参照）
-  const propsRef = useRef({ look, styleTab, intensity, showMesh, glassesItem, earringItem });
+  const propsRef = useRef({ baseLook, colorLook, intensity, showMesh, glassesItem, earringItem });
   useEffect(() => {
-    propsRef.current = { look, styleTab, intensity, showMesh, glassesItem, earringItem };
-  }, [look, styleTab, intensity, showMesh, glassesItem, earringItem]);
+    propsRef.current = { baseLook, colorLook, intensity, showMesh, glassesItem, earringItem };
+  }, [baseLook, colorLook, intensity, showMesh, glassesItem, earringItem]);
 
   // 前回の検出結果をキャッシュ（フレームスキップ用）
   const lastLandmarksRef = useRef(null);
@@ -76,22 +76,22 @@ const MakeupCanvas = forwardRef(function MakeupCanvas({ getVideo, look, styleTab
 
       const w = canvas.width;
       const h = canvas.height;
-      const { look: lk, styleTab: tab, intensity: inten, showMesh: mesh,
+      const { baseLook: base, colorLook: color, intensity: inten, showMesh: mesh,
               glassesItem: glasses, earringItem: earring } = propsRef.current;
       const opacity = (inten || 70) / 100;
 
-      // Layer 1-2: メイク描画
-      if (lk) {
-        if (tab === 0) {
-          if (lk.cheek)     drawCheek(ctx, lms, w, h, lk.cheek, opacity);
-          if (lk.eyeshadow) drawEyeshadow(ctx, lms, w, h, lk.eyeshadow, opacity);
-          if (lk.lip)       drawLip(ctx, lms, w, h, lk.lip, opacity);
-        } else {
-          if (lk.base)      drawFoundation(ctx, lms, w, h, lk.base, opacity);
-          if (lk.concealer) drawConcealer(ctx, lms, w, h, lk.concealer, opacity);
-          if (lk.brow)      drawBrow(ctx, lms, w, h, lk.brow, opacity);
-          if (lk.lip)       drawLip(ctx, lms, w, h, lk.lip, opacity);
-        }
+      // Layer 1: ベース（ファンデ・コンシーラー・眉）
+      if (base) {
+        if (base.base)      drawFoundation(ctx, lms, w, h, base.base, opacity);
+        if (base.concealer) drawConcealer(ctx, lms, w, h, base.concealer, opacity);
+        if (base.brow)      drawBrow(ctx, lms, w, h, base.brow, opacity);
+      }
+
+      // Layer 2: カラー（アイシャドウ・チーク・リップ）
+      if (color) {
+        if (color.cheek)     drawCheek(ctx, lms, w, h, color.cheek, opacity);
+        if (color.eyeshadow) drawEyeshadow(ctx, lms, w, h, color.eyeshadow, opacity);
+        if (color.lip)       drawLip(ctx, lms, w, h, color.lip, opacity);
       }
 
       // Layer 3: アクセサリー描画
