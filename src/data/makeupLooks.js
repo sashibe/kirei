@@ -114,32 +114,59 @@ export const SKINCARE_ROUTINE = {
   ],
   night: [
     {
-      step: { ja: 'クレンジング', en: 'Cleansing', ko: '클렌징' },
+      step:    { ja: 'クレンジング', en: 'Cleansing', ko: '클렌징' },
       product: { ja: 'ジェルクレンジング', en: 'Gel Cleansing', ko: '젤 클렌징' },
       price: 1580,
       targetScore: 'pores',
-      effect: { ja: '毛穴の汚れを丁寧に落として詰まりを防ぐ', en: 'Gently removes pore-clogging impurities', ko: '모공 속 노폐물을 꼼꼼히 제거' },
+      effect: {
+        ja: '毛穴の奥まで溶け込んで、角栓・黒ずみをごっそり落とす',
+        en: 'Melts deep into pores — lifts blackheads and congestion',
+        ko: '모공 깊숙이 스며들어 각질 마개·블랙헤드를 말끔히 제거',
+      },
     },
     {
-      step: { ja: '洗顔', en: 'Cleanser', ko: '세안' },
+      step:    { ja: '洗顔', en: 'Cleanser', ko: '세안' },
       product: { ja: 'アミノ酸洗顔フォーム', en: 'Amino Acid Facial Foam', ko: '아미노산 세안 폼' },
       price: 1480,
       targetScore: 'tone',
-      effect: { ja: '肌を傷めず毛穴汚れをすっきり落とす', en: 'Thoroughly cleanses without damaging skin', ko: '피부 손상 없이 모공 오염을 말끔히 제거' },
+      effect: {
+        ja: '肌のバリアを守りながら余分な角質を除去。洗い上がりつるつる',
+        en: 'Removes excess dead skin while protecting barrier — silky-smooth finish',
+        ko: '피부 장벽을 지키며 불필요한 각질 제거. 세안 후 매끈한 피부감',
+      },
     },
     {
-      step: { ja: '美容液', en: 'Serum', ko: '세럼' },
+      step:    { ja: 'レチノール美容液', en: 'Retinol Serum', ko: '레티놀 세럼' },
+      product: { ja: 'レチノールリフト美容液', en: 'Retinol Lift Serum', ko: '레티놀 리프트 세럼' },
+      price: 4280,
+      targetScore: 'tone',
+      effect: {
+        ja: 'レチノールがターンオーバーを促進。2週間で肌の質感が変わり始める',
+        en: 'Retinol accelerates cell turnover — skin texture starts changing in 2 weeks',
+        ko: '레티놀이 턴오버를 촉진. 2주 만에 피부 결이 달라지기 시작',
+      },
+    },
+    {
+      step:    { ja: '美容液', en: 'Serum', ko: '세럼' },
       product: { ja: 'ビタミンC美容液', en: 'Vitamin C Serum', ko: '비타민C 세럼' },
       price: 3280,
       targetScore: 'dullness',
-      effect: { ja: 'ビタミンCがくすみを集中ケア。寝ている間に透明感を高める', en: 'Vitamin C intensively targets dullness overnight', ko: '비타민C가 칙칙함을 집중 케어. 자는 동안 투명감 향상' },
+      effect: {
+        ja: '高濃度ビタミンCが眠っている間にくすみを集中ケア。朝の肌が別次元',
+        en: 'High-potency vitamin C attacks dullness overnight — wake up to new-level skin',
+        ko: '고농도 비타민C가 자는 동안 칙칙함을 집중 케어. 아침 피부가 달라짐',
+      },
     },
     {
-      step: { ja: 'クリーム', en: 'Cream', ko: '크림' },
+      step:    { ja: 'クリーム', en: 'Cream', ko: '크림' },
       product: { ja: 'バリアリペアクリーム', en: 'Barrier Repair Cream', ko: '배리어 리페어 크림' },
       price: 2480,
       targetScore: 'pores',
-      effect: { ja: '肌バリアを修復。毛穴が目立ちにくいなめらかな肌へ', en: 'Repairs skin barrier for smoother, less visible pores', ko: '피부 장벽 회복. 모공이 덜 눈에 띄는 매끄러운 피부로' },
+      effect: {
+        ja: '肌バリアを夜通し修復。毛穴が引き締まり、翌朝の毛穴レス肌へ',
+        en: 'Repairs skin barrier all night — pores visibly tightened by morning',
+        ko: '밤새 피부 장벽 복구. 다음 날 아침 모공이 눈에 띄게 조여짐',
+      },
     },
   ],
 };
