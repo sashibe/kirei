@@ -34,6 +34,8 @@ export default {
   "mirror.btn_skin": "피부",
   "mirror.btn_dental": "덴탈",
   "mirror.view_result": "결과 보기 →",
+  "mirror.start_skincare": "스킨케어 시작하기 →",
+  "mirror.try_makeup": "메이크업 해보기",
   "mirror.recheck": "🪞 거울로 돌아가기",
   "mirror.start_skin": "✨ 피부 체크 시작",
   "mirror.disclaimer": "※이 앱은 의료 진단을 제공하지 않습니다",
@@ -137,6 +139,13 @@ export default {
   "suggest.base_intro": "베이스 메이크업으로 청결감 업♪ 피부 타입에 맞춘 제안이야!",
   "suggest.try_ar": "AR로 체험 →",
   "suggest.select": "선택 →",
+  "suggest.see_other_looks": "다른 룩도 보기",
+  "suggest.recommended": "추천",
+  "suggest.try_this": "이 룩으로 시도하기",
+  "suggest.hero_base": "베이스",
+  "suggest.hero_reason_dullness": "{pc} 타입인 너에게, {base}로 칙칙함을 커버하고 {color}로 마무리하는 조합이야♪",
+  "suggest.hero_reason_pc": "{pc} 타입에 딱 맞는 {color}를 골랐어♪",
+  "suggest.hero_reason_default": "너의 피부에 맞춰 {color}를 선택했어♪",
 
   // === SkincareRoutineView ===
   "skincare.intro": "당신의 피부 점수에 맞춘 스킨케어 루틴이야♪ 아침과 밤으로 나눠서 사용해!",
@@ -144,6 +153,29 @@ export default {
   "skincare.night_title": "🌙 나이트 루틴",
   "skincare.total": "루틴 합계 ({count}아이템)",
   "skincare.view_result": "✨ 결과 보기 →",
+
+  // === SkincareARScreen ===
+  "skincare_ar.back":              "결과로 돌아가기",
+  "skincare_ar.back_to_ar":        "2주 후 프리뷰로 돌아가기",
+  "skincare_ar.label_now":         "지금",
+  "skincare_ar.label_future":      "2주 후",
+  "skincare_ar.kirari_now":        "지금 피부 상태야♪ 슬라이더를 움직여서 2주 후를 봐봐!",
+  "skincare_ar.kirari_mid":        "조금씩 달라지고 있지♪ 슬라이더를 조금 더 움직여봐!",
+  "skincare_ar.kirari_future":     "이게 2주 동안 케어한 후의 너의 피부야♪ 오늘부터 시작하자!",
+  "skincare_ar.why_title":         "왜 2주 후야?",
+  "skincare_ar.why_p1":            "피부는 약 28일 주기로 새로운 세포로 다시 태어나는 \"턴오버\"를 반복해요.",
+  "skincare_ar.why_p2":            "케어를 시작하고 약 2주(반 주기)가 지나면, 새로 태어난 세포가 피부 표면에 나타나기 시작해 칙칙함이나 모공이 눈에 덜 띄게 돼요.",
+  "skincare_ar.why_personal_dullness": "너의 칙칙함 점수는 {score}점. 집중 케어로 2주 후에 차이가 잘 나타나는 포인트야.",
+  "skincare_ar.why_personal_pores":    "너의 모공 점수는 {score}점. 보습 케어를 계속하면 모공이 조여져요.",
+  "skincare_ar.why_encouragement": "위 루틴을 2주 동안 계속하면 피부 변화를 실감하기 쉬워져요♪",
+  "skincare_ar.cta":               "이 루틴 시작하기 →",
+  "skincare_ar.day":               "일",
+  "skincare_ar.two_weeks":         "2주 후",
+  "skincare_ar.turnover_label":    "피부 턴오버 (약 28일)",
+
+  "result.skincare_cta_title":     "2주 동안 케어한 후의 피부를 봐보자",
+  "result.skincare_cta_desc":      "너의 칙칙함 · 모공 점수를 바탕으로 시뮬레이션할게♪",
+  "result.skincare_cta_btn":       "2주 후의 나를 보러 가기 →",
 
   // === ArTryOnScreen ===
   "ar.look_fallback": "룩",

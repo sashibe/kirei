@@ -34,6 +34,8 @@ export default {
   "mirror.btn_skin": "Skin",
   "mirror.btn_dental": "Dental",
   "mirror.view_result": "View Results →",
+  "mirror.start_skincare": "Start skin care \u2192",
+  "mirror.try_makeup": "Try makeup",
   "mirror.recheck": "🪞 Back to mirror",
   "mirror.start_skin": "✨ Start Skin Check",
   "mirror.disclaimer": "*This app does not provide medical diagnoses.",
@@ -137,6 +139,13 @@ export default {
   "suggest.base_intro": "Boost your clean look with base makeup\u266A Picks matched to your skin type!",
   "suggest.try_ar": "Try in AR \u2192",
   "suggest.select": "Select \u2192",
+  "suggest.see_other_looks": "See other looks",
+  "suggest.recommended": "recommended",
+  "suggest.try_this": "Try this look",
+  "suggest.hero_base": "Base",
+  "suggest.hero_reason_dullness": "For your {pc} type, we paired {base} to cover dullness with {color} to finish\u266A",
+  "suggest.hero_reason_pc": "Picked {color} — perfect for your {pc} type\u266A",
+  "suggest.hero_reason_default": "Chose {color} to match your skin\u266A",
 
   // === SkincareRoutineView ===
   "skincare.intro": "Here's a skincare routine matched to your skin score\u266A Use different items for morning and night!",
@@ -144,6 +153,29 @@ export default {
   "skincare.night_title": "\uD83C\uDF19 Night Routine",
   "skincare.total": "Routine Total ({count} items)",
   "skincare.view_result": "\u2728 View Results \u2192",
+
+  // === SkincareARScreen ===
+  "skincare_ar.back":              "Back to Results",
+  "skincare_ar.back_to_ar":        "Back to 2-Week Preview",
+  "skincare_ar.label_now":         "Now",
+  "skincare_ar.label_future":      "In 2 Weeks",
+  "skincare_ar.kirari_now":        "This is your skin right now♪ Move the slider to see 2 weeks ahead!",
+  "skincare_ar.kirari_mid":        "Starting to change, right?♪ Try moving the slider a bit more!",
+  "skincare_ar.kirari_future":     "This is your skin after 2 weeks of care♪ Let's start today!",
+  "skincare_ar.why_title":         "Why 2 weeks?",
+  "skincare_ar.why_p1":            "Your skin renews itself through a cycle called \"turnover\" about every 28 days.",
+  "skincare_ar.why_p2":            "After about 2 weeks (half a cycle) of care, newly-born cells reach the surface and dullness and pores start to look less noticeable.",
+  "skincare_ar.why_personal_dullness": "Your dullness score is {score}. Focused care tends to show clear differences in 2 weeks.",
+  "skincare_ar.why_personal_pores":    "Your pore score is {score}. Keep up moisturizing care and pores will tighten over time.",
+  "skincare_ar.why_encouragement": "Following the routine above for 2 weeks makes skin changes easier to feel♪",
+  "skincare_ar.cta":               "Start This Routine →",
+  "skincare_ar.day":               "d",
+  "skincare_ar.two_weeks":         "2 weeks",
+  "skincare_ar.turnover_label":    "Skin turnover (about 28 days)",
+
+  "result.skincare_cta_title":     "See your skin after 2 weeks of care",
+  "result.skincare_cta_desc":      "Simulated based on your dullness and pore scores♪",
+  "result.skincare_cta_btn":       "See Yourself in 2 Weeks →",
 
   // === ArTryOnScreen ===
   "ar.look_fallback": "Look",
