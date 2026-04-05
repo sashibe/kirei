@@ -21,7 +21,11 @@
 
 ### コアフロー（v2）
 ```
-鏡を開く → 肌分析 → メイク提案 → ARトライオン → 結果・購入導線
+鏡を開く → 肌分析 → [2択分岐]
+              ├─ 肌ケアを始める（Primary）→ SkincareAR（2週間後プレビュー）→ ルーティン商品
+              └─ メイクを試す（Secondary）→ SuggestScreen（HeroCard+Explorer）
+                                           → ARトライオン（Base+Color 2レイヤー）
+                                           → 結果画面 → スキンケアARクロスセル
 ```
 
 ### ポジショニング
@@ -54,9 +58,14 @@
 ### 仕様書の管理ルール
 ```
 docs/
-  MIRROR_UX_SPEC.md     ← ミラーUX刷新仕様（実装完了）
-  STEP2_SPEC.md         ← ステップ2仕様（実装完了）
-  STEP3_SPEC.md         ← ステップ3仕様（実装完了）
+  MIRROR_UX_SPEC.md              ← ミラーUX刷新仕様（実装完了）
+  STEP2_SPEC.md                  ← ステップ2仕様（実装完了）
+  STEP3_SPEC.md                  ← ステップ3仕様（実装完了）
+  PERSONAL_COLOR_SPEC.md         ← パーソナルカラー判定仕様（実装完了）
+  SUGGEST_AR_REDESIGN_SPEC.md    ← SuggestScreen/ArTryOn再設計（実装完了）
+  SUGGEST_AR_REDESIGN_SPEC_UPDATE.md ← ミラー2択＋スキンケア独立化（実装完了）
+  SKINCARE_AR_SPEC.md            ← SkincareARScreen新設仕様（実装完了）
+  FIX_SPEC.md                    ← 上記3つの統合版（実装完了）
 ```
 - 仕様書は実装指示書。完了後はCLAUDE.mdに要約を反映してアーカイブ
 - CLAUDE.mdには**実装済みの事実**のみ記録する
@@ -141,39 +150,50 @@ docs: CLAUDE.md更新
 
 ## 画面設計（v2）
 
-### Screen 1: ミラー画面（MirrorScreen / MirrorScreenV3）
-
-**現行版（MirrorScreen.jsx）**:
-- カメラプレビュー＋「肌チェック開始」ボタン常時表示
-- キラリのメッセージバーが常時表示
-
-**新版（MirrorScreenV3.jsx）— 実装予定**:
-- **ピュアミラー設計**: フルスクリームカメラ。UIゼロが基本
+### Screen 1: ミラー画面（MirrorScreenV3 — 本番稼働中）
+- **ピュアミラー設計**: フルスクリーンカメラ。UIゼロが基本
 - **タップで診断開始**（ボタン廃止）
-- **低照度検知**: 暗い環境ではアラート表示（`useNightMode.js` は実装済み、ネイティブ化Phase 2でナイトモードUI再検討）
-- **広告ゼロ**（ミラー画面はクリーンな鏡体験を最優先）
-- `USE_MIRROR_V3` フラグで旧版と切替可能
+- スキャン後: パーソナルカラーバッジ（左上）+ スコア（右上）表示
+- **分析完了後の2択ボタン**（スキンケア優先）:
+  - 🌿 **肌ケアを始める →** (Primary・グリーン) → SkincareARScreen 直行
+  - 💄 メイクを試す (Secondary・パープル) → SuggestScreen
+- **低照度検知**: `useNightMode.js` 実装済み（UIはPhase 2で再検討）
+- `USE_MIRROR_V3=true` で本番稼働中
 - 詳細: `docs/MIRROR_UX_SPEC.md` 参照
 
-### Screen 2: メイク提案画面（MakeupScreen）
-- **スタイルタブ**: Color makeup / Base makeup / Skin care
-- 今日の肌コンディション サマリー → おすすめルック2〜3パターン → ARトライオンへ
-- 天気データ連動（Phase 2以降）: UV・湿度に応じたルック優先度調整
+### Screen 2: メイク提案画面（SuggestScreen — ヒーローカード構成）
+- **ヒーローカード**: `recommendLooks()` によるPC×スコア自動推薦（Base+Color 1組）
+  - 「これで試す →」で両方プリセット済みARへ
+  - PC別推薦文3種（dullness連動 / PC連動 / フォールバック）
+- **「他のルックも見る ▼」エクスプローラー**: Base/Color 2タブ
+  - SmallLookCardでPC順ソート表示
+- Skin careタブは廃止（ミラー側スキンケア導線に統合）
 
 ### Screen 3: ARトライオン（ArTryOnScreen）
-- ライブカメラ + リアルタイムARメイクオーバーレイ（実装済み）
-- パーツ: リップ・アイシャドウ・チーク・ファンデ・眉・コンシーラー（実装済み）
-- 濃さスライダー、カラーパレット、ビフォーアフター長押し（実装済み）
-- styleTab に応じたメイクオーバーレイ切替（Color/Base）実装済み
-- カテゴリパネル（リップ/チーク/メガネ/イヤリング）4タブ切替（実装済み）
-- メガネARレイヤー: 4形状（round/square/oval/wayfarer）、ランドマーク#6/#234/#454（実装済み）
-- イヤリングARレイヤー: 4タイプ（stud/drop/hoop/chain）、ランドマーク#132/#361（実装済み）
-- 「このメイクで決定」キャプチャ: video+canvas合成 → JPEG dataURL（実装済み）
+- ライブカメラ + リアルタイムARメイクオーバーレイ
+- **Base+Color 2レイヤー同時描画**（MakeupCanvas）
+  - Layer1: Base（drawFoundation / drawConcealer / drawBrow）
+  - Layer2: Color（drawCheek / drawEyeshadow / drawLip）
+- **カテゴリパネル 5タブ**: 🧴ベース / 💄リップ / 🌸チーク / 👓メガネ / 💍イヤリング
+- ベーススイッチャー: BASE_LOOKS 3種を切替
+- 濃さスライダー、カラーパレット、ビフォーアフター長押し
+- メガネARレイヤー: 4形状、ランドマーク#6/#234/#454
+- イヤリングARレイヤー: 4タイプ、ランドマーク#132/#361
+- 「このメイクで決定」キャプチャ: video+canvas合成 → JPEG dataURL
 
 ### Screen 4: 結果画面（ResultScreen）
-- 肌スコアサマリー、選んだメイクルックの記録
-- キャプチャ写真表示（ARメイク+アクセサリー合成済み、シェアボタン付き）
-- コスメ+アクセサリー統合商品リスト（KIREI SELECT）、合計金額、スコア履歴、SNSシェア
+- 肌スコアサマリー、Base+Colorルック名（カテゴリバッジ動的）
+- キャプチャ写真表示（ARメイク+アクセサリー合成済み）
+- コスメ統合商品リスト（Base商品+Color商品）KIREI SELECT
+- **スキンケアAR誘導CTAカード**（緑）: 「2週間後の自分を見てみる →」
+
+### Screen 5: スキンケアAR（SkincareARScreen）
+- ライブカメラにCSSフィルター（brightness/contrast/saturate）を適用
+- フィルター強度は肌スコア（dullness/tone/pores）に連動
+- **スライダー**: 0=今 ↔ 100=2週間後（初期1秒後に5秒かけて自動アニメーション）
+- キラリセリフ6段階: now / starting / week1 / week2 / almost / future
+- 「なぜ2週間後なの？」アコーディオン + 28日ターンオーバーSVG図
+- 「このルーティンを始める →」→ SkincareRoutineView
 
 ---
 
@@ -371,16 +391,19 @@ const colors = {
 - [x] 低照度アラートUI（lowLight検知時にキラリメッセージ表示）
 - 詳細: `docs/MIRROR_UX_SPEC.md`
 
-### Phase 2: メイク提案＋EC導線（一部完了）
-- [ ] パーソナルカラー判定ロジック（`personalColor.js`）
-- [ ] メイクルック提案ロジック（`makeupRecommender.js`）
-- [x] SuggestScreen実装（スタイルタブ Color/Base/Skincare・ルックカード・SkincareRoutineView）
+### Phase 2: メイク提案＋EC導線（大幅完了）
+- [x] パーソナルカラー判定ロジック（`personalColor.js` 四季タイプ＋12サブタイプ）
+- [x] メイクルック推薦ロジック（`makeupLooks.js::recommendLooks()` PC×スコア）
+- [x] SuggestScreen改修（ヒーローカード＋Base/Color 2タブエクスプローラー）
+- [x] ArTryOnScreen改修（Baseカテゴリ追加・Base+Color 2レイヤー同時描画）
+- [x] MirrorScreenV3: 分析後2択ボタン（🌿肌ケア優先 + 💄メイク）
+- [x] SkincareARScreen新設（2週間後CSSフィルターシミュレーション・なぜ2週間？アコーディオン）
+- [x] ResultScreen: スキンケアARへの誘導CTAカード
 - [x] CoordinateOverlay実装（TPOセレクター・SVGシルエット・コーデデータマトリクス）
 - [x] 天気API連動（useWeather・メイク提案・キラリセリフ連動）
 - [x] KIREI SELECT（コスメ商品リスト・合計金額・購入CTA）
 - [x] i18n対応（JA/EN/KO 三言語）
-- [x] ARトライオン：カテゴリパネル（メガネ/イヤリング）+ キャプチャ → 結果写真表示（STEP3完了）
-- [ ] パーソナルカラー判定（`personalColor.js`）
+- [x] ARトライオン：カテゴリパネル（ベース/リップ/チーク/メガネ/イヤリング）+ キャプチャ → 結果写真表示
 - [~] ナイトモードUI — デモ版では中止（ブラウザ輝度推定の精度不足）。Capacitor移行後に再実装
 - [ ] スコア履歴（Supabase or Firebase）
 - [ ] Capacitor移行（iOS/Androidネイティブラッパー）
