@@ -179,9 +179,9 @@ export default {
   "result.skincare_cta_title":     "See your skin after 2 weeks of care",
   "result.skincare_cta_desc":      "Simulated based on your dullness and pore scores♪",
   "result.skincare_cta_btn":       "See Yourself in 2 Weeks →",
-  "result.skincare_cta_btn_again": "See again",
+  "result.skincare_cta_btn_again": "See again \u2192",
   "result.no_makeup_kirari":       "Now that your skin is cared for, why not try some makeup next?\u266A",
-  "result.try_makeup_btn":         "\uD83D\uDC84 See makeup looks for you",
+  "result.try_makeup_btn":         "\uD83D\uDC84 See recommended makeup \u2192",
 
   // === ArTryOnScreen ===
   "ar.look_fallback": "Look",
