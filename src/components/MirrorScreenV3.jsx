@@ -11,6 +11,8 @@ import { useFaceLandmarkerCtx } from '../contexts/FaceLandmarkerContext.jsx';
 import { useT } from '../i18n/index.jsx';
 import { SKIN_SCORES } from '../data/scores.js';
 import { analyzeSkin, analyzeSkinWithLandmarks } from '../analysis/skinAnalyzer.js';
+import { analyzePersonalColor, getPcColors, getPcIcon } from '../analysis/personalColor.js';
+import { getPcLine } from '../data/kirariDialogues.js';
 
 const STAGE = { SEARCHING: 'searching', DETECTED: 'detected', READY: 'ready', SHUTTER: 'shutter', SCANNING: 'scanning' };
 
@@ -20,6 +22,7 @@ export default function MirrorScreenV3({ onResult }) {
   const [checking, setChecking] = useState(false);
   const [stage, setStage] = useState(null);
   const [skinScores, setSkinScores] = useState(null);
+  const [personalColor, setPersonalColor] = useState(null);
   const [showScores, setShowScores] = useState(true);
   const [frozenFrame, setFrozenFrame] = useState(null);
   const [ripple, setRipple] = useState(null); // { x, y } for tap ripple
@@ -56,9 +59,12 @@ export default function MirrorScreenV3({ onResult }) {
 
   const landmarksRef = useRef(null);
   useEffect(() => { landmarksRef.current = lastLandmarks; }, [lastLandmarks]);
+  const shutterFrameRef = useRef(null);
 
   const applyScores = useCallback(() => {
-    const frame = cameraRef.current?.isActive ? cameraRef.current.captureFrame() : null;
+    // Prefer the frame captured at shutter moment (sync with landmarks)
+    const frame = shutterFrameRef.current
+      || (cameraRef.current?.isActive ? cameraRef.current.captureFrame() : null);
     const lm = landmarksRef.current;
     let result = null;
     try {
@@ -71,13 +77,29 @@ export default function MirrorScreenV3({ onResult }) {
       pores: { ...SKIN_SCORES.pores, score: result.pores.score },
       dullness: { ...SKIN_SCORES.dullness, score: result.dullness.score },
     } : SKIN_SCORES;
+
+    // パーソナルカラー判定
+    let pc = null;
+    if (frame && lm) {
+      try {
+        pc = analyzePersonalColor(frame, lm);
+        console.log('[PC]', { hasFrame: !!frame, lmCount: lm?.length, pc });
+      } catch (e) {
+        console.error('[PC error]', e);
+      }
+    } else {
+      console.log('[PC] skipped', { hasFrame: !!frame, hasLm: !!lm, lmCount: lm?.length });
+    }
+
     setSkinScores(scores);
-    return scores;
+    setPersonalColor(pc);
+    return { scores, personalColor: pc };
   }, []);
 
   const runShutterSequence = useCallback(() => {
     const frame = cameraRef.current?.isActive ? cameraRef.current.captureFrame() : null;
     if (frame) {
+      shutterFrameRef.current = frame;
       const canvas = document.createElement('canvas');
       canvas.width = frame.width;
       canvas.height = frame.height;
@@ -122,6 +144,7 @@ export default function MirrorScreenV3({ onResult }) {
       setTimeout(() => {
         if (cancelled) return;
         setSkinScores(SKIN_SCORES);
+        setPersonalColor(null);
         setStage(null);
         setChecking(false);
       }, 4200);
@@ -135,6 +158,7 @@ export default function MirrorScreenV3({ onResult }) {
     setFrozenFrame(null);
     setStage(STAGE.SEARCHING);
     setSkinScores(null);
+    setPersonalColor(null);
     setChecking(true);
   }, [resetShutter]);
 
@@ -384,6 +408,29 @@ export default function MirrorScreenV3({ onResult }) {
           </div>
         )}
 
+        {/* === Personal color badge === */}
+        {!checking && !analyzing && personalColor && showScores && (
+          <div style={{
+            position: "absolute", top: 72, left: 12, zIndex: 2,
+            display: "inline-flex", alignItems: "center", gap: 6,
+            background: getPcColors(personalColor.season).bg,
+            border: `1px solid ${getPcColors(personalColor.season).border}`,
+            borderRadius: 20, padding: "4px 12px",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+          }}>
+            <span style={{ fontSize: 12 }}>{getPcIcon(personalColor.season)}</span>
+            <span style={{
+              fontSize: 11, fontWeight: 700,
+              color: getPcColors(personalColor.season).color,
+            }}>
+              {t(personalColor.label)}
+            </span>
+            {personalColor.confidence < 0.6 && (
+              <span style={{ fontSize: 9, color: '#94a3b8' }}>{t("pc.reference")}</span>
+            )}
+          </div>
+        )}
+
         {/* === Bottom overlay (V3: minimal, no start button) === */}
         <div style={{
           position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 4,
@@ -436,7 +483,7 @@ export default function MirrorScreenV3({ onResult }) {
               </button>
               <button
                 className="btn-primary"
-                onClick={() => { setSkinScores(null); setStage(null); setChecking(false); setFrozenFrame(null); }}
+                onClick={() => { setSkinScores(null); setPersonalColor(null); setStage(null); setChecking(false); setFrozenFrame(null); }}
                 style={{
                   width: "100%", padding: "12px 0", border: "none", borderRadius: 14, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer",
                   background: "#a855f7", opacity: 0.7,
@@ -447,7 +494,7 @@ export default function MirrorScreenV3({ onResult }) {
               </button>
               <button
                 className="btn-primary"
-                onClick={() => onResult({ skinScores, dentalScores: null })}
+                onClick={() => onResult({ skinScores, personalColor, dentalScores: null })}
                 style={{ width: "100%", padding: 12, background: "linear-gradient(135deg, #a855f7, #ec4899)", border: "none", borderRadius: 14, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer", boxShadow: "0 4px 20px rgba(168,85,247,0.3)" }}
               >
                 {t("mirror.view_result")}

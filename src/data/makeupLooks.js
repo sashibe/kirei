@@ -4,6 +4,7 @@
 export const COLOR_LOOKS = [
   {
     id: 'glow',
+    pcSeasons: ['spring', 'summer'],
     name: { ja: 'ツヤ肌ブルームルック', en: 'Dewy Bloom Look', ko: '윤기 블룸 룩' },
     desc: { ja: '血色感のあるコーラルピンクで自然なツヤを演出', en: 'Natural glow with vibrant coral pink', ko: '혈색감 있는 코럴 핑크로 자연스러운 윤기 연출' },
     reason: { ja: 'くすみスコアが良好なので、ツヤ肌が映えます', en: 'Your low dullness score means dewy skin will shine', ko: '칙칙함 점수가 양호해서 윤기 피부가 돋보여요' },
@@ -15,6 +16,7 @@ export const COLOR_LOOKS = [
   },
   {
     id: 'matte',
+    pcSeasons: ['winter', 'autumn'],
     name: { ja: 'マットシックルック', en: 'Matte Chic Look', ko: '매트 시크 룩' },
     desc: { ja: '落ち着いたローズでクールな印象に', en: 'Cool impression with calm rose tones', ko: '차분한 로즈로 쿨한 인상으로' },
     reason: { ja: '肌トーンが安定しているので、マット仕上げが映えます', en: 'Your stable skin tone suits a matte finish', ko: '피부 톤이 안정적이어서 매트 마무리가 돋보여요' },
@@ -26,6 +28,7 @@ export const COLOR_LOOKS = [
   },
   {
     id: 'warm',
+    pcSeasons: ['spring', 'autumn'],
     name: { ja: 'ウォームグロウルック', en: 'Warm Glow Look', ko: '웜 글로우 룩' },
     desc: { ja: 'オレンジ系で健康的な血色感をプラス', en: 'Healthy warmth with orange tones', ko: '오렌지 계열로 건강한 혈색감 플러스' },
     reason: { ja: 'パーソナルカラーに合わせた暖色系で統一感UP', en: 'Warm tones matched to your personal color for unity', ko: '퍼스널 컬러에 맞춘 난색 계열로 통일감 UP' },
@@ -41,6 +44,7 @@ export const COLOR_LOOKS = [
 export const BASE_LOOKS = [
   {
     id: 'clean-natural',
+    pcSeasons: ['spring', 'summer'],
     name: { ja: 'クリーンナチュラル', en: 'Clean Natural', ko: '클린 내추럴' },
     desc: { ja: 'BBクリーム + コンシーラーで肌の色ムラを均一に', en: 'BB cream + concealer for even skin tone', ko: 'BB크림 + 컨실러로 피부 색 얼룩 균일하게' },
     reason: { ja: '肌トーンスコアを活かして清潔感のある印象に', en: 'Leverage your tone score for a clean impression', ko: '피부 톤 점수를 살려 청결감 있는 인상으로' },
@@ -52,6 +56,7 @@ export const BASE_LOOKS = [
   },
   {
     id: 'business-sharp',
+    pcSeasons: ['winter', 'summer'],
     name: { ja: 'ビジネスシャープ', en: 'Business Sharp', ko: '비즈니스 샤프' },
     desc: { ja: 'トーンアップ下地 + 眉マスカラでキリッとした印象に', en: 'Tone-up base + brow mascara for a sharp look', ko: '톤업 베이스 + 눈썹 마스카라로 깔끔한 인상으로' },
     reason: { ja: 'パーソナルカラーに合わせた眉色で知的に仕上げる', en: 'Intellectual finish with brow color matched to your personal color', ko: '퍼스널 컬러에 맞춘 눈썹 색으로 지적인 마무리' },
@@ -63,6 +68,7 @@ export const BASE_LOOKS = [
   },
   {
     id: 'weekend-fresh',
+    pcSeasons: ['spring', 'autumn'],
     name: { ja: 'ウィークエンドフレッシュ', en: 'Weekend Fresh', ko: '위크엔드 프레시' },
     desc: { ja: '軽いトーンアップ + リップバームで爽やかに', en: 'Light tone-up + lip balm for freshness', ko: '가벼운 톤업 + 립밤으로 상쾌하게' },
     reason: { ja: '休日のリラックスした印象をキープ', en: 'Keep a relaxed weekend vibe', ko: '휴일의 릴랙스한 인상을 유지' },

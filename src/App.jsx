@@ -19,12 +19,12 @@ export default function App() {
   const { t } = useT();
   const [screen, setScreen] = useState('mirror');
   const prevScreenRef = useRef('mirror');
-  const scoresRef = useRef({ skinScores: null });
+  const scoresRef = useRef({ skinScores: null, personalColor: null });
   const lookRef = useRef({ selectedLook: null, styleTab: 0 });
   const captureRef = useRef({ capturedImage: null, finalProducts: [] });
 
-  const handleResult = useCallback(({ skinScores }) => {
-    scoresRef.current = { skinScores };
+  const handleResult = useCallback(({ skinScores, personalColor }) => {
+    scoresRef.current = { skinScores, personalColor };
     setScreen('suggest');
   }, []);
 
@@ -89,6 +89,7 @@ export default function App() {
         {screen === 'suggest' && (
           <SuggestScreen
             skinScores={scoresRef.current.skinScores}
+            personalColor={scoresRef.current.personalColor}
             onSelectLook={handleSelectLook}
             onSkipToResult={handleSkipToResult}
           />
@@ -97,6 +98,7 @@ export default function App() {
           <ArTryOnScreen
             look={lookRef.current.selectedLook}
             styleTab={lookRef.current.styleTab}
+            personalColor={scoresRef.current.personalColor}
             onDecide={handleArDecide}
             onBack={() => setScreen('suggest')}
           />
@@ -104,6 +106,7 @@ export default function App() {
         {screen === 'result' && (
           <ResultScreen
             skinScores={scoresRef.current.skinScores}
+            personalColor={scoresRef.current.personalColor}
             onRestart={handleRestart}
             styleTab={lookRef.current.styleTab}
             selectedLook={lookRef.current.selectedLook}

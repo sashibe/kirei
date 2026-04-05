@@ -202,4 +202,21 @@ export default {
   "kirari.weather_rain": "Rain forecast! Check out waterproof items",
   "kirari.night_on": "Using the screen as a light\u2728 Bring your face closer",
   "mirror.night_tap_back": "Tap to return to mirror",
+
+  // === Personal color ===
+  "pc.reference": "(reference)",
+  "pc.look_match": "Matches your personal color",
+  "kirari.pc_bright_spring": "You're a luminous Bright Spring! Pastel coral looks amazing on you\u2728",
+  "kirari.pc_true_spring":   "You're a golden True Spring! Coral and gold make you shine\u2728",
+  "kirari.pc_clear_spring":  "You're a vivid Clear Spring! Bold warm tones are your magic\u2728",
+  "kirari.pc_light_summer":  "You're a soft Light Summer! Pastel lavender is a perfect match\u2728",
+  "kirari.pc_true_summer":   "You're a classic True Summer! Mauve and smoky pink suit you beautifully\u2728",
+  "kirari.pc_soft_summer":   "You're an elegant Soft Summer! Grayish tones give you a refined look\u2728",
+  "kirari.pc_soft_autumn":   "You're a charming Soft Autumn! Terracotta and khaki add depth\u2728",
+  "kirari.pc_true_autumn":   "You're a rich True Autumn! Olive and brick red look gorgeous\u2728",
+  "kirari.pc_deep_autumn":   "You're a deep-toned Autumn! Burgundy and dark brown command presence\u2728",
+  "kirari.pc_clear_winter":  "You're a high-contrast Clear Winter! Vivid primaries make you stand out\u2728",
+  "kirari.pc_true_winter":   "You're a luminous True Winter! Icy colors and wine red suit you perfectly\u2728",
+  "kirari.pc_deep_winter":   "You're a striking Deep Winter! Deep navy and charcoal give you presence\u2728",
+  "kirari.pc_fallback":      "Your personal color is ready! I've picked looks that match your type\u2728",
 };

@@ -202,4 +202,21 @@ export default {
   "kirari.weather_rain": "雨の予報だよ。ウォータープルーフのアイテム、チェックしてみて",
   "kirari.night_on": "画面をライト代わりにしてるよ✨ 顔を近づけてみて",
   "mirror.night_tap_back": "タップで鏡に戻る",
+
+  // === パーソナルカラー ===
+  "pc.reference": "（参考）",
+  "pc.look_match": "あなたのパーソナルカラーにマッチ",
+  "kirari.pc_bright_spring": "透明感バッチリの明るいイエベ春だよ♪ パステルコーラルが超似合う〜！",
+  "kirari.pc_true_spring":   "黄みのある明るいイエベ春♪ コーラルやゴールドが映えるよ〜！",
+  "kirari.pc_clear_spring":  "華やかなイエベ春！ ビビッドな暖色でトータルコーデが決まるよ♪",
+  "kirari.pc_light_summer":  "やわらかな明るいブルベ夏♪ パステルラベンダーがベストマッチ〜",
+  "kirari.pc_true_summer":   "ローズ系が得意なブルベ夏♪ モーブやスモーキーピンクで大人っぽく〜",
+  "kirari.pc_soft_summer":   "くすみが上品なソフトブルベ夏♪ グレイッシュカラーで洗練された印象に〜",
+  "kirari.pc_soft_autumn":   "くすみが魅力のイエベ秋♪ テラコッタやカーキで深みのある仕上がりに〜",
+  "kirari.pc_true_autumn":   "リッチな黄みのイエベ秋♪ オリーブやブリックレッドがとっても似合うよ〜",
+  "kirari.pc_deep_autumn":   "深みたっぷりのイエベ秋♪ バーガンディやダークブラウンで存在感UP〜",
+  "kirari.pc_clear_winter":  "コントラスト強めのブルベ冬♪ ビビッドな原色で個性が際立つよ〜！",
+  "kirari.pc_true_winter":   "透明感のあるブルベ冬♪ アイシーカラーやワインレッドが最高に似合う〜",
+  "kirari.pc_deep_winter":   "深みのあるブルベ冬♪ ディープネイビーやチャコールで圧倒的な存在感に〜",
+  "kirari.pc_fallback":      "パーソナルカラーが分かったよ♪ このタイプに合ったルックを選んだよ〜！",
 };

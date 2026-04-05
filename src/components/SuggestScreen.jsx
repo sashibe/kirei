@@ -3,9 +3,19 @@ import Kirari from './Kirari.jsx';
 import Bubble from './Bubble.jsx';
 import SkincareRoutineView from './SkincareRoutineView.jsx';
 import { COLOR_LOOKS, BASE_LOOKS } from '../data/makeupLooks.js';
+import { getPcColors } from '../analysis/personalColor.js';
 import { useT } from '../i18n/index.jsx';
 
-export default function SuggestScreen({ skinScores, onSelectLook, onSkipToResult }) {
+function sortLooksByPc(looks, personalColor) {
+  if (!personalColor) return looks;
+  return [...looks].sort((a, b) => {
+    const aMatch = a.pcSeasons?.includes(personalColor.season) ? 0 : 1;
+    const bMatch = b.pcSeasons?.includes(personalColor.season) ? 0 : 1;
+    return aMatch - bMatch;
+  });
+}
+
+export default function SuggestScreen({ skinScores, personalColor, onSelectLook, onSkipToResult }) {
   const { t } = useT();
   const [styleTab, setStyleTab] = useState(() => {
     const saved = localStorage.getItem('kirei_style_tab');
@@ -16,9 +26,10 @@ export default function SuggestScreen({ skinScores, onSelectLook, onSkipToResult
     localStorage.setItem('kirei_style_tab', String(styleTab));
   }, [styleTab]);
 
-  const looks = styleTab === 0 ? COLOR_LOOKS
+  const rawLooks = styleTab === 0 ? COLOR_LOOKS
               : styleTab === 1 ? BASE_LOOKS
               : null;
+  const looks = rawLooks ? sortLooksByPc(rawLooks, personalColor) : null;
 
   // Skin care: skip AR, go directly to result
   if (styleTab === 2) {
@@ -53,6 +64,7 @@ export default function SuggestScreen({ skinScores, onSelectLook, onSkipToResult
             key={look.id}
             look={look}
             styleTab={styleTab}
+            personalColor={personalColor}
             onSelect={() => onSelectLook(look, styleTab)}
             t={t}
           />
@@ -85,8 +97,9 @@ function StyleTabs({ styleTab, setStyleTab, t }) {
   );
 }
 
-function LookCard({ look, styleTab, onSelect, t }) {
+function LookCard({ look, styleTab, personalColor, onSelect, t }) {
   const isColor = styleTab === 0;
+  const pcMatch = personalColor && look.pcSeasons?.includes(personalColor.season);
 
   // Preview swatches
   const swatches = isColor
@@ -103,6 +116,18 @@ function LookCard({ look, styleTab, onSelect, t }) {
         transition: 'transform 0.15s ease',
       }}
     >
+      {pcMatch && (
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 4,
+          background: getPcColors(personalColor.season).bg,
+          borderRadius: 8, padding: '2px 8px', marginBottom: 6,
+          fontSize: 10, fontWeight: 600,
+          color: getPcColors(personalColor.season).color,
+          border: `1px solid ${getPcColors(personalColor.season).border}`,
+        }}>
+          ✨ {t("pc.look_match")}
+        </div>
+      )}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
         <div>
           <p style={{ fontSize: 14, fontWeight: 700, color: '#334155', margin: '0 0 2px' }}>{t(look.name)}</p>

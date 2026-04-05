@@ -20,6 +20,25 @@ export function getCoordLine(context, t) {
   return t('coord.default');
 }
 
+export function getPcLine(personalColor, t) {
+  if (!personalColor) return null;
+  const lines = {
+    'bright-spring': 'kirari.pc_bright_spring',
+    'true-spring':   'kirari.pc_true_spring',
+    'clear-spring':  'kirari.pc_clear_spring',
+    'light-summer':  'kirari.pc_light_summer',
+    'true-summer':   'kirari.pc_true_summer',
+    'soft-summer':   'kirari.pc_soft_summer',
+    'soft-autumn':   'kirari.pc_soft_autumn',
+    'true-autumn':   'kirari.pc_true_autumn',
+    'deep-autumn':   'kirari.pc_deep_autumn',
+    'clear-winter':  'kirari.pc_clear_winter',
+    'true-winter':   'kirari.pc_true_winter',
+    'deep-winter':   'kirari.pc_deep_winter',
+  };
+  return t(lines[personalColor.subtypeId] ?? 'kirari.pc_fallback');
+}
+
 export function getCoordHint(selectedLook, styleTab, t) {
   const tabNames = ['color', 'base', 'skincare'];
   const tab = tabNames[styleTab] || 'color';

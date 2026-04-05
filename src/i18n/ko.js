@@ -202,4 +202,21 @@ export default {
   "kirari.weather_rain": "비 예보야! 워터프루프 아이템 확인해 봐",
   "kirari.night_on": "화면을 조명 대신 쓰고 있어✨ 얼굴을 가까이 해 봐",
   "mirror.night_tap_back": "탭하면 거울로 돌아가",
+
+  // === 퍼스널 컬러 ===
+  "pc.reference": "(참고)",
+  "pc.look_match": "너의 퍼스널 컬러와 매치",
+  "kirari.pc_bright_spring": "투명감 넘치는 밝은 스프링이야♪ 파스텔 코럴이 완전 잘 어울려~!",
+  "kirari.pc_true_spring":   "황금빛 밝은 트루 스프링♪ 코럴이나 골드가 빛나 보여~!",
+  "kirari.pc_clear_spring":  "화려한 클리어 스프링! 비비드 웜톤으로 토탈 코디가 완성돼♪",
+  "kirari.pc_light_summer":  "부드럽고 밝은 라이트 서머♪ 파스텔 라벤더가 베스트 매치~",
+  "kirari.pc_true_summer":   "로즈 톤이 잘 어울리는 트루 서머♪ 모브나 스모키 핑크로 성숙하게~",
+  "kirari.pc_soft_summer":   "우아한 뮤트의 소프트 서머♪ 그레이시 컬러로 세련된 인상으로~",
+  "kirari.pc_soft_autumn":   "뮤트한 매력의 소프트 오텀♪ 테라코타나 카키로 깊이감 있게~",
+  "kirari.pc_true_autumn":   "리치한 황미의 트루 오텀♪ 올리브나 브릭레드가 정말 잘 어울려~",
+  "kirari.pc_deep_autumn":   "깊이감 가득한 딥 오텀♪ 버건디나 다크 브라운으로 존재감 UP~",
+  "kirari.pc_clear_winter":  "콘트라스트 강한 클리어 윈터♪ 비비드한 원색으로 개성 돋보여~!",
+  "kirari.pc_true_winter":   "투명감 있는 트루 윈터♪ 아이시 컬러나 와인 레드가 최고로 어울려~",
+  "kirari.pc_deep_winter":   "깊이감 있는 딥 윈터♪ 딥 네이비나 차콜로 압도적인 존재감으로~",
+  "kirari.pc_fallback":      "퍼스널 컬러를 알았어♪ 이 타입에 맞는 룩을 골라봤어~!",
 };

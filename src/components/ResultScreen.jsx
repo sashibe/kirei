@@ -6,7 +6,8 @@ import ProductModal from './ProductModal.jsx';
 import CoordinateOverlay from './CoordinateOverlay.jsx';
 import { useT } from '../i18n/index.jsx';
 import { SKIN_SCORES } from '../data/scores.js';
-import { getCoordHint } from '../data/kirariDialogues.js';
+import { getCoordHint, getPcLine } from '../data/kirariDialogues.js';
+import { getPcColors, getPcIcon } from '../analysis/personalColor.js';
 
 function avg(scores) {
   const vals = Object.values(scores).map(v => v.score);
@@ -24,7 +25,7 @@ function generateLookComment(selectedLook, styleTab, t) {
   return `${lookName}${t("result.look_comment_suffix")} ${lookReason}`;
 }
 
-export default function ResultScreen({ skinScores: propSkin, onRestart, styleTab = 0, selectedLook = null, capturedImage = null, products: productsProp = null }) {
+export default function ResultScreen({ skinScores: propSkin, personalColor = null, onRestart, styleTab = 0, selectedLook = null, capturedImage = null, products: productsProp = null }) {
   const { t } = useT();
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showCoord, setShowCoord] = useState(false);
@@ -43,10 +44,45 @@ export default function ResultScreen({ skinScores: propSkin, onRestart, styleTab
         : [selectedLook.base, selectedLook.concealer, selectedLook.brow, selectedLook.lip].filter(Boolean))
     : [];
 
+  const pcBg = personalColor ? getPcColors(personalColor.season) : null;
+
   return (
     <div style={{ position: 'relative', paddingBottom: 16, minHeight: '100%' }}>
 
-      {/* ===== 0. Captured AR photo ===== */}
+      {/* ===== 0a. Personal color card ===== */}
+      {personalColor && pcBg && (
+        <div style={{
+          margin: '8px 16px 12px', padding: '14px 16px',
+          background: pcBg.bg,
+          border: `1px solid ${pcBg.border}`,
+          borderRadius: 18,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            <span style={{ fontSize: 20 }}>{getPcIcon(personalColor.season)}</span>
+            <p style={{ fontSize: 14, fontWeight: 800, color: pcBg.color, margin: 0 }}>
+              {t(personalColor.label)}
+            </p>
+            {personalColor.confidence < 0.6 && (
+              <span style={{ fontSize: 9, color: '#94a3b8', marginLeft: 'auto' }}>
+                {t("pc.reference")}
+              </span>
+            )}
+          </div>
+          <p style={{ fontSize: 11, color: '#475569', margin: '0 0 10px', lineHeight: 1.6 }}>
+            {t(personalColor.desc)}
+          </p>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+            <Kirari size={32} expression="sparkle" bounce />
+            <Bubble>
+              <p style={{ fontSize: 11, color: '#334155', margin: 0, lineHeight: 1.6 }}>
+                {getPcLine(personalColor, t)}
+              </p>
+            </Bubble>
+          </div>
+        </div>
+      )}
+
+      {/* ===== 0b. Captured AR photo ===== */}
       {capturedImage && (
         <div style={{ position: 'relative' }}>
           <img
