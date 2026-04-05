@@ -179,9 +179,9 @@ export default {
   "result.skincare_cta_title":     "2주 동안 케어한 후의 피부를 봐보자",
   "result.skincare_cta_desc":      "너의 칙칙함 · 모공 점수를 바탕으로 시뮬레이션할게♪",
   "result.skincare_cta_btn":       "2주 후의 나를 보러 가기 →",
-  "result.skincare_cta_btn_again": "다시 보기",
+  "result.skincare_cta_btn_again": "다시 보기 →",
   "result.no_makeup_kirari":       "스킨케어로 피부를 가꿨으니, 다음엔 메이크업도 시도해봐♪",
-  "result.try_makeup_btn":         "💄 너에게 추천하는 메이크업 보기",
+  "result.try_makeup_btn":         "💄 추천 메이크업 보기 →",
 
   // === ArTryOnScreen ===
   "ar.look_fallback": "룩",

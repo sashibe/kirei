@@ -179,9 +179,9 @@ export default {
   "result.skincare_cta_title":     "ケアを続けた2週間後の肌を見てみよう",
   "result.skincare_cta_desc":      "あなたのくすみ・毛穴スコアをもとにシミュレーションするよ♪",
   "result.skincare_cta_btn":       "2週間後の自分を見てみる →",
-  "result.skincare_cta_btn_again": "もう一度見る",
+  "result.skincare_cta_btn_again": "もう一度見る →",
   "result.no_makeup_kirari":       "スキンケアで肌を整えたら、次はメイクも試してみてね♪",
-  "result.try_makeup_btn":         "💄 あなたにおすすめのメイクを見てみる",
+  "result.try_makeup_btn":         "💄 おすすめメイクを見る →",
 
   // === ArTryOnScreen ===
   "ar.look_fallback": "ルック",
