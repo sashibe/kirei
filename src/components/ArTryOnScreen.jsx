@@ -5,26 +5,28 @@ import MakeupCanvas from './MakeupCanvas.jsx';
 import useCamera from '../hooks/useCamera.js';
 import { useT } from '../i18n/index.jsx';
 import { GLASSES_ITEMS, EARRING_ITEMS } from '../data/accessories.js';
+import { BASE_LOOKS } from '../data/makeupLooks.js';
 
 const CATEGORIES = [
+  { id: 'base',    label: 'ベース',    icon: '🧴' },
   { id: 'lip',     label: 'リップ',    icon: '💄' },
   { id: 'cheek',   label: 'チーク',    icon: '🌸' },
   { id: 'glasses', label: 'メガネ',    icon: '👓' },
   { id: 'earring', label: 'イヤリング', icon: '💍' },
 ];
 
-export default function ArTryOnScreen({ look, styleTab, onDecide, onBack }) {
+export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack }) {
   const { t } = useT();
   const [intensity, setIntensity] = useState(70);
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [showMesh, setShowMesh] = useState(false);
   const [videoAspect, setVideoAspect] = useState(null);
-  const [activeCategory, setActiveCategory] = useState('lip');
-  const [lipColor, setLipColor] = useState(look?.lip || '#e8607c');
-  const [cheekColor, setCheekColor] = useState(look?.cheek || 'rgba(232,96,124,0.4)');
+  const [activeCategory, setActiveCategory] = useState('base');
+  const [selectedBase, setSelectedBase] = useState(baseLook?.id ?? 'clean-natural');
+  const [lipColor, setLipColor] = useState(colorLook?.lip || '#e8607c');
+  const [cheekColor, setCheekColor] = useState(colorLook?.cheek || 'rgba(232,96,124,0.4)');
   const [selectedGlasses, setSelectedGlasses] = useState('none');
   const [selectedEarring, setSelectedEarring] = useState('none');
-  const isColor = styleTab === 0;
 
   const canvasRef = useRef(null);
   const { videoRef, isActive, error: cameraError } = useCamera({ enabled: true });
@@ -46,25 +48,31 @@ export default function ArTryOnScreen({ look, styleTab, onDecide, onBack }) {
   const getVideo = useCallback(() => videoRef.current, [videoRef]);
   const cameraLive = isActive && !cameraError && videoPlaying;
 
-  // 現在のlookにリップ/チークの選択を反映
-  const activeLook = { ...look, lip: lipColor, cheek: cheekColor };
+  const currentBase = BASE_LOOKS.find(l => l.id === selectedBase) ?? baseLook;
+  const activeColorLook = {
+    ...colorLook,
+    lip: lipColor,
+    cheek: cheekColor,
+    eyeshadow: colorLook?.eyeshadow || 'rgba(232,150,120,0.2)',
+  };
 
   const opacityFactor = intensity / 100;
-  const eyeshadowColor = look?.eyeshadow || 'rgba(232,150,120,0.2)';
-  const baseColor = look?.base || '#e8d8c8';
-  const concealerColor = look?.concealer;
-  const browColor = look?.brow;
+  const eyeshadowColor = colorLook?.eyeshadow || 'rgba(232,150,120,0.2)';
+  const baseColor = currentBase?.base || '#e8d8c8';
+  const concealerColor = currentBase?.concealer;
+  const browColor = currentBase?.brow;
 
   const glassesItem = GLASSES_ITEMS.find(i => i.id === selectedGlasses);
   const earringItem = EARRING_ITEMS.find(i => i.id === selectedEarring);
 
-  const lookName = look?.name
-    ? (typeof look.name === 'object' ? t(look.name) : look.name)
+  const baseName = currentBase?.name
+    ? (typeof currentBase.name === 'object' ? t(currentBase.name) : currentBase.name)
+    : '';
+  const colorName = colorLook?.name
+    ? (typeof colorLook.name === 'object' ? t(colorLook.name) : colorLook.name)
     : t('ar.look_fallback');
 
-  // キャプチャ → 結果画面へ
   const handleDecide = () => {
-    // video + canvas を合成してキャプチャ
     const video = videoRef.current;
     const arCanvas = canvasRef.current;
 
@@ -73,14 +81,12 @@ export default function ArTryOnScreen({ look, styleTab, onDecide, onBack }) {
     captureCanvas.height = video.videoHeight || 480;
     const cctx = captureCanvas.getContext('2d');
 
-    // video描画（ミラー反転）
     cctx.save();
     cctx.translate(captureCanvas.width, 0);
     cctx.scale(-1, 1);
     cctx.drawImage(video, 0, 0, captureCanvas.width, captureCanvas.height);
     cctx.restore();
 
-    // ARオーバーレイ描画（ミラー反転）
     if (arCanvas) {
       cctx.save();
       cctx.translate(captureCanvas.width, 0);
@@ -106,17 +112,17 @@ export default function ArTryOnScreen({ look, styleTab, onDecide, onBack }) {
 
     onDecide({
       capturedImage: dataUrl,
-      look: activeLook,
+      baseLook: currentBase,
+      colorLook: { ...colorLook, lip: lipColor, cheek: cheekColor },
       products: [
-        ...(look?.products || []),
+        ...(currentBase?.products || []),
+        ...(colorLook?.products || []),
         ...accessoryProducts,
       ],
     });
   };
 
-  // リップカラーパレット
   const LIP_COLORS = ['#e8607c','#c05070','#d4826a','#b85050','#cf6080','#e07070'];
-  // チークカラーパレット
   const CHEEK_COLORS = [
     'rgba(232,96,124,0.4)',
     'rgba(255,150,100,0.4)',
@@ -126,7 +132,6 @@ export default function ArTryOnScreen({ look, styleTab, onDecide, onBack }) {
 
   return (
     <div style={{ padding: '12px 0' }}>
-      {/* Back button */}
       <button onClick={onBack} style={{
         background: 'none', border: 'none', fontSize: 13, color: '#94a3b8',
         cursor: 'pointer', padding: '0 16px 8px', fontWeight: 600,
@@ -134,7 +139,6 @@ export default function ArTryOnScreen({ look, styleTab, onDecide, onBack }) {
         {'<'} {t('ar.back_to_looks')}
       </button>
 
-      {/* AR Preview area */}
       <div style={{
         position: 'relative', margin: '0 16px 12px',
         borderRadius: 20, overflow: 'hidden',
@@ -157,8 +161,8 @@ export default function ArTryOnScreen({ look, styleTab, onDecide, onBack }) {
           <MakeupCanvas
             ref={canvasRef}
             getVideo={getVideo}
-            look={activeLook}
-            styleTab={styleTab}
+            baseLook={currentBase}
+            colorLook={activeColorLook}
             intensity={intensity}
             showMesh={showMesh}
             glassesItem={glassesItem}
@@ -166,7 +170,6 @@ export default function ArTryOnScreen({ look, styleTab, onDecide, onBack }) {
           />
         )}
 
-        {/* メッシュ表示トグル */}
         {cameraLive && (
           <button
             onClick={() => setShowMesh(v => !v)}
@@ -185,7 +188,6 @@ export default function ArTryOnScreen({ look, styleTab, onDecide, onBack }) {
           </button>
         )}
 
-        {/* SVG フォールバック */}
         {!cameraLive && (
           <div style={{
             width: '100%', height: '100%',
@@ -204,68 +206,63 @@ export default function ArTryOnScreen({ look, styleTab, onDecide, onBack }) {
               <path d="M58 90 Q75 82 90 88" stroke={browColor || '#5a4030'} strokeWidth="2.5" fill="none" strokeLinecap="round"/>
               <path d="M110 88 Q125 82 142 90" stroke={browColor || '#5a4030'} strokeWidth="2.5" fill="none" strokeLinecap="round"/>
               <path d="M100 108 L96 128 Q100 132 104 128 Z" fill="#e8c0a0" opacity="0.5"/>
-              {isColor ? (
+              <ellipse cx="100" cy="120" rx="60" ry="70" fill={baseColor} opacity={opacityFactor * 0.15} style={{ mixBlendMode: 'softLight' }}/>
+              {concealerColor && (
                 <>
-                  <ellipse cx="75" cy="100" rx="16" ry="10" fill={eyeshadowColor} opacity={opacityFactor * 0.8}/>
-                  <ellipse cx="125" cy="100" rx="16" ry="10" fill={eyeshadowColor} opacity={opacityFactor * 0.8}/>
-                  <ellipse cx="60" cy="135" rx="18" ry="14" fill={cheekColor} opacity={opacityFactor}/>
-                  <ellipse cx="140" cy="135" rx="18" ry="14" fill={cheekColor} opacity={opacityFactor}/>
-                  <path d="M85 155 Q100 148 115 155 Q108 165 100 167 Q92 165 85 155 Z" fill={lipColor} opacity={opacityFactor * 0.85}/>
-                </>
-              ) : (
-                <>
-                  <ellipse cx="100" cy="120" rx="60" ry="70" fill={baseColor} opacity={opacityFactor * 0.15} style={{ mixBlendMode: 'softLight' }}/>
-                  {concealerColor && (
-                    <>
-                      <ellipse cx="75" cy="115" rx="12" ry="6" fill={concealerColor} opacity={opacityFactor * 0.3}/>
-                      <ellipse cx="125" cy="115" rx="12" ry="6" fill={concealerColor} opacity={opacityFactor * 0.3}/>
-                    </>
-                  )}
-                  {look?.lip && (
-                    <path d="M85 155 Q100 148 115 155 Q108 165 100 167 Q92 165 85 155 Z" fill={look.lip} opacity={opacityFactor * 0.5}/>
-                  )}
+                  <ellipse cx="75" cy="115" rx="12" ry="6" fill={concealerColor} opacity={opacityFactor * 0.3}/>
+                  <ellipse cx="125" cy="115" rx="12" ry="6" fill={concealerColor} opacity={opacityFactor * 0.3}/>
                 </>
               )}
+              <ellipse cx="75" cy="100" rx="16" ry="10" fill={eyeshadowColor} opacity={opacityFactor * 0.8}/>
+              <ellipse cx="125" cy="100" rx="16" ry="10" fill={eyeshadowColor} opacity={opacityFactor * 0.8}/>
+              <ellipse cx="60" cy="135" rx="18" ry="14" fill={cheekColor} opacity={opacityFactor}/>
+              <ellipse cx="140" cy="135" rx="18" ry="14" fill={cheekColor} opacity={opacityFactor}/>
+              <path d="M85 155 Q100 148 115 155 Q108 165 100 167 Q92 165 85 155 Z" fill={lipColor} opacity={opacityFactor * 0.85}/>
             </svg>
           </div>
         )}
 
-        {/* Look name badge */}
         <div style={{
           position: 'absolute', top: 12, left: 12,
           background: cameraLive ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.9)',
           backdropFilter: 'blur(8px)',
           borderRadius: 12, padding: '6px 12px',
           boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+          maxWidth: '60%',
         }}>
+          {baseName && (
+            <p style={{
+              fontSize: 9, margin: '0 0 1px',
+              color: cameraLive ? 'rgba(255,255,255,0.6)' : '#94a3b8',
+              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+            }}>
+              {baseName}
+            </p>
+          )}
           <p style={{
             fontSize: 11, fontWeight: 700, margin: 0,
             color: cameraLive ? '#fff' : '#a855f7',
+            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
           }}>
-            {lookName}
+            {colorName}
           </p>
         </div>
       </div>
 
-      {/* Kirari comment */}
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '0 16px 10px' }}>
         <Kirari size={32} expression="sparkle" />
         <Bubble>
           <p style={{ fontSize: 12, color: '#334155', margin: 0, lineHeight: 1.6 }}>
-            {isColor
-              ? t('ar.color_comment', { name: lookName })
-              : t('ar.base_comment', { name: lookName })}
+            {t('ar.color_comment', { name: colorName })}
           </p>
         </Bubble>
       </div>
 
-      {/* Category tabs + selection panel */}
       <div style={{ padding: '0 16px', marginBottom: 10 }}>
         <div style={{
           background: '#fff', borderRadius: 16, padding: '10px 12px',
           boxShadow: '0 2px 8px rgba(139,92,246,0.06)', border: '1px solid #ede9fe',
         }}>
-          {/* Category tab bar */}
           <div style={{
             display: 'flex', gap: 0,
             background: 'rgba(139,92,246,0.06)', borderRadius: 12,
@@ -289,7 +286,43 @@ export default function ArTryOnScreen({ look, styleTab, onDecide, onBack }) {
             ))}
           </div>
 
-          {/* Lip palette */}
+          {activeCategory === 'base' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {BASE_LOOKS.map(item => (
+                <button
+                  key={item.id}
+                  onClick={() => setSelectedBase(item.id)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    padding: '8px 10px', borderRadius: 10,
+                    background: selectedBase === item.id
+                      ? 'rgba(168,85,247,0.12)' : 'rgba(139,92,246,0.04)',
+                    border: selectedBase === item.id
+                      ? '2px solid #a855f7' : '1px solid #ede9fe',
+                    cursor: 'pointer', textAlign: 'left',
+                  }}
+                >
+                  <div style={{
+                    width: 28, height: 28, borderRadius: '50%',
+                    background: item.base || item.brow || '#e8d8c8',
+                    border: '1.5px solid rgba(0,0,0,0.06)', flexShrink: 0,
+                  }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontSize: 12, fontWeight: 600, color: '#334155', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {t(item.name)}
+                    </p>
+                    <p style={{ fontSize: 10, color: '#94a3b8', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {t(item.desc)}
+                    </p>
+                  </div>
+                  {selectedBase === item.id && (
+                    <span style={{ fontSize: 16, color: '#a855f7', flexShrink: 0 }}>✓</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+
           {activeCategory === 'lip' && (
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
               {LIP_COLORS.map(c => (
@@ -303,7 +336,6 @@ export default function ArTryOnScreen({ look, styleTab, onDecide, onBack }) {
             </div>
           )}
 
-          {/* Cheek palette */}
           {activeCategory === 'cheek' && (
             <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
               {CHEEK_COLORS.map(c => (
@@ -316,7 +348,6 @@ export default function ArTryOnScreen({ look, styleTab, onDecide, onBack }) {
             </div>
           )}
 
-          {/* Glasses items */}
           {activeCategory === 'glasses' && (
             <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
               {GLASSES_ITEMS.map(item => (
@@ -336,7 +367,6 @@ export default function ArTryOnScreen({ look, styleTab, onDecide, onBack }) {
             </div>
           )}
 
-          {/* Earring items */}
           {activeCategory === 'earring' && (
             <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
               {EARRING_ITEMS.map(item => (
@@ -356,7 +386,6 @@ export default function ArTryOnScreen({ look, styleTab, onDecide, onBack }) {
             </div>
           )}
 
-          {/* Intensity slider (lip/cheek only) */}
           {(activeCategory === 'lip' || activeCategory === 'cheek') && (
             <div style={{ marginTop: 10 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
@@ -373,7 +402,6 @@ export default function ArTryOnScreen({ look, styleTab, onDecide, onBack }) {
         </div>
       </div>
 
-      {/* CTA */}
       <div style={{ padding: '0 16px', display: 'flex', gap: 8, marginBottom: 8 }}>
         <button onClick={onBack} style={{
           flex: 0.4, padding: 12,
