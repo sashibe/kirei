@@ -66,13 +66,20 @@ export default function ResultScreen({ skinScores: propSkin, personalColor = nul
           border: `1px solid ${pcBg.border}`,
           borderRadius: 18,
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-            <span style={{ fontSize: 20 }}>{getPcIcon(personalColor.season)}</span>
-            <p style={{ fontSize: 14, fontWeight: 800, color: pcBg.color, margin: 0 }}>
-              {t(personalColor.label)}
-            </p>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 6 }}>
+            <div>
+              <p style={{ fontSize: 10, color: pcBg.color, opacity: 0.7, margin: '0 0 2px', fontWeight: 600 }}>
+                {t('pc.your_type')}
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 20 }}>{getPcIcon(personalColor.season)}</span>
+                <p style={{ fontSize: 14, fontWeight: 800, color: pcBg.color, margin: 0 }}>
+                  {t(personalColor.label)}
+                </p>
+              </div>
+            </div>
             {personalColor.confidence < 0.6 && (
-              <span style={{ fontSize: 9, color: '#94a3b8', marginLeft: 'auto' }}>
+              <span style={{ fontSize: 9, color: '#94a3b8' }}>
                 {t("pc.reference")}
               </span>
             )}
@@ -111,57 +118,81 @@ export default function ResultScreen({ skinScores: propSkin, personalColor = nul
         </div>
       )}
 
-      {/* ===== 1. Hero: Look name + swatches + Kirari comment ===== */}
-      <div style={{
-        margin: '8px 16px 12px', padding: '16px',
-        background: 'linear-gradient(135deg, #faf5ff, #fdf2f8)',
-        borderRadius: 20, border: '1px solid #ede9fe',
-      }}>
-        {/* Category badge */}
-        <span style={{
-          fontSize: 10, fontWeight: 600, color: '#a855f7',
-          background: '#f3e8ff', padding: '3px 10px', borderRadius: 8,
+      {/* ===== 1. Hero: Look (メイク済み) or メイクCTA (スキンケア直行) ===== */}
+      {(!colorLook && !baseLook) ? (
+        <div style={{ margin: '8px 16px 12px', padding: '16px',
+          background: 'linear-gradient(135deg, #faf5ff, #fdf2f8)',
+          borderRadius: 20, border: '1px solid #ede9fe' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 12 }}>
+            <Kirari size={36} expression="wink" />
+            <Bubble>
+              <p style={{ fontSize: 12, color: '#334155', margin: 0, lineHeight: 1.6 }}>
+                {t('result.no_makeup_kirari')}
+              </p>
+            </Bubble>
+          </div>
+          <button onClick={onRestart} style={{
+            width: '100%', padding: 13,
+            background: 'linear-gradient(135deg, #a855f7, #ec4899)',
+            border: 'none', borderRadius: 14,
+            fontSize: 13, fontWeight: 700, color: '#fff', cursor: 'pointer',
+            boxShadow: '0 4px 16px rgba(168,85,247,0.25)',
+          }}>
+            {t('result.try_makeup_btn')}
+          </button>
+        </div>
+      ) : (
+        <div style={{
+          margin: '8px 16px 12px', padding: '16px',
+          background: 'linear-gradient(135deg, #faf5ff, #fdf2f8)',
+          borderRadius: 20, border: '1px solid #ede9fe',
         }}>
-          {categoryLabel}
-        </span>
+          {/* Category badge */}
+          <span style={{
+            fontSize: 10, fontWeight: 600, color: '#a855f7',
+            background: '#f3e8ff', padding: '3px 10px', borderRadius: 8,
+          }}>
+            {categoryLabel}
+          </span>
 
-        {/* Look name + swatches */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
-          <p style={{ fontSize: 18, fontWeight: 800, color: '#334155', margin: 0 }}>
-            {displayLookName}
-          </p>
-          {swatches.length > 0 && (
-            <div style={{ display: 'flex', gap: 4 }}>
-              {swatches.map((c, i) => (
-                <div key={i} style={{
-                  width: 24, height: 24, borderRadius: '50%', background: c,
-                  border: '2px solid rgba(255,255,255,0.8)',
-                  boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
-                }} />
-              ))}
-            </div>
-          )}
-        </div>
-
-        {(colorLook?.desc || baseLook?.desc) && (
-          <p style={{ fontSize: 11, color: '#64748b', margin: '4px 0 0', lineHeight: 1.5 }}>
-            {(() => {
-              const d = colorLook?.desc || baseLook?.desc;
-              return typeof d === 'object' ? t(d) : d;
-            })()}
-          </p>
-        )}
-
-        {/* Kirari comment */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginTop: 12 }}>
-          <Kirari size={36} expression="sparkle" bounce />
-          <Bubble>
-            <p style={{ fontSize: 12, color: '#334155', margin: 0, lineHeight: 1.6 }}>
-              {generateLookComment(colorLook, baseLook, t)}
+          {/* Look name + swatches */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+            <p style={{ fontSize: 18, fontWeight: 800, color: '#334155', margin: 0 }}>
+              {displayLookName}
             </p>
-          </Bubble>
+            {swatches.length > 0 && (
+              <div style={{ display: 'flex', gap: 4 }}>
+                {swatches.map((c, i) => (
+                  <div key={i} style={{
+                    width: 24, height: 24, borderRadius: '50%', background: c,
+                    border: '2px solid rgba(255,255,255,0.8)',
+                    boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+                  }} />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {(colorLook?.desc || baseLook?.desc) && (
+            <p style={{ fontSize: 11, color: '#64748b', margin: '4px 0 0', lineHeight: 1.5 }}>
+              {(() => {
+                const d = colorLook?.desc || baseLook?.desc;
+                return typeof d === 'object' ? t(d) : d;
+              })()}
+            </p>
+          )}
+
+          {/* Kirari comment */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginTop: 12 }}>
+            <Kirari size={36} expression="sparkle" bounce />
+            <Bubble>
+              <p style={{ fontSize: 12, color: '#334155', margin: 0, lineHeight: 1.6 }}>
+                {generateLookComment(colorLook, baseLook, t)}
+              </p>
+            </Bubble>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ===== 2. KIREI SELECT: Product cards ===== */}
       {products.length > 0 && (
@@ -263,7 +294,9 @@ export default function ResultScreen({ skinScores: propSkin, personalColor = nul
             cursor: 'pointer',
             boxShadow: '0 4px 12px rgba(34,197,94,0.3)',
           }}>
-            {'✨'} {t('result.skincare_cta_btn')}
+            {'✨'} {(!colorLook && !baseLook)
+              ? t('result.skincare_cta_btn_again')
+              : t('result.skincare_cta_btn')}
           </button>
         </div>
       )}

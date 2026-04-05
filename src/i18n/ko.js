@@ -179,6 +179,9 @@ export default {
   "result.skincare_cta_title":     "2주 동안 케어한 후의 피부를 봐보자",
   "result.skincare_cta_desc":      "너의 칙칙함 · 모공 점수를 바탕으로 시뮬레이션할게♪",
   "result.skincare_cta_btn":       "2주 후의 나를 보러 가기 →",
+  "result.skincare_cta_btn_again": "다시 보기",
+  "result.no_makeup_kirari":       "스킨케어로 피부를 가꿨으니, 다음엔 메이크업도 시도해봐♪",
+  "result.try_makeup_btn":         "💄 너에게 추천하는 메이크업 보기",
 
   // === ArTryOnScreen ===
   "ar.look_fallback": "룩",
@@ -240,6 +243,7 @@ export default {
 
   // === 퍼스널 컬러 ===
   "pc.reference": "(참고)",
+  "pc.your_type": "당신의 퍼스널 컬러",
   "pc.look_match": "너의 퍼스널 컬러와 매치",
   "kirari.pc_bright_spring": "투명감 넘치는 밝은 스프링이야♪ 파스텔 코럴이 완전 잘 어울려~!",
   "kirari.pc_true_spring":   "황금빛 밝은 트루 스프링♪ 코럴이나 골드가 빛나 보여~!",

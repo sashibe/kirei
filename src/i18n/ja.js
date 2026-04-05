@@ -179,6 +179,9 @@ export default {
   "result.skincare_cta_title":     "ケアを続けた2週間後の肌を見てみよう",
   "result.skincare_cta_desc":      "あなたのくすみ・毛穴スコアをもとにシミュレーションするよ♪",
   "result.skincare_cta_btn":       "2週間後の自分を見てみる →",
+  "result.skincare_cta_btn_again": "もう一度見る",
+  "result.no_makeup_kirari":       "スキンケアで肌を整えたら、次はメイクも試してみてね♪",
+  "result.try_makeup_btn":         "💄 あなたにおすすめのメイクを見てみる",
 
   // === ArTryOnScreen ===
   "ar.look_fallback": "ルック",
@@ -240,6 +243,7 @@ export default {
 
   // === パーソナルカラー ===
   "pc.reference": "（参考）",
+  "pc.your_type": "あなたのパーソナルカラー",
   "pc.look_match": "あなたのパーソナルカラーにマッチ",
   "kirari.pc_bright_spring": "透明感バッチリの明るいイエベ春だよ♪ パステルコーラルが超似合う〜！",
   "kirari.pc_true_spring":   "黄みのある明るいイエベ春♪ コーラルやゴールドが映えるよ〜！",
