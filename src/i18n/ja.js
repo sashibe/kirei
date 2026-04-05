@@ -191,6 +191,12 @@ export default {
   "ar.intensity": "メイクの強さ",
   "ar.view_result": "このルックで結果を見る →",
   "ar.try_another": "別のルックを試す",
+  "ar.cat_base":    "ベース",
+  "ar.cat_lip":     "リップ",
+  "ar.cat_cheek":   "チーク",
+  "ar.cat_glasses": "メガネ",
+  "ar.cat_earring": "イヤリング",
+  "ar.decide":      "このメイクで決定 ✓",
 
   // === CoordinateOverlay ===
   "coord.title": "Today's Total Look",
