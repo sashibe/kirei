@@ -20,17 +20,17 @@ const RIGHT_BROW   = FaceLandmarker.FACE_LANDMARKS_RIGHT_EYEBROW;
 const LIPS         = FaceLandmarker.FACE_LANDMARKS_LIPS;
 const TESSELATION  = FaceLandmarker.FACE_LANDMARKS_TESSELATION;
 
-const MakeupCanvas = forwardRef(function MakeupCanvas({ getVideo, baseLook, colorLook, intensity, showMesh, glassesItem, earringItem, contactLensItem }, ref) {
+const MakeupCanvas = forwardRef(function MakeupCanvas({ getVideo, baseLook, colorLook, intensity, showMesh, glassesItem, earringItem, contactLensItem, coverFit }, ref) {
   const canvasRef = useRef(null);
   useImperativeHandle(ref, () => canvasRef.current);
   const rafRef = useRef(null);
   const { ready, detect } = useFaceLandmarkerCtx();
 
   // props を ref に同期（ループ内で最新値参照）
-  const propsRef = useRef({ baseLook, colorLook, intensity, showMesh, glassesItem, earringItem, contactLensItem });
+  const propsRef = useRef({ baseLook, colorLook, intensity, showMesh, glassesItem, earringItem, contactLensItem, coverFit });
   useEffect(() => {
-    propsRef.current = { baseLook, colorLook, intensity, showMesh, glassesItem, earringItem, contactLensItem };
-  }, [baseLook, colorLook, intensity, showMesh, glassesItem, earringItem, contactLensItem]);
+    propsRef.current = { baseLook, colorLook, intensity, showMesh, glassesItem, earringItem, contactLensItem, coverFit };
+  }, [baseLook, colorLook, intensity, showMesh, glassesItem, earringItem, contactLensItem, coverFit]);
 
   // 前回の検出結果をキャッシュ（フレームスキップ用）
   const lastLandmarksRef = useRef(null);
@@ -53,6 +53,24 @@ const MakeupCanvas = forwardRef(function MakeupCanvas({ getVideo, baseLook, colo
       if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
+      }
+
+      // coverFit: match canvas CSS to objectFit:cover positioning
+      if (propsRef.current.coverFit && canvas.parentElement) {
+        const cW = canvas.parentElement.clientWidth;
+        const cH = canvas.parentElement.clientHeight;
+        const vA = video.videoWidth / video.videoHeight;
+        const cA = cW / cH;
+        let dW, dH;
+        if (cA > vA) {
+          dW = cW; dH = cW / vA;
+        } else {
+          dH = cH; dW = cH * vA;
+        }
+        canvas.style.width = dW + 'px';
+        canvas.style.height = dH + 'px';
+        canvas.style.left = ((cW - dW) / 2) + 'px';
+        canvas.style.top = ((cH - dH) / 2) + 'px';
       }
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);

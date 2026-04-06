@@ -31,19 +31,13 @@ export default function SkincareARScreen({ skinScores, onNext, onBack }) {
   const [sliderValue, setSliderValue] = useState(0);
   const [userInteracted, setUserInteracted] = useState(false);
   const [videoPlaying, setVideoPlaying] = useState(false);
-  const [videoAspect, setVideoAspect] = useState(null);
   const [whyOpen, setWhyOpen] = useState(false);
   const { videoRef, isActive, error: cameraError } = useCamera({ enabled: true });
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    const onPlaying = () => {
-      setVideoPlaying(true);
-      if (video.videoWidth && video.videoHeight) {
-        setVideoAspect(video.videoWidth / video.videoHeight);
-      }
-    };
+    const onPlaying = () => setVideoPlaying(true);
     if (video.readyState >= 2) { onPlaying(); return; }
     video.addEventListener('loadeddata', onPlaying);
     return () => video.removeEventListener('loadeddata', onPlaying);
@@ -90,22 +84,18 @@ export default function SkincareARScreen({ skinScores, onNext, onBack }) {
       background: '#000', overflow: 'hidden',
     }}>
 
-      {/* Video wrapper: aspect-ratio locked */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>
-        <video
-          ref={videoRef}
-          style={{
-            width: '100%', height: '100%',
-            ...(videoAspect ? { aspectRatio: String(videoAspect), width: 'auto', maxWidth: '100%', maxHeight: '100%' } : {}),
-            transform: 'scaleX(-1)',
-            display: cameraLive ? 'block' : 'none',
-          }}
-          playsInline muted autoPlay
-        />
-      </div>
+      {/* Video: objectFit cover fills container */}
+      <video
+        ref={videoRef}
+        style={{
+          position: 'absolute', inset: 0,
+          width: '100%', height: '100%',
+          objectFit: 'cover',
+          transform: 'scaleX(-1)',
+          display: cameraLive ? 'block' : 'none',
+        }}
+        playsInline muted autoPlay
+      />
 
       {!cameraLive && (
         <div style={{
