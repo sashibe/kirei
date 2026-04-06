@@ -441,6 +441,28 @@ const colors = {
 
 ---
 
+## エンゲージメント設計（実装済み + アプリ化検討事項）
+
+### 実装済み（デモ版・localStorage）
+- **行動ログ基盤** (`src/utils/logger.js`): `logEvent()` / `getHoursSinceLastCheck()` / `getTotalChecks()` / `getPrevScore()`
+- **キラリセリフのパーソナライズ化**: 優先順位ベースの自動選出（経過時間→時間帯/曜日→天気→連続日数→ランダム）
+- **表示頻度を毎回に変更**: 10回に1回 → 毎回（バリエーション確保済み）
+- **セリフ重複回避**: `pickLine()` で直近5件と重複しないよう制御
+- **ミラー滞在時間計測**: `mirror_enter` / `mirror_exit` イベント
+- **チェック完了ログ**: `check_complete`（スコア・パーソナルカラー記録）
+- 仕様詳細: `docs/ENGAGEMENT_SPEC.md`
+
+### アプリ化時の検討事項（Step 5〜9）
+- **Step 5: Supabaseテーブル作成** — `users` / `skin_checks` / `user_events` / `product_taps` の4テーブル。外部EC連携カラム（`musinsa_user_id`等）を含む。スキーマは `ENGAGEMENT_SPEC.md` §3 参照
+- **Step 6: localStorageログのSupabase同期** — ローカルログをバックエンドに送信するバッチ処理。オフライン時はlocalStorageに蓄積し、オンライン復帰時に同期
+- **Step 7: パーソナルカラー判定の永続化** — `personal_color_type` / `personal_color_tone` をSupabase userテーブルに保存。判定結果を跨セッションで保持
+- **Step 8: MUSINSA送客URL生成** — `buildMusinsaSearchUrl()` でパーソナルカラー × 韓国語クエリでMUSINSA検索ページへ送客
+- **Step 9: ResultScreen / SuggestScreenにMUSINSA送客CTA追加** — 「MUSINSAで見る」ボタン。市場（kr/jp/global）に応じてリンク先を切替（`ecLinks.js`）
+- **プライバシー**: 肌データの外部送信は全市場で明示的同意必須（`consent_data_sharing`フラグ）
+- **法規制**: 韓国PIPA / 日本個人情報保護法 / EU GDPR（Phase 3以降）の市場別対応が必要
+
+---
+
 ## 技術的負債
 
 ### 非同期state/ナビゲーション問題

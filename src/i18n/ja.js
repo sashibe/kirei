@@ -67,10 +67,10 @@ export default {
   "result.skin_check_btn": "肌チェックも受ける ✨",
   "result.share": "シェアする",
   "result.share_copied": "画像をクリップボードにコピーしました！",
-  "result.purchase_btn": "まとめて購入する",
-  "result.check_item": "商品を見る",
-  "result.purchase_all": "まとめてチェックする",
-  "result.purchase_note": "※外部サイト（Amazon）に移動します",
+  "result.purchase_btn": "選択した商品を購入する",
+  "result.check_item": "MUSINSAで見る",
+  "result.purchase_all": "選択した商品を購入する",
+  "result.purchase_note": "※外部サイト（MUSINSA）に移動します",
   "result.restart": "もう一度ミラーを開く",
   "result.skincare_comment": "スキンケアルーティンで素肌力アップ♪ 毎日続けてキレイをキープしてね！",
   "result.makeup_comment": "メイクの仕上がりチェック♪ 今日のあなたにぴったり！",
@@ -78,6 +78,7 @@ export default {
   "result.look_comment_default": "今日のあなたにぴったり！",
   "result.used_items": "使用アイテム",
   "result.total": "合計",
+  "result.total_selected": "選択中（{count}件）",
   "result.coord_hint": "今日のコーデヒント",
   "result.view_coord": "おすすめコーデを見る",
   "result.check_skin_score": "肌スコアを確認",
@@ -250,6 +251,30 @@ export default {
   "kirari.weather_hot": "今日は暑くなりそう。皮脂多めの日かも",
   "kirari.weather_rain": "雨の予報だよ。ウォータープルーフのアイテム、チェックしてみて",
   "kirari.night_on": "画面をライト代わりにしてるよ✨ 顔を近づけてみて",
+
+  // === 経過時間 × 促しセリフ ===
+  "kirari.first_visit": "はじめまして！タップして肌チェックしてみてね♪",
+  "kirari.check_miss_long": "会いたかったよ〜！チェックしよ♪",
+  "kirari.check_miss_day": "久しぶり！肌の様子どう？",
+  "kirari.check_miss_half": "今日まだチェックしてないね",
+  "kirari.check_change": "さっきより変化あるかも♪",
+
+  // === スコア変化 × パーソナライズ ===
+  "kirari.first_check_done": "初めての肌チェック完了！これが基準になるよ♪",
+  "kirari.score_up_big": "肌の調子、めちゃいいじゃん！何かした？",
+  "kirari.score_up": "昨日より上がってるよ、いい感じ♪",
+  "kirari.score_down_big": "ちょっと下がったね、疲れてる？",
+  "kirari.score_down": "今日は乾燥気味かも、水飲んだ？",
+  "kirari.score_stable": "今日もチェックできたね♪",
+
+  // === 時間帯・曜日 ===
+  "kirari.time_early": "早起きえらい！朝ケアの効果が出やすい時間♪",
+  "kirari.time_morning": "おはよう！今日の肌チェックしてみよ♪",
+  "kirari.time_late": "夜更かし？お肌のゴールデンタイムだよ",
+  "kirari.time_night": "夜チェックえらい、明日の肌が楽しみ♪",
+  "kirari.time_monday": "今週もよろしく♪",
+  "kirari.time_friday": "週末前！肌ケアして気持ちよく過ごそ",
+
   "mirror.night_tap_back": "タップで鏡に戻る",
 
   // === パーソナルカラー ===

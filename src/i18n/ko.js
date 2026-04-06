@@ -67,10 +67,10 @@ export default {
   "result.skin_check_btn": "피부 체크도 받기 ✨",
   "result.share": "공유하기",
   "result.share_copied": "이미지를 클립보드에 복사했습니다!",
-  "result.purchase_btn": "모아서 구매하기",
-  "result.check_item": "상품 보기",
-  "result.purchase_all": "모아서 확인하기",
-  "result.purchase_note": "※ 외부 사이트(Amazon)로 이동합니다",
+  "result.purchase_btn": "선택한 상품 구매하기",
+  "result.check_item": "MUSINSA에서 보기",
+  "result.purchase_all": "선택한 상품 구매하기",
+  "result.purchase_note": "※ MUSINSA로 이동합니다",
   "result.restart": "다시 거울 열기",
   "result.skincare_comment": "스킨케어 루틴으로 맨살 파워 업♪ 매일 계속해서 예쁘게 유지하자!",
   "result.makeup_comment": "메이크업 마무리 체크♪ 오늘의 당신에게 딱!",
@@ -78,6 +78,7 @@ export default {
   "result.look_comment_default": "오늘의 당신에게 딱!",
   "result.used_items": "사용 아이템",
   "result.total": "합계",
+  "result.total_selected": "선택 중 ({count}개)",
   "result.coord_hint": "오늘의 코디 힌트",
   "result.view_coord": "추천 코디 보기",
   "result.check_skin_score": "피부 점수 확인",
@@ -250,6 +251,30 @@ export default {
   "kirari.weather_hot": "오늘은 더워질 것 같아. 피지가 많은 날일지도",
   "kirari.weather_rain": "비 예보야! 워터프루프 아이템 확인해 봐",
   "kirari.night_on": "화면을 조명 대신 쓰고 있어✨ 얼굴을 가까이 해 봐",
+
+  // === 경과 시간 × 체크 유도 ===
+  "kirari.first_visit": "반가워! 탭해서 피부 체크해 봐♪",
+  "kirari.check_miss_long": "보고 싶었어~! 체크하자♪",
+  "kirari.check_miss_day": "오랜만이야! 피부 상태 어때?",
+  "kirari.check_miss_half": "오늘 아직 체크 안 했네",
+  "kirari.check_change": "아까보다 변화가 있을지도♪",
+
+  // === 점수 변화 × 맞춤 대사 ===
+  "kirari.first_check_done": "첫 피부 체크 완료! 이게 기준이 될 거야♪",
+  "kirari.score_up_big": "피부 컨디션 완전 좋은데! 뭐 했어?",
+  "kirari.score_up": "어제보다 올라갔어, 좋은 느낌♪",
+  "kirari.score_down_big": "좀 내려갔네, 피곤해?",
+  "kirari.score_down": "오늘은 건조한 편인지도, 물 마셨어?",
+  "kirari.score_stable": "오늘도 체크했네♪",
+
+  // === 시간대 · 요일 ===
+  "kirari.time_early": "일찍 일어났네! 아침 케어 효과가 좋은 시간♪",
+  "kirari.time_morning": "좋은 아침! 오늘의 피부 체크해 보자♪",
+  "kirari.time_late": "야행성? 피부 골든타임이야",
+  "kirari.time_night": "저녁 체크 좋아, 내일 피부가 기대돼♪",
+  "kirari.time_monday": "이번 주도 잘 부탁해♪",
+  "kirari.time_friday": "주말 앞! 피부 케어하고 기분 좋게 보내자",
+
   "mirror.night_tap_back": "탭하면 거울로 돌아가",
 
   // === 퍼스널 컬러 ===

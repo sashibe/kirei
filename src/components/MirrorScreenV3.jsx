@@ -12,7 +12,8 @@ import { useT } from '../i18n/index.jsx';
 import { SKIN_SCORES } from '../data/scores.js';
 import { analyzeSkin, analyzeSkinWithLandmarks } from '../analysis/skinAnalyzer.js';
 import { analyzePersonalColor, getPcColors, getPcIcon } from '../analysis/personalColor.js';
-import { getPcLine } from '../data/kirariDialogues.js';
+import { getPcLine, getScoreDeltaLine } from '../data/kirariDialogues.js';
+import { logEvent, getPrevScore } from '../utils/logger.js';
 
 const STAGE = { SEARCHING: 'searching', DETECTED: 'detected', READY: 'ready', SHUTTER: 'shutter', SCANNING: 'scanning' };
 
@@ -39,6 +40,16 @@ export default function MirrorScreenV3({ onResult }) {
 
   // キラリ アンビエント出現（Step 2 + 天気連動 Step 3）
   const kirariAmbient = useKirari({ weather, isChecking: checking, t });
+
+  // 行動ログ: ミラー画面の滞在時間計測
+  useEffect(() => {
+    const enterTime = Date.now();
+    logEvent('mirror_enter');
+    return () => {
+      const duration = Math.round((Date.now() - enterTime) / 1000);
+      logEvent('mirror_exit', { duration_sec: duration });
+    };
+  }, []);
 
   const isScanning = stage === STAGE.SCANNING;
   const shutterEnabled = checking && !isScanning && stage !== STAGE.SHUTTER;
@@ -93,6 +104,17 @@ export default function MirrorScreenV3({ onResult }) {
 
     setSkinScores(scores);
     setPersonalColor(pc);
+
+    // 行動ログ: チェック完了
+    const overall = Math.round((scores.tone.score + scores.pores.score + scores.dullness.score) / 3);
+    logEvent('check_complete', {
+      score_overall: overall,
+      score_tone: scores.tone.score,
+      score_pores: scores.pores.score,
+      score_dullness: scores.dullness.score,
+      personal_color: pc?.season || null,
+    });
+
     return { scores, personalColor: pc };
   }, []);
 

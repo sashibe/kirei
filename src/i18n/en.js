@@ -67,10 +67,10 @@ export default {
   "result.skin_check_btn": "Take a Skin Check too ✨",
   "result.share": "Share",
   "result.share_copied": "Image copied to clipboard!",
-  "result.purchase_btn": "Buy all items",
-  "result.check_item": "View item",
-  "result.purchase_all": "Check all items",
-  "result.purchase_note": "* Opens external site (Amazon)",
+  "result.purchase_btn": "Purchase selected items",
+  "result.check_item": "View on MUSINSA",
+  "result.purchase_all": "Purchase selected items",
+  "result.purchase_note": "* Redirects to MUSINSA",
   "result.restart": "Open mirror again",
   "result.skincare_comment": "Boost your natural skin with a skincare routine♪ Keep it up every day!",
   "result.makeup_comment": "Makeup check♪ Perfect for you today!",
@@ -78,6 +78,7 @@ export default {
   "result.look_comment_default": "Perfect for you today!",
   "result.used_items": "Items Used",
   "result.total": "Total",
+  "result.total_selected": "Selected ({count} items)",
   "result.coord_hint": "Today's Coord Hint",
   "result.view_coord": "View Recommended Coord",
   "result.check_skin_score": "Check Skin Score",
@@ -250,6 +251,30 @@ export default {
   "kirari.weather_hot": "It's going to be hot today. Your skin might be oilier",
   "kirari.weather_rain": "Rain forecast! Check out waterproof items",
   "kirari.night_on": "Using the screen as a light\u2728 Bring your face closer",
+
+  // === Check prompt by elapsed time ===
+  "kirari.first_visit": "Nice to meet you! Tap to check your skin♪",
+  "kirari.check_miss_long": "I missed you! Let's check your skin♪",
+  "kirari.check_miss_day": "Long time no see! How's your skin doing?",
+  "kirari.check_miss_half": "Haven't checked today yet!",
+  "kirari.check_change": "Might be different from earlier♪",
+
+  // === Score delta personalization ===
+  "kirari.first_check_done": "First skin check done! This is your baseline♪",
+  "kirari.score_up_big": "Your skin is looking great! Did you do something special?",
+  "kirari.score_up": "Better than yesterday, looking good♪",
+  "kirari.score_down_big": "Score went down a bit. Feeling tired?",
+  "kirari.score_down": "Skin seems a bit dry today. Had enough water?",
+  "kirari.score_stable": "Another check done♪",
+
+  // === Time of day / day of week ===
+  "kirari.time_early": "Early bird! Great time for morning skincare♪",
+  "kirari.time_morning": "Good morning! Let's check your skin♪",
+  "kirari.time_late": "Staying up late? It's golden time for skin recovery!",
+  "kirari.time_night": "Evening check, nice! Tomorrow's skin will thank you♪",
+  "kirari.time_monday": "New week, let's go♪",
+  "kirari.time_friday": "Weekend's coming! Take care of your skin♪",
+
   "mirror.night_tap_back": "Tap to return to mirror",
 
   // === Personal color ===

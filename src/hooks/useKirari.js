@@ -1,4 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { getHoursSinceLastCheck, getTotalChecks } from '../utils/logger.js';
+import {
+  getCheckPromptLine,
+  shouldShowCheckPrompt,
+  getTimeBasedLine,
+  pickLine,
+} from '../data/kirariDialogues.js';
 
 // --- セリフパターン定義（翻訳キー） ---
 
@@ -49,18 +56,57 @@ function getAndUpdateStreak() {
   return newStreak;
 }
 
-// セリフプールを構築（天気キーがあれば含む）
-function buildPool(weatherKey) {
-  const pool = [HINT_IDLE_KEY, ...RANDOM_KEYS];
-  if (weatherKey) pool.push(weatherKey);
-  return pool;
+/**
+ * 優先順位でセリフキーを選出
+ * 1. 連続日数（3/7/30日）
+ * 2. 前回チェックからの経過時間（促しセリフ）
+ * 3. 時間帯・曜日
+ * 4. 天気
+ * 5. ランダムプール
+ */
+function selectFirstLineKey(streak, weatherKey) {
+  // 1. 連続日数
+  if (streak === 3 || streak === 7 || streak === 30) {
+    return STREAK_KEYS[streak];
+  }
+
+  // 2. 前回チェックからの経過時間
+  const hours = getHoursSinceLastCheck();
+  const totalChecks = getTotalChecks();
+  if (shouldShowCheckPrompt(hours)) {
+    const promptKey = getCheckPromptLine(hours, totalChecks);
+    if (promptKey) return promptKey;
+  }
+
+  // 3. 時間帯・曜日
+  const now = new Date();
+  const timeKey = getTimeBasedLine(now.getHours(), now.getDay());
+  if (timeKey) return timeKey;
+
+  // 4. 天気
+  if (weatherKey) return weatherKey;
+
+  // 5. フォールバック
+  return HINT_IDLE_KEY;
 }
 
-// シャッフルして同じセリフが連続しないようにする
-function shuffleAvoid(pool, lastKey) {
-  const filtered = pool.filter(k => k !== lastKey);
-  if (filtered.length === 0) return pool[0];
-  return filtered[Math.floor(Math.random() * filtered.length)];
+// セリフプールを構築（リピート用）
+function buildPool(weatherKey) {
+  const pool = [...RANDOM_KEYS];
+  if (weatherKey) pool.push(weatherKey);
+
+  // 時間帯キーもプールに追加
+  const now = new Date();
+  const timeKey = getTimeBasedLine(now.getHours(), now.getDay());
+  if (timeKey) pool.push(timeKey);
+
+  // 経過時間系の促しも含める
+  const hours = getHoursSinceLastCheck();
+  const totalChecks = getTotalChecks();
+  const promptKey = getCheckPromptLine(hours, totalChecks);
+  if (promptKey) pool.push(promptKey);
+
+  return pool;
 }
 
 // 適応型インターバル: 経過時間に応じて間隔を広げる
@@ -74,11 +120,10 @@ function getInterval(elapsedMs) {
 /**
  * useKirari - キラリの適応型リピート出現を管理するフック
  *
- * ミラーモード起動中、適応型の間隔でセリフをリピート表示する。
- * - 0〜30秒: 15秒間隔
- * - 30秒〜2分: 30秒間隔
- * - 2分以降: 45秒間隔
- * 表示時間は一律4秒。同じセリフが連続しない。
+ * v2: パーソナライズセリフ対応
+ * - 毎回表示（10回に1回 → 毎回）
+ * - 優先順位: 経過時間 > スコア変化 > 時間帯 > 天気 > 連続日数 > ランダム
+ * - pickLine()で重複回避
  *
  * @param {Object} options
  * @param {Object|null} options.weather - 天気データ
@@ -115,23 +160,15 @@ export default function useKirari({ weather = null, isChecking = false, t = (k) 
   useEffect(() => {
     if (isChecking) return;
 
-    getAndUpdateStreak();
+    const streak = getAndUpdateStreak();
     const weatherKey = getWeatherKey(weather);
     const pool = buildPool(weatherKey);
     startTimeRef.current = Date.now();
 
-    // 初回表示: 連続日数メッセージ or 通常プール
-    const streak = parseInt(localStorage.getItem('kirei_streak') || '0', 10);
-    let firstKey;
-    if (streak === 3 || streak === 7 || streak === 30) {
-      firstKey = STREAK_KEYS[streak];
-    } else if (weatherKey) {
-      firstKey = weatherKey;
-    } else {
-      firstKey = HINT_IDLE_KEY;
-    }
+    // 初回セリフを優先順位で選出
+    const firstKey = selectFirstLineKey(streak, weatherKey);
 
-    // 初回は3秒後に表示
+    // 初回は3秒後に表示（毎回表示）
     const firstTimer = setTimeout(() => {
       show(t(firstKey));
       lastKeyRef.current = firstKey;
@@ -143,10 +180,10 @@ export default function useKirari({ weather = null, isChecking = false, t = (k) 
       const interval = getInterval(elapsed);
 
       repeatTimerRef.current = setTimeout(() => {
-        const key = shuffleAvoid(pool, lastKeyRef.current);
+        const key = pickLine(pool.filter(k => k !== lastKeyRef.current));
         show(t(key));
         lastKeyRef.current = key;
-        scheduleNext(); // 再帰的に次をスケジュール
+        scheduleNext();
       }, interval);
     }
 
