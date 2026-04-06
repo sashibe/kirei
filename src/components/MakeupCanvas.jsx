@@ -136,8 +136,8 @@ export default MakeupCanvas;
 // ============================================================
 
 function drawMeshOverlay(ctx, lms, w, h) {
-  // Mirror flip helper
-  const mx = (lm) => (1 - lm.x) * w;
+  // Canvas has CSS scaleX(-1), so use raw coordinates
+  const mx = (lm) => lm.x * w;
   const my = (lm) => lm.y * h;
 
   ctx.globalAlpha = 0.85;

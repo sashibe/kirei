@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2026-04-06 — fix: ランドマーク二重反転を修正
+
+- Canvas要素にCSS `scaleX(-1)` が既に適用されていたため、JS側で `(1-lm.x)*W` とすると二重反転になっていた
+- `lmX(lm, w) = lm.x * w` に戻し、CSS側のみでミラー処理する方式に統一
+- makeupRenderer.js + MakeupCanvas.jsx のメッシュ描画を修正
+
+---
+
 ## 2026-04-06 — fix: PC環境でカメラ映像が顔を映さない問題
 
 - ArTryOnScreen / SkincareARScreen の `objectFit: 'cover'` → `'contain'` に変更

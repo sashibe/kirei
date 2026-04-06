@@ -11,10 +11,11 @@
 import { FaceLandmarker } from '@mediapipe/tasks-vision';
 
 // ============================================================
-// 座標変換ヘルパー（ミラー反転）
+// 座標変換ヘルパー
 // ============================================================
-// フロントカメラはミラー表示のため、MediaPipeの x 座標を反転する
-const lmX = (lm, w) => (1 - lm.x) * w;
+// Canvas要素にCSS scaleX(-1)が適用されているため、
+// JS側ではMediaPipeの座標をそのまま使用する（CSS側でミラー反転される）
+const lmX = (lm, w) => lm.x * w;
 const lmY = (lm, h) => lm.y * h;
 
 // ============================================================
@@ -153,7 +154,7 @@ export function drawEyeshadow(ctx, lms, w, h, colorStr, opacity) {
   for (const indices of [LEFT_EYESHADOW, RIGHT_EYESHADOW]) {
     let cx = 0, cy = 0, minY = Infinity, maxY = -Infinity;
     for (const i of indices) {
-      cx += (1 - lms[i].x); cy += lms[i].y;
+      cx += lms[i].x; cy += lms[i].y;
       minY = Math.min(minY, lms[i].y);
       maxY = Math.max(maxY, lms[i].y);
     }
@@ -349,7 +350,7 @@ export function drawConcealer(ctx, lms, w, h, colorStr, opacity) {
     ctx.globalAlpha = opa * 0.15;
 
     let cx = 0, cy = 0;
-    for (const i of indices) { cx += (1 - lms[i].x); cy += lms[i].y; }
+    for (const i of indices) { cx += lms[i].x; cy += lms[i].y; }
     cx = (cx / indices.length) * w;
     cy = (cy / indices.length) * h;
 
