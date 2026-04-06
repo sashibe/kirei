@@ -37,6 +37,7 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
   const [selectedEarring, setSelectedEarring] = useState('none');
   const [selectedContactLens, setSelectedContactLens] = useState('none');
   const [beforeAfter, setBeforeAfter] = useState(false);
+  const [videoAspect, setVideoAspect] = useState(null);
 
   const canvasRef = useRef(null);
   const { videoRef, isActive, error: cameraError } = useCamera({ enabled: true });
@@ -44,7 +45,12 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    const onPlaying = () => setVideoPlaying(true);
+    const onPlaying = () => {
+      setVideoPlaying(true);
+      if (video.videoWidth && video.videoHeight) {
+        setVideoAspect(video.videoWidth / video.videoHeight);
+      }
+    };
     if (video.readyState >= 2) { onPlaying(); return; }
     video.addEventListener('loadeddata', onPlaying);
     return () => video.removeEventListener('loadeddata', onPlaying);
@@ -121,36 +127,44 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
       background: '#000', overflow: 'hidden',
     }}>
 
-      {/* Camera full-screen (same approach as MirrorScreen/CameraView) */}
-      <video
-        ref={videoRef}
-        style={{
-          position: 'absolute', inset: 0,
-          width: '100%', height: '100%',
-          objectFit: 'contain',
-          transform: 'scaleX(-1)',
-          display: cameraLive ? 'block' : 'none',
-        }}
-        playsInline muted autoPlay
+      {/* Video + Canvas wrapper: aspect-ratio locked to video dimensions */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
-      />
-
-      {/* AR Canvas overlay */}
-      {cameraLive && !beforeAfter && (
-        <MakeupCanvas
-          ref={canvasRef}
-          getVideo={getVideo}
-          baseLook={currentBase}
-          colorLook={activeColorLook}
-          intensity={intensity}
-          showMesh={showMesh}
-          glassesItem={glassesItem}
-          earringItem={earringItem}
-          contactLensItem={contactLensItem}
-        />
-      )}
+      >
+        <div style={{
+          position: 'relative',
+          width: '100%', height: '100%',
+          ...(videoAspect ? { aspectRatio: String(videoAspect), width: 'auto', maxWidth: '100%', maxHeight: '100%' } : {}),
+        }}>
+          <video
+            ref={videoRef}
+            style={{
+              width: '100%', height: '100%',
+              transform: 'scaleX(-1)',
+              display: cameraLive ? 'block' : 'none',
+            }}
+            playsInline muted autoPlay
+          />
+          {cameraLive && !beforeAfter && (
+            <MakeupCanvas
+              ref={canvasRef}
+              getVideo={getVideo}
+              baseLook={currentBase}
+              colorLook={activeColorLook}
+              intensity={intensity}
+              showMesh={showMesh}
+              glassesItem={glassesItem}
+              earringItem={earringItem}
+              contactLensItem={contactLensItem}
+            />
+          )}
+        </div>
+      </div>
 
       {/* Before/After indicator */}
       {beforeAfter && (
