@@ -67,7 +67,7 @@ export default {
   "result.skin_check_btn": "피부 체크도 받기 ✨",
   "result.share": "공유하기",
   "result.share_copied": "이미지를 클립보드에 복사했습니다!",
-  "result.purchase_btn": "선택한 상품 구매하기",
+  "result.purchase_btn": "상품 모아보기",
   "result.check_item": "MUSINSA에서 보기",
   "result.purchase_all": "선택한 상품 구매하기",
   "result.purchase_note": "※ MUSINSA로 이동합니다",

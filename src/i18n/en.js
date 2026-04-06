@@ -67,7 +67,7 @@ export default {
   "result.skin_check_btn": "Take a Skin Check too ✨",
   "result.share": "Share",
   "result.share_copied": "Image copied to clipboard!",
-  "result.purchase_btn": "Purchase selected items",
+  "result.purchase_btn": "View all items",
   "result.check_item": "View on MUSINSA",
   "result.purchase_all": "Purchase selected items",
   "result.purchase_note": "* Redirects to MUSINSA",

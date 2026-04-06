@@ -67,7 +67,7 @@ export default {
   "result.skin_check_btn": "肌チェックも受ける ✨",
   "result.share": "シェアする",
   "result.share_copied": "画像をクリップボードにコピーしました！",
-  "result.purchase_btn": "選択した商品を購入する",
+  "result.purchase_btn": "商品をまとめて見る",
   "result.check_item": "MUSINSAで見る",
   "result.purchase_all": "選択した商品を購入する",
   "result.purchase_note": "※外部サイト（MUSINSA）に移動します",

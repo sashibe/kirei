@@ -458,6 +458,7 @@ const colors = {
 - **Step 7: パーソナルカラー判定の永続化** — `personal_color_type` / `personal_color_tone` をSupabase userテーブルに保存。判定結果を跨セッションで保持
 - **Step 8: MUSINSA送客URL生成** — `buildMusinsaSearchUrl()` でパーソナルカラー × 韓国語クエリでMUSINSA検索ページへ送客
 - **Step 9: ResultScreen / SuggestScreenにMUSINSA送客CTA追加** — 「MUSINSAで見る」ボタン。市場（kr/jp/global）に応じてリンク先を切替（`ecLinks.js`）
+- **KIREI SELECTブランドラベル**: ResultScreenの商品カード右下「KIREI SELECT」は現状維持。MUSINSA提携実現後、共同ブランディングに応じて変更する可能性あり
 - **プライバシー**: 肌データの外部送信は全市場で明示的同意必須（`consent_data_sharing`フラグ）
 - **法規制**: 韓国PIPA / 日本個人情報保護法 / EU GDPR（Phase 3以降）の市場別対応が必要
 
