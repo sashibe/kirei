@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 2026-04-07 — fix: AR画面 position:relative + height:100% 方式に変更
+
+- `position: absolute` だと `.kirei-app-container` の `overflow-y:auto` と相性が悪く真っ白になる問題を修正
+- `position: relative; width:100%; height:100%; overflow:hidden` でブロック要素として親を100%埋める方式に変更
+- video/canvas は内部で `position: absolute; inset:0` により相対配置
+- PC（デバイスフレーム）でもスマホ（フルスクリーン）でも正常に表示
+
+---
+
 ## 2026-04-07 — fix: AR全画面の position:fixed → absolute 修正
 
 - PC表示ではiPhoneモックアップ（390x844px）内にレンダリングされるが、`position:fixed` + `100vw/100vh` はビューポート全体を基準にするためモック外にはみ出していた

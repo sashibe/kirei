@@ -88,7 +88,7 @@ export default function SkincareARScreen({ skinScores, onNext, onBack }) {
 
   return (
     <div style={{
-      position: 'absolute', inset: 0,
+      position: 'relative',
       width: '100%', height: '100%',
       background: '#000', overflow: 'hidden',
       zIndex: 100,
