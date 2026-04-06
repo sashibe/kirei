@@ -1,17 +1,26 @@
 # CHANGELOG
 
-## 2026-04-07 — feat: AR全画面化（MirrorScreen方式）+ おでこ輪郭拡張
+## 2026-04-07 — feat: AR全画面化 + レターボックス解消 + バグ修正
 
-### AR全画面化
+### AR全画面化（MirrorScreen方式）
 - App.jsxの`showScrollable`からar/skincare-arを除外 → `height:"100%"` + `overflow:"hidden"`
-- MirrorScreenV3と同じ方式: ルート `position:relative; width/height:100%`、video/canvas `position:absolute; inset:0`
+- MirrorScreenV3と同じ方式: ルート `position:relative; width/height:100%`
 - カテゴリパネルを `position:absolute; bottom:0` のオーバーレイで配置
 - PCデバイスフレーム（390x844px）内でもスマホフルスクリーンでも正しく動作
 
-### おでこ輪郭拡張
-- `expandForehead()` 関数を追加: フェイスオーバル上部ポイントを生え際方向にシフト
-- 顔の高さの18%分を上方向にオフセット（上端に近いほどシフト量大）
-- ファンデーション描画のclip範囲が生え際付近まで拡張される
+### レターボックス解消
+- video `objectFit: cover` で全画面を隙間なく埋める
+- MakeupCanvasに `coverFit` prop追加: canvasのCSS width/height/left/topを毎フレーム動的に計算し、videoのcover表示と位置・サイズを一致させる
+
+### PC環境対応の試行錯誤と解決
+- position:fixed → PCデバイスフレーム外にはみ出す ✗
+- position:absolute → overflow:autoコンテナ内で非表示 ✗
+- position:relative + height:100% → MirrorScreenと同方式で解決 ✅
+- objectFit:contain → レターボックス発生 → cover + coverFit計算で解決 ✅
+
+### 後回しにした項目
+- ファンデーション目くり抜き: coverFit座標系との整合が必要。clip('evenodd')で目が黒塗りになる問題が未解決
+- おでこ輪郭拡張: expandForehead()がオーバルを過度に伸長。座標系整理後に再実装
 
 ### 変更ファイル
 - `src/App.jsx` — showScrollableからar/skincare-arを除外
