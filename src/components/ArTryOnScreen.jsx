@@ -127,7 +127,7 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
         style={{
           position: 'absolute', inset: 0,
           width: '100%', height: '100%',
-          objectFit: 'cover',
+          objectFit: 'contain',
           transform: 'scaleX(-1)',
           display: cameraLive ? 'block' : 'none',
         }}

@@ -238,10 +238,10 @@ function expandForehead(points, lms, w, h) {
   const foreheadY = lmY(lms[10], h);
   const chinY = lmY(lms[152], h);
   const faceHeight = Math.abs(chinY - foreheadY);
-  const expandAmount = faceHeight * 0.18;
-  // 上部10%以内のポイントを検出してシフト
+  const expandAmount = faceHeight * 0.10;
+  // 上部5%以内のポイントのみ検出してシフト
   const topY = Math.min(...points.map(p => p[1]));
-  const threshold = topY + faceHeight * 0.12;
+  const threshold = topY + faceHeight * 0.06;
 
   return points.map(([x, y]) => {
     if (y < threshold) {
