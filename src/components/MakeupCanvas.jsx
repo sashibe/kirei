@@ -136,6 +136,10 @@ export default MakeupCanvas;
 // ============================================================
 
 function drawMeshOverlay(ctx, lms, w, h) {
+  // Mirror flip helper
+  const mx = (lm) => (1 - lm.x) * w;
+  const my = (lm) => lm.y * h;
+
   ctx.globalAlpha = 0.85;
 
   // テッセレーション（しっかり見える濃さ）
@@ -144,8 +148,8 @@ function drawMeshOverlay(ctx, lms, w, h) {
   ctx.beginPath();
   for (const conn of TESSELATION) {
     const a = lms[conn.start], b = lms[conn.end];
-    ctx.moveTo(a.x * w, a.y * h);
-    ctx.lineTo(b.x * w, b.y * h);
+    ctx.moveTo(mx(a), my(a));
+    ctx.lineTo(mx(b), my(b));
   }
   ctx.stroke();
 
@@ -165,8 +169,8 @@ function drawMeshOverlay(ctx, lms, w, h) {
     ctx.beginPath();
     for (const conn of conns) {
       const a = lms[conn.start], b = lms[conn.end];
-      ctx.moveTo(a.x * w, a.y * h);
-      ctx.lineTo(b.x * w, b.y * h);
+      ctx.moveTo(mx(a), my(a));
+      ctx.lineTo(mx(b), my(b));
     }
     ctx.stroke();
   }

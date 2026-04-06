@@ -1,5 +1,23 @@
 # CHANGELOG
 
+## 2026-04-06 — バグ⑦: ランドマーク左右反転修正（最重要）
+
+### 根本原因
+フロントカメラはミラー表示だが、MediaPipeのx座標をそのまま `lm.x * W` で描画していたため、全メイクオーバーレイが左右反転していた。フェイスオーバル・目・カラコン・アイシャドウの位置ズレの共通原因。
+
+### 修正内容
+- `makeupRenderer.js` 先頭にミラー反転ヘルパー `lmX(lm, w) = (1 - lm.x) * w` を定義
+- 全描画関数を一括修正: `drawLip`, `drawEyeshadow`, `drawCheek`, `drawFoundation`, `drawBrow`, `drawConcealer`, `drawContactLens`, `drawGlasses`, `drawEarrings`
+- ヘルパー関数 `traceIndices`, `buildOrderedPoints` も同様に修正
+- `MakeupCanvas.jsx` の `drawMeshOverlay`（テッセレーション + 輪郭ライン）も修正
+- バグ①②⑥（カラコン位置ズレ、ファンデはみ出し、アイシャドウズレ）はこの修正で同時に改善される見込み
+
+### 変更ファイル
+- `src/rendering/makeupRenderer.js` — 全描画関数のx座標を `(1 - lm.x) * W` に統一
+- `src/components/MakeupCanvas.jsx` — メッシュ描画のx座標を反転
+
+---
+
 ## 2026-04-06 — STEP 4: UI/UX改善（Be Makeup+競合調査ベース）
 
 仕様書: `docs/STEP4_SPEC.md`

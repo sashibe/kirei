@@ -11,6 +11,13 @@
 import { FaceLandmarker } from '@mediapipe/tasks-vision';
 
 // ============================================================
+// 座標変換ヘルパー（ミラー反転）
+// ============================================================
+// フロントカメラはミラー表示のため、MediaPipeの x 座標を反転する
+const lmX = (lm, w) => (1 - lm.x) * w;
+const lmY = (lm, h) => lm.y * h;
+
+// ============================================================
 // ランドマーク定数
 // ============================================================
 
@@ -82,21 +89,21 @@ export function drawLip(ctx, lms, w, h, colorStr, opacity) {
   const traceLipRing = () => {
     ctx.beginPath();
     // 上唇リング
-    ctx.moveTo(lms[UPPER_LIP_OUTER[0]].x * w, lms[UPPER_LIP_OUTER[0]].y * h);
+    ctx.moveTo(lmX(lms[UPPER_LIP_OUTER[0]], w), lmY(lms[UPPER_LIP_OUTER[0]], h));
     for (let i = 1; i < UPPER_LIP_OUTER.length; i++) {
-      ctx.lineTo(lms[UPPER_LIP_OUTER[i]].x * w, lms[UPPER_LIP_OUTER[i]].y * h);
+      ctx.lineTo(lmX(lms[UPPER_LIP_OUTER[i]], w), lmY(lms[UPPER_LIP_OUTER[i]], h));
     }
     for (const idx of upperInner) {
-      ctx.lineTo(lms[idx].x * w, lms[idx].y * h);
+      ctx.lineTo(lmX(lms[idx], w), lmY(lms[idx], h));
     }
     ctx.closePath();
     // 下唇リング
-    ctx.moveTo(lms[LOWER_LIP_OUTER[0]].x * w, lms[LOWER_LIP_OUTER[0]].y * h);
+    ctx.moveTo(lmX(lms[LOWER_LIP_OUTER[0]], w), lmY(lms[LOWER_LIP_OUTER[0]], h));
     for (let i = 1; i < LOWER_LIP_OUTER.length; i++) {
-      ctx.lineTo(lms[LOWER_LIP_OUTER[i]].x * w, lms[LOWER_LIP_OUTER[i]].y * h);
+      ctx.lineTo(lmX(lms[LOWER_LIP_OUTER[i]], w), lmY(lms[LOWER_LIP_OUTER[i]], h));
     }
     for (const idx of lowerInner) {
-      ctx.lineTo(lms[idx].x * w, lms[idx].y * h);
+      ctx.lineTo(lmX(lms[idx], w), lmY(lms[idx], h));
     }
     ctx.closePath();
   };
@@ -119,10 +126,10 @@ export function drawLip(ctx, lms, w, h, colorStr, opacity) {
   ctx.globalCompositeOperation = 'screen';
   ctx.globalAlpha = opa * 0.18;
   const topLip = lms[13], botLip = lms[14];
-  const cx = (topLip.x * w + botLip.x * w) * 0.5;
-  const cy = botLip.y * h * 0.65 + topLip.y * h * 0.35;
-  const rx = Math.abs(lms[291].x - lms[61].x) * w * 0.25;
-  const ry = Math.abs(botLip.y - topLip.y) * h * 0.25;
+  const cx = (lmX(topLip, w) + lmX(botLip, w)) * 0.5;
+  const cy = lmY(botLip, h) * 0.65 + lmY(topLip, h) * 0.35;
+  const rx = Math.abs(lmX(lms[291], w) - lmX(lms[61], w)) * 0.25;
+  const ry = Math.abs(lmY(botLip, h) - lmY(topLip, h)) * 0.25;
   const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, rx);
   grad.addColorStop(0, 'rgba(255,255,255,0.5)');
   grad.addColorStop(0.5, 'rgba(255,255,255,0.15)');
@@ -146,7 +153,7 @@ export function drawEyeshadow(ctx, lms, w, h, colorStr, opacity) {
   for (const indices of [LEFT_EYESHADOW, RIGHT_EYESHADOW]) {
     let cx = 0, cy = 0, minY = Infinity, maxY = -Infinity;
     for (const i of indices) {
-      cx += lms[i].x; cy += lms[i].y;
+      cx += (1 - lms[i].x); cy += lms[i].y;
       minY = Math.min(minY, lms[i].y);
       maxY = Math.max(maxY, lms[i].y);
     }
@@ -190,9 +197,9 @@ export function drawCheek(ctx, lms, w, h, colorStr, opacity) {
   // 左頬: 234, 右頬: 454
   for (const cheekIdx of [234, 454]) {
     const cheek = lms[cheekIdx];
-    const cx = cheek.x * w;
-    const cy = cheek.y * h;
-    const r = Math.abs(lms[454].x - lms[234].x) * w * 0.18;
+    const cx = lmX(cheek, w);
+    const cy = lmY(cheek, h);
+    const r = Math.abs(lmX(lms[454], w) - lmX(lms[234], w)) * 0.18;
 
     ctx.globalAlpha = opa * 0.5;
     ctx.globalCompositeOperation = 'multiply';
@@ -273,7 +280,7 @@ export function drawFoundation(ctx, lms, w, h, colorStr, opacity) {
   ctx.globalCompositeOperation = 'screen';
   ctx.globalAlpha = opa * 0.2;
   const nose = lms[4], forehead = lms[10];
-  const tZone = ctx.createLinearGradient(forehead.x * w, forehead.y * h, nose.x * w, nose.y * h);
+  const tZone = ctx.createLinearGradient(lmX(forehead, w), lmY(forehead, h), lmX(nose, w), lmY(nose, h));
   tZone.addColorStop(0, 'rgba(255,255,255,0.35)');
   tZone.addColorStop(0.5, 'rgba(255,255,255,0.2)');
   tZone.addColorStop(1, 'rgba(255,255,255,0)');
@@ -284,7 +291,7 @@ export function drawFoundation(ctx, lms, w, h, colorStr, opacity) {
   for (const cheekIdx of [234, 454]) {
     const cheek = lms[cheekIdx];
     const cr = maxR * 0.25;
-    const cheekGrad = ctx.createRadialGradient(cheek.x * w, cheek.y * h, 0, cheek.x * w, cheek.y * h, cr);
+    const cheekGrad = ctx.createRadialGradient(lmX(cheek, w), lmY(cheek, h), 0, lmX(cheek, w), lmY(cheek, h), cr);
     cheekGrad.addColorStop(0, 'rgba(255,255,255,0.4)');
     cheekGrad.addColorStop(1, 'rgba(255,255,255,0)');
     ctx.fillStyle = cheekGrad;
@@ -312,8 +319,8 @@ export function drawBrow(ctx, lms, w, h, colorStr, opacity) {
     ctx.beginPath();
     for (const conn of conns) {
       const a = lms[conn.start], b = lms[conn.end];
-      ctx.moveTo(a.x * w, a.y * h);
-      ctx.lineTo(b.x * w, b.y * h);
+      ctx.moveTo(lmX(a, w), lmY(a, h));
+      ctx.lineTo(lmX(b, w), lmY(b, h));
     }
     ctx.stroke();
   }
@@ -342,7 +349,7 @@ export function drawConcealer(ctx, lms, w, h, colorStr, opacity) {
     ctx.globalAlpha = opa * 0.15;
 
     let cx = 0, cy = 0;
-    for (const i of indices) { cx += lms[i].x; cy += lms[i].y; }
+    for (const i of indices) { cx += (1 - lms[i].x); cy += lms[i].y; }
     cx = (cx / indices.length) * w;
     cy = (cy / indices.length) * h;
 
@@ -371,9 +378,9 @@ export function drawGlasses(ctx, landmarks, item, canvasW, canvasH) {
   const leftEar = landmarks[234];
   const rightEar = landmarks[454];
 
-  const cx = nose.x * canvasW;
-  const cy = nose.y * canvasH;
-  const frameWidth  = Math.abs(rightEar.x - leftEar.x) * canvasW * 1.1;
+  const cx = lmX(nose, canvasW);
+  const cy = lmY(nose, canvasH);
+  const frameWidth  = Math.abs(lmX(rightEar, canvasW) - lmX(leftEar, canvasW)) * 1.1;
   const frameHeight = frameWidth * 0.38;
   const lw = frameWidth * 0.03;
 
@@ -388,12 +395,12 @@ export function drawGlasses(ctx, landmarks, item, canvasW, canvasH) {
   // テンプル（つる）
   ctx.beginPath();
   ctx.moveTo(cx - frameWidth * 0.5 + lw, cy);
-  ctx.lineTo(leftEar.x * canvasW, leftEar.y * canvasH);
+  ctx.lineTo(lmX(leftEar, canvasW), lmY(leftEar, canvasH));
   ctx.stroke();
 
   ctx.beginPath();
   ctx.moveTo(cx + frameWidth * 0.5 - lw, cy);
-  ctx.lineTo(rightEar.x * canvasW, rightEar.y * canvasH);
+  ctx.lineTo(lmX(rightEar, canvasW), lmY(rightEar, canvasH));
   ctx.stroke();
 
   // ブリッジ
@@ -448,8 +455,8 @@ export function drawEarrings(ctx, landmarks, item, canvasW, canvasH) {
   if (!item || item.id === 'none') return;
 
   const positions = [
-    { x: landmarks[132].x * canvasW, y: landmarks[132].y * canvasH },
-    { x: landmarks[361].x * canvasW, y: landmarks[361].y * canvasH },
+    { x: lmX(landmarks[132], canvasW), y: lmY(landmarks[132], canvasH) },
+    { x: lmX(landmarks[361], canvasW), y: lmY(landmarks[361], canvasH) },
   ];
 
   positions.forEach(pos => {
@@ -513,8 +520,8 @@ export function drawContactLens(ctx, landmarks, item, canvasW, canvasH, opacity 
 
   // 目頭・目尻の距離から虹彩半径を推定
   // 左目: #33(目頭), #133(目尻)  右目: #362(目頭), #263(目尻)
-  const leftEyeWidth = Math.abs(landmarks[133].x - landmarks[33].x) * canvasW;
-  const rightEyeWidth = Math.abs(landmarks[362].x - landmarks[263].x) * canvasW;
+  const leftEyeWidth = Math.abs(lmX(landmarks[133], canvasW) - lmX(landmarks[33], canvasW));
+  const rightEyeWidth = Math.abs(lmX(landmarks[362], canvasW) - lmX(landmarks[263], canvasW));
 
   const pairs = [
     { center: LEFT_IRIS_CENTER, eyeWidth: leftEyeWidth },
@@ -527,8 +534,8 @@ export function drawContactLens(ctx, landmarks, item, canvasW, canvasH, opacity 
     const iris = landmarks[center];
     if (!iris) continue;
 
-    const ix = iris.x * canvasW;
-    const iy = iris.y * canvasH;
+    const ix = lmX(iris, canvasW);
+    const iy = lmY(iris, canvasH);
     const irisRadius = eyeWidth * 0.20;
 
     // Base color (multiply blend)
@@ -586,9 +593,9 @@ export function drawContactLens(ctx, landmarks, item, canvasW, canvasH, opacity 
 
 function traceIndices(ctx, lms, indices, w, h) {
   ctx.beginPath();
-  ctx.moveTo(lms[indices[0]].x * w, lms[indices[0]].y * h);
+  ctx.moveTo(lmX(lms[indices[0]], w), lmY(lms[indices[0]], h));
   for (let i = 1; i < indices.length; i++) {
-    ctx.lineTo(lms[indices[i]].x * w, lms[indices[i]].y * h);
+    ctx.lineTo(lmX(lms[indices[i]], w), lmY(lms[indices[i]], h));
   }
   ctx.closePath();
 }
@@ -611,7 +618,7 @@ export function buildOrderedPoints(connections, lms, w, h) {
   while (current !== undefined && !visited.has(current)) {
     visited.add(current);
     const p = lms[current];
-    ordered.push([p.x * w, p.y * h]);
+    ordered.push([lmX(p, w), lmY(p, h)]);
     const neighbors = adj.get(current) || [];
     current = neighbors.find(n => !visited.has(n));
   }
