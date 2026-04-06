@@ -277,20 +277,6 @@ export function drawFoundation(ctx, lms, w, h, colorStr, opacity) {
     Math.sqrt((px - cx) ** 2 + (py - cy) ** 2)
   ));
 
-  // クリップ: フェイスオーバルから目の領域をくり抜き
-  ctx.beginPath();
-  ctx.moveTo(points[0][0], points[0][1]);
-  for (let i = 1; i < points.length; i++) ctx.lineTo(points[i][0], points[i][1]);
-  ctx.closePath();
-  for (const eyeHole of [RIGHT_EYE_HOLE, LEFT_EYE_HOLE]) {
-    ctx.moveTo(lmX(lms[eyeHole[0]], w), lmY(lms[eyeHole[0]], h));
-    for (let i = 1; i < eyeHole.length; i++) {
-      ctx.lineTo(lmX(lms[eyeHole[i]], w), lmY(lms[eyeHole[i]], h));
-    }
-    ctx.closePath();
-  }
-  ctx.clip('evenodd');
-
   const tracePath = () => {
     ctx.beginPath();
     ctx.moveTo(points[0][0], points[0][1]);
