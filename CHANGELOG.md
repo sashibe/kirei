@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## 2026-04-07 — feat: パーソナルカラー16タイプ対応 + バッジ表示更新
+
+### personalColor.js
+- 12サブタイプ → 16タイプに拡張（仕様書準拠）
+- `SEASON_DISPLAY`: 16タイプの表記（main/sub/desc/color/emoji）
+- `SEASON_LOOK_MAP`: シーズン別推薦ルック・カラー対応表
+- `SEASON_KIRARI`: シーズン別キラリセリフ
+- `savePersonalColor`/`loadPersonalColor`/`clearPersonalColor`: localStorageキャッシュ
+- `detectSubtype()`: season + avgL/avgC から16タイプIDを判定
+
+### MirrorScreenV3 バッジ表示
+- 16タイプ表記対応（main: 「イエベ春」、sub: 「ライトスプリング」）
+- バッジサイズ拡大（emoji 16px、main 13px太字、sub 9px）
+- 色はSEASON_DISPLAYのcolorフィールドを使用
+
+---
+
 ## 2026-04-07 — fix: バグ⑧カラーパレット横スクロール化 + バグ⑨アイシャドウカテゴリ追加
 
 ### バグ⑧ カラーパレット横スクロール化

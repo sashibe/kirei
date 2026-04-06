@@ -430,25 +430,32 @@ export default function MirrorScreenV3({ onResult }) {
           </div>
         )}
 
-        {/* === Personal color badge === */}
+        {/* === Personal color badge (16type) === */}
         {!checking && !analyzing && personalColor && showScores && (
           <div style={{
             position: "absolute", top: 72, left: 12, zIndex: 2,
-            display: "inline-flex", alignItems: "center", gap: 6,
-            background: getPcColors(personalColor.season).bg,
-            border: `1px solid ${getPcColors(personalColor.season).border}`,
-            borderRadius: 20, padding: "4px 12px",
+            display: "inline-flex", alignItems: "center", gap: 8,
+            background: (personalColor.color || getPcColors(personalColor.season).color) + '18',
+            border: `1.5px solid ${personalColor.color || getPcColors(personalColor.season).border}`,
+            borderRadius: 20, padding: "6px 14px",
             boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
           }}>
-            <span style={{ fontSize: 12 }}>{getPcIcon(personalColor.season)}</span>
-            <span style={{
-              fontSize: 11, fontWeight: 700,
-              color: getPcColors(personalColor.season).color,
-            }}>
-              {t(personalColor.label)}
-            </span>
+            <span style={{ fontSize: 16 }}>{personalColor.emoji || getPcIcon(personalColor.season)}</span>
+            <div>
+              <div style={{
+                fontSize: 13, fontWeight: 800,
+                color: personalColor.color || getPcColors(personalColor.season).color,
+              }}>
+                {personalColor.main || t(personalColor.label)}
+              </div>
+              {personalColor.sub && (
+                <div style={{ fontSize: 9, color: '#94a3b8', fontWeight: 600, marginTop: 1 }}>
+                  {personalColor.sub}
+                </div>
+              )}
+            </div>
             {personalColor.confidence < 0.6 && (
-              <span style={{ fontSize: 9, color: '#94a3b8' }}>{t("pc.reference")}</span>
+              <span style={{ fontSize: 8, color: '#94a3b8' }}>{t("pc.reference")}</span>
             )}
           </div>
         )}

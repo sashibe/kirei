@@ -1,5 +1,5 @@
 // === パーソナルカラー判定 ===
-// 頬Lab平均から四季タイプ＋12サブタイプを推定する
+// 頬Lab平均から四季タイプ＋16サブタイプを推定する
 
 import { rgbToLab } from './colorUtils.js';
 
@@ -16,87 +16,89 @@ const THRESHOLDS = {
   chromaLow: 18,
 };
 
-export const SUBTYPES = {
-  // ─── Spring ───
-  'bright-spring': {
-    season: 'spring',
-    label: { ja: '明るいイエベ春', en: 'Bright Spring', ko: '밝은 스프링' },
-    desc: { ja: '透明感のある明るい肌。淡いコーラルや水色が得意', en: 'Luminous bright skin tone', ko: '투명감 있는 밝은 피부' },
-    condition: (s) => s.season === 'spring' && s.avgL > 70,
-  },
-  'true-spring': {
-    season: 'spring',
-    label: { ja: '真のイエベ春', en: 'True Spring', ko: '트루 스프링' },
-    desc: { ja: '黄みがかった明るい肌。コーラルやゴールドが映える', en: 'Warm golden spring tone', ko: '황금빛 봄 피부 톤' },
-    condition: (s) => s.season === 'spring' && s.avgL <= 70 && s.avgC >= 22,
-  },
-  'clear-spring': {
-    season: 'spring',
-    label: { ja: '華やかイエベ春', en: 'Clear Spring', ko: '클리어 스프링' },
-    desc: { ja: 'コントラストのある鮮やかな肌。ビビッドな暖色が得意', en: 'Vivid warm spring tone', ko: '선명한 웜 스프링' },
-    condition: (s) => s.season === 'spring' && s.avgC >= THRESHOLDS.chromaHigh,
-  },
+// --- 16タイプ表記 ---
+export const SEASON_DISPLAY = {
+  'spring-light':  { main: 'イエベ春', sub: 'ライトスプリング',     color: '#F59E0B', emoji: '🌸', desc: '明るく軽やかな暖色が得意' },
+  'spring-warm':   { main: 'イエベ春', sub: 'ウォームスプリング',   color: '#F59E0B', emoji: '🌸', desc: '鮮やかで温かみのある色が得意' },
+  'spring-clear':  { main: 'イエベ春', sub: 'クリアスプリング',     color: '#F59E0B', emoji: '🌸', desc: '華やかでクリアな暖色が得意' },
+  'spring-muted':  { main: 'イエベ春', sub: 'ソフトスプリング',     color: '#F59E0B', emoji: '🌸', desc: 'やわらかくナチュラルな暖色が得意' },
+  'summer-light':  { main: 'ブルベ夏', sub: 'ライトサマー',         color: '#94A3B8', emoji: '🌿', desc: '明るく涼やかな淡色が得意' },
+  'summer-cool':   { main: 'ブルベ夏', sub: 'クールサマー',         color: '#94A3B8', emoji: '🌿', desc: '洗練された青みのある色が得意' },
+  'summer-soft':   { main: 'ブルベ夏', sub: 'ソフトサマー',         color: '#94A3B8', emoji: '🌿', desc: 'くすみのある穏やかな色が得意' },
+  'summer-medium': { main: 'ブルベ夏', sub: 'ミディアムサマー',     color: '#94A3B8', emoji: '🌿', desc: '中間的な青みカラーが得意' },
+  'autumn-soft':   { main: 'イエベ秋', sub: 'ソフトオータム',       color: '#D97706', emoji: '🍂', desc: 'やわらかく落ち着いた暖色が得意' },
+  'autumn-warm':   { main: 'イエベ秋', sub: 'ウォームオータム',     color: '#D97706', emoji: '🍂', desc: '深みのある温かい色が得意' },
+  'autumn-muted':  { main: 'イエベ秋', sub: 'ミューテッドオータム', color: '#D97706', emoji: '🍂', desc: 'くすみのあるアースカラーが得意' },
+  'autumn-deep':   { main: 'イエベ秋', sub: 'ディープオータム',     color: '#D97706', emoji: '🍂', desc: '深く濃い暖色が得意' },
+  'winter-clear':  { main: 'ブルベ冬', sub: 'クリアウィンター',     color: '#6366F1', emoji: '❄️', desc: '鮮やかでシャープな色が得意' },
+  'winter-cool':   { main: 'ブルベ冬', sub: 'クールウィンター',     color: '#6366F1', emoji: '❄️', desc: '冷たくクールな色が得意' },
+  'winter-deep':   { main: 'ブルベ冬', sub: 'ディープウィンター',   color: '#6366F1', emoji: '❄️', desc: '深みのある強い色が得意' },
+  'winter-vivid':  { main: 'ブルベ冬', sub: 'ビビッドウィンター',   color: '#6366F1', emoji: '❄️', desc: '原色・モノトーンが得意' },
+};
 
-  // ─── Summer ───
-  'light-summer': {
-    season: 'summer',
-    label: { ja: '明るいブルベ夏', en: 'Light Summer', ko: '라이트 서머' },
-    desc: { ja: 'やわらかく明るい肌。パステルや淡いラベンダーが得意', en: 'Soft and light cool tone', ko: '부드럽고 밝은 쿨 톤' },
-    condition: (s) => s.season === 'summer' && s.avgL > 68,
+// --- シーズン別ルック対応表 ---
+export const SEASON_LOOK_MAP = {
+  spring: {
+    recommended: ['warm-glow', 'clean-natural', 'peach-fresh'],
+    eyeshadow: ['rgba(196,149,106,0.25)', 'rgba(232,150,122,0.25)', 'rgba(255,218,185,0.25)'],
+    lip: ['#FF7F7F', '#FF6B6B', '#FFA07A'],
+    cheek: ['rgba(255,182,193,0.4)', 'rgba(255,160,122,0.4)'],
   },
-  'true-summer': {
-    season: 'summer',
-    label: { ja: '真のブルベ夏', en: 'True Summer', ko: '트루 서머' },
-    desc: { ja: 'ローズ系の清涼感ある肌。モーブやスモーキーピンクが得意', en: 'Rose-toned classic summer', ko: '로즈 톤 클래식 서머' },
-    condition: (s) => s.season === 'summer' && s.avgL <= 68 && s.avgC >= 14,
+  summer: {
+    recommended: ['cool-rose', 'sheer-pink', 'lavender-soft'],
+    eyeshadow: ['rgba(200,162,200,0.25)', 'rgba(216,191,216,0.25)', 'rgba(230,230,250,0.25)'],
+    lip: ['#C48EA1', '#DB7093', '#FFB6C1'],
+    cheek: ['rgba(255,182,193,0.4)', 'rgba(219,112,147,0.4)'],
   },
-  'soft-summer': {
-    season: 'summer',
-    label: { ja: 'ソフトブルベ夏', en: 'Soft Summer', ko: '소프트 서머' },
-    desc: { ja: 'くすみのある柔らかな肌。グレイッシュやアッシュが得意', en: 'Muted soft cool tone', ko: '뮤트 소프트 쿨 톤' },
-    condition: (s) => s.season === 'summer' && s.avgC < THRESHOLDS.chromaLow,
+  autumn: {
+    recommended: ['warm-terra', 'matt-chic', 'earthy-natural'],
+    eyeshadow: ['rgba(139,69,19,0.20)', 'rgba(210,105,30,0.20)', 'rgba(205,133,63,0.20)'],
+    lip: ['#8B0000', '#A0522D', '#CD853F'],
+    cheek: ['rgba(210,105,30,0.4)', 'rgba(188,143,95,0.4)'],
   },
-
-  // ─── Autumn ───
-  'soft-autumn': {
-    season: 'autumn',
-    label: { ja: 'ソフトイエベ秋', en: 'Soft Autumn', ko: '소프트 오텀' },
-    desc: { ja: 'くすみのある落ち着いた肌。テラコッタやカーキが得意', en: 'Muted warm earthy tone', ko: '뮤트 웜 어시 톤' },
-    condition: (s) => s.season === 'autumn' && s.avgC < THRESHOLDS.chromaLow,
-  },
-  'true-autumn': {
-    season: 'autumn',
-    label: { ja: '真のイエベ秋', en: 'True Autumn', ko: '트루 오텀' },
-    desc: { ja: '黄みのある深い肌。オリーブやブリックレッドが得意', en: 'Golden deep autumn tone', ko: '골든 딥 오텀 톤' },
-    condition: (s) => s.season === 'autumn' && s.avgL >= 50 && s.avgC >= THRESHOLDS.chromaLow,
-  },
-  'deep-autumn': {
-    season: 'autumn',
-    label: { ja: '深みイエベ秋', en: 'Deep Autumn', ko: '딥 오텀' },
-    desc: { ja: 'リッチで深みのある肌。バーガンディやダークブラウンが得意', en: 'Rich deep warm tone', ko: '리치 딥 웜 톤' },
-    condition: (s) => s.season === 'autumn' && s.avgL < 50,
-  },
-
-  // ─── Winter ───
-  'clear-winter': {
-    season: 'winter',
-    label: { ja: '鮮やかブルベ冬', en: 'Clear Winter', ko: '클리어 윈터' },
-    desc: { ja: 'コントラストの強い肌。ビビッドな原色やロイヤルブルーが得意', en: 'High contrast vivid cool tone', ko: '하이 콘트라스트 비비드 쿨 톤' },
-    condition: (s) => s.season === 'winter' && s.avgC >= THRESHOLDS.chromaHigh,
-  },
-  'true-winter': {
-    season: 'winter',
-    label: { ja: '真のブルベ冬', en: 'True Winter', ko: '트루 윈터' },
-    desc: { ja: '青みのある透明感ある肌。アイシーカラーやワインが得意', en: 'Icy blue-toned classic winter', ko: '아이시 블루 클래식 윈터' },
-    condition: (s) => s.season === 'winter' && s.avgL >= 52 && s.avgC < THRESHOLDS.chromaHigh,
-  },
-  'deep-winter': {
-    season: 'winter',
-    label: { ja: '深みブルベ冬', en: 'Deep Winter', ko: '딥 윈터' },
-    desc: { ja: 'ダークで存在感のある肌。ディープネイビーやチャコールが得意', en: 'Deep cool dark tone', ko: '딥 쿨 다크 톤' },
-    condition: (s) => s.season === 'winter' && s.avgL < 52,
+  winter: {
+    recommended: ['cool-elegant', 'berry-night', 'sharp-contrast'],
+    eyeshadow: ['rgba(75,0,130,0.20)', 'rgba(72,61,139,0.20)', 'rgba(128,128,128,0.20)'],
+    lip: ['#8B008B', '#DC143C', '#FF1493'],
+    cheek: ['rgba(219,112,147,0.4)', 'rgba(199,21,133,0.4)'],
   },
 };
+
+// --- キラリセリフ ---
+export const SEASON_KIRARI = {
+  spring: 'イエベ春タイプだよ🌸 コーラルやピーチ系が得意なの♪',
+  summer: 'ブルベ夏タイプだよ🌿 ローズやラベンダー系が似合うよ♪',
+  autumn: 'イエベ秋タイプだよ🍂 テラコッタやブラウン系がドンピシャ♪',
+  winter: 'ブルベ冬タイプだよ❄️ ビビッドカラーやバーガンディが映えるよ♪',
+};
+
+// --- 16タイプ判定ロジック ---
+function detectSubtype(season, avgL, avgC) {
+  switch (season) {
+    case 'spring':
+      if (avgL > 70) return 'spring-light';
+      if (avgC >= THRESHOLDS.chromaHigh) return 'spring-clear';
+      if (avgC < THRESHOLDS.chromaLow) return 'spring-muted';
+      return 'spring-warm';
+    case 'summer':
+      if (avgL > 68) return 'summer-light';
+      if (avgC < THRESHOLDS.chromaLow) return 'summer-soft';
+      if (avgL <= 58) return 'summer-medium';
+      return 'summer-cool';
+    case 'autumn':
+      if (avgC < THRESHOLDS.chromaLow) return 'autumn-soft';
+      if (avgL < 50) return 'autumn-deep';
+      if (avgC >= THRESHOLDS.chromaLow) return 'autumn-warm';
+      return 'autumn-muted';
+    case 'winter':
+      if (avgC >= THRESHOLDS.chromaHigh) return 'winter-vivid';
+      if (avgL < 52) return 'winter-deep';
+      if (avgC >= 22) return 'winter-clear';
+      return 'winter-cool';
+    default:
+      return `${season}-warm`;
+  }
+}
 
 // --- 頬ピクセル抽出 ---
 function sampleCheekPixels(imageData, landmarks) {
@@ -160,13 +162,9 @@ export function analyzePersonalColor(imageData, landmarks) {
     ? (isHighBrightness ? 'spring' : 'autumn')
     : (isHighBrightness ? 'summer' : 'winter');
 
-  const stats = { season, avgL, avgA, avgB, avgC };
-
-  const subtypeEntry = Object.entries(SUBTYPES).find(
-    ([, v]) => v.season === season && v.condition(stats)
-  );
-  const subtypeId = subtypeEntry?.[0] ?? `true-${season}`;
-  const subtype = SUBTYPES[subtypeId];
+  // 16タイプ判定
+  const subtypeId = detectSubtype(season, avgL, avgC);
+  const display = SEASON_DISPLAY[subtypeId];
 
   // 信頼度
   const labStdC = Math.sqrt(
@@ -182,15 +180,35 @@ export function analyzePersonalColor(imageData, landmarks) {
   return {
     season,
     subtypeId,
-    label: subtype.label,
-    desc: subtype.desc,
+    main: display?.main ?? season,
+    sub: display?.sub ?? '',
+    desc: display?.desc ?? '',
+    emoji: display?.emoji ?? '✨',
+    color: display?.color ?? '#a855f7',
     undertone: isWarm ? 'warm' : 'cool',
-    brightness: isHighBrightness ? 'high' : 'low',
-    chroma: avgC >= THRESHOLDS.chromaHigh ? 'clear'
-          : avgC <= THRESHOLDS.chromaLow ? 'muted' : 'neutral',
     confidence,
     raw: { avgL, avgA, avgB, avgC },
   };
+}
+
+// --- localStorage キャッシュ ---
+export function savePersonalColor(result) {
+  if (!result) return;
+  localStorage.setItem('kirei_personal_color', JSON.stringify({
+    ...result,
+    detectedAt: new Date().toISOString(),
+  }));
+}
+
+export function loadPersonalColor() {
+  try {
+    const saved = localStorage.getItem('kirei_personal_color');
+    return saved ? JSON.parse(saved) : null;
+  } catch { return null; }
+}
+
+export function clearPersonalColor() {
+  localStorage.removeItem('kirei_personal_color');
 }
 
 // --- UIカラー ---
@@ -207,7 +225,7 @@ export function getPcColors(season) {
 
 export const PC_ICONS = {
   spring: '🌸',
-  summer: '🌊',
+  summer: '🌿',
   autumn: '🍂',
   winter: '❄️',
 };
