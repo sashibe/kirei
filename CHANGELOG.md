@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 2026-04-07 — fix: AR全画面の position:fixed → absolute 修正
+
+- PC表示ではiPhoneモックアップ（390x844px）内にレンダリングされるが、`position:fixed` + `100vw/100vh` はビューポート全体を基準にするためモック外にはみ出していた
+- `position: absolute` + `width/height: 100%` に変更し、親コンテナ基準で描画
+- ArTryOnScreen / SkincareARScreen 両方を修正
+- video `objectFit: cover` で親コンテナを隙間なく埋める
+
+---
+
 ## 2026-04-06 — fix: PC環境でARカメラとCanvasの位置ずれ修正（v2）
 
 - CSS min()/vw/vh計算がデバイスフレーム内で機能しない問題を修正

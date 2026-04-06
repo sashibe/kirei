@@ -88,8 +88,8 @@ export default function SkincareARScreen({ skinScores, onNext, onBack }) {
 
   return (
     <div style={{
-      position: 'fixed', inset: 0,
-      width: '100vw', height: '100vh',
+      position: 'absolute', inset: 0,
+      width: '100%', height: '100%',
       background: '#000', overflow: 'hidden',
       zIndex: 100,
     }}>
@@ -100,7 +100,7 @@ export default function SkincareARScreen({ skinScores, onNext, onBack }) {
         style={{
           position: 'absolute', inset: 0,
           width: '100%', height: '100%',
-          objectFit: 'contain',
+          objectFit: 'cover',
           transform: 'scaleX(-1)',
           display: cameraLive ? 'block' : 'none',
         }}

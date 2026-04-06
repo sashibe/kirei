@@ -37,50 +37,18 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
   const [selectedEarring, setSelectedEarring] = useState('none');
   const [selectedContactLens, setSelectedContactLens] = useState('none');
   const [beforeAfter, setBeforeAfter] = useState(false);
-  const [fitStyle, setFitStyle] = useState(null); // { width, height } in px
 
   const canvasRef = useRef(null);
-  const wrapperRef = useRef(null);
   const { videoRef, isActive, error: cameraError } = useCamera({ enabled: true });
-
-  // Calculate fitted video size inside the wrapper
-  const recalcFit = useCallback(() => {
-    const video = videoRef.current;
-    const wrapper = wrapperRef.current;
-    if (!video || !wrapper || !video.videoWidth) return;
-    const cw = wrapper.clientWidth;
-    const ch = wrapper.clientHeight;
-    const vAspect = video.videoWidth / video.videoHeight;
-    const cAspect = cw / ch;
-    if (cAspect > vAspect) {
-      // Container wider than video — fit to height
-      setFitStyle({ width: Math.round(ch * vAspect), height: ch });
-    } else {
-      // Container taller than video — fit to width
-      setFitStyle({ width: cw, height: Math.round(cw / vAspect) });
-    }
-  }, [videoRef]);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    const onPlaying = () => {
-      setVideoPlaying(true);
-      recalcFit();
-    };
+    const onPlaying = () => setVideoPlaying(true);
     if (video.readyState >= 2) { onPlaying(); return; }
     video.addEventListener('loadeddata', onPlaying);
     return () => video.removeEventListener('loadeddata', onPlaying);
-  }, [isActive, videoRef, recalcFit]);
-
-  // Recalc on resize
-  useEffect(() => {
-    const wrapper = wrapperRef.current;
-    if (!wrapper) return;
-    const ro = new ResizeObserver(() => recalcFit());
-    ro.observe(wrapper);
-    return () => ro.disconnect();
-  }, [recalcFit]);
+  }, [isActive, videoRef]);
 
   const getVideo = useCallback(() => videoRef.current, [videoRef]);
   const cameraLive = isActive && !cameraError && videoPlaying;
@@ -165,55 +133,42 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
 
   return (
     <div style={{
-      position: 'fixed', inset: 0,
-      width: '100vw', height: '100vh',
+      position: 'absolute', inset: 0,
+      width: '100%', height: '100%',
       background: '#000', overflow: 'hidden',
       zIndex: 100,
     }}>
 
-      {/* Camera + Canvas wrapper */}
-      <div
-        ref={wrapperRef}
+      {/* Camera + Canvas — both fill the container */}
+      <video
+        ref={videoRef}
         style={{
           position: 'absolute', inset: 0,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          width: '100%', height: '100%',
+          objectFit: 'cover',
+          transform: 'scaleX(-1)',
+          display: cameraLive ? 'block' : 'none',
         }}
+        playsInline muted autoPlay
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
-      >
-        <div style={{
-          position: 'relative',
-          width: fitStyle ? fitStyle.width : '100%',
-          height: fitStyle ? fitStyle.height : '100%',
-          overflow: 'hidden',
-        }}>
-          <video
-            ref={videoRef}
-            style={{
-              width: '100%', height: '100%',
-              transform: 'scaleX(-1)',
-              display: cameraLive ? 'block' : 'none',
-            }}
-            playsInline muted autoPlay
-          />
+      />
 
-          {/* AR Canvas overlay — exact same size as video */}
-          {cameraLive && !beforeAfter && (
-            <MakeupCanvas
-              ref={canvasRef}
-              getVideo={getVideo}
-              baseLook={currentBase}
-              colorLook={activeColorLook}
-              intensity={intensity}
-              showMesh={showMesh}
-              glassesItem={glassesItem}
-              earringItem={earringItem}
-              contactLensItem={contactLensItem}
-            />
-          )}
-        </div>
-      </div>
+      {/* AR Canvas overlay */}
+      {cameraLive && !beforeAfter && (
+        <MakeupCanvas
+          ref={canvasRef}
+          getVideo={getVideo}
+          baseLook={currentBase}
+          colorLook={activeColorLook}
+          intensity={intensity}
+          showMesh={showMesh}
+          glassesItem={glassesItem}
+          earringItem={earringItem}
+          contactLensItem={contactLensItem}
+        />
+      )}
 
       {/* Placeholder when camera not live */}
       {!cameraLive && (
