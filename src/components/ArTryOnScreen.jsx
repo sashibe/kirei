@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import Kirari from './Kirari.jsx';
+import Bubble from './Bubble.jsx';
 import MakeupCanvas from './MakeupCanvas.jsx';
 import useCamera from '../hooks/useCamera.js';
 import { useT } from '../i18n/index.jsx';
@@ -29,6 +30,7 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
   const [intensity, setIntensity] = useState(70);
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [showMesh, setShowMesh] = useState(false);
+  const [videoAspect, setVideoAspect] = useState(null);
   const [activeCategory, setActiveCategory] = useState('base');
   const [selectedBase, setSelectedBase] = useState(baseLook?.id ?? 'clean-natural');
   const [lipColor, setLipColor] = useState(colorLook?.lip || '#e8607c');
@@ -44,7 +46,12 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    const onPlaying = () => setVideoPlaying(true);
+    const onPlaying = () => {
+      setVideoPlaying(true);
+      if (video.videoWidth && video.videoHeight) {
+        setVideoAspect(`${video.videoWidth} / ${video.videoHeight}`);
+      }
+    };
     if (video.readyState >= 2) { onPlaying(); return; }
     video.addEventListener('loadeddata', onPlaying);
     return () => video.removeEventListener('loadeddata', onPlaying);
@@ -60,6 +67,12 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
     cheek: cheekColor,
     eyeshadow: colorLook?.eyeshadow || 'rgba(232,150,120,0.2)',
   };
+
+  const opacityFactor = intensity / 100;
+  const eyeshadowColor = colorLook?.eyeshadow || 'rgba(232,150,120,0.2)';
+  const baseColor = currentBase?.base || '#e8d8c8';
+  const concealerColor = currentBase?.concealer;
+  const browColor = currentBase?.brow;
 
   const glassesItem = GLASSES_ITEMS.find(i => i.id === selectedGlasses);
   const earringItem = EARRING_ITEMS.find(i => i.id === selectedEarring);
@@ -79,18 +92,15 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
   const handleDecide = () => {
     const video = videoRef.current;
     const arCanvas = canvasRef.current;
-
     const captureCanvas = document.createElement('canvas');
     captureCanvas.width = video.videoWidth || 640;
     captureCanvas.height = video.videoHeight || 480;
     const cctx = captureCanvas.getContext('2d');
-
     cctx.save();
     cctx.translate(captureCanvas.width, 0);
     cctx.scale(-1, 1);
     cctx.drawImage(video, 0, 0, captureCanvas.width, captureCanvas.height);
     cctx.restore();
-
     if (arCanvas) {
       cctx.save();
       cctx.translate(captureCanvas.width, 0);
@@ -98,27 +108,15 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
       cctx.drawImage(arCanvas, 0, 0, captureCanvas.width, captureCanvas.height);
       cctx.restore();
     }
-
     const dataUrl = captureCanvas.toDataURL('image/jpeg', 0.92);
-
     const accessoryProducts = [
       ...(glassesItem && glassesItem.id !== 'none'
-        ? [{ emoji: glassesItem.emoji, name: glassesItem.name,
-             shade: glassesItem.shape || '', price: glassesItem.price,
-             category: 'glasses' }]
-        : []),
+        ? [{ emoji: glassesItem.emoji, name: glassesItem.name, shade: glassesItem.shape || '', price: glassesItem.price, category: 'glasses' }] : []),
       ...(earringItem && earringItem.id !== 'none'
-        ? [{ emoji: earringItem.emoji, name: earringItem.name,
-             shade: earringItem.type || '', price: earringItem.price,
-             category: 'earring' }]
-        : []),
+        ? [{ emoji: earringItem.emoji, name: earringItem.name, shade: earringItem.type || '', price: earringItem.price, category: 'earring' }] : []),
       ...(contactLensItem && contactLensItem.id !== 'none'
-        ? [{ emoji: contactLensItem.emoji, name: contactLensItem.name,
-             shade: '', price: contactLensItem.price,
-             category: 'contacts' }]
-        : []),
+        ? [{ emoji: contactLensItem.emoji, name: contactLensItem.name, shade: '', price: contactLensItem.price, category: 'contacts' }] : []),
     ];
-
     onDecide({
       capturedImage: dataUrl,
       baseLook: currentBase,
@@ -132,237 +130,226 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
   };
 
   return (
-    <div style={{
-      position: 'relative',
-      width: '100%', height: '100%',
-      background: '#000', overflow: 'hidden',
-    }}>
+    <div style={{ padding: '12px 0' }}>
+      <button onClick={onBack} style={{
+        background: 'none', border: 'none', fontSize: 13, color: '#94a3b8',
+        cursor: 'pointer', padding: '0 16px 8px', fontWeight: 600,
+      }}>
+        {'<'} {t('ar.back_to_looks')}
+      </button>
 
-      {/* Camera + Canvas — both fill the container */}
-      <video
-        ref={videoRef}
-        style={{
-          position: 'absolute', inset: 0,
-          width: '100%', height: '100%',
-          objectFit: 'cover',
-          transform: 'scaleX(-1)',
-          display: cameraLive ? 'block' : 'none',
-        }}
-        playsInline muted autoPlay
+      {/* Camera + AR Canvas area (same structure as working v1) */}
+      <div style={{
+        position: 'relative', margin: '0 16px 12px',
+        borderRadius: 20, overflow: 'hidden',
+        background: cameraLive ? '#000' : '#f8f5ff',
+        aspectRatio: cameraLive && videoAspect ? videoAspect : '3/4',
+        maxHeight: '55vh',
+      }}
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
-      />
-
-      {/* AR Canvas overlay */}
-      {cameraLive && !beforeAfter && (
-        <MakeupCanvas
-          ref={canvasRef}
-          getVideo={getVideo}
-          baseLook={currentBase}
-          colorLook={activeColorLook}
-          intensity={intensity}
-          showMesh={showMesh}
-          glassesItem={glassesItem}
-          earringItem={earringItem}
-          contactLensItem={contactLensItem}
+      >
+        <video
+          ref={videoRef}
+          style={{
+            width: '100%', height: '100%',
+            objectFit: 'contain',
+            transform: 'scaleX(-1)',
+            display: cameraLive ? 'block' : 'none',
+          }}
+          playsInline muted autoPlay
         />
-      )}
 
-      {/* Placeholder when camera not live */}
-      {!cameraLive && (
-        <div style={{
-          position: 'absolute', inset: 0,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: 'linear-gradient(180deg, #1a1025 0%, #0f0a1a 100%)',
-        }}>
-          <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
-            <div style={{ fontSize: 40, marginBottom: 8 }}>{'\uD83D\uDCF7'}</div>
-            <p style={{ fontSize: 13 }}>{t('ar.loading_camera') || 'Loading camera...'}</p>
+        {cameraLive && !beforeAfter && (
+          <MakeupCanvas
+            ref={canvasRef}
+            getVideo={getVideo}
+            baseLook={currentBase}
+            colorLook={activeColorLook}
+            intensity={intensity}
+            showMesh={showMesh}
+            glassesItem={glassesItem}
+            earringItem={earringItem}
+            contactLensItem={contactLensItem}
+          />
+        )}
+
+        {/* Before/After indicator */}
+        {beforeAfter && (
+          <div style={{
+            position: 'absolute', top: '50%', left: '50%',
+            transform: 'translate(-50%, -50%)',
+            background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)',
+            borderRadius: 16, padding: '10px 20px',
+            color: '#fff', fontSize: 14, fontWeight: 700,
+            pointerEvents: 'none',
+          }}>
+            Before
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Before/After indicator */}
-      {beforeAfter && (
+        {cameraLive && (
+          <button
+            onClick={() => setShowMesh(v => !v)}
+            style={{
+              position: 'absolute', top: 12, right: 12,
+              background: showMesh ? 'rgba(168,85,247,0.7)' : 'rgba(0,0,0,0.4)',
+              backdropFilter: 'blur(8px)',
+              border: showMesh ? '1px solid #a855f7' : '1px solid rgba(255,255,255,0.2)',
+              borderRadius: 10, padding: '5px 10px',
+              fontSize: 10, fontWeight: 600,
+              color: '#fff', cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
+          >
+            {showMesh ? '\u25C9 Mesh ON' : '\u25CB Mesh'}
+          </button>
+        )}
+
+        {!cameraLive && (
+          <div style={{
+            width: '100%', height: '100%',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'linear-gradient(180deg, #faf5ff 0%, #fdf2f8 100%)',
+            position: 'relative',
+          }}>
+            <svg viewBox="0 0 200 260" style={{ width: '60%', height: '70%' }}>
+              <ellipse cx="100" cy="110" rx="65" ry="80" fill="#f5d0b0"/>
+              <ellipse cx="100" cy="55" rx="70" ry="50" fill="#4a3728"/>
+              <rect x="30" y="55" width="140" height="30" rx="5" fill="#4a3728"/>
+              <ellipse cx="75" cy="105" rx="10" ry="6" fill="#fff"/>
+              <ellipse cx="125" cy="105" rx="10" ry="6" fill="#fff"/>
+              <ellipse cx="75" cy="105" rx="5" ry="5" fill="#3a2a1a"/>
+              <ellipse cx="125" cy="105" rx="5" ry="5" fill="#3a2a1a"/>
+              <path d="M58 90 Q75 82 90 88" stroke={browColor || '#5a4030'} strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+              <path d="M110 88 Q125 82 142 90" stroke={browColor || '#5a4030'} strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+              <path d="M100 108 L96 128 Q100 132 104 128 Z" fill="#e8c0a0" opacity="0.5"/>
+              <ellipse cx="100" cy="120" rx="60" ry="70" fill={baseColor} opacity={opacityFactor * 0.15} style={{ mixBlendMode: 'softLight' }}/>
+              {concealerColor && (
+                <>
+                  <ellipse cx="75" cy="115" rx="12" ry="6" fill={concealerColor} opacity={opacityFactor * 0.3}/>
+                  <ellipse cx="125" cy="115" rx="12" ry="6" fill={concealerColor} opacity={opacityFactor * 0.3}/>
+                </>
+              )}
+              <ellipse cx="75" cy="100" rx="16" ry="10" fill={eyeshadowColor} opacity={opacityFactor * 0.8}/>
+              <ellipse cx="125" cy="100" rx="16" ry="10" fill={eyeshadowColor} opacity={opacityFactor * 0.8}/>
+              <ellipse cx="60" cy="135" rx="18" ry="14" fill={cheekColor} opacity={opacityFactor}/>
+              <ellipse cx="140" cy="135" rx="18" ry="14" fill={cheekColor} opacity={opacityFactor}/>
+              <path d="M85 155 Q100 148 115 155 Q108 165 100 167 Q92 165 85 155 Z" fill={lipColor} opacity={opacityFactor * 0.85}/>
+            </svg>
+          </div>
+        )}
+
         <div style={{
-          position: 'absolute', top: '50%', left: '50%',
-          transform: 'translate(-50%, -50%)',
-          background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)',
-          borderRadius: 16, padding: '10px 20px',
-          color: '#fff', fontSize: 14, fontWeight: 700,
-          pointerEvents: 'none',
+          position: 'absolute', top: 12, left: 12,
+          background: cameraLive ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.9)',
+          backdropFilter: 'blur(8px)',
+          borderRadius: 12, padding: '6px 12px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+          maxWidth: '60%',
         }}>
-          Before
-        </div>
-      )}
-
-      {/* Top-left: Look name label */}
-      <div style={{
-        position: 'absolute',
-        top: 'max(env(safe-area-inset-top, 0px), 12px)', left: 16,
-        background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(8px)',
-        borderRadius: 12, padding: '6px 12px',
-        maxWidth: '55%', zIndex: 2,
-      }}>
-        {baseName && (
+          {baseName && (
+            <p style={{
+              fontSize: 9, margin: '0 0 1px',
+              color: cameraLive ? 'rgba(255,255,255,0.6)' : '#94a3b8',
+              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+            }}>
+              {baseName}
+            </p>
+          )}
           <p style={{
-            fontSize: 9, margin: '0 0 1px',
-            color: 'rgba(255,255,255,0.6)',
+            fontSize: 11, fontWeight: 700, margin: 0,
+            color: cameraLive ? '#fff' : '#a855f7',
             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
           }}>
-            {baseName}
+            {colorName}
           </p>
-        )}
-        <p style={{
-          fontSize: 12, fontWeight: 700, margin: 0,
-          color: '#fff',
-          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-        }}>
-          {colorName}
-        </p>
-      </div>
-
-      {/* Top-right: Mesh toggle */}
-      {cameraLive && (
-        <button
-          onClick={() => setShowMesh(v => !v)}
-          style={{
-            position: 'absolute',
-            top: 'max(env(safe-area-inset-top, 0px), 12px)', right: 16,
-            background: showMesh ? 'rgba(168,85,247,0.7)' : 'rgba(0,0,0,0.4)',
-            backdropFilter: 'blur(8px)',
-            border: showMesh ? '1px solid #a855f7' : '1px solid rgba(255,255,255,0.2)',
-            borderRadius: 10, padding: '5px 10px',
-            fontSize: 10, fontWeight: 600,
-            color: '#fff', cursor: 'pointer',
-            zIndex: 2,
-          }}
-        >
-          {showMesh ? '\u25C9 Mesh ON' : '\u25CB Mesh'}
-        </button>
-      )}
-
-      {/* Back button */}
-      <button onClick={onBack} style={{
-        position: 'absolute',
-        top: 'calc(max(env(safe-area-inset-top, 0px), 12px) + 44px)', left: 16,
-        background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(8px)',
-        border: 'none', borderRadius: 20, color: '#fff',
-        padding: '6px 14px', fontSize: 13, cursor: 'pointer',
-        fontWeight: 600, zIndex: 2,
-      }}>
-        {'\u2190'} {t('ar.back_to_looks')}
-      </button>
-
-      {/* Kirari speech bubble (above tab bar) */}
-      <div style={{
-        position: 'absolute',
-        bottom: 'calc(env(safe-area-inset-bottom, 0px) + 160px)',
-        left: 16, right: 16,
-        background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)',
-        borderRadius: 16, padding: '10px 14px',
-        display: 'flex', alignItems: 'center', gap: 10,
-        zIndex: 2,
-      }}>
-        <Kirari size={32} expression="sparkle" />
-        <p style={{ fontSize: 13, color: '#334155', margin: 0, lineHeight: 1.5, flex: 1 }}>
-          {beforeAfter
-            ? (t('ar.before_after_hint') || '\u9577\u62BC\u3057\u3067\u7D20\u9854\u3068\u6BD4\u3079\u3089\u308C\u308B\u3088\u2728')
-            : t('ar.color_comment', { name: colorName })}
-        </p>
-      </div>
-
-      {/* Category panel (bottom overlay) */}
-      <div style={{
-        position: 'absolute', bottom: 0, left: 0, right: 0,
-        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-        background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(16px)',
-        borderTop: '1px solid rgba(255,255,255,0.4)',
-        borderRadius: '20px 20px 0 0',
-        zIndex: 3,
-        maxHeight: '40vh',
-        overflowY: 'auto',
-      }}>
-        {/* Category tabs */}
-        <div style={{
-          display: 'flex', overflowX: 'auto', gap: 0,
-          borderBottom: '1px solid #ede9fe',
-          WebkitOverflowScrolling: 'touch',
-          scrollbarWidth: 'none',
-        }}>
-          {CATEGORIES.map(cat => (
-            <button key={cat.id} onClick={() => setActiveCategory(cat.id)} style={{
-              flex: 1, padding: '8px 2px', minWidth: 0,
-              background: 'transparent', border: 'none',
-              borderBottom: activeCategory === cat.id
-                ? '2.5px solid #a855f7' : '2.5px solid transparent',
-              color: cat.comingSoon ? '#c4b5fd' : (activeCategory === cat.id ? '#a855f7' : '#94a3b8'),
-              fontSize: 10, fontWeight: activeCategory === cat.id ? 700 : 400,
-              cursor: 'pointer', transition: 'all 0.2s',
-              opacity: cat.comingSoon ? 0.6 : 1,
-              position: 'relative',
-            }}>
-              <div style={{ fontSize: 16 }}>{cat.icon}</div>
-              <div>{t(cat.labelKey)}</div>
-              {cat.comingSoon && (
-                <span style={{
-                  position: 'absolute', top: 2, right: 2,
-                  background: '#a855f7', color: '#fff',
-                  fontSize: 7, fontWeight: 700, borderRadius: 4,
-                  padding: '1px 3px', lineHeight: 1.2,
-                }}>SOON</span>
-              )}
-            </button>
-          ))}
         </div>
+      </div>
 
-        {/* Category content */}
-        <div style={{ padding: '10px 16px 12px' }}>
+      {/* Kirari */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '0 16px 10px' }}>
+        <Kirari size={32} expression="sparkle" />
+        <Bubble>
+          <p style={{ fontSize: 12, color: '#334155', margin: 0, lineHeight: 1.6 }}>
+            {beforeAfter
+              ? (t('ar.before_after_hint') || '\u9577\u62BC\u3057\u3067\u7D20\u9854\u3068\u6BD4\u3079\u3089\u308C\u308B\u3088\u2728')
+              : t('ar.color_comment', { name: colorName })}
+          </p>
+        </Bubble>
+      </div>
+
+      {/* Category panel */}
+      <div style={{ padding: '0 16px', marginBottom: 10 }}>
+        <div style={{
+          background: '#fff', borderRadius: 16, padding: '10px 12px',
+          boxShadow: '0 2px 8px rgba(139,92,246,0.06)', border: '1px solid #ede9fe',
+        }}>
+          {/* Category tabs — horizontal scroll */}
+          <div style={{
+            display: 'flex', gap: 0,
+            background: 'rgba(139,92,246,0.06)', borderRadius: 12,
+            overflow: 'hidden', overflowX: 'auto', marginBottom: 10,
+            WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none',
+          }}>
+            {CATEGORIES.map(cat => (
+              <button key={cat.id}
+                onClick={() => !cat.comingSoon && setActiveCategory(cat.id)}
+                style={{
+                  flex: 1, padding: '8px 2px', minWidth: 0,
+                  background: activeCategory === cat.id
+                    ? 'rgba(168,85,247,0.15)' : 'transparent',
+                  border: 'none',
+                  borderBottom: activeCategory === cat.id
+                    ? '2px solid #a855f7' : '2px solid transparent',
+                  color: cat.comingSoon ? '#cbd5e1' : activeCategory === cat.id ? '#a855f7' : '#94a3b8',
+                  fontSize: 9, fontWeight: activeCategory === cat.id ? 700 : 400,
+                  cursor: cat.comingSoon ? 'default' : 'pointer',
+                  transition: 'all 0.2s', position: 'relative',
+                  opacity: cat.comingSoon ? 0.5 : 1,
+                }}>
+                <div style={{ fontSize: 14 }}>{cat.icon}</div>
+                <div>{t(cat.labelKey)}</div>
+                {cat.comingSoon && (
+                  <span style={{
+                    position: 'absolute', top: 2, right: 2,
+                    fontSize: 7, background: '#a855f7', color: '#fff',
+                    borderRadius: 4, padding: '1px 3px', fontWeight: 700,
+                  }}>SOON</span>
+                )}
+              </button>
+            ))}
+          </div>
+
           {activeCategory === 'base' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {BASE_LOOKS.map(item => (
-                <button
-                  key={item.id}
-                  onClick={() => setSelectedBase(item.id)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 10,
-                    padding: '8px 10px', borderRadius: 10,
-                    background: selectedBase === item.id
-                      ? 'rgba(168,85,247,0.12)' : 'rgba(139,92,246,0.04)',
-                    border: selectedBase === item.id
-                      ? '2px solid #a855f7' : '1px solid #ede9fe',
-                    cursor: 'pointer', textAlign: 'left',
-                  }}
-                >
-                  <div style={{
-                    width: 28, height: 28, borderRadius: '50%',
-                    background: item.base || item.brow || '#e8d8c8',
-                    border: '1.5px solid rgba(0,0,0,0.06)', flexShrink: 0,
-                  }} />
+                <button key={item.id} onClick={() => setSelectedBase(item.id)} style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  padding: '8px 10px', borderRadius: 10,
+                  background: selectedBase === item.id ? 'rgba(168,85,247,0.12)' : 'rgba(139,92,246,0.04)',
+                  border: selectedBase === item.id ? '2px solid #a855f7' : '1px solid #ede9fe',
+                  cursor: 'pointer', textAlign: 'left',
+                }}>
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: item.base || item.brow || '#e8d8c8', border: '1.5px solid rgba(0,0,0,0.06)', flexShrink: 0 }} />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: 12, fontWeight: 600, color: '#334155', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {t(item.name)}
-                    </p>
-                    <p style={{ fontSize: 10, color: '#94a3b8', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {t(item.desc)}
-                    </p>
+                    <p style={{ fontSize: 12, fontWeight: 600, color: '#334155', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t(item.name)}</p>
+                    <p style={{ fontSize: 10, color: '#94a3b8', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t(item.desc)}</p>
                   </div>
-                  {selectedBase === item.id && (
-                    <span style={{ fontSize: 16, color: '#a855f7', flexShrink: 0 }}>{'\u2713'}</span>
-                  )}
+                  {selectedBase === item.id && <span style={{ fontSize: 16, color: '#a855f7', flexShrink: 0 }}>{'\u2713'}</span>}
                 </button>
               ))}
             </div>
           )}
 
           {activeCategory === 'lip' && (
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center', padding: '4px 0' }}>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
               {LIP_COLORS.map(c => (
                 <div key={c} onClick={() => setLipColor(c)} style={{
-                  width: 36, height: 36, borderRadius: '50%', background: c, cursor: 'pointer',
+                  width: 32, height: 32, borderRadius: '50%', background: c, cursor: 'pointer',
                   border: lipColor === c ? '3px solid #a855f7' : '2px solid rgba(139,92,246,0.15)',
-                  boxShadow: lipColor === c ? '0 0 12px rgba(168,85,247,0.4)' : 'none',
+                  boxShadow: lipColor === c ? '0 0 10px rgba(168,85,247,0.3)' : 'none',
                   transition: 'all 0.2s',
                 }}/>
               ))}
@@ -370,10 +357,10 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
           )}
 
           {activeCategory === 'cheek' && (
-            <div style={{ display: 'flex', gap: 10, justifyContent: 'center', padding: '4px 0' }}>
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
               {CHEEK_COLORS.map(c => (
                 <div key={c} onClick={() => setCheekColor(c)} style={{
-                  width: 36, height: 36, borderRadius: '50%', background: c, cursor: 'pointer',
+                  width: 32, height: 32, borderRadius: '50%', background: c, cursor: 'pointer',
                   border: cheekColor === c ? '3px solid #a855f7' : '2px solid rgba(139,92,246,0.15)',
                   transition: 'all 0.2s',
                 }}/>
@@ -382,32 +369,21 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
           )}
 
           {activeCategory === 'contacts' && (
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', padding: '4px 0' }}>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
               {CONTACT_LENS_ITEMS.map(item => (
                 <div key={item.id} onClick={() => setSelectedContactLens(item.id)} style={{
-                  width: 36, height: 36, borderRadius: '50%',
-                  background: item.id === 'none' ? '#e2e8f0' : item.color,
+                  width: 32, height: 32, borderRadius: '50%',
+                  background: item.id === 'none' ? '#f1f5f9' : item.color,
                   cursor: 'pointer',
                   border: selectedContactLens === item.id ? '3px solid #a855f7' : '2px solid rgba(139,92,246,0.15)',
-                  boxShadow: selectedContactLens === item.id ? '0 0 12px rgba(168,85,247,0.4)' : 'none',
+                  boxShadow: selectedContactLens === item.id ? '0 0 10px rgba(168,85,247,0.3)' : 'none',
                   transition: 'all 0.2s',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 11, color: item.id === 'none' ? '#94a3b8' : 'transparent',
+                  fontSize: 10, color: item.id === 'none' ? '#94a3b8' : 'transparent',
                 }}>
-                  {item.id === 'none' && '\u2715'}
+                  {item.id === 'none' ? 'OFF' : ''}
                 </div>
               ))}
-            </div>
-          )}
-
-          {activeCategory === 'lashes' && (
-            <div style={{
-              textAlign: 'center', padding: '16px 0',
-              color: '#94a3b8', fontSize: 13,
-            }}>
-              <div style={{ fontSize: 28, marginBottom: 6 }}>{'\u2728'}</div>
-              <p style={{ margin: 0, fontWeight: 600 }}>{t('ar.coming_soon') || 'Coming Soon'}</p>
-              <p style={{ margin: '4px 0 0', fontSize: 11 }}>{t('ar.lashes_hint') || 'WebGL\u79FB\u884C\u5F8C\u306B\u5B9F\u88C5\u4E88\u5B9A'}</p>
             </div>
           )}
 
@@ -415,13 +391,11 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
             <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
               {GLASSES_ITEMS.map(item => (
                 <button key={item.id} onClick={() => setSelectedGlasses(item.id)} style={{
-                  padding: '6px 12px', borderRadius: 10, fontSize: 11, fontWeight: 600,
-                  background: selectedGlasses === item.id
-                    ? 'rgba(168,85,247,0.15)' : 'rgba(139,92,246,0.04)',
-                  border: selectedGlasses === item.id
-                    ? '2px solid #a855f7' : '1px solid #ede9fe',
+                  padding: '6px 10px', borderRadius: 10, fontSize: 11, fontWeight: 600,
+                  background: selectedGlasses === item.id ? 'rgba(168,85,247,0.15)' : 'rgba(139,92,246,0.04)',
+                  border: selectedGlasses === item.id ? '2px solid #a855f7' : '1px solid #ede9fe',
                   color: selectedGlasses === item.id ? '#a855f7' : '#64748b',
-                  cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
+                  cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, transition: 'all 0.2s',
                 }}>
                   {item.emoji} {item.name}
                 </button>
@@ -433,13 +407,11 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
             <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
               {EARRING_ITEMS.map(item => (
                 <button key={item.id} onClick={() => setSelectedEarring(item.id)} style={{
-                  padding: '6px 12px', borderRadius: 10, fontSize: 11, fontWeight: 600,
-                  background: selectedEarring === item.id
-                    ? 'rgba(168,85,247,0.15)' : 'rgba(139,92,246,0.04)',
-                  border: selectedEarring === item.id
-                    ? '2px solid #a855f7' : '1px solid #ede9fe',
+                  padding: '6px 10px', borderRadius: 10, fontSize: 11, fontWeight: 600,
+                  background: selectedEarring === item.id ? 'rgba(168,85,247,0.15)' : 'rgba(139,92,246,0.04)',
+                  border: selectedEarring === item.id ? '2px solid #a855f7' : '1px solid #ede9fe',
                   color: selectedEarring === item.id ? '#a855f7' : '#64748b',
-                  cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
+                  cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, transition: 'all 0.2s',
                 }}>
                   {item.emoji} {item.name}
                 </button>
@@ -447,44 +419,40 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
             </div>
           )}
 
-          {/* Intensity slider for lip/cheek */}
           {(activeCategory === 'lip' || activeCategory === 'cheek') && (
             <div style={{ marginTop: 10 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                 <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b' }}>{t('ar.intensity')}</span>
                 <span style={{ fontSize: 12, fontWeight: 700, color: '#a855f7' }}>{intensity}%</span>
               </div>
-              <input
-                type="range" min="0" max="100" value={intensity}
+              <input type="range" min="0" max="100" value={intensity}
                 onChange={e => setIntensity(Number(e.target.value))}
                 style={{ width: '100%', accentColor: '#a855f7' }}
               />
             </div>
           )}
-
-          {/* Action buttons */}
-          <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-            <button onClick={onBack} style={{
-              flex: '0 0 auto', padding: '10px 16px',
-              background: 'transparent', border: '1px solid #e2e8f0',
-              borderRadius: 14, fontSize: 12, fontWeight: 600,
-              color: '#64748b', cursor: 'pointer',
-              whiteSpace: 'nowrap',
-            }}>
-              {'\u2190'} {t('ar.try_another')}
-            </button>
-            <button onClick={handleDecide} style={{
-              flex: 1, padding: '10px 16px',
-              background: 'linear-gradient(135deg, #a855f7, #ec4899)',
-              border: 'none', borderRadius: 14, fontSize: 13, fontWeight: 700,
-              color: '#fff', cursor: 'pointer',
-              boxShadow: '0 4px 16px rgba(168,85,247,0.25)',
-              whiteSpace: 'nowrap',
-            }}>
-              {t('ar.decide')}
-            </button>
-          </div>
         </div>
+      </div>
+
+      {/* Action buttons */}
+      <div style={{ padding: '0 16px', display: 'flex', gap: 8, marginBottom: 8 }}>
+        <button onClick={onBack} style={{
+          flex: 0.4, padding: 12,
+          background: '#f8fafc', border: '1px solid #e2e8f0',
+          borderRadius: 14, fontSize: 12, fontWeight: 600,
+          color: '#64748b', cursor: 'pointer', whiteSpace: 'nowrap',
+        }}>
+          {t('ar.try_another')}
+        </button>
+        <button onClick={handleDecide} style={{
+          flex: 1, padding: 12,
+          background: 'linear-gradient(135deg, #a855f7, #ec4899)',
+          border: 'none', borderRadius: 14, fontSize: 13, fontWeight: 700,
+          color: '#fff', cursor: 'pointer', whiteSpace: 'nowrap',
+          boxShadow: '0 4px 16px rgba(168,85,247,0.25)',
+        }}>
+          {t('ar.decide')}
+        </button>
       </div>
     </div>
   );

@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 2026-04-07 — fix: AR画面レイアウトを動作版ベースに復元
+
+- 全画面化（position:fixed/absolute）を撤回し、動作していたスクロールレイアウトに復元
+- ArTryOnScreen: `padding: '12px 0'` + `aspectRatio` + `maxHeight: '55vh'` の元構造を維持
+- SkincareARScreen: 完全にSTEP4前の動作版に復元
+- 新機能（カラコン、長押しビフォーアフター、7カテゴリタブ）は元レイアウト内に追加
+
+---
+
 ## 2026-04-07 — fix: AR画面 position:relative + height:100% 方式に変更
 
 - `position: absolute` だと `.kirei-app-container` の `overflow-y:auto` と相性が悪く真っ白になる問題を修正
