@@ -199,6 +199,7 @@ export default {
   "ar.try_another": "別のルックを試す",
   "ar.cat_base":    "ベース",
   "ar.cat_lip":     "リップ",
+  "ar.cat_eyeshadow": "アイシャドウ",
   "ar.cat_cheek":   "チーク",
   "ar.cat_contacts": "カラコン",
   "ar.cat_glasses": "メガネ",

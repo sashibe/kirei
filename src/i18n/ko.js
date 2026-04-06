@@ -199,6 +199,7 @@ export default {
   "ar.try_another": "다른 룩 시도하기",
   "ar.cat_base":    "베이스",
   "ar.cat_lip":     "립",
+  "ar.cat_eyeshadow": "아이섀도우",
   "ar.cat_cheek":   "치크",
   "ar.cat_glasses": "안경",
   "ar.cat_contacts": "컬러렌즈",

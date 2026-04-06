@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 2026-04-07 — fix: バグ⑧カラーパレット横スクロール化 + バグ⑨アイシャドウカテゴリ追加
+
+### バグ⑧ カラーパレット横スクロール化
+- リップ・チーク・カラコンのカラーチップを `flexWrap:wrap` → `flexWrap:nowrap; overflowX:auto` に変更
+- パネル高さが1行分に安定し、カメラ領域が広がる
+- `SCROLL_ROW` 共通スタイルで全カテゴリ統一
+
+### バグ⑨ アイシャドウカテゴリ追加
+- CATEGORIESに `eyeshadow` タブ追加（リップとチークの間）
+- EYESHADOW_COLORS: 8色パレット（コーラルブラウン/モーブ/テラコッタ/ネイビー等）
+- `eyeshadowColor` stateで即反映、濃さスライダー対応
+- i18n: JA「アイシャドウ」/ EN「Eye」/ KO「아이섀도우」
+
+---
+
 ## 2026-04-07 — feat: AR全画面化 + レターボックス解消 + バグ修正
 
 ### AR全画面化（MirrorScreen方式）

@@ -7,22 +7,36 @@ import { GLASSES_ITEMS, EARRING_ITEMS, CONTACT_LENS_ITEMS } from '../data/access
 import { BASE_LOOKS } from '../data/makeupLooks.js';
 
 const CATEGORIES = [
-  { id: 'base',    labelKey: 'ar.cat_base',    icon: '\uD83E\uDDF4' },
-  { id: 'lip',     labelKey: 'ar.cat_lip',     icon: '\uD83D\uDC84' },
-  { id: 'cheek',   labelKey: 'ar.cat_cheek',   icon: '\uD83C\uDF38' },
-  { id: 'contacts', labelKey: 'ar.cat_contacts', icon: '\uD83D\uDC41\uFE0F' },
-  { id: 'glasses', labelKey: 'ar.cat_glasses', icon: '\uD83D\uDC53' },
-  { id: 'earring', labelKey: 'ar.cat_earring', icon: '\uD83D\uDC8D' },
-  { id: 'lashes',  labelKey: 'ar.cat_lashes',  icon: '\u2728', comingSoon: true },
+  { id: 'base',      labelKey: 'ar.cat_base',      icon: '\uD83E\uDDF4' },
+  { id: 'lip',       labelKey: 'ar.cat_lip',       icon: '\uD83D\uDC84' },
+  { id: 'eyeshadow', labelKey: 'ar.cat_eyeshadow', icon: '\u2728' },
+  { id: 'cheek',     labelKey: 'ar.cat_cheek',     icon: '\uD83C\uDF38' },
+  { id: 'contacts',  labelKey: 'ar.cat_contacts',  icon: '\uD83D\uDC41\uFE0F' },
+  { id: 'glasses',   labelKey: 'ar.cat_glasses',   icon: '\uD83D\uDC53' },
+  { id: 'earring',   labelKey: 'ar.cat_earring',   icon: '\uD83D\uDC8D' },
+  { id: 'lashes',    labelKey: 'ar.cat_lashes',    icon: '\uD83E\uDEF6', comingSoon: true },
 ];
 
 const LIP_COLORS = ['#e8607c','#c05070','#d4826a','#b85050','#cf6080','#e07070'];
+const EYESHADOW_COLORS = [
+  'rgba(196,149,106,0.25)', 'rgba(232,150,122,0.25)', 'rgba(200,162,200,0.25)',
+  'rgba(139,69,19,0.20)',   'rgba(210,105,30,0.20)',  'rgba(75,0,130,0.20)',
+  'rgba(128,128,128,0.20)', 'rgba(30,30,46,0.20)',
+];
 const CHEEK_COLORS = [
   'rgba(232,96,124,0.4)',
   'rgba(255,150,100,0.4)',
   'rgba(200,160,200,0.4)',
   'rgba(255,180,120,0.4)',
 ];
+
+// Horizontal scroll style for color palettes (Bug⑧)
+const SCROLL_ROW = {
+  display: 'flex', gap: 8, flexWrap: 'nowrap',
+  overflowX: 'auto', padding: '4px 2px',
+  scrollbarWidth: 'none', msOverflowStyle: 'none',
+  WebkitOverflowScrolling: 'touch',
+};
 
 export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack }) {
   const { t } = useT();
@@ -33,6 +47,7 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
   const [selectedBase, setSelectedBase] = useState(baseLook?.id ?? 'clean-natural');
   const [lipColor, setLipColor] = useState(colorLook?.lip || '#e8607c');
   const [cheekColor, setCheekColor] = useState(colorLook?.cheek || 'rgba(232,96,124,0.4)');
+  const [eyeshadowColor, setEyeshadowColor] = useState(colorLook?.eyeshadow || 'rgba(196,149,106,0.25)');
   const [selectedGlasses, setSelectedGlasses] = useState('none');
   const [selectedEarring, setSelectedEarring] = useState('none');
   const [selectedContactLens, setSelectedContactLens] = useState('none');
@@ -58,7 +73,7 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
     ...colorLook,
     lip: lipColor,
     cheek: cheekColor,
-    eyeshadow: colorLook?.eyeshadow || 'rgba(232,150,120,0.2)',
+    eyeshadow: eyeshadowColor,
   };
 
   const glassesItem = GLASSES_ITEMS.find(i => i.id === selectedGlasses);
@@ -305,10 +320,10 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
           )}
 
           {activeCategory === 'lip' && (
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center', padding: '4px 0' }}>
+            <div style={SCROLL_ROW}>
               {LIP_COLORS.map(c => (
                 <div key={c} onClick={() => setLipColor(c)} style={{
-                  width: 36, height: 36, borderRadius: '50%', background: c, cursor: 'pointer',
+                  width: 36, height: 36, borderRadius: '50%', background: c, cursor: 'pointer', flexShrink: 0,
                   border: lipColor === c ? '3px solid #a855f7' : '2px solid rgba(139,92,246,0.15)',
                   boxShadow: lipColor === c ? '0 0 12px rgba(168,85,247,0.4)' : 'none',
                 }}/>
@@ -316,11 +331,23 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
             </div>
           )}
 
+          {activeCategory === 'eyeshadow' && (
+            <div style={SCROLL_ROW}>
+              {EYESHADOW_COLORS.map(c => (
+                <div key={c} onClick={() => setEyeshadowColor(c)} style={{
+                  width: 36, height: 36, borderRadius: '50%', background: c.replace(/[\d.]+\)$/, '1)'), cursor: 'pointer', flexShrink: 0,
+                  border: eyeshadowColor === c ? '3px solid #a855f7' : '2px solid rgba(139,92,246,0.15)',
+                  boxShadow: eyeshadowColor === c ? '0 0 12px rgba(168,85,247,0.4)' : 'none',
+                }}/>
+              ))}
+            </div>
+          )}
+
           {activeCategory === 'cheek' && (
-            <div style={{ display: 'flex', gap: 10, justifyContent: 'center', padding: '4px 0' }}>
+            <div style={SCROLL_ROW}>
               {CHEEK_COLORS.map(c => (
                 <div key={c} onClick={() => setCheekColor(c)} style={{
-                  width: 36, height: 36, borderRadius: '50%', background: c, cursor: 'pointer',
+                  width: 36, height: 36, borderRadius: '50%', background: c, cursor: 'pointer', flexShrink: 0,
                   border: cheekColor === c ? '3px solid #a855f7' : '2px solid rgba(139,92,246,0.15)',
                 }}/>
               ))}
@@ -328,10 +355,10 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
           )}
 
           {activeCategory === 'contacts' && (
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <div style={SCROLL_ROW}>
               {CONTACT_LENS_ITEMS.map(item => (
                 <div key={item.id} onClick={() => setSelectedContactLens(item.id)} style={{
-                  width: 32, height: 32, borderRadius: '50%',
+                  width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
                   background: item.id === 'none' ? '#f1f5f9' : item.color, cursor: 'pointer',
                   border: selectedContactLens === item.id ? '3px solid #a855f7' : '2px solid rgba(139,92,246,0.15)',
                   boxShadow: selectedContactLens === item.id ? '0 0 10px rgba(168,85,247,0.3)' : 'none',
@@ -372,7 +399,7 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
             </div>
           )}
 
-          {(activeCategory === 'lip' || activeCategory === 'cheek') && (
+          {(activeCategory === 'lip' || activeCategory === 'eyeshadow' || activeCategory === 'cheek') && (
             <div style={{ marginTop: 10 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                 <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b' }}>{t('ar.intensity')}</span>

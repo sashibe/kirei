@@ -199,6 +199,7 @@ export default {
   "ar.try_another": "Try Another Look",
   "ar.cat_base":    "Base",
   "ar.cat_lip":     "Lip",
+  "ar.cat_eyeshadow": "Eye",
   "ar.cat_cheek":   "Cheek",
   "ar.cat_glasses": "Glasses",
   "ar.cat_contacts": "Contacts",
