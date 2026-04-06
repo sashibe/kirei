@@ -38,6 +38,10 @@ const RIGHT_EYESHADOW = [
   107, 66, 105, 63, 70, 156, 143, 116, 123, 33,
 ];
 
+// 目の開口部（ファンデーションくり抜き用）
+const RIGHT_EYE_HOLE = [33, 246, 161, 160, 159, 158, 157, 173, 133, 155, 154, 153, 145, 144, 163, 7];
+const LEFT_EYE_HOLE  = [362, 398, 384, 385, 386, 387, 388, 466, 263, 249, 390, 373, 374, 380, 381, 382];
+
 // コンシーラー（目の下クマ領域）
 const LEFT_UNDEREYE = [463, 341, 256, 252, 253, 254, 339, 255, 359, 467, 463];
 const RIGHT_UNDEREYE = [243, 112, 26, 22, 23, 24, 110, 25, 130, 247, 243];
@@ -275,9 +279,19 @@ export function drawFoundation(ctx, lms, w, h, colorStr, opacity) {
 
   const tracePath = () => {
     ctx.beginPath();
+    // 外側: フェイスオーバル（時計回り）
     ctx.moveTo(points[0][0], points[0][1]);
     for (let i = 1; i < points.length; i++) ctx.lineTo(points[i][0], points[i][1]);
     ctx.closePath();
+    // 内側: 目のくり抜き（反時計回りで穴を開ける）
+    for (const eyeHole of [RIGHT_EYE_HOLE, LEFT_EYE_HOLE]) {
+      const last = eyeHole.length - 1;
+      ctx.moveTo(lmX(lms[eyeHole[last]], w), lmY(lms[eyeHole[last]], h));
+      for (let i = last - 1; i >= 0; i--) {
+        ctx.lineTo(lmX(lms[eyeHole[i]], w), lmY(lms[eyeHole[i]], h));
+      }
+      ctx.closePath();
+    }
   };
 
   // ベースカバー
