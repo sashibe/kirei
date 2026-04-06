@@ -277,24 +277,28 @@ export function drawFoundation(ctx, lms, w, h, colorStr, opacity) {
     Math.sqrt((px - cx) ** 2 + (py - cy) ** 2)
   ));
 
+  // クリップ: フェイスオーバルから目の領域をくり抜き
+  ctx.beginPath();
+  ctx.moveTo(points[0][0], points[0][1]);
+  for (let i = 1; i < points.length; i++) ctx.lineTo(points[i][0], points[i][1]);
+  ctx.closePath();
+  for (const eyeHole of [RIGHT_EYE_HOLE, LEFT_EYE_HOLE]) {
+    ctx.moveTo(lmX(lms[eyeHole[0]], w), lmY(lms[eyeHole[0]], h));
+    for (let i = 1; i < eyeHole.length; i++) {
+      ctx.lineTo(lmX(lms[eyeHole[i]], w), lmY(lms[eyeHole[i]], h));
+    }
+    ctx.closePath();
+  }
+  ctx.clip('evenodd');
+
   const tracePath = () => {
     ctx.beginPath();
-    // 外側: フェイスオーバル（時計回り）
     ctx.moveTo(points[0][0], points[0][1]);
     for (let i = 1; i < points.length; i++) ctx.lineTo(points[i][0], points[i][1]);
     ctx.closePath();
-    // 内側: 目のくり抜き（反時計回りで穴を開ける）
-    for (const eyeHole of [RIGHT_EYE_HOLE, LEFT_EYE_HOLE]) {
-      const last = eyeHole.length - 1;
-      ctx.moveTo(lmX(lms[eyeHole[last]], w), lmY(lms[eyeHole[last]], h));
-      for (let i = last - 1; i >= 0; i--) {
-        ctx.lineTo(lmX(lms[eyeHole[i]], w), lmY(lms[eyeHole[i]], h));
-      }
-      ctx.closePath();
-    }
   };
 
-  // ベースカバー
+  // ベースカバー（clipされた領域内のみ描画される）
   const base = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR);
   base.addColorStop(0, hex + '80');
   base.addColorStop(0.5, hex + '65');
@@ -303,7 +307,7 @@ export function drawFoundation(ctx, lms, w, h, colorStr, opacity) {
   ctx.globalAlpha = opa * 0.5;
   ctx.globalCompositeOperation = 'multiply';
   ctx.fillStyle = base;
-  tracePath(); ctx.fill('evenodd');
+  tracePath(); ctx.fill();
 
   // ティント
   ctx.globalCompositeOperation = 'overlay';
@@ -313,7 +317,7 @@ export function drawFoundation(ctx, lms, w, h, colorStr, opacity) {
   tint.addColorStop(0.7, hex + '30');
   tint.addColorStop(1, hex + '00');
   ctx.fillStyle = tint;
-  tracePath(); ctx.fill('evenodd');
+  tracePath(); ctx.fill();
 
   // Tゾーン + 頬ハイライト
   ctx.globalCompositeOperation = 'screen';
@@ -324,7 +328,7 @@ export function drawFoundation(ctx, lms, w, h, colorStr, opacity) {
   tZone.addColorStop(0.5, 'rgba(255,255,255,0.2)');
   tZone.addColorStop(1, 'rgba(255,255,255,0)');
   ctx.fillStyle = tZone;
-  tracePath(); ctx.fill('evenodd');
+  tracePath(); ctx.fill();
 
   ctx.globalAlpha = opa * 0.15;
   for (const cheekIdx of [234, 454]) {
@@ -334,7 +338,7 @@ export function drawFoundation(ctx, lms, w, h, colorStr, opacity) {
     cheekGrad.addColorStop(0, 'rgba(255,255,255,0.4)');
     cheekGrad.addColorStop(1, 'rgba(255,255,255,0)');
     ctx.fillStyle = cheekGrad;
-    tracePath(); ctx.fill('evenodd');
+    tracePath(); ctx.fill();
   }
 
   ctx.restore();
