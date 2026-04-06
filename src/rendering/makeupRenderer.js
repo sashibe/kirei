@@ -303,7 +303,7 @@ export function drawFoundation(ctx, lms, w, h, colorStr, opacity) {
   ctx.globalAlpha = opa * 0.5;
   ctx.globalCompositeOperation = 'multiply';
   ctx.fillStyle = base;
-  tracePath(); ctx.fill();
+  tracePath(); ctx.fill('evenodd');
 
   // ティント
   ctx.globalCompositeOperation = 'overlay';
@@ -313,7 +313,7 @@ export function drawFoundation(ctx, lms, w, h, colorStr, opacity) {
   tint.addColorStop(0.7, hex + '30');
   tint.addColorStop(1, hex + '00');
   ctx.fillStyle = tint;
-  tracePath(); ctx.fill();
+  tracePath(); ctx.fill('evenodd');
 
   // Tゾーン + 頬ハイライト
   ctx.globalCompositeOperation = 'screen';
@@ -324,7 +324,7 @@ export function drawFoundation(ctx, lms, w, h, colorStr, opacity) {
   tZone.addColorStop(0.5, 'rgba(255,255,255,0.2)');
   tZone.addColorStop(1, 'rgba(255,255,255,0)');
   ctx.fillStyle = tZone;
-  tracePath(); ctx.fill();
+  tracePath(); ctx.fill('evenodd');
 
   ctx.globalAlpha = opa * 0.15;
   for (const cheekIdx of [234, 454]) {
@@ -334,7 +334,7 @@ export function drawFoundation(ctx, lms, w, h, colorStr, opacity) {
     cheekGrad.addColorStop(0, 'rgba(255,255,255,0.4)');
     cheekGrad.addColorStop(1, 'rgba(255,255,255,0)');
     ctx.fillStyle = cheekGrad;
-    tracePath(); ctx.fill();
+    tracePath(); ctx.fill('evenodd');
   }
 
   ctx.restore();
