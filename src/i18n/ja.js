@@ -67,7 +67,7 @@ export default {
   "result.skin_check_btn": "肌チェックも受ける ✨",
   "result.share": "シェアする",
   "result.share_copied": "画像をクリップボードにコピーしました！",
-  "result.purchase_btn": "商品をまとめて見る",
+  "result.purchase_btn": "商品を購入する",
   "result.check_item": "MUSINSAで見る",
   "result.purchase_all": "選択した商品を購入する",
   "result.purchase_note": "※外部サイト（MUSINSA）に移動します",
@@ -200,8 +200,14 @@ export default {
   "ar.cat_base":    "ベース",
   "ar.cat_lip":     "リップ",
   "ar.cat_cheek":   "チーク",
+  "ar.cat_contacts": "カラコン",
   "ar.cat_glasses": "メガネ",
   "ar.cat_earring": "イヤリング",
+  "ar.cat_lashes": "まつげ",
+  "ar.coming_soon": "近日公開",
+  "ar.lashes_hint": "WebGL移行後に実装予定",
+  "ar.before_after_hint": "長押しで素顔と比べられるよ\u2728",
+  "ar.loading_camera": "カメラを起動中...",
   "ar.decide":      "このメイクで決定 ✓",
 
   // === CoordinateOverlay ===
@@ -243,6 +249,22 @@ export default {
   "kirari.random_change": "鏡に映る自分、毎日少しずつ変わってるんだよ",
   "kirari.random_lip": "今日は何色のリップにする？",
   "kirari.random_dull": "ちょっとくすんでる日でも、大丈夫。チェックしてみて",
+
+  // === キラリ ARガイドセリフ（改善7）===
+  "kirari.ar_first_open": "カラーをタップすると即試せるよ\u2728",
+  "kirari.ar_long_press": "そう！長押しで素顔と比べられるよ",
+  "kirari.ar_cart_add": "カートに入れたよ\uD83D\uDED2",
+  "kirari.ar_color_change": "似合ってる！",
+  "kirari.ar_category_switch": "他のカテゴリも見てみよう",
+  "kirari.ar_customize": "パーツごとに変えられるよ。気に入ったのだけでOK！",
+  "kirari.ar_checkout": "いい選択だね\u2728",
+
+  // === カート ===
+  "cart.items": "点",
+  "cart.checkout": "まとめて購入",
+
+  // === スキンケアAR追加 ===
+  "skincare_ar.skin_score": "肌スコア",
   "kirari.weather_pollen": "花粉の季節。肌が敏感になってる人も多いよ",
   "kirari.weather_humid": "今日は湿気多めだって。崩れにくいメイクがいいかも",
   "kirari.weather_dry": "今日は乾燥注意日。肌の水分、確認してみて",

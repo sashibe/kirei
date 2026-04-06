@@ -201,7 +201,13 @@ export default {
   "ar.cat_lip":     "Lip",
   "ar.cat_cheek":   "Cheek",
   "ar.cat_glasses": "Glasses",
+  "ar.cat_contacts": "Contacts",
   "ar.cat_earring": "Earring",
+  "ar.cat_lashes": "Lashes",
+  "ar.coming_soon": "Coming Soon",
+  "ar.lashes_hint": "Available after WebGL migration",
+  "ar.before_after_hint": "Hold to compare with bare face\u2728",
+  "ar.loading_camera": "Loading camera...",
   "ar.decide":      "Decide this look \u2713",
 
   // === CoordinateOverlay ===
@@ -243,6 +249,19 @@ export default {
   "kirari.random_change": "Your reflection changes a little each day, you know",
   "kirari.random_lip": "What lip color are you going with today?",
   "kirari.random_dull": "Even on dull days, it's okay. Try a check",
+
+  "kirari.ar_first_open": "Tap a color to try it instantly\u2728",
+  "kirari.ar_long_press": "Yes! Hold down to compare with bare face",
+  "kirari.ar_cart_add": "Added to cart\uD83D\uDED2",
+  "kirari.ar_color_change": "Looking great!",
+  "kirari.ar_category_switch": "Let's check other categories",
+  "kirari.ar_customize": "You can swap each part. Just pick what you like!",
+  "kirari.ar_checkout": "Great choices\u2728",
+
+  "cart.items": " items",
+  "cart.checkout": "Buy All",
+
+  "skincare_ar.skin_score": "Skin Score",
   "kirari.weather_pollen": "It's pollen season. Many people have sensitive skin right now",
   "kirari.weather_humid": "High humidity today. Smudge-proof makeup might be a good idea",
   "kirari.weather_dry": "Dry weather alert! Check your skin's moisture level",

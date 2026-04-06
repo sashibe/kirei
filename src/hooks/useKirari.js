@@ -205,4 +205,15 @@ export default function useKirari({ weather = null, isChecking = false, t = (k) 
   return { message, visible, dismiss };
 }
 
+// AR操作ガイドセリフ（改善7）
+export const AR_GUIDE_KEYS = {
+  onFirstOpen: 'kirari.ar_first_open',
+  onLongPress: 'kirari.ar_long_press',
+  onCartAdd: 'kirari.ar_cart_add',
+  onColorChange: 'kirari.ar_color_change',
+  onCategorySwitch: 'kirari.ar_category_switch',
+  onCustomize: 'kirari.ar_customize',
+  onCheckout: 'kirari.ar_checkout',
+};
+
 export { getWeatherKey, STREAK_KEYS, RANDOM_KEYS, HINT_IDLE_KEY, HINT_LONG_PRESS_KEY };

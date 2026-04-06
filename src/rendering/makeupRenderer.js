@@ -501,6 +501,85 @@ export function drawEarrings(ctx, landmarks, item, canvasW, canvasH) {
   });
 }
 
+/**
+ * カラコン — 瞳中心 #468(左) / #473(右) に虹彩オーバーレイ
+ */
+export function drawContactLens(ctx, landmarks, item, canvasW, canvasH, opacity = 0.7) {
+  if (!item || item.id === 'none') return;
+
+  // MediaPipe FaceLandmarker extended iris landmarks
+  const LEFT_IRIS_CENTER = 468;
+  const RIGHT_IRIS_CENTER = 473;
+
+  // 目頭・目尻の距離から虹彩半径を推定
+  // 左目: #33(目頭), #133(目尻)  右目: #362(目頭), #263(目尻)
+  const leftEyeWidth = Math.abs(landmarks[133].x - landmarks[33].x) * canvasW;
+  const rightEyeWidth = Math.abs(landmarks[362].x - landmarks[263].x) * canvasW;
+
+  const pairs = [
+    { center: LEFT_IRIS_CENTER, eyeWidth: leftEyeWidth },
+    { center: RIGHT_IRIS_CENTER, eyeWidth: rightEyeWidth },
+  ];
+
+  ctx.save();
+
+  for (const { center, eyeWidth } of pairs) {
+    const iris = landmarks[center];
+    if (!iris) continue;
+
+    const ix = iris.x * canvasW;
+    const iy = iris.y * canvasH;
+    const irisRadius = eyeWidth * 0.20;
+
+    // Base color (multiply blend)
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.globalAlpha = opacity * 0.55;
+    const grad = ctx.createRadialGradient(ix, iy, 0, ix, iy, irisRadius);
+    grad.addColorStop(0, item.color + 'CC');
+    grad.addColorStop(0.6, item.color + '99');
+    grad.addColorStop(1, item.color + '00');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(ix, iy, irisRadius, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Overlay tint for depth
+    ctx.globalCompositeOperation = 'overlay';
+    ctx.globalAlpha = opacity * 0.3;
+    ctx.fillStyle = item.color;
+    ctx.beginPath();
+    ctx.arc(ix, iy, irisRadius * 0.8, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Pupil cutout (darken center)
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.globalAlpha = opacity * 0.6;
+    const pupilGrad = ctx.createRadialGradient(ix, iy, 0, ix, iy, irisRadius * 0.35);
+    pupilGrad.addColorStop(0, '#1a1a1a');
+    pupilGrad.addColorStop(1, 'transparent');
+    ctx.fillStyle = pupilGrad;
+    ctx.beginPath();
+    ctx.arc(ix, iy, irisRadius * 0.35, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Highlight dot
+    ctx.globalCompositeOperation = 'screen';
+    ctx.globalAlpha = opacity * 0.25;
+    const hlGrad = ctx.createRadialGradient(
+      ix - irisRadius * 0.2, iy - irisRadius * 0.25, 0,
+      ix - irisRadius * 0.2, iy - irisRadius * 0.25, irisRadius * 0.3
+    );
+    hlGrad.addColorStop(0, 'rgba(255,255,255,0.7)');
+    hlGrad.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = hlGrad;
+    ctx.beginPath();
+    ctx.arc(ix - irisRadius * 0.2, iy - irisRadius * 0.25, irisRadius * 0.3, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
 // ============================================================
 // ヘルパー
 // ============================================================

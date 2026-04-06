@@ -201,8 +201,14 @@ export default {
   "ar.cat_lip":     "립",
   "ar.cat_cheek":   "치크",
   "ar.cat_glasses": "안경",
+  "ar.cat_contacts": "컬러렌즈",
   "ar.cat_earring": "귀걸이",
-  "ar.decide":      "이 메이크업으로 결정 ✓",
+  "ar.cat_lashes": "속눈썹",
+  "ar.coming_soon": "출시 예정",
+  "ar.lashes_hint": "WebGL 전환 후 구현 예정",
+  "ar.before_after_hint": "길게 누르면 맨 얼굴과 비교할 수 있어\u2728",
+  "ar.loading_camera": "카메라 시작 중...",
+  "ar.decide":      "이 메이크업으로 결정 \u2713",
 
   // === CoordinateOverlay ===
   "coord.title": "Today's Total Look",
@@ -243,6 +249,19 @@ export default {
   "kirari.random_change": "거울 속 나는 매일 조금씩 변하고 있어",
   "kirari.random_lip": "오늘은 무슨 색 립 할 거야?",
   "kirari.random_dull": "좀 칙칙한 날이어도 괜찮아. 체크해 봐",
+
+  "kirari.ar_first_open": "컬러를 탭하면 바로 적용돼\u2728",
+  "kirari.ar_long_press": "맞아! 길게 누르면 맨 얼굴과 비교할 수 있어",
+  "kirari.ar_cart_add": "장바구니에 담았어\uD83D\uDED2",
+  "kirari.ar_color_change": "잘 어울려!",
+  "kirari.ar_category_switch": "다른 카테고리도 확인해 보자",
+  "kirari.ar_customize": "파트별로 바꿀 수 있어. 마음에 드는 것만 골라!",
+  "kirari.ar_checkout": "좋은 선택이야\u2728",
+
+  "cart.items": "개",
+  "cart.checkout": "일괄 구매",
+
+  "skincare_ar.skin_score": "피부 점수",
   "kirari.weather_pollen": "꽃가루 시즌이야. 피부가 예민해진 사람이 많아",
   "kirari.weather_humid": "오늘은 습기가 많대. 무너지지 않는 메이크업이 좋을지도",
   "kirari.weather_dry": "오늘은 건조 주의보! 피부 수분, 확인해 봐",

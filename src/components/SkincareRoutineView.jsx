@@ -113,31 +113,32 @@ export default function SkincareRoutineView({ onNext, skinScores }) {
         <span style={{ fontSize: 16, fontWeight: 800, color: '#a855f7' }}>{'\u00A5'}{total.toLocaleString()}</span>
       </div>
 
-      {/* まとめて購入 */}
-      <button
-        onClick={() => setShowPurchaseModal(true)}
-        style={{
-          width: '100%', padding: 13, marginBottom: 14,
-          background: 'linear-gradient(135deg, #a855f7, #ec4899)',
-          border: 'none', borderRadius: 14,
-          fontSize: 13, fontWeight: 700, color: '#fff',
-          cursor: 'pointer',
-          boxShadow: '0 4px 16px rgba(168,85,247,0.25)',
-        }}
-      >
-        🛒 {t('result.purchase_btn')}
-      </button>
-
       {/* ③ なぜ2週間？ セクション */}
       <WhyTwoWeeksSection skinScores={skinScores} t={t} />
 
-      {/* CTA */}
+      {/* Primary CTA: 購入 */}
+      <button
+        onClick={() => setShowPurchaseModal(true)}
+        style={{
+          width: '100%', padding: 14, marginBottom: 10,
+          background: 'linear-gradient(135deg, #a855f7, #ec4899)',
+          border: 'none', borderRadius: 14,
+          fontSize: 14, fontWeight: 700, color: '#fff',
+          cursor: 'pointer',
+          boxShadow: '0 4px 16px rgba(168,85,247,0.25)',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {'\uD83D\uDED2'} {t('result.purchase_btn')}
+      </button>
+
+      {/* Secondary CTA: 結果を見る（テキストリンク風） */}
       <button onClick={onNext} style={{
-        width: '100%', padding: 14, marginBottom: 12,
-        background: 'linear-gradient(135deg, #a855f7, #ec4899)',
-        border: 'none', borderRadius: 14, fontSize: 14, fontWeight: 700,
-        color: '#fff', cursor: 'pointer',
-        boxShadow: '0 4px 16px rgba(168,85,247,0.25)',
+        width: '100%', padding: 12, marginBottom: 12,
+        background: 'transparent',
+        border: '1px solid #e2e8f0', borderRadius: 14,
+        fontSize: 13, fontWeight: 600,
+        color: '#64748b', cursor: 'pointer',
       }}>
         {t('skincare.view_result')}
       </button>
