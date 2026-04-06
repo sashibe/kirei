@@ -207,6 +207,7 @@ docs: CLAUDE.md更新
 - **眉・コンシーラー**: 実装済み
 - **メガネ**: ランドマーク #6（鼻梁）/#234（左耳）/#454（右耳）、4形状（round/square/oval/wayfarer）、source-overブレンド
 - **イヤリング**: ランドマーク #132（左耳珠）/#361（右耳珠）、4タイプ（stud/drop/hoop/chain）、source-overブレンド
+- **カラコン**: ランドマーク #468（左瞳中心）/#473（右瞳中心）、虹彩半径=目幅×20%、multiply+overlayブレンド、15色（ブラウン/グレー/ブルー/グリーン/パープル各3色）
 
 ### レンダリングパイプライン
 ```
@@ -214,7 +215,7 @@ docs: CLAUDE.md更新
   → MediaPipe FaceLandmarker推論 (468点)
   → ランドマーク座標 → パーツ領域ポリゴン生成
   → Layer 1-2: メイク描画（Canvas2D）
-  → Layer 3: アクセサリー描画（メガネ・イヤリング）
+  → Layer 3: アクセサリー描画（メガネ・イヤリング・カラコン）
   → Canvas2D描画（現在）/ WebGL（将来）
 ```
 
@@ -282,6 +283,7 @@ C:\dev\kirei\
 │   │   ├── CoordinateOverlay.jsx  ← TPOセレクター・スタイルボード実装済み
 │   │   ├── BodySilhouette.jsx     ← SVG全身シルエット実装済み
 │   │   ├── SkincareRoutineView.jsx ← スキンケアルーティン表示実装済み
+│   │   ├── CartSummaryBar.jsx     ← カートサマリー（メイク/スキンケア統合）
 │   │   ├── ClinicModal.jsx
 │   │   └── DentalRotationModal.jsx
 │   ├── contexts/
@@ -293,7 +295,8 @@ C:\dev\kirei\
 │   │   ├── useFaceLandmarker.js
 │   │   ├── useKirari.js           ★実装済み
 │   │   ├── useNightMode.js        ★実装済み（ナイトモードUIはPhase 2で再検討）
-│   │   └── useWeather.js          ★実装済み
+│   │   ├── useWeather.js          ★実装済み
+│   │   └── useCart.js             ★実装済み（メイク/スキンケア統合カート）
 │   ├── analysis/
 │   │   ├── skinAnalyzer.js
 │   │   ├── personalColor.js       ★実装予定
@@ -403,7 +406,14 @@ const colors = {
 - [x] 天気API連動（useWeather・メイク提案・キラリセリフ連動）
 - [x] KIREI SELECT（コスメ商品リスト・合計金額・購入CTA）
 - [x] i18n対応（JA/EN/KO 三言語）
-- [x] ARトライオン：カテゴリパネル（ベース/リップ/チーク/メガネ/イヤリング）+ キャプチャ → 結果写真表示
+- [x] ARトライオン：カテゴリパネル（ベース/リップ/チーク/カラコン/メガネ/イヤリング/まつげ(SOON)）+ キャプチャ → 結果写真表示
+- [x] ARトライオン全画面化（position:fixed, inset:0 + UIオーバーレイ）
+- [x] SkincareARScreen全画面化（スライダー・キラリ・FAQをオーバーレイ）
+- [x] カラコンAR（drawContactLens — 瞳ランドマーク#468/#473、15色パレット）
+- [x] 長押しビフォーアフター（pointerDown/Up でAR ON/OFF）
+- [x] useCart hook + CartSummaryBar（メイク/スキンケア統合カート）
+- [x] キラリARガイドセリフ7種追加
+- [x] SkincareRoutineView CTA優先度修正（購入=Primary、結果=Secondary）
 - [~] ナイトモードUI — デモ版では中止（ブラウザ輝度推定の精度不足）。Capacitor移行後に再実装
 - [ ] スコア履歴（Supabase or Firebase）
 - [ ] Capacitor移行（iOS/Androidネイティブラッパー）
