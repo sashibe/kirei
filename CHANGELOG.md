@@ -1,5 +1,26 @@
 # CHANGELOG
 
+## 2026-04-07 — feat: AR全画面化（MirrorScreen方式）+ おでこ輪郭拡張
+
+### AR全画面化
+- App.jsxの`showScrollable`からar/skincare-arを除外 → `height:"100%"` + `overflow:"hidden"`
+- MirrorScreenV3と同じ方式: ルート `position:relative; width/height:100%`、video/canvas `position:absolute; inset:0`
+- カテゴリパネルを `position:absolute; bottom:0` のオーバーレイで配置
+- PCデバイスフレーム（390x844px）内でもスマホフルスクリーンでも正しく動作
+
+### おでこ輪郭拡張
+- `expandForehead()` 関数を追加: フェイスオーバル上部ポイントを生え際方向にシフト
+- 顔の高さの18%分を上方向にオフセット（上端に近いほどシフト量大）
+- ファンデーション描画のclip範囲が生え際付近まで拡張される
+
+### 変更ファイル
+- `src/App.jsx` — showScrollableからar/skincare-arを除外
+- `src/components/ArTryOnScreen.jsx` — 全画面レイアウト + 下部オーバーレイパネル
+- `src/components/SkincareARScreen.jsx` — 全画面レイアウト + スライダーオーバーレイ
+- `src/rendering/makeupRenderer.js` — expandForehead()追加
+
+---
+
 ## 2026-04-07 — fix: AR画面レイアウトを動作版ベースに復元
 
 - 全画面化（position:fixed/absolute）を撤回し、動作していたスクロールレイアウトに復元

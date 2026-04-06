@@ -230,6 +230,30 @@ export function drawCheek(ctx, lms, w, h, colorStr, opacity) {
 }
 
 /**
+ * おでこ拡張: フェイスオーバルの上部ポイントを生え際方向にシフト
+ * MediaPipeの標準オーバルは眉上付近(#10)までしかカバーしないため、
+ * 顔の高さの18%分だけ上方向にオフセットして生え際まで拡張する
+ */
+function expandForehead(points, lms, w, h) {
+  const foreheadY = lmY(lms[10], h);
+  const chinY = lmY(lms[152], h);
+  const faceHeight = Math.abs(chinY - foreheadY);
+  const expandAmount = faceHeight * 0.18;
+  // 上部10%以内のポイントを検出してシフト
+  const topY = Math.min(...points.map(p => p[1]));
+  const threshold = topY + faceHeight * 0.12;
+
+  return points.map(([x, y]) => {
+    if (y < threshold) {
+      // シフト量は上端に近いほど大きく
+      const ratio = 1 - (y - topY) / (threshold - topY);
+      return [x, y - expandAmount * ratio];
+    }
+    return [x, y];
+  });
+}
+
+/**
  * ファンデーション — Face Oval全体のカバー + Tゾーン&頬ハイライト
  */
 export function drawFoundation(ctx, lms, w, h, colorStr, opacity) {
@@ -237,8 +261,10 @@ export function drawFoundation(ctx, lms, w, h, colorStr, opacity) {
   const opa = opacity * alpha;
   ctx.save();
 
-  const points = buildOrderedPoints(FACE_OVAL, lms, w, h);
-  if (points.length < 3) { ctx.restore(); return; }
+  const rawPoints = buildOrderedPoints(FACE_OVAL, lms, w, h);
+  if (rawPoints.length < 3) { ctx.restore(); return; }
+  // おでこ拡張: 上部ポイントを髪の生え際方向にシフト
+  const points = expandForehead(rawPoints, lms, w, h);
 
   let cx = 0, cy = 0;
   for (const [px, py] of points) { cx += px; cy += py; }

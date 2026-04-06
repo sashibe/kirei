@@ -77,8 +77,9 @@ export default function App() {
     </div>
   );
 
-  const showScrollable = screen === 'suggest' || screen === 'result' || screen === 'ar'
-                      || screen === 'skincare-ar' || screen === 'skincare-routine';
+  // ar, skincare-ar は height:"100%" + overflow:"hidden" で全画面（MirrorScreenと同方式）
+  const showScrollable = screen === 'suggest' || screen === 'result'
+                      || screen === 'skincare-routine';
 
   const content = (
     <FaceLandmarkerProvider>
