@@ -24,24 +24,6 @@ const CHEEK_COLORS = [
   'rgba(255,180,120,0.4)',
 ];
 
-/**
- * Compute CSS width/height to fit video inside viewport while preserving aspect ratio.
- * Uses CSS vw/vh units so it works without JS resize listeners.
- */
-function fitVideoStyle(vw, vh) {
-  // Aspect ratio of the video
-  const aspect = vw / vh;
-  // Use CSS max() equivalent via both constraints
-  // If viewport is wider than video: height=100vh, width=100vh*aspect
-  // If viewport is taller than video: width=100vw, height=100vw/aspect
-  return {
-    width: `min(100vw, ${100 * aspect}vh)`,
-    height: `min(100vh, ${100 / aspect}vw)`,
-    maxWidth: '100vw',
-    maxHeight: '100vh',
-  };
-}
-
 export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack }) {
   const { t } = useT();
   const [intensity, setIntensity] = useState(70);
@@ -55,23 +37,50 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
   const [selectedEarring, setSelectedEarring] = useState('none');
   const [selectedContactLens, setSelectedContactLens] = useState('none');
   const [beforeAfter, setBeforeAfter] = useState(false);
-  const [videoSize, setVideoSize] = useState(null); // { vw, vh }
+  const [fitStyle, setFitStyle] = useState(null); // { width, height } in px
 
   const canvasRef = useRef(null);
-  const containerRef = useRef(null);
+  const wrapperRef = useRef(null);
   const { videoRef, isActive, error: cameraError } = useCamera({ enabled: true });
+
+  // Calculate fitted video size inside the wrapper
+  const recalcFit = useCallback(() => {
+    const video = videoRef.current;
+    const wrapper = wrapperRef.current;
+    if (!video || !wrapper || !video.videoWidth) return;
+    const cw = wrapper.clientWidth;
+    const ch = wrapper.clientHeight;
+    const vAspect = video.videoWidth / video.videoHeight;
+    const cAspect = cw / ch;
+    if (cAspect > vAspect) {
+      // Container wider than video — fit to height
+      setFitStyle({ width: Math.round(ch * vAspect), height: ch });
+    } else {
+      // Container taller than video — fit to width
+      setFitStyle({ width: cw, height: Math.round(cw / vAspect) });
+    }
+  }, [videoRef]);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
     const onPlaying = () => {
       setVideoPlaying(true);
-      setVideoSize({ vw: video.videoWidth, vh: video.videoHeight });
+      recalcFit();
     };
     if (video.readyState >= 2) { onPlaying(); return; }
     video.addEventListener('loadeddata', onPlaying);
     return () => video.removeEventListener('loadeddata', onPlaying);
-  }, [isActive, videoRef]);
+  }, [isActive, videoRef, recalcFit]);
+
+  // Recalc on resize
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+    const ro = new ResizeObserver(() => recalcFit());
+    ro.observe(wrapper);
+    return () => ro.disconnect();
+  }, [recalcFit]);
 
   const getVideo = useCallback(() => videoRef.current, [videoRef]);
   const cameraLive = isActive && !cameraError && videoPlaying;
@@ -162,9 +171,9 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
       zIndex: 100,
     }}>
 
-      {/* Camera + Canvas wrapper — aspect-ratio-locked so both align */}
+      {/* Camera + Canvas wrapper */}
       <div
-        ref={containerRef}
+        ref={wrapperRef}
         style={{
           position: 'absolute', inset: 0,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -175,22 +184,21 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
       >
         <div style={{
           position: 'relative',
-          width: videoSize ? undefined : '100%',
-          height: videoSize ? undefined : '100%',
-          ...(videoSize ? fitVideoStyle(videoSize.vw, videoSize.vh) : {}),
+          width: fitStyle ? fitStyle.width : '100%',
+          height: fitStyle ? fitStyle.height : '100%',
+          overflow: 'hidden',
         }}>
           <video
             ref={videoRef}
             style={{
               width: '100%', height: '100%',
-              objectFit: 'cover',
               transform: 'scaleX(-1)',
               display: cameraLive ? 'block' : 'none',
             }}
             playsInline muted autoPlay
           />
 
-          {/* AR Canvas overlay — same size as video */}
+          {/* AR Canvas overlay — exact same size as video */}
           {cameraLive && !beforeAfter && (
             <MakeupCanvas
               ref={canvasRef}

@@ -1,10 +1,10 @@
 # CHANGELOG
 
-## 2026-04-06 — fix: PC環境でARカメラとCanvasの位置ずれ修正
+## 2026-04-06 — fix: PC環境でARカメラとCanvasの位置ずれ修正（v2）
 
-- video `objectFit:contain` ではCanvasとの位置がずれる問題を修正
-- video+canvasを同一アスペクト比wrapperで囲み、`fitVideoStyle()` でCSS vw/vh計算
-- PC（横長カメラ×縦長ビューポート）でも正しくカメラ映像とAR描画が重なる
+- CSS min()/vw/vh計算がデバイスフレーム内で機能しない問題を修正
+- ResizeObserver + JS で wrapper の clientWidth/clientHeight を計測し、ビデオアスペクト比に合わせてpx指定する方式に変更
+- video と canvas が同一サイズの inner div に収まるため、objectFit 不要
 
 ---
 
