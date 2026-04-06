@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2026-04-06 — fix: PC環境でARカメラとCanvasの位置ずれ修正
+
+- video `objectFit:contain` ではCanvasとの位置がずれる問題を修正
+- video+canvasを同一アスペクト比wrapperで囲み、`fitVideoStyle()` でCSS vw/vh計算
+- PC（横長カメラ×縦長ビューポート）でも正しくカメラ映像とAR描画が重なる
+
+---
+
 ## 2026-04-06 — fix: ランドマーク二重反転を修正
 
 - Canvas要素にCSS `scaleX(-1)` が既に適用されていたため、JS側で `(1-lm.x)*W` とすると二重反転になっていた

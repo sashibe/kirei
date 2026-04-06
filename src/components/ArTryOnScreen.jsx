@@ -24,6 +24,24 @@ const CHEEK_COLORS = [
   'rgba(255,180,120,0.4)',
 ];
 
+/**
+ * Compute CSS width/height to fit video inside viewport while preserving aspect ratio.
+ * Uses CSS vw/vh units so it works without JS resize listeners.
+ */
+function fitVideoStyle(vw, vh) {
+  // Aspect ratio of the video
+  const aspect = vw / vh;
+  // Use CSS max() equivalent via both constraints
+  // If viewport is wider than video: height=100vh, width=100vh*aspect
+  // If viewport is taller than video: width=100vw, height=100vw/aspect
+  return {
+    width: `min(100vw, ${100 * aspect}vh)`,
+    height: `min(100vh, ${100 / aspect}vw)`,
+    maxWidth: '100vw',
+    maxHeight: '100vh',
+  };
+}
+
 export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack }) {
   const { t } = useT();
   const [intensity, setIntensity] = useState(70);
@@ -37,14 +55,19 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
   const [selectedEarring, setSelectedEarring] = useState('none');
   const [selectedContactLens, setSelectedContactLens] = useState('none');
   const [beforeAfter, setBeforeAfter] = useState(false);
+  const [videoSize, setVideoSize] = useState(null); // { vw, vh }
 
   const canvasRef = useRef(null);
+  const containerRef = useRef(null);
   const { videoRef, isActive, error: cameraError } = useCamera({ enabled: true });
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    const onPlaying = () => setVideoPlaying(true);
+    const onPlaying = () => {
+      setVideoPlaying(true);
+      setVideoSize({ vw: video.videoWidth, vh: video.videoHeight });
+    };
     if (video.readyState >= 2) { onPlaying(); return; }
     video.addEventListener('loadeddata', onPlaying);
     return () => video.removeEventListener('loadeddata', onPlaying);
@@ -139,41 +162,50 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
       zIndex: 100,
     }}>
 
-      {/* Camera full-screen */}
-      <video
-        ref={videoRef}
+      {/* Camera + Canvas wrapper — aspect-ratio-locked so both align */}
+      <div
+        ref={containerRef}
         style={{
           position: 'absolute', inset: 0,
-          width: '100%', height: '100%',
-          objectFit: 'contain',
-          transform: 'scaleX(-1)',
-          display: cameraLive ? 'block' : 'none',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}
-        playsInline muted autoPlay
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
-      />
+      >
+        <div style={{
+          position: 'relative',
+          width: videoSize ? undefined : '100%',
+          height: videoSize ? undefined : '100%',
+          ...(videoSize ? fitVideoStyle(videoSize.vw, videoSize.vh) : {}),
+        }}>
+          <video
+            ref={videoRef}
+            style={{
+              width: '100%', height: '100%',
+              objectFit: 'cover',
+              transform: 'scaleX(-1)',
+              display: cameraLive ? 'block' : 'none',
+            }}
+            playsInline muted autoPlay
+          />
 
-      {/* AR Canvas overlay */}
-      {cameraLive && !beforeAfter && (
-        <MakeupCanvas
-          ref={canvasRef}
-          getVideo={getVideo}
-          baseLook={currentBase}
-          colorLook={activeColorLook}
-          intensity={intensity}
-          showMesh={showMesh}
-          glassesItem={glassesItem}
-          earringItem={earringItem}
-          contactLensItem={contactLensItem}
-          style={{
-            position: 'absolute', inset: 0,
-            width: '100%', height: '100%',
-            pointerEvents: 'none',
-          }}
-        />
-      )}
+          {/* AR Canvas overlay — same size as video */}
+          {cameraLive && !beforeAfter && (
+            <MakeupCanvas
+              ref={canvasRef}
+              getVideo={getVideo}
+              baseLook={currentBase}
+              colorLook={activeColorLook}
+              intensity={intensity}
+              showMesh={showMesh}
+              glassesItem={glassesItem}
+              earringItem={earringItem}
+              contactLensItem={contactLensItem}
+            />
+          )}
+        </div>
+      </div>
 
       {/* Placeholder when camera not live */}
       {!cameraLive && (
