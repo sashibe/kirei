@@ -138,8 +138,10 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
       >
         <div style={{
           position: 'relative',
-          width: '100%', height: '100%',
-          ...(videoAspect ? { aspectRatio: String(videoAspect), width: 'auto', maxWidth: '100%', maxHeight: '100%' } : {}),
+          ...(videoAspect
+            ? { aspectRatio: String(videoAspect), width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%' }
+            : { width: '100%', height: '100%' }),
+          overflow: 'hidden',
         }}>
           <video
             ref={videoRef}

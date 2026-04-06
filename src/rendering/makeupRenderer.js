@@ -261,10 +261,8 @@ export function drawFoundation(ctx, lms, w, h, colorStr, opacity) {
   const opa = opacity * alpha;
   ctx.save();
 
-  const rawPoints = buildOrderedPoints(FACE_OVAL, lms, w, h);
-  if (rawPoints.length < 3) { ctx.restore(); return; }
-  // おでこ拡張: 上部ポイントを髪の生え際方向にシフト
-  const points = expandForehead(rawPoints, lms, w, h);
+  const points = buildOrderedPoints(FACE_OVAL, lms, w, h);
+  if (points.length < 3) { ctx.restore(); return; }
 
   let cx = 0, cy = 0;
   for (const [px, py] of points) { cx += px; cy += py; }
