@@ -5,6 +5,7 @@ import useCamera from '../hooks/useCamera.js';
 import { useT } from '../i18n/index.jsx';
 import { GLASSES_ITEMS, EARRING_ITEMS, CONTACT_LENS_ITEMS } from '../data/accessories.js';
 import { BASE_LOOKS } from '../data/makeupLooks.js';
+import { PRODUCTS } from '../data/products.js';
 
 const CATEGORIES = [
   { id: 'base',      labelKey: 'ar.cat_base',      icon: '\uD83E\uDDF4' },
@@ -53,6 +54,8 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
   const [selectedContactLens, setSelectedContactLens] = useState('none');
   const [beforeAfter, setBeforeAfter] = useState(false);
   const [panelHeight, setPanelHeight] = useState(0);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedColor, setSelectedColor] = useState(null);
 
   const canvasRef = useRef(null);
   const panelRef = useRef(null);
@@ -140,6 +143,17 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
       ],
     });
   };
+
+  // Apply color from product selection to AR
+  const applyColor = useCallback((category, hex) => {
+    if (category === 'lip') setLipColor(hex);
+    else if (category === 'eyeshadow') setEyeshadowColor(`rgba(${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)},0.25)`);
+    else if (category === 'cheek') setCheekColor(`rgba(${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)},0.4)`);
+    else if (category === 'contacts') {
+      const item = CONTACT_LENS_ITEMS.find(i => i.color === hex) || { id: 'custom', color: hex };
+      setSelectedContactLens(item.id);
+    }
+  }, []);
 
   return (
     <div style={{
@@ -331,56 +345,27 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
             </div>
           )}
 
-          {activeCategory === 'lip' && (
-            <div style={SCROLL_ROW}>
-              {LIP_COLORS.map(c => (
-                <div key={c} onClick={() => setLipColor(c)} style={{
-                  width: 36, height: 36, borderRadius: '50%', background: c, cursor: 'pointer', flexShrink: 0,
-                  border: lipColor === c ? '3px solid #a855f7' : '2px solid rgba(139,92,246,0.15)',
-                  boxShadow: lipColor === c ? '0 0 12px rgba(168,85,247,0.4)' : 'none',
-                }}/>
-              ))}
-            </div>
-          )}
-
-          {activeCategory === 'eyeshadow' && (
-            <div style={SCROLL_ROW}>
-              {EYESHADOW_COLORS.map(c => (
-                <div key={c} onClick={() => setEyeshadowColor(c)} style={{
-                  width: 36, height: 36, borderRadius: '50%', background: c.replace(/[\d.]+\)$/, '1)'), cursor: 'pointer', flexShrink: 0,
-                  border: eyeshadowColor === c ? '3px solid #a855f7' : '2px solid rgba(139,92,246,0.15)',
-                  boxShadow: eyeshadowColor === c ? '0 0 12px rgba(168,85,247,0.4)' : 'none',
-                }}/>
-              ))}
-            </div>
-          )}
-
-          {activeCategory === 'cheek' && (
-            <div style={SCROLL_ROW}>
-              {CHEEK_COLORS.map(c => (
-                <div key={c} onClick={() => setCheekColor(c)} style={{
-                  width: 36, height: 36, borderRadius: '50%', background: c, cursor: 'pointer', flexShrink: 0,
-                  border: cheekColor === c ? '3px solid #a855f7' : '2px solid rgba(139,92,246,0.15)',
-                }}/>
-              ))}
-            </div>
-          )}
-
-          {activeCategory === 'contacts' && (
-            <div style={SCROLL_ROW}>
-              {CONTACT_LENS_ITEMS.map(item => (
-                <div key={item.id} onClick={() => setSelectedContactLens(item.id)} style={{
-                  width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
-                  background: item.id === 'none' ? '#f1f5f9' : item.color, cursor: 'pointer',
-                  border: selectedContactLens === item.id ? '3px solid #a855f7' : '2px solid rgba(139,92,246,0.15)',
-                  boxShadow: selectedContactLens === item.id ? '0 0 10px rgba(168,85,247,0.3)' : 'none',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 10, color: item.id === 'none' ? '#94a3b8' : 'transparent',
-                }}>
-                  {item.id === 'none' ? 'OFF' : ''}
-                </div>
-              ))}
-            </div>
+          {/* 3-layer product UI for lip/eyeshadow/cheek/contacts */}
+          {['lip', 'eyeshadow', 'cheek', 'contacts'].includes(activeCategory) && (
+            <ProductLayer
+              category={activeCategory}
+              selectedProduct={selectedProduct}
+              selectedColor={selectedColor}
+              intensity={intensity}
+              onSelectProduct={(p) => {
+                setSelectedProduct(p);
+                const dc = p.colors[0];
+                if (dc) {
+                  setSelectedColor(dc);
+                  applyColor(activeCategory, dc.hex);
+                }
+              }}
+              onSelectColor={(c) => {
+                setSelectedColor(c);
+                applyColor(activeCategory, c.hex);
+              }}
+              onIntensityChange={setIntensity}
+            />
           )}
 
           {activeCategory === 'glasses' && (
@@ -446,6 +431,97 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+// === 3-Layer Product UI ===
+function ProductLayer({ category, selectedProduct, selectedColor, intensity, onSelectProduct, onSelectColor, onIntensityChange }) {
+  const categoryProducts = PRODUCTS.filter(p => p.category === category);
+  if (categoryProducts.length === 0) return <div style={{ fontSize: 12, color: '#94a3b8', textAlign: 'center', padding: 8 }}>Coming soon</div>;
+
+  return (
+    <div>
+      {/* Layer 2: Product cards (horizontal scroll) */}
+      <div style={{
+        display: 'flex', overflowX: 'auto', gap: 10, padding: '0 2px 8px',
+        scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch',
+      }}>
+        {categoryProducts.map(product => (
+          <div key={product.id} onClick={() => onSelectProduct(product)} style={{
+            flexShrink: 0, width: 72, cursor: 'pointer',
+            opacity: selectedProduct?.id === product.id ? 1 : 0.6,
+            transition: 'all 0.15s ease',
+          }}>
+            {product.image ? (
+              <div style={{
+                width: 72, height: 72, borderRadius: 12, overflow: 'hidden',
+                border: selectedProduct?.id === product.id ? '2px solid #a855f7' : '2px solid #ede9fe',
+              }}>
+                <img src={product.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+            ) : (
+              <div style={{
+                width: 72, height: 72, borderRadius: 12,
+                background: `linear-gradient(135deg, ${product.baseColor}40, ${product.baseColor}20)`,
+                border: selectedProduct?.id === product.id ? '2px solid #a855f7' : '2px solid #ede9fe',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <div style={{ display: 'flex', gap: 2 }}>
+                  {product.colors.slice(0, 3).map(c => (
+                    <div key={c.id} style={{ width: 14, height: 14, borderRadius: '50%', background: c.hex }} />
+                  ))}
+                </div>
+              </div>
+            )}
+            <p style={{ fontSize: 9, fontWeight: 600, marginTop: 3, color: '#334155',
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {product.name}
+            </p>
+            <p style={{ fontSize: 9, color: '#a855f7', fontWeight: 700, margin: 0 }}>
+              {'\u00A5'}{product.price.toLocaleString()}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {/* Layer 3: Color palette + slider */}
+      {selectedProduct && selectedProduct.colors.length > 0 && (
+        <div style={{ borderTop: '1px solid #f1f0ff', paddingTop: 8 }}>
+          <p style={{ fontSize: 11, color: '#64748b', margin: '0 0 6px', fontWeight: 600 }}>
+            {selectedProduct.name}
+          </p>
+          <div style={{
+            display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4,
+            scrollbarWidth: 'none',
+          }}>
+            {selectedProduct.colors.map(color => (
+              <div key={color.id} onClick={() => onSelectColor(color)} title={color.name} style={{
+                flexShrink: 0, width: 32, height: 32, borderRadius: '50%',
+                background: color.hex, cursor: 'pointer',
+                border: selectedColor?.id === color.id ? '3px solid #a855f7' : '2px solid rgba(139,92,246,0.15)',
+                boxShadow: selectedColor?.id === color.id ? '0 0 10px rgba(168,85,247,0.4)' : 'none',
+                transition: 'all 0.15s',
+              }} />
+            ))}
+          </div>
+          {selectedColor && (
+            <p style={{ fontSize: 9, color: '#94a3b8', margin: '4px 0 0' }}>{selectedColor.name}</p>
+          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
+            <span style={{ fontSize: 10, color: '#64748b', whiteSpace: 'nowrap', fontWeight: 600 }}>
+              {'\u6FC3\u3055'}
+            </span>
+            <input type="range" min={0} max={100} value={intensity}
+              onChange={e => onIntensityChange(Number(e.target.value))}
+              style={{ flex: 1, accentColor: '#a855f7' }}
+            />
+            <span style={{ fontSize: 11, color: '#a855f7', fontWeight: 700, minWidth: 28 }}>
+              {intensity}%
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
