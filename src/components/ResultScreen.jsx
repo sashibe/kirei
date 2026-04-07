@@ -90,10 +90,17 @@ export default function ResultScreen({ skinScores: propSkin, personalColor = nul
                 {t('pc.your_type')}
               </p>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ fontSize: 20 }}>{getPcIcon(personalColor.season)}</span>
-                <p style={{ fontSize: 14, fontWeight: 800, color: pcBg.color, margin: 0 }}>
-                  {t(personalColor.label)}
-                </p>
+                <span style={{ fontSize: 20 }}>{personalColor.emoji || getPcIcon(personalColor.season)}</span>
+                <div>
+                  <p style={{ fontSize: 16, fontWeight: 800, color: personalColor.color || pcBg.color, margin: 0 }}>
+                    {personalColor.main || t(personalColor.label)}
+                  </p>
+                  {personalColor.sub && (
+                    <p style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600, margin: '2px 0 0' }}>
+                      {personalColor.sub}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
             {personalColor.confidence < 0.6 && (
@@ -103,7 +110,7 @@ export default function ResultScreen({ skinScores: propSkin, personalColor = nul
             )}
           </div>
           <p style={{ fontSize: 11, color: '#475569', margin: '0 0 10px', lineHeight: 1.6 }}>
-            {t(personalColor.desc)}
+            {personalColor.desc || t(personalColor.desc)}
           </p>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
             <Kirari size={32} expression="sparkle" bounce />

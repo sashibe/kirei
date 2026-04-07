@@ -111,18 +111,29 @@ function HeroCard({ baseLook, colorLook, personalColor, skinScores, onTry, t }) 
         border: '1.5px solid #ede9fe',
         boxShadow: '0 4px 16px rgba(139,92,246,0.10)',
       }}>
-        {pcColors && (
+        {pcColors && personalColor && (
           <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 4,
-            background: pcColors.bg, border: `1px solid ${pcColors.border}`,
-            borderRadius: 20, padding: '3px 10px', marginBottom: 10,
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            background: (personalColor.color || pcColors.color) + '18',
+            border: `1.5px solid ${personalColor.color || pcColors.border}`,
+            borderRadius: 20, padding: '5px 12px', marginBottom: 10,
           }}>
-            <span style={{ fontSize: 11 }}>
-              {PC_ICONS[personalColor.season] ?? '✨'}
+            <span style={{ fontSize: 14 }}>
+              {personalColor.emoji || PC_ICONS[personalColor.season] || '✨'}
             </span>
-            <span style={{ fontSize: 11, fontWeight: 700, color: pcColors.color }}>
-              {t(personalColor.label)} {t('suggest.recommended')}
-            </span>
+            <div>
+              <span style={{ fontSize: 12, fontWeight: 800, color: personalColor.color || pcColors.color }}>
+                {personalColor.main || t(personalColor.label)}
+              </span>
+              {personalColor.sub && (
+                <span style={{ fontSize: 9, color: '#94a3b8', fontWeight: 600, marginLeft: 4 }}>
+                  {personalColor.sub}
+                </span>
+              )}
+              <span style={{ fontSize: 10, color: '#94a3b8', marginLeft: 4 }}>
+                {t('suggest.recommended')}
+              </span>
+            </div>
           </div>
         )}
 
@@ -171,7 +182,7 @@ function HeroCard({ baseLook, colorLook, personalColor, skinScores, onTry, t }) 
 function buildHeroReason(personalColor, skinScores, baseLook, colorLook, t) {
   const dullness = skinScores?.dullness?.score ?? 70;
   const season = personalColor?.season;
-  const label = personalColor?.label ? t(personalColor.label) : '';
+  const label = personalColor?.main || (personalColor?.label ? t(personalColor.label) : '');
 
   if (dullness < 60 && season) {
     return t('suggest.hero_reason_dullness', { pc: label, base: t(baseLook.name), color: t(colorLook.name) });
