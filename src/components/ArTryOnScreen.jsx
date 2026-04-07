@@ -7,6 +7,16 @@ import { GLASSES_ITEMS, EARRING_ITEMS, CONTACT_LENS_ITEMS } from '../data/access
 import { BASE_LOOKS } from '../data/makeupLooks.js';
 import { PRODUCTS } from '../data/products.js';
 
+// Vite: import all product images from assets/products/
+const productImages = import.meta.glob('../assets/products/*.jpg', { eager: true, query: '?url', import: 'default' });
+function getProductImage(product) {
+  if (product.localImage) {
+    const key = `../assets/products/${product.localImage}`;
+    if (productImages[key]) return productImages[key];
+  }
+  return product.image || '';
+}
+
 const CATEGORIES = [
   { id: 'base',      labelKey: 'ar.cat_base',      icon: '\uD83E\uDDF4' },
   { id: 'lip',       labelKey: 'ar.cat_lip',       icon: '\uD83D\uDC84' },
@@ -459,12 +469,12 @@ function ProductLayer({ category, selectedProduct, selectedColor, intensity, onS
             opacity: selectedProduct?.id === product.id ? 1 : 0.6,
             transition: 'all 0.15s ease',
           }}>
-            {product.image ? (
+            {getProductImage(product) ? (
               <div style={{
                 width: 72, height: 72, borderRadius: 12, overflow: 'hidden',
                 border: selectedProduct?.id === product.id ? '2px solid #a855f7' : '2px solid #ede9fe',
               }}>
-                <img src={product.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img src={getProductImage(product)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
             ) : (
               <div style={{
