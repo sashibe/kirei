@@ -41,7 +41,15 @@ const SCROLL_ROW = {
 
 export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack }) {
   const { t } = useT();
-  const [intensity, setIntensity] = useState(70);
+  // Per-category intensity (independent sliders)
+  const [intensities, setIntensities] = useState({ base: 70, lip: 70, eyeshadow: 70, cheek: 70, contacts: 70 });
+  const intensity = intensities[activeCategory] ?? 70;
+  const setIntensity = useCallback((val) => {
+    setIntensities(prev => ({ ...prev, [activeCategory]: val }));
+  }, [activeCategory]);
+  // Global intensity for MakeupCanvas (average or per-part)
+  const globalIntensity = Math.round(Object.values(intensities).reduce((a, b) => a + b, 0) / Object.keys(intensities).length);
+
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [showMesh, setShowMesh] = useState(false);
   const [activeCategory, setActiveCategory] = useState('base');
@@ -56,6 +64,13 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
   const [panelHeight, setPanelHeight] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
+
+  // Reset product/color selection when switching categories
+  const handleCategoryChange = useCallback((catId) => {
+    setActiveCategory(catId);
+    setSelectedProduct(null);
+    setSelectedColor(null);
+  }, []);
 
   const canvasRef = useRef(null);
   const panelRef = useRef(null);
@@ -184,7 +199,7 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
           getVideo={getVideo}
           baseLook={currentBase}
           colorLook={activeColorLook}
-          intensity={intensity}
+          intensity={globalIntensity}
           showMesh={showMesh}
           glassesItem={glassesItem}
           earringItem={earringItem}
@@ -298,7 +313,7 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
         }}>
           {CATEGORIES.map(cat => (
             <button key={cat.id}
-              onClick={() => !cat.comingSoon && setActiveCategory(cat.id)}
+              onClick={() => !cat.comingSoon && handleCategoryChange(cat.id)}
               style={{
                 flex: 1, padding: '8px 2px', minWidth: 0,
                 background: activeCategory === cat.id ? 'rgba(168,85,247,0.1)' : 'transparent',
@@ -396,17 +411,8 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
             </div>
           )}
 
-          {(activeCategory === 'lip' || activeCategory === 'eyeshadow' || activeCategory === 'cheek') && (
-            <div style={{ marginTop: 10 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b' }}>{t('ar.intensity')}</span>
-                <span style={{ fontSize: 12, fontWeight: 700, color: '#a855f7' }}>{intensity}%</span>
-              </div>
-              <input type="range" min="0" max="100" value={intensity}
-                onChange={e => setIntensity(Number(e.target.value))}
-                style={{ width: '100%', accentColor: '#a855f7' }}
-              />
-            </div>
+          {false && ( // Removed: per-category slider is now inside ProductLayer
+            <div />
           )}
 
           {/* Action buttons */}
