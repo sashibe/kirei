@@ -242,7 +242,7 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
 
       {/* Kirari bubble (above panel) */}
       <div style={{
-        position: 'absolute', bottom: 200, left: 12, right: 12,
+        position: 'absolute', bottom: 'calc(35vh + 8px)', left: 12, right: 12,
         background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)',
         borderRadius: 16, padding: '8px 12px',
         display: 'flex', alignItems: 'center', gap: 8, zIndex: 2,
@@ -260,7 +260,7 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
         position: 'absolute', bottom: 0, left: 0, right: 0,
         background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(16px)',
         borderRadius: '20px 20px 0 0',
-        maxHeight: '45%', overflowY: 'auto',
+        maxHeight: '35vh', overflowY: 'auto',
         zIndex: 3,
       }}>
         {/* Category tabs */}
