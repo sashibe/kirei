@@ -1,12 +1,12 @@
 // src/data/products.js
-// 楽天APIデータ + 仕様書カラーデータをマージ
-// 生成日: 2026-04-07T11:22:34.010Z
+// 楽天APIデータ + 仕様書カラー・商品名・ローカル画像をマージ
+// 生成日: 2026-04-07T15:29:22.759Z
 
 export const PRODUCTS = [
   {
     "id": "lilyanna_10000683",
     "category": "lip",
-    "name": "Ririmew リリミュウ センシュアルフィックスティント/ミューテッ",
+    "name": "リリミュウ センシュアルフィックスティント",
     "price": 1870,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/lilyanna/cabinet/ririmew/2401ririmew_thum_02.jpg?_ex=200x200",
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00svqgm.x7s2ccac.g00svqgm.x7s2d8a4/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Flilyanna%2Fririmew-tint%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Flilyanna%2Fi%2F10000683%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
@@ -41,12 +41,13 @@ export const PRODUCTS = [
       }
     ],
     "baseColor": "#C4607A",
-    "season": "winter"
+    "season": "winter",
+    "localImage": "lip_ririmew_sensual.jpg"
   },
   {
     "id": "ludia_10000418",
     "category": "lip",
-    "name": "韓国コスメ リップ ティント ROMAND ロムアンド リップ ティン",
+    "name": "ロムアンド ジューシーラスティングティント",
     "price": 1199,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/ludia/cabinet/07561868/rom-5-1.jpg?_ex=200x200",
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00snkfm.x7s2c06a.g00snkfm.x7s2dc71/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fludia%2From-l-01%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fludia%2Fi%2F10000418%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
@@ -81,12 +82,13 @@ export const PRODUCTS = [
       }
     ],
     "baseColor": "#C84050",
-    "season": "spring"
+    "season": "spring",
+    "localImage": "lip_romand_juicy.jpg"
   },
   {
     "id": "yslbeauty_10000365",
     "category": "lip",
-    "name": "YSL ラブシャイン キャンディ グロウ バーム / リップ 口紅 /",
+    "name": "YSL ラブシャイン キャンディグロウバーム",
     "price": 5390,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/yslbeauty/cabinet/products/51216/imgrc0107333562.jpg?_ex=200x200",
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00u7bym.x7s2c8af.g00u7bym.x7s2d5c5/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fyslbeauty%2Fww-51216ysl%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fyslbeauty%2Fi%2F10000365%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
@@ -121,12 +123,13 @@ export const PRODUCTS = [
       }
     ],
     "baseColor": "#D4708A",
-    "season": "summer"
+    "season": "summer",
+    "localImage": "lip_ysl_loveshyne.jpg"
   },
   {
     "id": "citrus-shop_10001109",
     "category": "lip",
-    "name": "「フラワーリップ ピンクゴールドモデル」「フラワーリップ クリアタイプ",
+    "name": "カイリジュメイ フラワーリップ",
     "price": 2728,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/citrus-shop/cabinet/cosme02/10010701/rip6_1/rip6_ss.jpg?_ex=200x200",
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00tlumm.x7s2c2a6.g00tlumm.x7s2d2b1/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fcitrus-shop%2Frip6_ss%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fcitrus-shop%2Fi%2F10001109%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
@@ -151,12 +154,13 @@ export const PRODUCTS = [
       }
     ],
     "baseColor": "#E890A0",
-    "season": "spring"
+    "season": "spring",
+    "localImage": "lip_kaijumei_flower.jpg"
   },
   {
     "id": "citrus-shop_10000018",
     "category": "lip",
-    "name": "カイリジュメイ 色が変わる リップ コスメ ギフト 正規代理店商品 プ",
+    "name": "カイリジュメイ 色が変わるリップ",
     "price": 1670,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/citrus-shop/cabinet/cosme02/10108775/10575759/00_2.jpg?_ex=200x200",
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00tlumm.x7s2c2a6.g00tlumm.x7s2d2b1/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fcitrus-shop%2Frip7%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fcitrus-shop%2Fi%2F10000018%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
@@ -181,12 +185,13 @@ export const PRODUCTS = [
       }
     ],
     "baseColor": "#E8A0B0",
-    "season": "spring"
+    "season": "spring",
+    "localImage": "lip_kaijumei_change.jpg"
   },
   {
     "id": "tomfordbeauty_10000000",
     "category": "eyeshadow",
-    "name": "アイ カラー クォード ｜ ト",
+    "name": "トムフォード アイカラークォード",
     "price": 13640,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/tomfordbeauty/cabinet/alt/eye_ecq/2502_eye_ecq_t05v2.jpg?_ex=200x200",
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00u4fem.x7s2c6a4.g00u4fem.x7s2d538/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Ftomfordbeauty%2Feye_ecq%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Ftomfordbeauty%2Fi%2F10000000%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
@@ -221,12 +226,13 @@ export const PRODUCTS = [
       }
     ],
     "baseColor": "#C4956A",
-    "season": "autumn"
+    "season": "autumn",
+    "localImage": "eye_tomford_quad.jpg"
   },
   {
     "id": "cliojapan_10000211",
     "category": "eyeshadow",
-    "name": "★新コレクション発売!★ プロ アイ パレット エアー[限定クーポン配",
+    "name": "CLIO プロアイパレット エアー",
     "price": 2990,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/cliojapan/cabinet/06617315/06617316/imgrc0124329594.jpg?_ex=200x200",
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00tasbm.x7s2c7cb.g00tasbm.x7s2d449/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fcliojapan%2F10000211%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fcliojapan%2Fi%2F10000211%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
@@ -261,12 +267,13 @@ export const PRODUCTS = [
       }
     ],
     "baseColor": "#D4B090",
-    "season": "autumn"
+    "season": "autumn",
+    "localImage": "eye_clio_pro.jpg"
   },
   {
     "id": "lilyanna_10000410",
     "category": "eyeshadow",
-    "name": "Ririmew リリミュウ インザミラーアイパレット 指原莉乃プロデュ",
+    "name": "リリミュウ インザミラーアイパレット",
     "price": 2640,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/lilyanna/cabinet/ririmew/ririmew-eyepale_emb.jpg?_ex=200x200",
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00svqgm.x7s2ccac.g00svqgm.x7s2d8a4/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Flilyanna%2Fririmew-eyepalette%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Flilyanna%2Fi%2F10000410%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
@@ -301,12 +308,13 @@ export const PRODUCTS = [
       }
     ],
     "baseColor": "#F0D0D0",
-    "season": "summer"
+    "season": "summer",
+    "localImage": "eye_ririmew_mirror.jpg"
   },
   {
     "id": "yumebank_10000033",
     "category": "eyeshadow",
-    "name": "NOR.（ノール）AIRFITCREAMEYESHADOW（エアフィッ",
+    "name": "NOR. エアフィットクリームアイシャドウ",
     "price": 1496,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/yumebank/cabinet/thum/noreyeshadow/11014758/1.jpg?_ex=200x200",
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00t08vm.x7s2c228.g00t08vm.x7s2d696/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fyumebank%2Fairfitcreameyeshadow-001%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fyumebank%2Fi%2F10000033%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
@@ -341,12 +349,13 @@ export const PRODUCTS = [
       }
     ],
     "baseColor": "#E8D4B8",
-    "season": "spring"
+    "season": "spring",
+    "localImage": "eye_nor_airfit.jpg"
   },
   {
     "id": "yslbeauty_10000307",
     "category": "eyeshadow",
-    "name": "クチュール ミニ クラッチ / アイシャドウ アイパレット / イヴ ",
+    "name": "YSL クチュールミニクラッチ",
     "price": 10890,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/yslbeauty/cabinet/products/51079/main_51079ysl_01_v2.jpg?_ex=200x200",
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00u7bym.x7s2c8af.g00u7bym.x7s2d5c5/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fyslbeauty%2Fww-51079ysl%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fyslbeauty%2Fi%2F10000307%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
@@ -381,12 +390,13 @@ export const PRODUCTS = [
       }
     ],
     "baseColor": "#D4B898",
-    "season": "winter"
+    "season": "winter",
+    "localImage": "eye_ysl_couture.jpg"
   },
   {
     "id": "maccosmetics_10000924",
     "category": "cheek",
-    "name": "M・A・C マック グロープレイ クッショニーブラッシュ MAC ギフ",
+    "name": "MAC グロープレイ クッショニーブラッシュ",
     "price": 4950,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/maccosmetics/cabinet/pdp/thumb_01/260404_mr/73802.jpg?_ex=200x200",
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00t0fkm.x7s2c548.g00t0fkm.x7s2d349/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fmaccosmetics%2F73802%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fmaccosmetics%2Fi%2F10000924%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
@@ -416,12 +426,13 @@ export const PRODUCTS = [
       }
     ],
     "baseColor": "#F0A888",
-    "season": "spring"
+    "season": "spring",
+    "localImage": "cheek_mac_glowplay.jpg"
   },
   {
     "id": "dasique_10000006",
     "category": "cheek",
-    "name": "【全19色】送料無料 デイジークブレンディングムードチーク チークパレ",
+    "name": "dasique ブレンディングムードチーク",
     "price": 2490,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/dasique/cabinet/dasique_/09657397/12034937/imgrc0126710539.jpg?_ex=200x200",
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00uf6wm.x7s2c906.g00uf6wm.x7s2d118/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fdasique%2F100000003%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fdasique%2Fi%2F10000006%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
@@ -451,12 +462,13 @@ export const PRODUCTS = [
       }
     ],
     "baseColor": "#D4907A",
-    "season": "autumn"
+    "season": "autumn",
+    "localImage": "cheek_dasique_blending.jpg"
   },
   {
     "id": "dralthea_10000651",
     "category": "cheek",
-    "name": "＼NEWカラー登場★すべすべチーク／ 【ディアエー】フラッフィーブラッ",
+    "name": "ディアエー フラッフィーブラッシュ",
     "price": 1500,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/dralthea/cabinet/11897039/11897042/imgrc0106111341.jpg?_ex=200x200",
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00tnwvm.x7s2c36c.g00tnwvm.x7s2d8c4/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fdralthea%2Ffluffy_blush%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fdralthea%2Fi%2F10000651%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
@@ -481,12 +493,13 @@ export const PRODUCTS = [
       }
     ],
     "baseColor": "#F0B090",
-    "season": "spring"
+    "season": "spring",
+    "localImage": "cheek_dearea_fluffy.jpg"
   },
   {
     "id": "maccosmetics_10000291",
     "category": "cheek",
-    "name": "M・A・C マック エクストラ ディメンション ブラッシュ MAC チ",
+    "name": "MAC エクストラディメンション ブラッシュ",
     "price": 4950,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/maccosmetics/cabinet/pdp/thumb_01/260404_mr/24963.jpg?_ex=200x200",
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00t0fkm.x7s2c548.g00t0fkm.x7s2d349/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fmaccosmetics%2F24963%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fmaccosmetics%2Fi%2F10000291%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
@@ -516,12 +529,13 @@ export const PRODUCTS = [
       }
     ],
     "baseColor": "#E8B888",
-    "season": "autumn"
+    "season": "autumn",
+    "localImage": "cheek_mac_extradimension.jpg"
   },
   {
     "id": "bijin-cosme_10007124",
     "category": "cheek",
-    "name": "ペリペラ ピュアブラッシュド サンシャインチーク 【 選択 】 ふんわ",
+    "name": "ペリペラ ピュアブラッシュド サンシャインチーク",
     "price": 1080,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/bijin-cosme/cabinet/pp-img/imgrc0128433107.jpg?_ex=200x200",
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00r12qm.x7s2ce3c.g00r12qm.x7s2daf4/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbijin-cosme%2Fperipera-sunshine-cheek%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fbijin-cosme%2Fi%2F10007124%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
@@ -546,12 +560,13 @@ export const PRODUCTS = [
       }
     ],
     "baseColor": "#F0B080",
-    "season": "spring"
+    "season": "spring",
+    "localImage": "cheek_peripera_sunshine.jpg"
   },
   {
     "id": "lesthemo_10000033",
     "category": "base",
-    "name": "2560円 国産 レステモ シルク姉さん愛用 美白 BBクリーム 35",
+    "name": "レステモ BBクリーム",
     "price": 2560,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/lesthemo/cabinet/shg/bbcream_01_02_3500px.jpg?_ex=200x200",
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00qdaem.x7s2c380.g00qdaem.x7s2d652/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Flesthemo%2Fbb%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Flesthemo%2Fi%2F10000033%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
@@ -581,12 +596,13 @@ export const PRODUCTS = [
       }
     ],
     "baseColor": "#EDD0B0",
-    "season": null
+    "season": null,
+    "localImage": "base_restemo_bb.jpg"
   },
   {
     "id": "tvert_10000045",
     "category": "base",
-    "name": "リキッドファンデーション 化粧下地＋日焼け止め＋ファンデーション＋ 美",
+    "name": "ビタミンC リキッドファンデーション",
     "price": 2300,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/tvert/cabinet/goods/cart/essenceliquid_topr.jpg?_ex=200x200",
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00q4g8m.x7s2cb18.g00q4g8m.x7s2dc19/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Ftvert%2F926835%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Ftvert%2Fi%2F10000045%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
@@ -616,12 +632,13 @@ export const PRODUCTS = [
       }
     ],
     "baseColor": "#EDD0B0",
-    "season": null
+    "season": null,
+    "localImage": "base_vitaminc_liquid.jpg"
   },
   {
     "id": "curemart_10002525",
     "category": "base",
-    "name": "ロングフィット BBクリーム 35g UVファンデーション SPF50",
+    "name": "ロングフィット BBクリーム SPF50+",
     "price": 1380,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/curemart/cabinet/d/10385xx.jpg?_ex=200x200",
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00r6k6m.x7s2c8e8.g00r6k6m.x7s2d125/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fcuremart%2F10385xx%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fcuremart%2Fi%2F10002525%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
@@ -651,12 +668,13 @@ export const PRODUCTS = [
       }
     ],
     "baseColor": "#EDD0B0",
-    "season": null
+    "season": null,
+    "localImage": "base_longfit_bb.jpg"
   },
   {
     "id": "vertrich-cosmetics_10000024",
     "category": "base",
-    "name": "30ml ベルリッチ化粧品 水溶性 BBクリーム ファ",
+    "name": "ベルリッチ オイルフリーリキッドファンデ",
     "price": 3850,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/vertrich-cosmetics/cabinet/09084502/imgrc0077922380.jpg?_ex=200x200",
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00u0fim.x7s2c3f5.g00u0fim.x7s2d204/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fvertrich-cosmetics%2F01510153%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fvertrich-cosmetics%2Fi%2F10000024%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
@@ -686,12 +704,13 @@ export const PRODUCTS = [
       }
     ],
     "baseColor": "#EDD0B0",
-    "season": null
+    "season": null,
+    "localImage": "base_belrich_liquid.jpg"
   },
   {
     "id": "vertrich-cosmetics_10000095",
     "category": "base",
-    "name": "3850円→1,925円 初回 お試し 送料無料【 オイルフリー リキ",
+    "name": "ベルリッチ リキッドファンデ お試し",
     "price": 1925,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/vertrich-cosmetics/cabinet/08264726/imgrc0073990495.jpg?_ex=200x200",
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00u0fim.x7s2c3f5.g00u0fim.x7s2d204/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fvertrich-cosmetics%2F01510153new%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fvertrich-cosmetics%2Fi%2F10000095%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
@@ -721,12 +740,13 @@ export const PRODUCTS = [
       }
     ],
     "baseColor": "#EDD0B0",
-    "season": null
+    "season": null,
+    "localImage": "base_belrich_trial.jpg"
   },
   {
     "id": "queeneyes_10000234",
     "category": "contacts",
-    "name": "【クーポン利用で20%OFF】エバーカラーワンデーナチュラル (1箱2",
+    "name": "エバーカラーワンデーナチュラル",
     "price": 2598,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/queeneyes/cabinet/10603169/11380192/evernatural-i.jpg?_ex=200x200",
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00rcj9m.x7s2c794.g00rcj9m.x7s2d110/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fqueeneyes%2Fevercolor_natural%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fqueeneyes%2Fi%2F10000234%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
@@ -761,12 +781,13 @@ export const PRODUCTS = [
       }
     ],
     "baseColor": "#4A2810",
-    "season": null
+    "season": null,
+    "localImage": "colorcon_evercolor_natural.jpg"
   },
   {
     "id": "candymagic_10000575",
     "category": "contacts",
-    "name": "カラコン ワンデー【もれなく1箱無料】新色＆大リニューアル ReVIA",
+    "name": "ReVIA 1day COLOR",
     "price": 3432,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/candymagic/cabinet/revia/t_rv1d_26_3s_co_01r.jpg?_ex=200x200",
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00qssmm.x7s2c369.g00qssmm.x7s2dddd/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fcandymagic%2Frv-100%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fcandymagic%2Fi%2F10000575%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
@@ -801,12 +822,13 @@ export const PRODUCTS = [
       }
     ],
     "baseColor": "#4A2810",
-    "season": null
+    "season": null,
+    "localImage": "colorcon_revia_1day.jpg"
   },
   {
     "id": "pinchi_10000653",
     "category": "contacts",
-    "name": "新色登場！カラコン ワンデー シード アイコフレワンデー UV M【1",
+    "name": "シード アイコフレワンデー UV M",
     "price": 990,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/pinchi/cabinet/shohin01/color/eyecof/25_eyecofl_main.jpg?_ex=200x200",
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00qnacm.x7s2cf0b.g00qnacm.x7s2d391/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fpinchi%2Fsdc1dceyecof01pr00m0%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fpinchi%2Fi%2F10000653%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
@@ -841,12 +863,13 @@ export const PRODUCTS = [
       }
     ],
     "baseColor": "#4A2810",
-    "season": null
+    "season": null,
+    "localImage": "colorcon_seed_eyecoffre.jpg"
   },
   {
     "id": "loook_10000638",
     "category": "contacts",
-    "name": "【20%OFFクーポン】新色 カラコン ワンデー ネオサイトワンデーリ",
+    "name": "ネオサイトワンデーリングUV",
     "price": 5904,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/loook/cabinet/2510_ring_main30.jpg?_ex=200x200",
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00qb3jm.x7s2c2b5.g00qb3jm.x7s2d514/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Floook%2Faic1dcneo1r002l000%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Floook%2Fi%2F10000638%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
@@ -881,12 +904,13 @@ export const PRODUCTS = [
       }
     ],
     "baseColor": "#4A2810",
-    "season": null
+    "season": null,
+    "localImage": "colorcon_neosight_ring.jpg"
   },
   {
     "id": "queeneyes_10000228",
     "category": "contacts",
-    "name": "カラコン loveil ラヴェール (1箱10枚入り) ( 倖田來未カ",
+    "name": "ラヴェール 倖田來未カラコン",
     "price": 1760,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/queeneyes/cabinet/10603169/11058011/1080r3_loveil.jpg?_ex=200x200",
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00rcj9m.x7s2c794.g00rcj9m.x7s2d110/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fqueeneyes%2Floveil%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fqueeneyes%2Fi%2F10000228%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
@@ -921,6 +945,7 @@ export const PRODUCTS = [
       }
     ],
     "baseColor": "#4A2810",
-    "season": null
+    "season": null,
+    "localImage": "colorcon_laviere_koda.jpg"
   }
 ];
