@@ -121,6 +121,21 @@ export default function ResultScreen({ skinScores: propSkin, personalColor = nul
               </p>
             </Bubble>
           </div>
+          <button
+            onClick={() => {
+              localStorage.removeItem('kirei_personal_color');
+              onRestart();
+            }}
+            style={{
+              background: 'none', border: 'none',
+              fontSize: 12, color: '#94a3b8',
+              textDecoration: 'underline', cursor: 'pointer',
+              marginTop: 8, display: 'block',
+              width: '100%', textAlign: 'center',
+            }}
+          >
+            {t('pc.recheck') || '\u518D\u5224\u5B9A\u3059\u308B'}
+          </button>
         </div>
       )}
 
