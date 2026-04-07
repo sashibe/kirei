@@ -451,6 +451,7 @@ function ProductLayer({ category, selectedProduct, selectedColor, intensity, onS
       <div style={{
         display: 'flex', overflowX: 'auto', gap: 10, padding: '0 2px 8px',
         scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch',
+        touchAction: 'pan-x',
       }}>
         {categoryProducts.map(product => (
           <div key={product.id} onClick={() => onSelectProduct(product)} style={{
@@ -498,7 +499,7 @@ function ProductLayer({ category, selectedProduct, selectedColor, intensity, onS
           </p>
           <div style={{
             display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4,
-            scrollbarWidth: 'none',
+            scrollbarWidth: 'none', touchAction: 'pan-x',
           }}>
             {selectedProduct.colors.map(color => (
               <div key={color.id} onClick={() => onSelectColor(color)} title={color.name} style={{
