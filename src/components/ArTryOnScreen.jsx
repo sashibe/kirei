@@ -52,8 +52,10 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
   const [selectedEarring, setSelectedEarring] = useState('none');
   const [selectedContactLens, setSelectedContactLens] = useState('none');
   const [beforeAfter, setBeforeAfter] = useState(false);
+  const [panelHeight, setPanelHeight] = useState(0);
 
   const canvasRef = useRef(null);
+  const panelRef = useRef(null);
   const { videoRef, isActive, error: cameraError } = useCamera({ enabled: true });
 
   useEffect(() => {
@@ -64,6 +66,15 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
     video.addEventListener('loadeddata', onPlaying);
     return () => video.removeEventListener('loadeddata', onPlaying);
   }, [isActive, videoRef]);
+
+  // Panel height observer for kirari positioning
+  useEffect(() => {
+    const el = panelRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(entries => setPanelHeight(entries[0].contentRect.height));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const getVideo = useCallback(() => videoRef.current, [videoRef]);
   const cameraLive = isActive && !cameraError && videoPlaying;
@@ -242,7 +253,8 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
 
       {/* Kirari bubble (above panel) */}
       <div style={{
-        position: 'absolute', bottom: 'calc(35vh + 8px)', left: 12, right: 12,
+        position: 'absolute', bottom: panelHeight + 8, left: 12, right: 12,
+        transition: 'bottom 0.2s ease',
         background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)',
         borderRadius: 16, padding: '8px 12px',
         display: 'flex', alignItems: 'center', gap: 8, zIndex: 2,
@@ -256,7 +268,7 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
       </div>
 
       {/* Bottom panel overlay */}
-      <div style={{
+      <div ref={panelRef} style={{
         position: 'absolute', bottom: 0, left: 0, right: 0,
         background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(16px)',
         borderRadius: '20px 20px 0 0',
