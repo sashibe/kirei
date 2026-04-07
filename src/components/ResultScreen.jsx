@@ -10,6 +10,7 @@ import { SKIN_SCORES } from '../data/scores.js';
 import { getCoordHint, getPcLine } from '../data/kirariDialogues.js';
 import { getPcColors, getPcIcon } from '../analysis/personalColor.js';
 import useWeather from '../hooks/useWeather.js';
+import ScoreHistory from './ScoreHistory.jsx';
 
 function avg(scores) {
   const vals = Object.values(scores).map(v => v.score);
@@ -122,6 +123,9 @@ export default function ResultScreen({ skinScores: propSkin, personalColor = nul
           </div>
         </div>
       )}
+
+      {/* ===== Score History ===== */}
+      <ScoreHistory />
 
       {/* ===== 0b. Captured AR photo ===== */}
       {capturedImage && (

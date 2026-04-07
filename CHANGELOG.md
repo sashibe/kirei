@@ -1,5 +1,24 @@
 # CHANGELOG
 
+## 2026-04-07 — feat: Supabaseスコア履歴機能
+
+### 新規ファイル
+- `src/lib/supabase.js` — Supabaseクライアント初期化
+- `src/lib/scoreHistory.js` — saveScore / fetchScoreHistory
+- `src/hooks/useGuestId.js` — 匿名ゲストID（localStorageにUUID保存）
+- `src/components/ScoreHistory.jsx` — 履歴表示UI（トレンドチャート + 差分表示）
+
+### 変更
+- MirrorScreenV3: スキャン完了時にsaveScore呼び出し（サイレント失敗）
+- ResultScreen: ScoreHistoryコンポーネントを追加
+
+### 設計
+- ログイン不要（ゲストID方式）
+- 保存失敗してもアプリは止めない
+- 個人を特定できる情報は一切保存しない
+
+---
+
 ## 2026-04-07 — feat: パーソナルカラー16タイプ対応 + バッジ表示更新
 
 ### personalColor.js

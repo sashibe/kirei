@@ -14,12 +14,15 @@ import { analyzeSkin, analyzeSkinWithLandmarks } from '../analysis/skinAnalyzer.
 import { analyzePersonalColor, getPcColors, getPcIcon } from '../analysis/personalColor.js';
 import { getPcLine, getScoreDeltaLine } from '../data/kirariDialogues.js';
 import { logEvent, getPrevScore } from '../utils/logger.js';
+import { saveScore } from '../lib/scoreHistory.js';
+import { useGuestId } from '../hooks/useGuestId.js';
 
 const STAGE = { SEARCHING: 'searching', DETECTED: 'detected', READY: 'ready', SHUTTER: 'shutter', SCANNING: 'scanning' };
 
 
 export default function MirrorScreenV3({ onResult }) {
-  const { t } = useT();
+  const { t, lang } = useT();
+  const { guestId } = useGuestId();
   const [checking, setChecking] = useState(false);
   const [stage, setStage] = useState(null);
   const [skinScores, setSkinScores] = useState(null);
@@ -115,8 +118,11 @@ export default function MirrorScreenV3({ onResult }) {
       personal_color: pc?.season || null,
     });
 
+    // Supabase に保存（サイレント失敗）
+    saveScore({ guestId, scores, personalColor: pc, lang });
+
     return { scores, personalColor: pc };
-  }, []);
+  }, [guestId, lang]);
 
   const runShutterSequence = useCallback(() => {
     const frame = cameraRef.current?.isActive ? cameraRef.current.captureFrame() : null;
