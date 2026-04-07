@@ -1,5 +1,23 @@
 # CHANGELOG
 
+## 2026-04-07 — feat: 3層商品UI + 実商品データ
+
+### 3層UI（ArTryOnScreen）
+- Layer 1: カテゴリータブ（既存）
+- Layer 2: 商品カード横スクロール（ProductLayer）— 商品画像/カラーチップサムネ/名前/価格
+- Layer 3: カラーパレット + 濃さスライダー — 商品選択後に展開、タップ即AR反映
+- lip/eyeshadow/cheek/contacts の4カテゴリに適用（glasses/earringは既存UIを維持）
+
+### 実商品データ（products.js）
+- 13商品: リップ3、アイシャドウ4（PC別）、チーク2、ベース2、カラコン2
+- 各商品にcolors配列（カラー展開）を定義
+- 楽天API連携は後日（Access Keyの認証方式要確認）
+
+### scripts/fetchRakutenProducts.mjs
+- 楽天API取得スクリプト作成（API認証解決後に使用）
+
+---
+
 ## 2026-04-07 — feat: Supabaseスコア履歴機能
 
 ### 新規ファイル
