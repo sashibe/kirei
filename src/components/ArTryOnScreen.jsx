@@ -41,18 +41,17 @@ const SCROLL_ROW = {
 
 export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack }) {
   const { t } = useT();
-  // Per-category intensity (independent sliders)
+  const [videoPlaying, setVideoPlaying] = useState(false);
+  const [showMesh, setShowMesh] = useState(false);
+  const [activeCategory, setActiveCategory] = useState('base');
+
+  // Per-category intensity (independent sliders) — must be after activeCategory
   const [intensities, setIntensities] = useState({ base: 70, lip: 70, eyeshadow: 70, cheek: 70, contacts: 70 });
   const intensity = intensities[activeCategory] ?? 70;
   const setIntensity = useCallback((val) => {
     setIntensities(prev => ({ ...prev, [activeCategory]: val }));
   }, [activeCategory]);
-  // Global intensity for MakeupCanvas (average or per-part)
   const globalIntensity = Math.round(Object.values(intensities).reduce((a, b) => a + b, 0) / Object.keys(intensities).length);
-
-  const [videoPlaying, setVideoPlaying] = useState(false);
-  const [showMesh, setShowMesh] = useState(false);
-  const [activeCategory, setActiveCategory] = useState('base');
   const [selectedBase, setSelectedBase] = useState(baseLook?.id ?? 'clean-natural');
   const [lipColor, setLipColor] = useState(colorLook?.lip || '#e8607c');
   const [cheekColor, setCheekColor] = useState(colorLook?.cheek || 'rgba(232,96,124,0.4)');
