@@ -106,10 +106,7 @@ export default function ResultScreen({ skinScores, personalColor, cart, captured
         }}>{'\uD83D\uDC84'} {t('change_makeup') || '\u30E1\u30A4\u30AF\u3092\u5909\u66F4\u3059\u308B \u2192'}</button>
       </div>
 
-      {/* Coordinate hint */}
-      {weather && skinScores && (
-        <CoordinateOverlay weather={weather} personalColor={personalColor} skinScores={skinScores} />
-      )}
+      {/* Coordinate hint — removed from checkout screen (was full-screen overlay) */}
 
       {/* Skincare CTA */}
       <div style={{ padding: '0 16px', marginBottom: 10 }}>

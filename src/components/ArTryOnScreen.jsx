@@ -54,10 +54,10 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
   const [activeCategory, setActiveCategory] = useState('lip');
   const [sheetOpen, setSheetOpen] = useState(false);
 
-  const [selectedBase, setSelectedBase] = useState('clean-natural');
-  const [lipColor, setLipColor] = useState('#e8607c');
-  const [cheekColor, setCheekColor] = useState('rgba(232,96,124,0.4)');
-  const [eyeshadowColor, setEyeshadowColor] = useState('rgba(196,149,106,0.25)');
+  const [selectedBase, setSelectedBase] = useState(null);
+  const [lipColor, setLipColor] = useState(null);
+  const [cheekColor, setCheekColor] = useState(null);
+  const [eyeshadowColor, setEyeshadowColor] = useState(null);
   const [browColor, setBrowColor] = useState(null);
   const [selectedGlasses, setSelectedGlasses] = useState('none');
   const [selectedEarring, setSelectedEarring] = useState('none');
@@ -83,8 +83,10 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
   const getVideo = useCallback(() => videoRef.current, [videoRef]);
   const cameraLive = isActive && !cameraError && videoPlaying;
 
-  const currentBase = BASE_LOOKS.find(l => l.id === selectedBase) ?? BASE_LOOKS[0];
-  const activeColorLook = { lip: lipColor, cheek: cheekColor, eyeshadow: eyeshadowColor };
+  const currentBase = selectedBase ? (BASE_LOOKS.find(l => l.id === selectedBase) ?? null) : null;
+  const activeColorLook = (lipColor || cheekColor || eyeshadowColor)
+    ? { lip: lipColor, cheek: cheekColor, eyeshadow: eyeshadowColor }
+    : null;
 
   const glassesItem = GLASSES_ITEMS.find(i => i.id === selectedGlasses);
   const earringItem = EARRING_ITEMS.find(i => i.id === selectedEarring);
