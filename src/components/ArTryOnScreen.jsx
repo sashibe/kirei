@@ -220,7 +220,7 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
           getVideo={getVideo}
           baseLook={browColor ? { ...currentBase, brow: browColor } : currentBase}
           colorLook={activeColorLook}
-          intensities={intensities}
+          intensity={70}
           showMesh={showMesh}
           glassesItem={glassesItem}
           earringItem={earringItem}
