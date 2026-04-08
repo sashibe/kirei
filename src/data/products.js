@@ -956,13 +956,14 @@ export const PRODUCTS = [
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00ti5vm.x7s2c65c.g00ti5vm.x7s2d5ee/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fasiabnc%2From-brow%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
     "reviewCount": 2614, "reviewAvg": 4.7,
     "colors": [
-      { "id": "c01", "name": "ナチュラルブラウン", "hex": "#7A5030" },
-      { "id": "c02", "name": "アッシュブラウン",   "hex": "#6A6050" },
-      { "id": "c03", "name": "ダークブラウン",     "hex": "#4A3020" },
-      { "id": "c04", "name": "グレーブラウン",     "hex": "#706860" },
-      { "id": "c05", "name": "ブラック",           "hex": "#282828" }
+      { "id": "c01", "name": { "ja": "グレーストープ", "ko": "그레이 스톤", "en": "Gray Taupe" }, "hex": "#7A7870" },
+      { "id": "c02", "name": { "ja": "マイルドウッディー", "ko": "마일드 우디", "en": "Mild Woody" }, "hex": "#8A6848" },
+      { "id": "c03", "name": { "ja": "モダンベージュ", "ko": "모던 베이지", "en": "Modern Beige" }, "hex": "#A89070" },
+      { "id": "c04", "name": { "ja": "ダスキーローズ", "ko": "더스키 로즈", "en": "Dusky Rose" }, "hex": "#A07878" },
+      { "id": "c05", "name": { "ja": "ムーングレー", "ko": "문 그레이", "en": "Moon Gray" }, "hex": "#909098" }
     ],
-    "baseColor": "#7A5030", "season": null
+    "baseColor": "#7A7870", "season": "summer",
+    "localImage": "eyebrow_01.jpg"
   },
   {
     "id": "citrus-shop_10002476", "category": "eyebrow",
@@ -972,13 +973,12 @@ export const PRODUCTS = [
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00tlumm.x7s2c2a6.g00tlumm.x7s2d2b1/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fcitrus-shop%2Fcos-cathydoll-4d%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
     "reviewCount": 1406, "reviewAvg": 3.97,
     "colors": [
-      { "id": "c01", "name": "ナチュラルブラウン", "hex": "#7A5030" },
-      { "id": "c02", "name": "アッシュブラウン",   "hex": "#6A6050" },
-      { "id": "c03", "name": "ダークブラウン",     "hex": "#4A3020" },
-      { "id": "c04", "name": "グレーブラウン",     "hex": "#706860" },
-      { "id": "c05", "name": "ブラック",           "hex": "#282828" }
+      { "id": "c01", "name": { "ja": "ナチュラルブラウン", "ko": "내추럴 브라운", "en": "Natural Brown" }, "hex": "#7A5030" },
+      { "id": "c02", "name": { "ja": "アッシュブラウン", "ko": "애쉬 브라운", "en": "Ash Brown" }, "hex": "#6A6050" },
+      { "id": "c03", "name": { "ja": "ダークブラウン", "ko": "다크 브라운", "en": "Dark Brown" }, "hex": "#4A3020" }
     ],
-    "baseColor": "#7A5030", "season": null
+    "baseColor": "#7A5030", "season": "autumn",
+    "localImage": "eyebrow_02.jpg"
   },
   {
     "id": "attenir_10000327", "category": "eyebrow",
@@ -988,13 +988,13 @@ export const PRODUCTS = [
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00tna6m.x7s2c71d.g00tna6m.x7s2d2de/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fattenir%2F1329%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
     "reviewCount": 1126, "reviewAvg": 4.74,
     "colors": [
-      { "id": "c01", "name": "ナチュラルブラウン", "hex": "#7A5030" },
-      { "id": "c02", "name": "アッシュブラウン",   "hex": "#6A6050" },
-      { "id": "c03", "name": "ダークブラウン",     "hex": "#4A3020" },
-      { "id": "c04", "name": "グレーブラウン",     "hex": "#706860" },
-      { "id": "c05", "name": "ブラック",           "hex": "#282828" }
+      { "id": "c01", "name": { "ja": "ナチュラルブラウン", "ko": "내추럴 브라운", "en": "Natural Brown" }, "hex": "#7A5030" },
+      { "id": "c02", "name": { "ja": "アッシュブラウン", "ko": "애쉬 브라운", "en": "Ash Brown" }, "hex": "#706050" },
+      { "id": "c03", "name": { "ja": "ダークブラウン", "ko": "다크 브라운", "en": "Dark Brown" }, "hex": "#4A3020" },
+      { "id": "c04", "name": { "ja": "グレーブラウン", "ko": "그레이 브라운", "en": "Gray Brown" }, "hex": "#706870" }
     ],
-    "baseColor": "#7A5030", "season": null
+    "baseColor": "#7A5030", "season": "autumn",
+    "localImage": "eyebrow_03.jpg"
   },
   {
     "id": "candy_10454123", "category": "eyebrow",
@@ -1004,13 +1004,12 @@ export const PRODUCTS = [
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00pqgum.x7s2cde5.g00pqgum.x7s2d689/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fcandy%2F4557%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
     "reviewCount": 859, "reviewAvg": 4.29,
     "colors": [
-      { "id": "c01", "name": "ナチュラルブラウン", "hex": "#7A5030" },
-      { "id": "c02", "name": "アッシュブラウン",   "hex": "#6A6050" },
-      { "id": "c03", "name": "ダークブラウン",     "hex": "#4A3020" },
-      { "id": "c04", "name": "グレーブラウン",     "hex": "#706860" },
-      { "id": "c05", "name": "ブラック",           "hex": "#282828" }
+      { "id": "c01", "name": { "ja": "ナチュラルブラウン", "ko": "내추럴 브라운", "en": "Natural Brown" }, "hex": "#8A6848" },
+      { "id": "c02", "name": { "ja": "ダークブラウン", "ko": "다크 브라운", "en": "Dark Brown" }, "hex": "#4A3020" },
+      { "id": "c03", "name": { "ja": "グレー", "ko": "그레이", "en": "Gray" }, "hex": "#808088" }
     ],
-    "baseColor": "#7A5030", "season": null
+    "baseColor": "#8A6848", "season": null,
+    "localImage": "eyebrow_04.jpg"
   },
   {
     "id": "maybelline_10000339", "category": "eyebrow",
@@ -1020,12 +1019,12 @@ export const PRODUCTS = [
     "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00tlb5m.x7s2c68a.g00tlb5m.x7s2db65/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fmaybelline%2F404123%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
     "reviewCount": 761, "reviewAvg": 4.45,
     "colors": [
-      { "id": "c01", "name": "ナチュラルブラウン", "hex": "#7A5030" },
-      { "id": "c02", "name": "アッシュブラウン",   "hex": "#6A6050" },
-      { "id": "c03", "name": "ダークブラウン",     "hex": "#4A3020" },
-      { "id": "c04", "name": "グレーブラウン",     "hex": "#706860" },
-      { "id": "c05", "name": "ブラック",           "hex": "#282828" }
+      { "id": "c01", "name": { "ja": "ナチュラルブラウン", "ko": "내추럴 브라운", "en": "Natural Brown" }, "hex": "#8A6040" },
+      { "id": "c02", "name": { "ja": "アッシュブラウン", "ko": "애쉬 브라운", "en": "Ash Brown" }, "hex": "#706858" },
+      { "id": "c03", "name": { "ja": "ダークブラウン", "ko": "다크 브라운", "en": "Dark Brown" }, "hex": "#4A3020" },
+      { "id": "c04", "name": { "ja": "ブラック", "ko": "블랙", "en": "Black" }, "hex": "#282828" }
     ],
-    "baseColor": "#7A5030", "season": null
+    "baseColor": "#8A6040", "season": null,
+    "localImage": "eyebrow_05.jpg"
   }
 ];
