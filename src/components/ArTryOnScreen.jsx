@@ -524,6 +524,7 @@ function ProductLayer({ category, selectedProduct, selectedColor, intensity, onS
           {selectedColor && (
             <p style={{ fontSize: 9, color: '#94a3b8', margin: '4px 0 0' }}>{txt(selectedColor.name, lang)}</p>
           )}
+          {category !== 'contacts' && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
             <span style={{ fontSize: 10, color: '#64748b', whiteSpace: 'nowrap', fontWeight: 600 }}>
               {'\u6FC3\u3055'}
@@ -536,6 +537,7 @@ function ProductLayer({ category, selectedProduct, selectedColor, intensity, onS
               {intensity}%
             </span>
           </div>
+          )}
         </div>
       )}
     </div>
