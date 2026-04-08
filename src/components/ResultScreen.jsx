@@ -13,6 +13,7 @@ export default function ResultScreen({ skinScores, personalColor, cart, captured
   const { t, lang } = useT();
   const weather = useWeather();
   const [showScores, setShowScores] = useState(false);
+  const [showCoord, setShowCoord] = useState(false);
 
   const pcText = personalColor?.subtypeId ? getSeasonText(personalColor.subtypeId, lang) : null;
   const pcBg = personalColor ? getPcColors(personalColor.season) : null;
@@ -106,7 +107,23 @@ export default function ResultScreen({ skinScores, personalColor, cart, captured
         }}>{'\uD83D\uDC84'} {t('change_makeup') || '\u30E1\u30A4\u30AF\u3092\u5909\u66F4\u3059\u308B \u2192'}</button>
       </div>
 
-      {/* Coordinate hint — removed from checkout screen (was full-screen overlay) */}
+      {/* Coordinate hint — button to open overlay */}
+      {weather && skinScores && (
+        <>
+          <div style={{ padding: '0 16px', marginBottom: 10 }}>
+            <button onClick={() => setShowCoord(true)} style={{
+              width: '100%', padding: 12,
+              background: '#fffbeb', border: '1.5px solid #fde68a',
+              borderRadius: 14, fontSize: 13, fontWeight: 700,
+              color: '#b45309', cursor: 'pointer',
+            }}>{'\uD83D\uDC57'} {t('result.view_coord') || '\u30B3\u30FC\u30C7\u3092\u898B\u308B'}</button>
+          </div>
+          {showCoord && (
+            <CoordinateOverlay weather={weather} personalColor={personalColor} skinScores={skinScores}
+              onClose={() => setShowCoord(false)} />
+          )}
+        </>
+      )}
 
       {/* Skincare CTA */}
       <div style={{ padding: '0 16px', marginBottom: 10 }}>
