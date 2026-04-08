@@ -543,7 +543,7 @@ function ProductLayer({ category, selectedProduct, selectedColor, personalColor,
                   color: inCart ? '#94a3b8' : '#fff',
                   border: 'none', fontSize: 10, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap',
                 }}>
-                  {inCart ? '\u2713' : '\uD83D\uDED2+'}
+                  {inCart ? '\u2713' : '\uD83D\uDED2 ' + (t?.('cart_add') || 'Add')}
                 </button>
               );
             })()}
