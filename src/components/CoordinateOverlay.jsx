@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Kirari from './Kirari.jsx';
 import Bubble from './Bubble.jsx';
 import BodySilhouette from './BodySilhouette.jsx';
-import { getCoordItems } from '../data/coordItems.js';
+import { getCoordItems, COORD_IMAGES } from '../data/coordItems.js';
 import { getCoordLine } from '../data/kirariDialogues.js';
 import { useT } from '../i18n/index.jsx';
 
@@ -77,27 +77,32 @@ export default function CoordinateOverlay({ styleTab, selectedLook, weather, onC
         border: '1px solid #fde68a',
         display: 'flex', flexDirection: 'column', alignItems: 'center',
       }}>
-        {/* Body silhouette */}
+        {/* Coordinate image or SVG fallback */}
         <div style={{
           position: 'relative', width: '100%', display: 'flex', justifyContent: 'center',
           minHeight: 280,
         }}>
-          <BodySilhouette items={items} t={t} />
-
-          {/* Floating labels */}
-          {items.map((item, i) => (
-            <div key={i} style={{
-              position: 'absolute',
-              top: ['12%','30%','50%','65%','80%'][i] || `${12 + i * 15}%`,
-              ...(i % 2 === 0 ? { left: 8 } : { right: 8 }),
-              background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(4px)',
-              borderRadius: 10, padding: '4px 8px', maxWidth: '35%',
-              boxShadow: '0 1px 4px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.04)',
-            }}>
-              <p style={{ fontSize: 9, fontWeight: 600, color: '#a855f7', margin: 0 }}>{t(item.part)}</p>
-              <p style={{ fontSize: 10, fontWeight: 600, color: '#334155', margin: 0 }}>{t(item.name)}</p>
-            </div>
-          ))}
+          {COORD_IMAGES[`${tabId}_${selectedTPO}`] ? (
+            <img src={COORD_IMAGES[`${tabId}_${selectedTPO}`]} alt="Coordinate"
+              style={{ width: '80%', maxHeight: 320, objectFit: 'contain', borderRadius: 12 }} />
+          ) : (
+            <>
+              <BodySilhouette items={items} t={t} />
+              {items.map((item, i) => (
+                <div key={i} style={{
+                  position: 'absolute',
+                  top: ['12%','30%','50%','65%','80%'][i] || `${12 + i * 15}%`,
+                  ...(i % 2 === 0 ? { left: 8 } : { right: 8 }),
+                  background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(4px)',
+                  borderRadius: 10, padding: '4px 8px', maxWidth: '35%',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.04)',
+                }}>
+                  <p style={{ fontSize: 9, fontWeight: 600, color: '#a855f7', margin: 0 }}>{t(item.part)}</p>
+                  <p style={{ fontSize: 10, fontWeight: 600, color: '#334155', margin: 0 }}>{t(item.name)}</p>
+                </div>
+              ))}
+            </>
+          )}
         </div>
       </div>
 

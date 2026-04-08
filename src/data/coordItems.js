@@ -74,6 +74,14 @@ export const COORD_DATA = {
   ],
 };
 
+// ゴーストマネキン写真マッピング
+const coordImageModules = import.meta.glob('../assets/coord/*.jpg', { eager: true, query: '?url', import: 'default' });
+export const COORD_IMAGES = {};
+for (const [path, url] of Object.entries(coordImageModules)) {
+  const match = path.match(/coord_(.+)\.jpg$/);
+  if (match) COORD_IMAGES[match[1]] = url;
+}
+
 export function getCoordItems(styleTabId, tpoId) {
   const key = `${styleTabId}_${tpoId}`;
   return COORD_DATA[key] || COORD_DATA[`${styleTabId}_casual`] || [];
