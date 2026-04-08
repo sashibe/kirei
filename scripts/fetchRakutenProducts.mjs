@@ -15,6 +15,7 @@ const SEARCHES = [
   { category: 'cheek',     label: 'チーク',        keyword: 'チーク ブラッシュ コスメ',     hits: 5 },
   { category: 'base',      label: 'ベース',        keyword: 'BBクリーム リキッドファンデ',  hits: 5 },
   { category: 'contacts',  label: 'カラコン',      keyword: 'カラーコンタクト ワンデー',    hits: 5 },
+  { category: 'eyebrow',   label: 'アイブロウ',   keyword: 'アイブロウ 眉マスカラ コスメ', hits: 5 },
 ];
 
 async function fetchCategory({ category, keyword, hits }) {

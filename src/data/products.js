@@ -949,9 +949,12 @@ export const PRODUCTS = [
     "localImage": "colorcon_laviere_koda.jpg"
   },
   {
-    "id": "eyebrow-001", "category": "eyebrow",
-    "name": "アイブロウ ペンシル",
-    "price": 1320, "image": "", "affiliateUrl": "#",
+    "id": "asiabnc_10000243", "category": "eyebrow",
+    "name": "ロムアンド ハンオールブロウカラ",
+    "price": 1210,
+    "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/asiabnc/cabinet/09808241/imgrc0096399731.jpg?_ex=200x200",
+    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00ti5vm.x7s2c65c.g00ti5vm.x7s2d5ee/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fasiabnc%2From-brow%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "reviewCount": 2614, "reviewAvg": 4.7,
     "colors": [
       { "id": "c01", "name": "ナチュラルブラウン", "hex": "#7A5030" },
       { "id": "c02", "name": "アッシュブラウン",   "hex": "#6A6050" },
@@ -962,9 +965,60 @@ export const PRODUCTS = [
     "baseColor": "#7A5030", "season": null
   },
   {
-    "id": "eyebrow-002", "category": "eyebrow",
-    "name": "眉マスカラ",
-    "price": 880, "image": "", "affiliateUrl": "#",
+    "id": "citrus-shop_10002476", "category": "eyebrow",
+    "name": "キャシードール 4Dアイブロウ",
+    "price": 1000,
+    "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/citrus-shop/cabinet/cosme02/10228972/cos-cathydoll-4d/cos-4d.jpg?_ex=200x200",
+    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00tlumm.x7s2c2a6.g00tlumm.x7s2d2b1/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fcitrus-shop%2Fcos-cathydoll-4d%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "reviewCount": 1406, "reviewAvg": 3.97,
+    "colors": [
+      { "id": "c01", "name": "ナチュラルブラウン", "hex": "#7A5030" },
+      { "id": "c02", "name": "アッシュブラウン",   "hex": "#6A6050" },
+      { "id": "c03", "name": "ダークブラウン",     "hex": "#4A3020" },
+      { "id": "c04", "name": "グレーブラウン",     "hex": "#706860" },
+      { "id": "c05", "name": "ブラック",           "hex": "#282828" }
+    ],
+    "baseColor": "#7A5030", "season": null
+  },
+  {
+    "id": "attenir_10000327", "category": "eyebrow",
+    "name": "アテニア アイブロウ ペンシル",
+    "price": 880,
+    "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/attenir/cabinet/thum/thum/1329_2502.jpg?_ex=200x200",
+    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00tna6m.x7s2c71d.g00tna6m.x7s2d2de/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fattenir%2F1329%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "reviewCount": 1126, "reviewAvg": 4.74,
+    "colors": [
+      { "id": "c01", "name": "ナチュラルブラウン", "hex": "#7A5030" },
+      { "id": "c02", "name": "アッシュブラウン",   "hex": "#6A6050" },
+      { "id": "c03", "name": "ダークブラウン",     "hex": "#4A3020" },
+      { "id": "c04", "name": "グレーブラウン",     "hex": "#706860" },
+      { "id": "c05", "name": "ブラック",           "hex": "#282828" }
+    ],
+    "baseColor": "#7A5030", "season": null
+  },
+  {
+    "id": "candy_10454123", "category": "eyebrow",
+    "name": "ニューアイブロウスタンプ",
+    "price": 2310,
+    "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/candy/cabinet/event_thum/1/4557-thum1nnn.jpg?_ex=200x200",
+    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00pqgum.x7s2cde5.g00pqgum.x7s2d689/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fcandy%2F4557%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "reviewCount": 859, "reviewAvg": 4.29,
+    "colors": [
+      { "id": "c01", "name": "ナチュラルブラウン", "hex": "#7A5030" },
+      { "id": "c02", "name": "アッシュブラウン",   "hex": "#6A6050" },
+      { "id": "c03", "name": "ダークブラウン",     "hex": "#4A3020" },
+      { "id": "c04", "name": "グレーブラウン",     "hex": "#706860" },
+      { "id": "c05", "name": "ブラック",           "hex": "#282828" }
+    ],
+    "baseColor": "#7A5030", "season": null
+  },
+  {
+    "id": "maybelline_10000339", "category": "eyebrow",
+    "name": "メイベリン ファッションブロウ パウダーインペンシル",
+    "price": 1309,
+    "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/maybelline/cabinet/campagin/260404/prd/404123_v3.jpg?_ex=200x200",
+    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00tlb5m.x7s2c68a.g00tlb5m.x7s2db65/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fmaybelline%2F404123%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "reviewCount": 761, "reviewAvg": 4.45,
     "colors": [
       { "id": "c01", "name": "ナチュラルブラウン", "hex": "#7A5030" },
       { "id": "c02", "name": "アッシュブラウン",   "hex": "#6A6050" },
