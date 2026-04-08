@@ -573,20 +573,6 @@ export default function MirrorScreenV3({ onResult }) {
               >
                 {'\u2728'} {t("mirror.start_skincare")}
               </button>
-              {/* Tertiary: ミラーに戻る */}
-              <button
-                onClick={() => { setSkinScores(null); setPersonalColor(null); setStage(null); setChecking(false); setFrozenFrame(null); }}
-                style={{
-                  width: "100%", padding: 10,
-                  background: "rgba(255,255,255,0.85)",
-                  border: "1px solid rgba(168,85,247,0.2)",
-                  borderRadius: 14,
-                  fontSize: 12, fontWeight: 600,
-                  color: "#94a3b8", cursor: "pointer",
-                }}
-              >
-                {'\uD83E\uDE9E'} {t("mirror.recheck")}
-              </button>
               <p style={{ fontSize: 8, color: "#94a3b8", margin: 0 }}>{t("mirror.disclaimer")}</p>
             </>
           ) : null}
