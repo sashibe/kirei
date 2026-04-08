@@ -361,7 +361,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
                       border: selectedGlasses === item.id ? '2px solid #a855f7' : '1px solid #ede9fe',
                       color: selectedGlasses === item.id ? '#a855f7' : '#64748b',
                       cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
-                    }}>{item.emoji} {item.name}</button>
+                    }}>{item.emoji} {txt(item.name, lang)}</button>
                   ))}
                 </div>
                 {selectedGlasses !== 'none' && (() => {
@@ -392,7 +392,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
                       border: selectedEarring === item.id ? '2px solid #a855f7' : '1px solid #ede9fe',
                       color: selectedEarring === item.id ? '#a855f7' : '#64748b',
                       cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
-                    }}>{item.emoji} {item.name}</button>
+                    }}>{item.emoji} {txt(item.name, lang)}</button>
                   ))}
                 </div>
                 {selectedEarring !== 'none' && (() => {
