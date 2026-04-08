@@ -192,29 +192,35 @@ export function drawEyeshadow(ctx, lms, w, h, colorStr, opacity) {
 }
 
 /**
- * チーク — 頬骨ランドマーク(#205,#425)に楕円グラデーション
- * source-over + 低alpha で自然な血色感を表現
+ * チーク — 頬骨位置を計算で求めて楕円グラデーション
+ * 頬の中心 = 目尻と口角の中間点を外側にオフセット
  */
 export function drawCheek(ctx, lms, w, h, colorStr, opacity) {
   const { hex, alpha } = parseColor(colorStr);
   const opa = opacity * alpha;
 
-  // 目幅を基準にチーク楕円サイズを決定
   const eyeW = Math.abs(lmX(lms[133], w) - lmX(lms[33], w));
-  const rw = Math.max(eyeW * 0.8, 16); // 横半径（控えめ）
-  const rh = rw * 0.6; // 縦半径（楕円）
+  const rw = Math.max(eyeW * 0.7, 14);
+  const rh = rw * 0.55;
 
-  // 右頬: #205, 左頬: #425
-  for (const cheekIdx of [205, 425]) {
-    const cheek = lms[cheekIdx];
-    const cx = lmX(cheek, w);
-    const cy = lmY(cheek, h);
+  // 頬中心を計算: 目尻(#33/#263)と口角(#61/#291)の中間点を外側にシフト
+  const cheeks = [
+    { eye: lms[33],  mouth: lms[61],  ear: lms[234] }, // 右頬
+    { eye: lms[263], mouth: lms[291], ear: lms[454] }, // 左頬
+  ];
+
+  for (const { eye, mouth, ear } of cheeks) {
+    // 目尻と口角の中間点
+    const midX = (lmX(eye, w) + lmX(mouth, w)) / 2;
+    const midY = (lmY(eye, h) + lmY(mouth, h)) / 2;
+    // 耳方向に20%オフセット（頬骨の位置に寄せる）
+    const cx = midX + (lmX(ear, w) - midX) * 0.2;
+    const cy = midY;
 
     ctx.save();
     ctx.globalCompositeOperation = 'source-over';
     ctx.globalAlpha = opa * 0.35;
 
-    // 楕円グラデーション（中心が濃く、端がフェードアウト）
     const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, rw);
     grad.addColorStop(0, hex);
     grad.addColorStop(0.5, hex + 'A0');
@@ -326,31 +332,54 @@ export function drawFoundation(ctx, lms, w, h, colorStr, opacity) {
 }
 
 /**
- * 眉ティント — 眉のランドマーク接続に沿った太めストローク
+ * 眉ティント — 眉の上下ラインの間をソフトに塗りつぶし
+ * 眉の内側80%のみ描画（外端を切り落とし自然な長さに）
  */
+// 眉の上辺・下辺ランドマーク（内→外の順）
+const RIGHT_BROW_TOP = [107, 66, 105, 63, 70];
+const RIGHT_BROW_BOT = [107, 55, 65, 52, 53];
+const LEFT_BROW_TOP  = [336, 296, 334, 293, 300];
+const LEFT_BROW_BOT  = [336, 285, 295, 282, 283];
+
 export function drawBrow(ctx, lms, w, h, colorStr, opacity) {
   const { hex, alpha } = parseColor(colorStr);
   const opa = opacity * alpha;
-  ctx.save();
 
-  const eyeW = Math.abs(lmX(lms[133], w) - lmX(lms[33], w));
-  for (const conns of [LEFT_EYEBROW, RIGHT_EYEBROW]) {
-    ctx.globalAlpha = opa * 0.7;
+  const browPairs = [
+    { top: RIGHT_BROW_TOP, bot: RIGHT_BROW_BOT },
+    { top: LEFT_BROW_TOP,  bot: LEFT_BROW_BOT },
+  ];
+
+  for (const { top, bot } of browPairs) {
+    // 内側80%のみ使う（外端カット）
+    const useCount = Math.max(3, Math.ceil(top.length * 0.8));
+    const topPts = top.slice(0, useCount).map(i => [lmX(lms[i], w), lmY(lms[i], h)]);
+    const botPts = bot.slice(0, useCount).map(i => [lmX(lms[i], w), lmY(lms[i], h)]);
+
+    // 上辺→下辺（逆順）で閉じたポリゴン
+    ctx.save();
     ctx.globalCompositeOperation = 'multiply';
-    ctx.strokeStyle = hex;
-    ctx.lineWidth = Math.max(eyeW * 0.08, 1.5);
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.beginPath();
-    for (const conn of conns) {
-      const a = lms[conn.start], b = lms[conn.end];
-      ctx.moveTo(lmX(a, w), lmY(a, h));
-      ctx.lineTo(lmX(b, w), lmY(b, h));
-    }
-    ctx.stroke();
-  }
+    ctx.globalAlpha = opa * 0.35;
+    ctx.fillStyle = hex;
 
-  ctx.restore();
+    ctx.beginPath();
+    ctx.moveTo(topPts[0][0], topPts[0][1]);
+    for (let i = 1; i < topPts.length; i++) ctx.lineTo(topPts[i][0], topPts[i][1]);
+    for (let i = botPts.length - 1; i >= 0; i--) ctx.lineTo(botPts[i][0], botPts[i][1]);
+    ctx.closePath();
+    ctx.fill();
+
+    // ソフトエッジ: 同じパスを少し大きく、低alphaで重ねる
+    ctx.globalAlpha = opa * 0.15;
+    ctx.beginPath();
+    ctx.moveTo(topPts[0][0], topPts[0][1] - 2);
+    for (let i = 1; i < topPts.length; i++) ctx.lineTo(topPts[i][0], topPts[i][1] - 2);
+    for (let i = botPts.length - 1; i >= 0; i--) ctx.lineTo(botPts[i][0], botPts[i][1] + 2);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.restore();
+  }
 }
 
 /**
