@@ -352,29 +352,65 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
               />
             )}
             {activeCategory === 'glasses' && (
-              <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
-                {GLASSES_ITEMS.map(item => (
-                  <button key={item.id} onClick={() => setSelectedGlasses(item.id)} style={{
-                    padding: '6px 10px', borderRadius: 10, fontSize: 11, fontWeight: 600,
-                    background: selectedGlasses === item.id ? 'rgba(168,85,247,0.15)' : 'rgba(139,92,246,0.04)',
-                    border: selectedGlasses === item.id ? '2px solid #a855f7' : '1px solid #ede9fe',
-                    color: selectedGlasses === item.id ? '#a855f7' : '#64748b',
-                    cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
-                  }}>{item.emoji} {item.name}</button>
-                ))}
+              <div>
+                <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
+                  {GLASSES_ITEMS.map(item => (
+                    <button key={item.id} onClick={() => setSelectedGlasses(item.id)} style={{
+                      padding: '6px 10px', borderRadius: 10, fontSize: 11, fontWeight: 600,
+                      background: selectedGlasses === item.id ? 'rgba(168,85,247,0.15)' : 'rgba(139,92,246,0.04)',
+                      border: selectedGlasses === item.id ? '2px solid #a855f7' : '1px solid #ede9fe',
+                      color: selectedGlasses === item.id ? '#a855f7' : '#64748b',
+                      cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
+                    }}>{item.emoji} {item.name}</button>
+                  ))}
+                </div>
+                {selectedGlasses !== 'none' && (() => {
+                  const gi = GLASSES_ITEMS.find(i => i.id === selectedGlasses);
+                  if (!gi) return null;
+                  const uk = `glasses_${gi.id}`;
+                  const inCart = cart.cartItems.some(i => i.uniqueKey === uk);
+                  return (
+                    <button onClick={() => {
+                      if (inCart) cart.dispatch({ type: 'REMOVE', payload: { uniqueKey: uk } });
+                      else cart.dispatch({ type: 'ADD', payload: { product: { id: `glasses_${gi.id}`, name: gi.name, price: gi.price, affiliateUrl: '#', category: 'glasses' }, selectedColor: { id: gi.id, name: gi.name, hex: gi.color || '#333' } } });
+                    }} style={{
+                      marginTop: 6, padding: '6px 12px', borderRadius: 14, fontSize: 10, fontWeight: 700,
+                      background: inCart ? '#e2e8f0' : 'linear-gradient(135deg, #a855f7, #ec4899)',
+                      color: inCart ? '#94a3b8' : '#fff', border: 'none', cursor: 'pointer',
+                    }}>{inCart ? '\u2713 \u8FFD\u52A0\u6E08' : '\uD83D\uDED2 \u30AB\u30FC\u30C8\u306B\u8FFD\u52A0'}</button>
+                  );
+                })()}
               </div>
             )}
             {activeCategory === 'earring' && (
-              <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
-                {EARRING_ITEMS.map(item => (
-                  <button key={item.id} onClick={() => setSelectedEarring(item.id)} style={{
-                    padding: '6px 10px', borderRadius: 10, fontSize: 11, fontWeight: 600,
-                    background: selectedEarring === item.id ? 'rgba(168,85,247,0.15)' : 'rgba(139,92,246,0.04)',
-                    border: selectedEarring === item.id ? '2px solid #a855f7' : '1px solid #ede9fe',
-                    color: selectedEarring === item.id ? '#a855f7' : '#64748b',
-                    cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
-                  }}>{item.emoji} {item.name}</button>
-                ))}
+              <div>
+                <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
+                  {EARRING_ITEMS.map(item => (
+                    <button key={item.id} onClick={() => setSelectedEarring(item.id)} style={{
+                      padding: '6px 10px', borderRadius: 10, fontSize: 11, fontWeight: 600,
+                      background: selectedEarring === item.id ? 'rgba(168,85,247,0.15)' : 'rgba(139,92,246,0.04)',
+                      border: selectedEarring === item.id ? '2px solid #a855f7' : '1px solid #ede9fe',
+                      color: selectedEarring === item.id ? '#a855f7' : '#64748b',
+                      cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
+                    }}>{item.emoji} {item.name}</button>
+                  ))}
+                </div>
+                {selectedEarring !== 'none' && (() => {
+                  const ei = EARRING_ITEMS.find(i => i.id === selectedEarring);
+                  if (!ei) return null;
+                  const uk = `earring_${ei.id}`;
+                  const inCart = cart.cartItems.some(i => i.uniqueKey === uk);
+                  return (
+                    <button onClick={() => {
+                      if (inCart) cart.dispatch({ type: 'REMOVE', payload: { uniqueKey: uk } });
+                      else cart.dispatch({ type: 'ADD', payload: { product: { id: `earring_${ei.id}`, name: ei.name, price: ei.price, affiliateUrl: '#', category: 'earring' }, selectedColor: { id: ei.id, name: ei.name, hex: ei.color || '#333' } } });
+                    }} style={{
+                      marginTop: 6, padding: '6px 12px', borderRadius: 14, fontSize: 10, fontWeight: 700,
+                      background: inCart ? '#e2e8f0' : 'linear-gradient(135deg, #a855f7, #ec4899)',
+                      color: inCart ? '#94a3b8' : '#fff', border: 'none', cursor: 'pointer',
+                    }}>{inCart ? '\u2713 \u8FFD\u52A0\u6E08' : '\uD83D\uDED2 \u30AB\u30FC\u30C8\u306B\u8FFD\u52A0'}</button>
+                  );
+                })()}
               </div>
             )}
           </div>
@@ -481,14 +517,36 @@ function ProductLayer({ category, selectedProduct, selectedColor, personalColor,
       {selectedProduct && selectedProduct.colors.length > 0 && (
         <div style={{ borderTop: '1px solid #f1f0ff', paddingTop: 8 }}>
           <p style={{ fontSize: 11, color: '#64748b', margin: '0 0 6px', fontWeight: 600 }}>{txt(selectedProduct.name, lang)}</p>
-          <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4, scrollbarWidth: 'none', touchAction: 'pan-x' }}>
-            {selectedProduct.colors.map(color => (
-              <div key={color.id} onClick={() => onSelectColor(color)} style={{
-                flexShrink: 0, width: 32, height: 32, borderRadius: '50%', background: color.hex, cursor: 'pointer',
-                border: selectedColor?.id === color.id ? '3px solid #a855f7' : '2px solid rgba(139,92,246,0.15)',
-                boxShadow: selectedColor?.id === color.id ? '0 0 10px rgba(168,85,247,0.4)' : 'none',
-              }} />
-            ))}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4, scrollbarWidth: 'none', touchAction: 'pan-x', flex: 1 }}>
+              {selectedProduct.colors.map(color => (
+                <div key={color.id} onClick={() => onSelectColor(color)} style={{
+                  flexShrink: 0, width: 32, height: 32, borderRadius: '50%', background: color.hex, cursor: 'pointer',
+                  border: selectedColor?.id === color.id ? '3px solid #a855f7' : '2px solid rgba(139,92,246,0.15)',
+                  boxShadow: selectedColor?.id === color.id ? '0 0 10px rgba(168,85,247,0.4)' : 'none',
+                }} />
+              ))}
+            </div>
+            {/* Mini cart button */}
+            {selectedColor && (() => {
+              const inCart = cart.isInCart(selectedProduct.id, selectedColor.id);
+              return (
+                <button onClick={() => {
+                  if (inCart) {
+                    cart.dispatch({ type: 'REMOVE', payload: { uniqueKey: `${selectedProduct.id}_${selectedColor.id}` } });
+                  } else {
+                    onAddToCart(selectedProduct, selectedColor);
+                  }
+                }} style={{
+                  flexShrink: 0, padding: '6px 10px', borderRadius: 14,
+                  background: inCart ? '#e2e8f0' : 'linear-gradient(135deg, #a855f7, #ec4899)',
+                  color: inCart ? '#94a3b8' : '#fff',
+                  border: 'none', fontSize: 10, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap',
+                }}>
+                  {inCart ? '\u2713' : '\uD83D\uDED2+'}
+                </button>
+              );
+            })()}
           </div>
           {selectedColor && (
             <p style={{ fontSize: 9, color: '#94a3b8', margin: '4px 0 0' }}>{txt(selectedColor.name, lang)}</p>
