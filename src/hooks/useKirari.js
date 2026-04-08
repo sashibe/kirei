@@ -190,11 +190,11 @@ function buildPool(weatherKey) {
 }
 
 // 適応型インターバル: 経過時間に応じて間隔を広げる
-const DISPLAY_DURATION = 4000; // 表示時間 4秒
+const DISPLAY_DURATION = 5000; // 表示時間 5秒（長文セリフに対応）
 function getInterval(elapsedMs) {
-  if (elapsedMs < 30000) return 15000;   // 0〜30秒: 15秒間隔
-  if (elapsedMs < 120000) return 30000;  // 30秒〜2分: 30秒間隔
-  return 45000;                          // 2分以降: 45秒間隔
+  if (elapsedMs < 30000) return 8000;    // 0〜30秒: 8秒間隔
+  if (elapsedMs < 120000) return 12000;  // 30秒〜2分: 12秒間隔
+  return 20000;                          // 2分以降: 20秒間隔
 }
 
 /**
