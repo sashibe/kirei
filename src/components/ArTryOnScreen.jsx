@@ -462,7 +462,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
       {/* CartSummaryBar */}
       {cart.cartItems.length > 0 && (
         <CartSummaryBar items={cart.cartItems} totalPrice={cart.totalPrice}
-          onCheckout={onCheckout} />
+          onCheckout={() => { doCapture(); onCheckout(); }} />
       )}
     </div>
   );
