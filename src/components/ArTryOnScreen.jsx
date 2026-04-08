@@ -25,11 +25,11 @@ const CATEGORIES = [
   { id: 'lip',       labelKey: 'ar.cat_lip',       icon: '\uD83D\uDC84' },
   { id: 'eyeshadow', labelKey: 'ar.cat_eyeshadow', icon: '\u2728' },
   { id: 'eyebrow',   labelKey: 'ar.cat_eyebrow',   icon: '\uD83D\uDD8A\uFE0F' },
+  { id: 'lashes',    labelKey: 'ar.cat_lashes',    icon: '\u2728' },
   { id: 'cheek',     labelKey: 'ar.cat_cheek',     icon: '\uD83C\uDF38' },
   { id: 'contacts',  labelKey: 'ar.cat_contacts',  icon: '\uD83D\uDC41\uFE0F' },
   { id: 'glasses',   labelKey: 'ar.cat_glasses',   icon: '\uD83D\uDC53' },
   { id: 'earring',   labelKey: 'ar.cat_earring',   icon: '\uD83D\uDC8D' },
-  { id: 'lashes',    labelKey: 'ar.cat_lashes',    icon: '\u2728' },
 ];
 
 const SHEET_MIN = 56;
