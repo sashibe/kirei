@@ -200,8 +200,8 @@ export function drawCheek(ctx, lms, w, h, colorStr, opacity) {
   const opa = opacity * alpha;
 
   const eyeW = Math.abs(lmX(lms[133], w) - lmX(lms[33], w));
-  const rw = Math.max(eyeW * 0.5, 10);
-  const rh = rw * 0.45;
+  const rw = Math.max(eyeW * 0.65, 14);
+  const rh = rw * 0.5;
 
   // 頬中心を計算: 目尻(#33/#263)と口角(#61/#291)の中間点を外側にシフト
   const cheeks = [
@@ -219,12 +219,12 @@ export function drawCheek(ctx, lms, w, h, colorStr, opacity) {
 
     ctx.save();
     ctx.globalCompositeOperation = 'source-over';
-    ctx.globalAlpha = opa * 0.35;
+    ctx.globalAlpha = opa * 0.55;
 
     const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, rw);
     grad.addColorStop(0, hex);
-    grad.addColorStop(0.3, hex + 'B0');
-    grad.addColorStop(0.7, hex + '40');
+    grad.addColorStop(0.3, hex + 'C0');
+    grad.addColorStop(0.6, hex + '60');
     grad.addColorStop(1, hex + '00');
     ctx.fillStyle = grad;
 
