@@ -21,6 +21,7 @@ async function fetchWeather(lat, lon) {
   const url = `${WEATHER_API}?latitude=${lat}&longitude=${lon}` +
     `&current=temperature_2m,relative_humidity_2m,precipitation_probability,uv_index,weather_code` +
     `&hourly=precipitation_probability,weather_code` +
+    `&daily=temperature_2m_max,temperature_2m_min,uv_index_max` +
     `&forecast_days=2&timezone=auto`;
   const res = await fetch(url);
   if (!res.ok) return null;
@@ -47,6 +48,11 @@ async function fetchWeather(lat, lon) {
   });
   const tomorrowCode = tomorrowNoon >= 0 ? data.hourly.weather_code[tomorrowNoon] : null;
 
+  // 今日の最高/最低気温, UV最大値
+  const todayMax = data.daily?.temperature_2m_max?.[0] ?? null;
+  const todayMin = data.daily?.temperature_2m_min?.[0] ?? null;
+  const todayUvMax = data.daily?.uv_index_max?.[0] ?? null;
+
   return {
     temp: data.current.temperature_2m,
     humidity: data.current.relative_humidity_2m,
@@ -55,6 +61,9 @@ async function fetchWeather(lat, lon) {
     weatherCode: data.current.weather_code,
     afternoonRainMax,
     tomorrowCode,
+    todayMax,
+    todayMin,
+    todayUvMax,
   };
 }
 

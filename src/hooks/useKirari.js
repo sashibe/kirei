@@ -64,8 +64,40 @@ function buildWeatherForecast(weather, lang = 'ja') {
     }
   }
 
-  // UV注意
-  if (weather.uvIndex >= 6) {
+  // 最高気温
+  if (weather.todayMax != null) {
+    if (weather.todayMax >= 30) {
+      if (lang === 'ja') lines.push(`今日の予想最高気温は${weather.todayMax}°C🌡️ 暑くなるから水分補給を忘れずに！`);
+      else if (lang === 'ko') lines.push(`오늘 예상 최고기온 ${weather.todayMax}°C🌡️ 수분 보충 잊지 마세요!`);
+      else lines.push(`Today's high: ${weather.todayMax}°C🌡️ Stay hydrated!`);
+    } else if (weather.todayMax <= 15) {
+      if (lang === 'ja') lines.push(`今日の予想最高気温は${weather.todayMax}°C🧥 暖かくしてお出かけしてね♪`);
+      else if (lang === 'ko') lines.push(`오늘 예상 최고기온 ${weather.todayMax}°C🧥 따뜻하게 입고 나가세요♪`);
+      else lines.push(`Today's high: ${weather.todayMax}°C🧥 Dress warmly!`);
+    }
+  }
+
+  // 最低気温（寒暖差注意）
+  if (weather.todayMax != null && weather.todayMin != null) {
+    const diff = weather.todayMax - weather.todayMin;
+    if (diff >= 12) {
+      if (lang === 'ja') lines.push(`最低${weather.todayMin}°C〜最高${weather.todayMax}°C 寒暖差が大きいから薄手の羽織り物があるといいかも♪`);
+      else if (lang === 'ko') lines.push(`최저${weather.todayMin}°C~최고${weather.todayMax}°C 기온차가 크니까 가벼운 겉옷을 챙기세요♪`);
+      else lines.push(`Low ${weather.todayMin}°C / High ${weather.todayMax}°C — Big temp swing! Bring a light layer♪`);
+    }
+    if (weather.todayMin <= 10) {
+      if (lang === 'ja') lines.push(`朝の最低気温は${weather.todayMin}°C❄️ 朝は冷え込むから体調に気をつけてね！`);
+      else if (lang === 'ko') lines.push(`아침 최저기온 ${weather.todayMin}°C❄️ 아침은 추우니 건강 조심!`);
+      else lines.push(`Morning low: ${weather.todayMin}°C❄️ Bundle up in the morning!`);
+    }
+  }
+
+  // UV指数（日中最大値）
+  if (weather.todayUvMax != null && weather.todayUvMax >= 6) {
+    if (lang === 'ja') lines.push(`今日のUV指数は${Math.round(weather.todayUvMax)}☀️ 日焼け対策は万全に！`);
+    else if (lang === 'ko') lines.push(`오늘 UV 지수 ${Math.round(weather.todayUvMax)}☀️ 자외선 차단 철저히!`);
+    else lines.push(`Today's UV index: ${Math.round(weather.todayUvMax)}☀️ Sun protection is a must!`);
+  } else if (weather.uvIndex >= 6) {
     if (lang === 'ja') lines.push('UV指数が高め☀️ 日焼け止めを塗ろうね！');
     else if (lang === 'ko') lines.push('UV 지수가 높아요☀️ 자외선 차단제 잊지 마세요!');
     else lines.push('High UV index☀️ Apply sunscreen!');
