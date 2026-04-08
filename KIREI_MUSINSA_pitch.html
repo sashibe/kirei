@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KIREI × MUSINSA — Partnership Proposal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Sans+JP:wght@300;400;500;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --purple: #a855f7;
+    --purple-deep: #7c3aed;
+    --pink: #ec4899;
+    --ink: #0f0c1a;
+    --ink-soft: #2a2240;
+    --muted: #7c7291;
+    --pearl: #faf9f6;
+    --surface: #f3f0f8;
+    --border: rgba(168,85,247,0.12);
+    --gold: #c9a96e;
+    --green: #10b981;
+    --musinsa: #1a1a1a;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Noto Sans KR', 'Noto Sans JP', sans-serif;
+    background: var(--pearl);
+    color: var(--ink);
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── LANG SWITCHER ── */
+  .lang-switcher {
+    position: fixed;
+    top: 16px; right: 16px;
+    z-index: 1000;
+    display: flex;
+    gap: 2px;
+    background: rgba(15,12,26,0.5);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 3px;
+  }
+  .lang-switcher button {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.06em;
+    border: none; background: transparent;
+    color: rgba(255,255,255,0.45);
+    padding: 5px 10px; border-radius: 5px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .lang-switcher button:hover { color: rgba(255,255,255,0.75); }
+  .lang-switcher button.active {
+    background: linear-gradient(135deg, #a855f7, #ec4899);
+    color: #fff;
+  }
+
+  /* ── COVER ── */
+  .cover {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center;
+    padding: 100px 40px 80px;
+    background: linear-gradient(160deg, #0f0c1a 0%, #1e1035 40%, #0f0c1a 100%);
+    position: relative; overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    width: 800px; height: 800px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(168,85,247,0.15) 0%, transparent 65%);
+    top: -250px; left: 50%; transform: translateX(-50%);
+    pointer-events: none;
+  }
+  .cover::after {
+    content: '';
+    position: absolute;
+    width: 500px; height: 500px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(236,72,153,0.1) 0%, transparent 65%);
+    bottom: -150px; right: -120px;
+    pointer-events: none;
+  }
+
+  .cover-badge {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 48px;
+  }
+
+  .cover-lockup {
+    display: flex; align-items: center; justify-content: center;
+    gap: 24px; margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .cover-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(64px, 10vw, 100px);
+    font-weight: 300; color: #fff;
+    letter-spacing: 0.08em;
+    line-height: 1;
+  }
+  .cover-x {
+    font-family: 'DM Sans', sans-serif;
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 300; color: rgba(255,255,255,0.3);
+    line-height: 1;
+  }
+  .cover-musinsa {
+    font-family: 'DM Sans', sans-serif;
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 600; color: #fff;
+    letter-spacing: 0.04em;
+    line-height: 1;
+  }
+
+  .cover-tagline {
+    font-size: clamp(15px, 2.5vw, 20px);
+    font-weight: 300;
+    color: rgba(255,255,255,0.6);
+    max-width: 640px;
+    line-height: 1.7;
+    margin-bottom: 56px;
+  }
+
+  .cover-divider {
+    width: 48px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--purple), transparent);
+    margin: 0 auto 48px;
+  }
+
+  .cover-meta {
+    display: flex; gap: 48px; flex-wrap: wrap; justify-content: center;
+  }
+  .cover-meta-item .label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px; font-weight: 500;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    margin-bottom: 6px;
+  }
+  .cover-meta-item .value {
+    font-size: 14px; font-weight: 500;
+    color: rgba(255,255,255,0.8);
+  }
+
+  .scroll-hint {
+    position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px; letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.2);
+    animation: bounce 2.5s ease-in-out infinite;
+  }
+  @keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(6px)} }
+
+  /* ── SECTIONS ── */
+  section {
+    padding: 100px 40px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  section.dark {
+    max-width: 100%;
+    background: linear-gradient(160deg, #0f0c1a 0%, #1a1035 100%);
+    padding: 100px 40px;
+  }
+  section.dark .inner { max-width: 1000px; margin: 0 auto; }
+  section.tinted {
+    max-width: 100%;
+    background: var(--surface);
+    padding: 100px 40px;
+  }
+  section.tinted .inner { max-width: 1000px; margin: 0 auto; }
+
+  .section-number {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--purple);
+    margin-bottom: 16px;
+  }
+  .section-number.light { color: rgba(168,85,247,0.7); }
+
+  .divider {
+    width: 40px; height: 2px;
+    background: linear-gradient(90deg, var(--purple), var(--pink));
+    margin-bottom: 32px;
+    border-radius: 2px;
+  }
+
+  h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 400; line-height: 1.2;
+    color: var(--ink);
+    margin-bottom: 24px;
+  }
+  h2 em { font-style: italic; color: var(--purple-deep); }
+  h2.light { color: #fff; }
+  h2.light em { color: var(--pink); }
+
+  .lead {
+    font-size: 16px; font-weight: 300;
+    color: #4a4060; line-height: 1.9;
+    max-width: 720px; margin-bottom: 48px;
+  }
+  .lead.light { color: rgba(255,255,255,0.55); }
+
+  /* ── CARDS ── */
+  .card-grid { display: grid; gap: 20px; }
+  .card-grid.col-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .card-grid.col-3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(168,85,247,0.08); }
+  .card.dark-card {
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.07);
+  }
+  .card h3 {
+    font-size: 17px; font-weight: 500;
+    color: var(--ink); margin-bottom: 8px;
+  }
+  .card h3.light { color: #fff; }
+  .body-text { font-size: 14px; color: #5a5070; line-height: 1.75; }
+  .body-text.light { color: rgba(255,255,255,0.45); }
+
+  .card-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; margin-bottom: 16px;
+  }
+  .card-icon.purple { background: rgba(168,85,247,0.12); }
+  .card-icon.pink   { background: rgba(236,72,153,0.12); }
+  .card-icon.green  { background: rgba(16,185,129,0.12); }
+  .card-icon.gold   { background: rgba(201,169,110,0.12); }
+
+  /* ── HIGHLIGHT ── */
+  .highlight {
+    padding: 28px 32px;
+    background: linear-gradient(135deg, rgba(168,85,247,0.06), rgba(236,72,153,0.04));
+    border-left: 3px solid var(--purple);
+    border-radius: 0 12px 12px 0;
+  }
+  .highlight p { font-size: 15px; color: #3d3060; line-height: 1.8; }
+
+  /* ── STATS ── */
+  .stats-row {
+    display: flex; gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 20px; overflow: hidden;
+    margin-bottom: 40px;
+  }
+  .stat {
+    flex: 1; padding: 32px 24px; text-align: center;
+    border-right: 1px solid var(--border);
+  }
+  .stat:last-child { border-right: none; }
+  .stat .number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(40px, 6vw, 64px);
+    font-weight: 300; color: var(--purple-deep);
+    line-height: 1;
+  }
+  .stat .label {
+    font-size: 12px; color: var(--muted);
+    margin-top: 8px; line-height: 1.5;
+  }
+
+  /* ── FLOW ── */
+  .flow {
+    display: flex; gap: 0;
+    position: relative;
+  }
+  .flow::before {
+    content: '';
+    position: absolute;
+    top: 28px; left: 28px; right: 28px; height: 1px;
+    background: linear-gradient(90deg, var(--purple), var(--pink));
+    z-index: 0;
+  }
+  .flow-step {
+    flex: 1; text-align: center; position: relative; z-index: 1;
+    padding: 0 16px;
+  }
+  .flow-num {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--purple), var(--pink));
+    color: #fff; font-family: 'Cormorant Garamond', serif;
+    font-size: 24px; font-weight: 400;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+    box-shadow: 0 0 0 6px var(--pearl);
+  }
+  .flow-title {
+    font-size: 14px; font-weight: 500;
+    color: var(--ink); margin-bottom: 8px;
+  }
+  .flow-title.light { color: #fff; }
+  .flow-desc {
+    font-size: 12px; color: var(--muted); line-height: 1.6;
+  }
+  .flow-desc.light { color: rgba(255,255,255,0.4); }
+
+  /* ── TIMELINE ── */
+  .timeline { display: flex; flex-direction: column; gap: 0; }
+  .timeline-item {
+    display: grid; grid-template-columns: 160px 1fr auto;
+    gap: 24px; align-items: start;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .timeline-item:last-child { border-bottom: none; }
+  .timeline-phase {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--purple);
+    padding-top: 3px;
+  }
+  .timeline-title {
+    font-size: 16px; font-weight: 500;
+    color: var(--ink); margin-bottom: 6px;
+  }
+  .timeline-desc { font-size: 13px; color: var(--muted); line-height: 1.65; }
+  .timeline-tag {
+    font-size: 11px; font-weight: 500;
+    padding: 4px 10px; border-radius: 20px;
+    white-space: nowrap;
+  }
+  .timeline-tag.done { background: rgba(16,185,129,0.1); color: var(--green); }
+  .timeline-tag.wip  { background: rgba(168,85,247,0.1); color: var(--purple); }
+  .timeline-tag.plan { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.08); }
+  .timeline-tag.plan-light { background: rgba(168,85,247,0.06); color: var(--muted); border: 1px solid var(--border); }
+
+  /* ── SCENARIO BOX ── */
+  .scenario {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 20px; overflow: hidden;
+  }
+  .scenario-header {
+    background: linear-gradient(135deg, #0f0c1a, #1e1035);
+    padding: 20px 28px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .scenario-header-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--purple); opacity: 0.7;
+  }
+  .scenario-header p {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+  }
+  .scenario-steps { padding: 28px; }
+  .scenario-step {
+    display: flex; gap: 16px; align-items: flex-start;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(168,85,247,0.06);
+  }
+  .scenario-step:last-child { border-bottom: none; }
+  .scenario-time {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px; font-weight: 500;
+    color: var(--purple); width: 48px; flex-shrink: 0;
+    padding-top: 2px;
+  }
+  .scenario-action { font-size: 14px; color: var(--ink); line-height: 1.6; }
+  .scenario-action span {
+    display: inline-block;
+    background: rgba(168,85,247,0.08);
+    color: var(--purple-deep);
+    font-size: 12px; font-weight: 500;
+    padding: 2px 8px; border-radius: 4px;
+    margin-left: 8px;
+  }
+
+  /* ── VALUE TABLE ── */
+  .value-table { width: 100%; border-collapse: collapse; }
+  .value-table th {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--muted);
+    padding: 12px 16px; text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .value-table td {
+    padding: 16px; font-size: 14px; color: var(--ink);
+    border-bottom: 1px solid var(--border);
+    line-height: 1.6;
+  }
+  .value-table tr:last-child td { border-bottom: none; }
+  .value-table td:first-child { font-weight: 500; color: var(--purple-deep); width: 200px; }
+
+  /* ── TAG ── */
+  .tag {
+    display: inline-block;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px; font-weight: 500;
+    padding: 3px 10px; border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    margin: 3px 2px;
+  }
+
+  /* ── MARKET PILL ── */
+  .market-row {
+    display: flex; flex-direction: column; gap: 12px;
+    margin-top: 40px;
+  }
+  .market-item {
+    display: flex; align-items: center; gap: 20px;
+    padding: 20px 24px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+  }
+  .market-flag {
+    font-size: 28px; flex-shrink: 0; width: 40px; text-align: center;
+  }
+  .market-phase {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--purple); margin-bottom: 4px;
+  }
+  .market-name { font-size: 16px; font-weight: 500; color: #fff; margin-bottom: 4px; }
+  .market-desc { font-size: 13px; color: rgba(255,255,255,0.4); line-height: 1.5; }
+  .market-arrow {
+    margin-left: auto; font-size: 20px;
+    color: rgba(168,85,247,0.4);
+  }
+
+  /* ── DISCLAIMER ── */
+  .disclaimer {
+    background: #0f0c1a;
+    padding: 48px 40px;
+    text-align: center;
+  }
+  .disclaimer p {
+    font-size: 12px; color: rgba(255,255,255,0.25);
+    line-height: 1.8; max-width: 700px; margin: 0 auto 8px;
+  }
+
+  @media (max-width: 640px) {
+    section { padding: 64px 24px; }
+    .flow { flex-direction: column; }
+    .flow::before { display: none; }
+    .flow-num { box-shadow: none; }
+    .timeline-item { grid-template-columns: 1fr; }
+    .stats-row { flex-direction: column; }
+    .stat { border-right: none; border-bottom: 1px solid var(--border); }
+    .stat:last-child { border-bottom: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LANG SWITCHER -->
+<div class="lang-switcher">
+  <button onclick="setLang('ko')" class="active">KO</button>
+  <button onclick="setLang('ja')">JA</button>
+  <button onclick="setLang('en')">EN</button>
+</div>
+
+<!-- ══════════ COVER ══════════ -->
+<div class="cover">
+  <p class="cover-badge" data-i18n="cover_badge">Partnership Proposal — Confidential</p>
+  <div class="cover-lockup">
+    <span class="cover-logo">KIREI</span>
+    <span class="cover-x">×</span>
+    <span class="cover-musinsa">MUSINSA</span>
+  </div>
+  <p class="cover-tagline" data-i18n="cover_tagline">
+    얼굴에서 시작하는 K-뷰티 AI 플랫폼 — 퍼스널 컬러로 연결하는 새로운 쇼핑 경험
+  </p>
+  <div class="cover-divider"></div>
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <p class="label" data-i18n="cover_meta1_label">제안 유형</p>
+      <p class="value" data-i18n="cover_meta1_value">공동 개발 · 공식 앱 파트너십</p>
+    </div>
+    <div class="cover-meta-item">
+      <p class="label" data-i18n="cover_meta2_label">출시 시장</p>
+      <p class="value" data-i18n="cover_meta2_value">한국 → 일본 → 글로벌</p>
+    </div>
+    <div class="cover-meta-item">
+      <p class="label" data-i18n="cover_meta3_label">데모</p>
+      <p class="value">sashibe.github.io/kirei</p>
+    </div>
+  </div>
+  <p class="scroll-hint" data-i18n="scroll_hint">↓ scroll</p>
+</div>
+
+<!-- ══════════ 01 MUSINSA PROBLEM ══════════ -->
+<section>
+  <p class="section-number" data-i18n="s01_num">01 — 무신사가 안고 있는 과제</p>
+  <div class="divider"></div>
+  <h2 data-i18n="s01_title">상품은 많다.<br><em>고르는 기준이 없다.</em></h2>
+  <p class="lead" data-i18n="s01_lead">
+    무신사 뷰티는 급성장 중이다. 하지만 상품 수가 늘수록 "나한테 맞는 것"을 찾는 건 오히려 어려워진다. 검색·필터·리뷰만으로는 해결되지 않는 벽이 있다.
+  </p>
+
+  <div class="stats-row">
+    <div class="stat">
+      <p class="number" data-i18n="s01_stat1_n">1000만+</p>
+      <p class="label" data-i18n="s01_stat1_l">무신사 월간 MAU<br>（추정）</p>
+    </div>
+    <div class="stat">
+      <p class="number">?%</p>
+      <p class="label" data-i18n="s01_stat2_l">뷰티 카테고리<br>반품률<br>（색상 미스매치）</p>
+    </div>
+    <div class="stat">
+      <p class="number" data-i18n="s01_stat3_n">수십만</p>
+      <p class="label" data-i18n="s01_stat3_l">등록 상품 수<br>vs<br>개인화 부족</p>
+    </div>
+  </div>
+
+  <div class="card-grid col-2">
+    <div class="card">
+      <div class="card-icon purple">🎨</div>
+      <h3 data-i18n="s01_c1_title">색상 선택의 불확실성</h3>
+      <p class="body-text" data-i18n="s01_c1_text">립스틱·파운데이션·아이섀도는 화면에서 봐선 자신에게 어울리는지 알 수 없다. 구매 후 실망이 반품·저평가로 이어진다.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon pink">🔍</div>
+      <h3 data-i18n="s01_c2_title">퍼스널 컬러 기반 검색의 부재</h3>
+      <p class="body-text" data-i18n="s01_c2_text">Z세대 사이에서 퍼스널 컬러 인식은 급속도로 확산됐지만, 플랫폼 측의 대응은 아직 태그 수준에 머물고 있다.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon green">📊</div>
+      <h3 data-i18n="s01_c3_title">경쟁 플랫폼과의 차별화</h3>
+      <p class="body-text" data-i18n="s01_c3_text">올리브영·W컨셉 등 경쟁사와의 차별화는 상품 수나 가격만으로는 한계가 있다. 체험 가치로 승부할 레이어가 필요하다.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon gold">🔄</div>
+      <h3 data-i18n="s01_c4_title">재방문 동기의 부족</h3>
+      <p class="body-text" data-i18n="s01_c4_text">구매 목적 이외의 체류를 생성하는 콘텐츠가 없다면, 앱은 "살 때만 여는 것"에서 벗어나기 어렵다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 02 KIREI SOLUTION ══════════ -->
+<section class="dark">
+  <div class="inner">
+    <p class="section-number light" data-i18n="s02_num">02 — KIREI가 해결하는 것</p>
+    <div class="divider"></div>
+    <h2 class="light" data-i18n="s02_title">얼굴을 스캔하면<br><em>나에게 맞는 것만 보인다</em></h2>
+    <p class="lead light" data-i18n="s02_lead">
+      KIREI는 스마트폰 인카메라를 AI 뷰티 미러로 바꾸는 앱이다. 피부 분석 → 퍼스널 컬러 진단 → 맞춤 상품 추천까지를 한 번의 흐름으로 연결한다.
+    </p>
+
+    <div class="flow" style="margin-bottom: 48px;">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <div class="flow-title light" data-i18n="s02_f1_t">미러 화면</div>
+        <div class="flow-desc light" data-i18n="s02_f1_d">카메라를 켜면 자동으로 피부 상태를 분석. 수분·결·밝기를 실시간 스코어링.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <div class="flow-title light" data-i18n="s02_f2_t">퍼스널 컬러 진단</div>
+        <div class="flow-desc light" data-i18n="s02_f2_d">피부·눈동자·입술 색상에서 봄웜·여름쿨·가을웜·겨울쿨을 판정.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <div class="flow-title light" data-i18n="s02_f3_t">AR 가상 메이크업</div>
+        <div class="flow-desc light" data-i18n="s02_f3_d">립·치크·아이섀도를 실시간으로 얼굴에 합성. 구매 전 "해본 다음 사는" 경험.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">4</div>
+        <div class="flow-title light" data-i18n="s02_f4_t">무신사로 바로 연결</div>
+        <div class="flow-desc light" data-i18n="s02_f4_d">퍼스널 컬러 × 피부 타입에 맞는 상품을 무신사 뷰티에서 직접 추천.</div>
+      </div>
+    </div>
+
+    <div class="card-grid col-3">
+      <div class="card dark-card">
+        <div style="font-size:28px;margin-bottom:16px;">✨</div>
+        <h3 class="light" style="font-size:15px;" data-i18n="s02_c1_t">마스코트 「키라리」</h3>
+        <p class="body-text light" data-i18n="s02_c1_d">거울의 요정 캐릭터가 매일 피부를 체크해 말을 건넨다. 매일 여는 습관을 감성으로 뒷받침.</p>
+      </div>
+      <div class="card dark-card">
+        <div style="font-size:28px;margin-bottom:16px;">📈</div>
+        <h3 class="light" style="font-size:15px;" data-i18n="s02_c2_t">스코어 히스토리</h3>
+        <p class="body-text light" data-i18n="s02_c2_d">매일 쌓이는 데이터가 "변화를 알 수 있는" 경험으로. 케어 지속의 동기를 만든다.</p>
+      </div>
+      <div class="card dark-card">
+        <div style="font-size:28px;margin-bottom:16px;">🌤️</div>
+        <h3 class="light" style="font-size:15px;" data-i18n="s02_c3_t">날씨 연동 제안</h3>
+        <p class="body-text light" data-i18n="s02_c3_d">습도·UV·기온 데이터와 연동해 "오늘의 피부 환경"에 맞는 메이크업을 제안.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 03 USER SCENARIO ══════════ -->
+<section>
+  <p class="section-number" data-i18n="s03_num">03 — 사용 시나리오</p>
+  <div class="divider"></div>
+  <h2 data-i18n="s03_title">지하철 안에서<br><em>3분으로 완결</em></h2>
+  <p class="lead" data-i18n="s03_lead">
+    사용자는 "앱을 쓰겠다"고 생각하지 않는다. 거울을 열었을 뿐인데, 쇼핑까지 끝나 있다.
+  </p>
+
+  <div class="scenario">
+    <div class="scenario-header">
+      <div class="scenario-header-dot"></div>
+      <div class="scenario-header-dot" style="opacity:0.4"></div>
+      <div class="scenario-header-dot" style="opacity:0.2"></div>
+      <p data-i18n="s03_scenario_label">사용자 시나리오 — 출근 중 지하철 안</p>
+    </div>
+    <div class="scenario-steps">
+      <div class="scenario-step">
+        <div class="scenario-time">0초</div>
+        <div class="scenario-action" data-i18n="s03_s1">거울 앱을 연다 — KIREI가 시작된다<span data-i18n="s03_tag1">습관의 입구</span></div>
+      </div>
+      <div class="scenario-step">
+        <div class="scenario-time">10초</div>
+        <div class="scenario-action" data-i18n="s03_s2">키라리: 「오늘 습도 38%야, 촉촉한 립이 어울려♪」<span data-i18n="s03_tag2">개인화</span></div>
+      </div>
+      <div class="scenario-step">
+        <div class="scenario-time">20초</div>
+        <div class="scenario-action" data-i18n="s03_s3">화면을 탭하면 피부 체크 — 스코어가 표시된다<span data-i18n="s03_tag3">체크</span></div>
+      </div>
+      <div class="scenario-step">
+        <div class="scenario-time">40초</div>
+        <div class="scenario-action" data-i18n="s03_s4">퍼스널 컬러 기반으로 AR 립 컬러 제안 — 얼굴에 바로 합성<span data-i18n="s03_tag4">AR 체험</span></div>
+      </div>
+      <div class="scenario-step">
+        <div class="scenario-time">60초</div>
+        <div class="scenario-action" data-i18n="s03_s5">「무신사에서 보기」버튼 탭 → 상품 페이지로 이동<span data-i18n="s03_tag5">구매 전환</span></div>
+      </div>
+      <div class="scenario-step">
+        <div class="scenario-time">90초</div>
+        <div class="scenario-action" data-i18n="s03_s6">구매 완료 후 다시 거울로 돌아온다<span data-i18n="s03_tag6">이탈 없음</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="highlight" style="margin-top: 32px;">
+    <p data-i18n="s03_highlight">한 세션 안에서 거울 → 피부 체크 → AR 체험 → 구매가 완결된다. 사용자는 "쇼핑했다"는 감각 없이 자연스럽게 전환된다.</p>
+  </div>
+</section>
+
+<!-- ══════════ 04 VALUE TO MUSINSA ══════════ -->
+<section class="tinted">
+  <div class="inner">
+    <p class="section-number" data-i18n="s04_num">04 — 무신사에 대한 가치</p>
+    <div class="divider"></div>
+    <h2 data-i18n="s04_title">KIREI가 무신사에<br><em>가져다주는 것</em></h2>
+    <p class="lead" data-i18n="s04_lead">
+      단순한 앱 제휴가 아니다. 퍼스널 컬러 × 피부 데이터가 무신사의 추천 엔진을 근본적으로 강화한다.
+    </p>
+
+    <table class="value-table" style="margin-bottom:40px;">
+      <thead>
+        <tr>
+          <th data-i18n="s04_th1">과제</th>
+          <th data-i18n="s04_th2">KIREI가 해결하는 방법</th>
+          <th data-i18n="s04_th3">기대 효과</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td data-i18n="s04_r1_a">색상 미스매치로 인한 반품</td>
+          <td data-i18n="s04_r1_b">AR 가상 체험으로 구매 전에 확인</td>
+          <td data-i18n="s04_r1_c">반품률 감소</td>
+        </tr>
+        <tr>
+          <td data-i18n="s04_r2_a">추천의 비개인화</td>
+          <td data-i18n="s04_r2_b">퍼스널 컬러 × 피부 타입으로 필터링</td>
+          <td data-i18n="s04_r2_c">전환율 향상</td>
+        </tr>
+        <tr>
+          <td data-i18n="s04_r3_a">경쟁사와의 차별화 부족</td>
+          <td data-i18n="s04_r3_b">AI 뷰티 미러라는 독자 체험 가치</td>
+          <td data-i18n="s04_r3_c">브랜드 차별화</td>
+        </tr>
+        <tr>
+          <td data-i18n="s04_r4_a">구매 외 재방문 동기</td>
+          <td data-i18n="s04_r4_b">매일 여는 거울 습관 × 키라리의 대화</td>
+          <td data-i18n="s04_r4_c">DAU · 체류 시간 증가</td>
+        </tr>
+        <tr>
+          <td data-i18n="s04_r5_a">피부 × 구매 데이터 부재</td>
+          <td data-i18n="s04_r5_b">피부 타입별 구매 경향을 익명화 집계</td>
+          <td data-i18n="s04_r5_c">레코멘드 정밀도 향상</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="card-grid col-3">
+      <div class="card">
+        <div class="card-icon purple">🛍️</div>
+        <h3 data-i18n="s04_c1_t">마찰 없는 전환</h3>
+        <p class="body-text" data-i18n="s04_c1_d">거울을 열었을 뿐인데 무신사 상품으로 자연스럽게 유도. 의도적인 광고 없이 구매로 이어진다.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon green">🧬</div>
+        <h3 data-i18n="s04_c2_t">피부 데이터 자산화</h3>
+        <p class="body-text" data-i18n="s04_c2_d">익명화된 피부 스코어 × 구매 데이터는 향후 무신사의 추천 알고리즘 개선에 활용 가능.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon pink">🌏</div>
+        <h3 data-i18n="s04_c3_t">글로벌 확장의 기반</h3>
+        <p class="body-text" data-i18n="s04_c3_d">한국에서 시작하는 공동 앱은 K-뷰티 브랜드와 함께 일본·동남아시아·북미로 확장 가능.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 05 GLOBAL ROLLOUT ══════════ -->
+<section class="dark">
+  <div class="inner">
+    <p class="section-number light" data-i18n="s05_num">05 — 글로벌 전개</p>
+    <div class="divider"></div>
+    <h2 class="light" data-i18n="s05_title">한국 발신,<br><em>K-뷰티와 함께 세계로</em></h2>
+    <p class="lead light" data-i18n="s05_lead">
+      무신사와의 파트너십을 기점으로, K-뷰티의 글로벌 신뢰성을 등에 업고 단계적으로 시장을 확대한다.
+    </p>
+
+    <div class="market-row">
+      <div class="market-item">
+        <div class="market-flag">🇰🇷</div>
+        <div>
+          <p class="market-phase" data-i18n="s05_m1_phase">Phase 1 — 첫 번째</p>
+          <p class="market-name" data-i18n="s05_m1_name">한국</p>
+          <p class="market-desc" data-i18n="s05_m1_desc">무신사 공식 앱으로 출시. 퍼스널 컬러 문화가 성숙한 시장에서 핵심 체험을 검증한다. 개발비는 무신사 부담.</p>
+        </div>
+        <div class="market-arrow">→</div>
+      </div>
+      <div class="market-item">
+        <div class="market-flag">🇯🇵</div>
+        <div>
+          <p class="market-phase" data-i18n="s05_m2_phase">Phase 2 — 두 번째</p>
+          <p class="market-name" data-i18n="s05_m2_name">일본</p>
+          <p class="market-desc" data-i18n="s05_m2_desc">한국 실적 데이터를 들고 일본 전개. K-뷰티 역수입의 문맥으로 포지셔닝. 일본어 UI는 구현 완료.</p>
+        </div>
+        <div class="market-arrow">→</div>
+      </div>
+      <div class="market-item">
+        <div class="market-flag">🌏</div>
+        <div>
+          <p class="market-phase" data-i18n="s05_m3_phase">Phase 3 — 세 번째</p>
+          <p class="market-name" data-i18n="s05_m3_name">동남아시아 · 북미</p>
+          <p class="market-desc" data-i18n="s05_m3_desc">K-뷰티 수요가 높은 시장（태국·베트남·미국）으로 확장. 영어 UI는 구현 완료.</p>
+        </div>
+        <div class="market-arrow">∞</div>
+      </div>
+    </div>
+
+    <div style="margin-top:40px;padding:28px 32px;background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.2);border-radius:16px;">
+      <p style="font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:10px;font-family:'DM Sans',sans-serif;letter-spacing:0.15em;text-transform:uppercase;" data-i18n="s05_adv_label">경쟁 우위</p>
+      <p style="font-size:15px;color:rgba(255,255,255,0.75);line-height:1.8;" data-i18n="s05_adv_text">날씨 앱은 당신의 오늘을 알지만 얼굴을 모른다. SNS는 트렌드를 알지만 당신의 피부를 모른다. <strong style="color:#fff;">KIREI는 얼굴에서 역산한다.</strong></p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 06 TECH ══════════ -->
+<section>
+  <p class="section-number" data-i18n="s06_num">06 — 기술</p>
+  <div class="divider"></div>
+  <h2 data-i18n="s06_title">이미 동작하고 있다.<br><em>낮은 통합 비용</em></h2>
+  <p class="lead" data-i18n="s06_lead">
+    KIREI의 핵심 기술은 프로토타입 단계에서 이미 검증 완료다. 무신사와의 연동은 API 수준의 추가로 실현 가능하다.
+  </p>
+
+  <div class="card-grid col-2">
+    <div class="card">
+      <div class="card-icon purple">🔬</div>
+      <h3 data-i18n="s06_c1_t">AI 피부 분석（구현 완료）</h3>
+      <p class="body-text" data-i18n="s06_c1_d">MediaPipe FaceLandmarker（468점)에 의한 실시간 피부 분석. 수분·결·밝기를 브라우저 내에서 추론. 서버 비용 없음.</p>
+      <div style="margin-top:12px;">
+        <span class="tag">MediaPipe</span>
+        <span class="tag">WebRTC</span>
+        <span class="tag">Canvas2D</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-icon pink">💄</div>
+      <h3 data-i18n="s06_c2_t">AR 메이크업（구현 완료）</h3>
+      <p class="body-text" data-i18n="s06_c2_d">립·치크·아이섀도·파운데이션·눈썹·컨실러를 실시간으로 얼굴에 합성. multiply/softlight/overlay 블렌드 대응.</p>
+      <div style="margin-top:12px;">
+        <span class="tag">WebGL</span>
+        <span class="tag">Face Mesh</span>
+        <span class="tag">실시간 합성</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-icon green">🌐</div>
+      <h3 data-i18n="s06_c3_t">다국어 대응（구현 완료）</h3>
+      <p class="body-text" data-i18n="s06_c3_d">한국어·일본어·영어의 i18n 구현 완료. 키라리의 대화도 3개 언어에 대응. 추가 언어는 텍스트 추가만으로 확장 가능.</p>
+      <div style="margin-top:12px;">
+        <span class="tag">KO ✓</span>
+        <span class="tag">JA ✓</span>
+        <span class="tag">EN ✓</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-icon gold">🔗</div>
+      <h3 data-i18n="s06_c4_t">무신사 연동 설계</h3>
+      <p class="body-text" data-i18n="s06_c4_d">퍼스널 컬러 타입을 무신사 검색 쿼리（봄웜·여름쿨 등）에 자동 변환하는 로직 설계 완료. 무신사 회원 ID 연계 스키마도 준비 중.</p>
+      <div style="margin-top:12px;">
+        <span class="tag">퍼스널 컬러 API</span>
+        <span class="tag">Supabase</span>
+        <span class="tag">OAuth 연계（예정）</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 07 ROADMAP ══════════ -->
+<section class="tinted">
+  <div class="inner">
+    <p class="section-number" data-i18n="s07_num">07 — 로드맵</p>
+    <div class="divider"></div>
+    <h2 data-i18n="s07_title">단계적 <em>가치 검증</em></h2>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <p class="timeline-phase" data-i18n="s07_p0_phase">Phase 0 — 완료</p>
+        <div>
+          <p class="timeline-title" data-i18n="s07_p0_title">기술 POC · 프로토타입</p>
+          <p class="timeline-desc" data-i18n="s07_p0_desc">WebRTC 카메라 통합, 피부 분석, AR 메이크업, 다국어 UI를 실제로 동작하는 프로토타입으로 구현. GitHub Pages에서 데모 공개 중.</p>
+        </div>
+        <span class="timeline-tag done" data-i18n="s07_tag_done">✓ 완료</span>
+      </div>
+      <div class="timeline-item">
+        <p class="timeline-phase" data-i18n="s07_p1_phase">Phase 1 — 진행 중</p>
+        <div>
+          <p class="timeline-title" data-i18n="s07_p1_title">퍼스널 컬러 판정 · 행동 로그 기반 구축</p>
+          <p class="timeline-desc" data-i18n="s07_p1_desc">퍼스널 컬러 자동 판정, 피부 스코어 히스토리（Supabase）, 키라리 개인화 대화, 행동 로그 설계를 구현.</p>
+        </div>
+        <span class="timeline-tag wip" data-i18n="s07_tag_wip">진행 중</span>
+      </div>
+      <div class="timeline-item">
+        <p class="timeline-phase" data-i18n="s07_p2_phase">Phase 2 — 무신사 파트너십</p>
+        <div>
+          <p class="timeline-title" data-i18n="s07_p2_title">한국 공동 개발 · 공식 앱 출시</p>
+          <p class="timeline-desc" data-i18n="s07_p2_desc">무신사 뷰티 상품 데이터베이스 연동, 무신사 회원 ID 연계, 퍼스널 컬러 기반 상품 추천, 한국 iOS/Android 출시.</p>
+        </div>
+        <span class="timeline-tag plan-light" data-i18n="s07_tag_plan">계획 중</span>
+      </div>
+      <div class="timeline-item">
+        <p class="timeline-phase" data-i18n="s07_p3_phase">Phase 3 — 글로벌</p>
+        <div>
+          <p class="timeline-title" data-i18n="s07_p3_title">일본 · 동남아시아 전개</p>
+          <p class="timeline-desc" data-i18n="s07_p3_desc">한국에서의 전환율·반품률 감소 실적을 가지고 일본 진출. 이후 동남아시아·북미로 확장.</p>
+        </div>
+        <span class="timeline-tag plan-light" data-i18n="s07_tag_plan2">계획 중</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 08 ASK ══════════ -->
+<section class="dark">
+  <div class="inner">
+    <p class="section-number light" data-i18n="s08_num">08 — 제안</p>
+    <div class="divider"></div>
+    <h2 class="light" data-i18n="s08_title">무신사 공식<br><em>AI 뷰티 파트너</em>로</h2>
+    <p class="lead light" data-i18n="s08_lead">
+      KIREI는 단독 앱으로도 성립하지만, 무신사와 함께라면 처음부터 수백만 명의 사용자 기반으로 출발할 수 있다. K-뷰티 플랫폼 최초의 AI 뷰티 미러 경험을 함께 만들고 싶다.
+    </p>
+
+    <div class="card-grid col-3" style="margin-bottom:40px;">
+      <div class="card dark-card">
+        <div style="font-size:28px;margin-bottom:16px;">⚙️</div>
+        <h3 class="light" style="font-size:15px;" data-i18n="s08_c1_t">공동 개발</h3>
+        <p class="body-text light" data-i18n="s08_c1_d">무신사의 개발비 지원을 받아 공식 앱으로 함께 완성. 기술은 KIREI, 플랫폼·데이터는 무신사.</p>
+      </div>
+      <div class="card dark-card">
+        <div style="font-size:28px;margin-bottom:16px;">📲</div>
+        <h3 class="light" style="font-size:15px;" data-i18n="s08_c2_t">공식 앱 출시</h3>
+        <p class="body-text light" data-i18n="s08_c2_d">「MUSINSA × KIREI」 또는 「KIREI by MUSINSA」로 한국 iOS/Android에 출시. 무신사 앱 내 통합도 검토 가능.</p>
+      </div>
+      <div class="card dark-card">
+        <div style="font-size:28px;margin-bottom:16px;">📊</div>
+        <h3 class="light" style="font-size:15px;" data-i18n="s08_c3_t">데이터 파트너십</h3>
+        <p class="body-text light" data-i18n="s08_c3_d">익명화된 피부 × 구매 데이터를 양사에서 활용. 무신사의 추천 정밀도 향상에 직접 기여.</p>
+      </div>
+    </div>
+
+    <div style="padding:36px;background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.22);border-radius:20px;text-align:center;">
+      <p style="font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:16px;font-family:'DM Sans',sans-serif;letter-spacing:0.15em;text-transform:uppercase;" data-i18n="s08_demo_label">동작 중인 프로토타입</p>
+      <p style="font-size:22px;font-family:'Cormorant Garamond',serif;color:#fff;margin-bottom:8px;">sashibe.github.io/kirei</p>
+      <p style="font-size:13px;color:rgba(255,255,255,0.35);" data-i18n="s08_demo_desc">실제로 동작하는 AR 메이크업 · 피부 분석 체험을 확인해 주세요.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<div class="disclaimer">
+  <p><strong style="color:rgba(255,255,255,0.4);">KIREI × MUSINSA — Partnership Proposal</strong></p>
+  <p style="margin-top:16px;" data-i18n="footer_1">본 자료는 파트너십 제안을 목적으로 작성되었으며, 시장 규모 등의 수치는 공개 자료에 근거한 추정치입니다. 보증하는 것이 아닙니다.</p>
+  <p data-i18n="footer_2">본 앱은 의료 진단을 행하는 것이 아닙니다. 스코어·체크 결과는 셀프케어의 참고 정보입니다.</p>
+  <p style="margin-top:24px;font-size:11px;opacity:0.3;">Confidential — 무단 전재 금지</p>
+</div>
+
+<script>
+(function() {
+
+const i18n = {
+  ja: {
+    cover_badge: 'パートナーシップ提案 — Confidential',
+    cover_tagline: '顔から始まるK-beautyAIプラットフォーム — パーソナルカラーでつなぐ新しいショッピング体験',
+    cover_meta1_label: '提案種別', cover_meta1_value: '共同開発・公式アプリパートナーシップ',
+    cover_meta2_label: 'リリース市場', cover_meta2_value: '韓国 → 日本 → グローバル',
+    cover_meta3_label: 'デモ', scroll_hint: '↓ スクロール',
+
+    s01_num: '01 — MUSINSAが抱える課題',
+    s01_title: '商品はある。<br><em>選ぶ基準がない。</em>',
+    s01_lead: 'MUSINSAビューティーは急成長中だ。しかし商品数が増えるほど「自分に合うもの」を探すのは難しくなる。検索・フィルター・レビューだけでは解決できない壁がある。',
+    s01_stat1_n: '1000万+', s01_stat1_l: 'MUSINSA月間MAU（推計）',
+    s01_stat2_l: 'ビューティー\n返品率\n（色ミスマッチ）',
+    s01_stat3_n: '数十万', s01_stat3_l: '登録商品数\nvs\n個人化不足',
+    s01_c1_title: '色選びの不確実性', s01_c1_text: 'リップ・ファンデ・アイシャドウは画面で見ても自分に似合うかわからない。購入後の失望が返品・低評価につながる。',
+    s01_c2_title: 'パーソナルカラー検索の不在', s01_c2_text: 'Z世代でパーソナルカラー認知は急拡大しているが、プラットフォーム側の対応はまだタグ水準に留まっている。',
+    s01_c3_title: '競合との差別化不足', s01_c3_text: 'オリーブヤング等との差別化は商品数や価格だけでは限界がある。体験価値で勝負するレイヤーが必要だ。',
+    s01_c4_title: '再訪動機の不足', s01_c4_text: '購買目的以外の滞在を生むコンテンツがなければ、アプリは「買うときだけ開くもの」から抜け出せない。',
+
+    s02_num: '02 — KIREIが解決すること',
+    s02_title: '顔をスキャンすると<br><em>自分に合うものだけ見える</em>',
+    s02_lead: 'KIREIはスマートフォンのインカメラをAIビューティーミラーに変えるアプリ。肌分析 → パーソナルカラー診断 → 商品提案までを一本の流れで繋ぐ。',
+    s02_f1_t: 'ミラー画面', s02_f1_d: 'カメラを向けると自動で肌分析。水分・キメ・明るさをリアルタイムスコアリング。',
+    s02_f2_t: 'パーソナルカラー判定', s02_f2_d: '肌・瞳・唇の色相からスプリング/サマー/オータム/ウィンターを判定。',
+    s02_f3_t: 'ARバーチャルメイク', s02_f3_d: 'リップ・チーク・アイシャドウをリアルタイムで顔に合成。買う前に「試してから買う」体験。',
+    s02_f4_t: 'MUSINSAへ直結', s02_f4_d: 'パーソナルカラー × 肌タイプに合う商品をMUSINSAビューティーから直接提案。',
+    s02_c1_t: 'マスコット「キラリ」', s02_c1_d: '鏡の妖精が毎日肌をチェックして声をかける。毎日開く習慣を感情的に支える。',
+    s02_c2_t: 'スコア履歴', s02_c2_d: '毎日積み重なるデータが「変化がわかる」体験に。ケア継続のモチベーションを生む。',
+    s02_c3_t: '天気連動提案', s02_c3_d: '湿度・UV・気温データと連動して「今日の肌環境」に合うメイクを提案。',
+
+    s03_num: '03 — 使用シナリオ',
+    s03_title: '電車の中で<br><em>3分で完結</em>',
+    s03_lead: 'ユーザーは「アプリを使おう」と思っていない。鏡を開いただけなのに、買い物まで終わっている。',
+    s03_scenario_label: 'ユーザーシナリオ — 通勤中の電車内',
+    s03_s1: '鏡アプリを開く — KIREIが始まる', s03_tag1: '習慣の入口',
+    s03_s2: 'キラリ:「今日は湿度38%、潤いリップが似合いそう♪」', s03_tag2: '個人化',
+    s03_s3: '画面をタップすると肌チェック — スコアが表示される', s03_tag3: 'チェック',
+    s03_s4: 'パーソナルカラー基準でARリップ提案 — 顔にリアルタイム合成', s03_tag4: 'AR体験',
+    s03_s5: '「MUSINSAで見る」ボタンタップ → 商品ページへ', s03_tag5: '購買転換',
+    s03_s6: '購入後また鏡に戻る', s03_tag6: '離脱なし',
+    s03_highlight: '一セッションの中で鏡 → 肌チェック → AR体験 → 購買が完結する。ユーザーは「買い物した」感覚なしに自然と転換される。',
+
+    s04_num: '04 — MUSINSAへの価値',
+    s04_title: 'KIREIがMUSINSAに<br><em>もたらすもの</em>',
+    s04_lead: '単純なアプリ提携ではない。パーソナルカラー × 肌データがMUSINSAの推薦エンジンを根本から強化する。',
+    s04_th1: '課題', s04_th2: 'KIREIが解決する方法', s04_th3: '期待効果',
+    s04_r1_a: '色ミスマッチによる返品', s04_r1_b: 'ARバーチャル体験で購入前に確認', s04_r1_c: '返品率低下',
+    s04_r2_a: '推薦の非個人化', s04_r2_b: 'パーソナルカラー×肌タイプでフィルタリング', s04_r2_c: '転換率向上',
+    s04_r3_a: '競合との差別化不足', s04_r3_b: 'AIビューティーミラーという独自体験価値', s04_r3_c: 'ブランド差別化',
+    s04_r4_a: '購買外の再訪動機', s04_r4_b: '毎日開く鏡習慣 × キラリの対話', s04_r4_c: 'DAU・滞在時間増',
+    s04_r5_a: '肌 × 購買データ不在', s04_r5_b: '肌タイプ別購買傾向を匿名化集計', s04_r5_c: 'レコメンド精度向上',
+    s04_c1_t: '摩擦ゼロの転換', s04_c1_d: '鏡を開いただけでMUSINSA商品へ自然に誘導。意図的な広告なしで購買につながる。',
+    s04_c2_t: '肌データの資産化', s04_c2_d: '匿名化された肌スコア×購買データは将来のMUSINSA推薦アルゴリズム改善に活用可能。',
+    s04_c3_t: 'グローバル展開の基盤', s04_c3_d: '韓国で始まる共同アプリはK-beautyブランドと共に日本・東南アジア・北米へ拡張可能。',
+
+    s05_num: '05 — グローバル展開',
+    s05_title: '韓国発信、<br><em>K-beautyと共に世界へ</em>',
+    s05_lead: 'MUSINSAとのパートナーシップを起点に、K-beautyのグローバル信頼性を背景に段階的に市場を拡大する。',
+    s05_m1_phase: 'Phase 1 — 第一弾', s05_m1_name: '韓国', s05_m1_desc: 'MUSINSA公式アプリとして出時。パーソナルカラー文化が成熟した市場でコア体験を検証。開発費はMUSINSA負担。',
+    s05_m2_phase: 'Phase 2 — 第二弾', s05_m2_name: '日本', s05_m2_desc: '韓国実績データを持って日本展開。K-beauty逆輸入の文脈でポジショニング。日本語UIは実装済み。',
+    s05_m3_phase: 'Phase 3 — 第三弾', s05_m3_name: '東南アジア・北米', s05_m3_desc: 'K-beauty需要が高い市場（タイ・ベトナム・米国）へ拡張。英語UIは実装済み。',
+    s05_adv_label: '競合優位性',
+    s05_adv_text: '天気アプリは今日のあなたを知っているが顔を知らない。SNSはトレンドを知っているがあなたの肌を知らない。<strong style="color:#fff;">KIREIは顔から逆算する。</strong>',
+
+    s06_num: '06 — 技術', s06_title: '既に動いている。<br><em>低い統合コスト</em>',
+    s06_lead: 'KIREIのコア技術はプロトタイプ段階で検証済み。MUSINSAとの連携はAPI水準の追加で実現できる。',
+    s06_c1_t: 'AI肌分析（実装済み）', s06_c1_d: 'MediaPipe FaceLandmarker（468点）によるリアルタイム肌分析。水分・キメ・明るさをブラウザ内で推論。サーバーコストなし。',
+    s06_c2_t: 'ARメイク（実装済み）', s06_c2_d: 'リップ・チーク・アイシャドウ・ファンデ・眉・コンシーラーをリアルタイムで顔に合成。multiply/softlight/overlayブレンド対応。',
+    s06_c3_t: '多言語対応（実装済み）', s06_c3_d: '韓国語・日本語・英語のi18n実装済み。キラリのセリフも3言語対応。追加言語はテキスト追加のみで拡張可能。',
+    s06_c4_t: 'MUSINSA連携設計', s06_c4_d: 'パーソナルカラータイプをMUSINSA検索クエリ（봄웜・여름쿨等）に自動変換するロジック設計済み。MUSINSA会員ID連携スキーマも準備中。',
+
+    s07_num: '07 — 로드맵', s07_title: '단계적 <em>가치 검증</em>',
+    s07_p0_phase: 'Phase 0 — 完了', s07_p0_title: '技術POC・プロトタイプ', s07_p0_desc: 'WebRTCカメラ統合、肌分析、ARメイク、多言語UIを実際に動作するプロトタイプとして実装。GitHub Pagesでデモ公開中。',
+    s07_p1_phase: 'Phase 1 — 進行中', s07_p1_title: 'パーソナルカラー判定・行動ログ基盤構築', s07_p1_desc: 'パーソナルカラー自動判定、肌スコア履歴（Supabase）、キラリ個人化セリフ、行動ログ設計を実装。',
+    s07_p2_phase: 'Phase 2 — MUSINSAパートナーシップ', s07_p2_title: '韓国共同開発・公式アプリリリース', s07_p2_desc: 'MUSINSAビューティー商品DB連携、MUSINSA会員ID連携、パーソナルカラー基準商品推薦、韓国iOS/Androidリリース。',
+    s07_p3_phase: 'Phase 3 — グローバル', s07_p3_title: '日本・東南アジア展開', s07_p3_desc: '韓国での転換率・返品率低下実績を持って日本進出。その後東南アジア・北米へ拡張。',
+    s07_tag_done: '✓ 完了', s07_tag_wip: '進行中', s07_tag_plan: '計画中', s07_tag_plan2: '計画中',
+
+    s08_num: '08 — 提案',
+    s08_title: 'MUSINSA公式<br><em>AIビューティーパートナー</em>として',
+    s08_lead: 'KIREIは単独でも成立するが、MUSINSAと共に始めれば最初から数百万人のユーザー基盤でスタートできる。K-beautyプラットフォーム初のAIビューティーミラー体験を一緒に作りたい。',
+    s08_c1_t: '共同開発', s08_c1_d: 'MUSINSAの開発費支援を受けて公式アプリとして共に完成。技術はKIREI、プラットフォーム・データはMUSINSA。',
+    s08_c2_t: '公式アプリリリース', s08_c2_d: '「MUSINSA × KIREI」または「KIREI by MUSINSA」として韓国iOS/Androidにリリース。MUSINSAアプリ内統合も検討可能。',
+    s08_c3_t: 'データパートナーシップ', s08_c3_d: '匿名化された肌×購買データを両社で活用。MUSINSAの推薦精度向上に直接貢献。',
+    s08_demo_label: '動作中のプロトタイプ', s08_demo_desc: '実際に動作するARメイク・肌分析体験をご確認ください。',
+
+    footer_1: '本資料はパートナーシップ提案を目的として作成されたものであり、市場規模等の数値は公開資料に基づく推計であり、保証するものではありません。',
+    footer_2: '本アプリは医療診断を行うものではありません。スコア・チェック結果はセルフケアの参考情報です。',
+  },
+  en: {
+    cover_badge: 'Partnership Proposal — Confidential',
+    cover_tagline: 'The K-beauty AI platform that starts from your face — a new shopping experience powered by personal color',
+    cover_meta1_label: 'Proposal Type', cover_meta1_value: 'Co-development · Official App Partnership',
+    cover_meta2_label: 'Launch Markets', cover_meta2_value: 'Korea → Japan → Global',
+    cover_meta3_label: 'Demo', scroll_hint: '↓ scroll',
+
+    s01_num: '01 — The Problem MUSINSA Faces',
+    s01_title: 'Products are plentiful.<br><em>A basis for choosing is not.</em>',
+    s01_lead: 'MUSINSA Beauty is growing fast. But as product count increases, finding "what works for me" becomes harder. Search, filters, and reviews alone can\'t bridge that gap.',
+    s01_stat1_n: '10M+', s01_stat1_l: 'MUSINSA Monthly MAU (est.)',
+    s01_stat2_l: 'Beauty category\nreturn rate\n(color mismatch)',
+    s01_stat3_n: '100K+', s01_stat3_l: 'Listed products\nvs\nlack of personalization',
+    s01_c1_title: 'Color selection uncertainty', s01_c1_text: 'Lipsticks, foundations, and eyeshadows are impossible to evaluate on screen. Post-purchase disappointment leads to returns and low ratings.',
+    s01_c2_title: 'No personal color search', s01_c2_text: 'Awareness of personal color has exploded among Gen Z, but platform-level support is still limited to tags.',
+    s01_c3_title: 'Differentiation from competitors', s01_c3_text: 'Differentiation from Olive Young and W Concept on product count or price alone has limits. A layer that competes on experience value is needed.',
+    s01_c4_title: 'Lack of return visit motivation', s01_c4_text: 'Without content that creates non-purchase engagement, an app cannot escape being "something you open only to buy."',
+
+    s02_num: '02 — What KIREI Solves',
+    s02_title: 'Scan your face.<br><em>See only what suits you.</em>',
+    s02_lead: 'KIREI transforms a smartphone\'s front camera into an AI beauty mirror. It connects skin analysis → personal color diagnosis → product recommendations in a single flow.',
+    s02_f1_t: 'Mirror Screen', s02_f1_d: 'Automatic skin analysis when you turn the camera. Real-time scoring of moisture, texture, and brightness.',
+    s02_f2_t: 'Personal Color Diagnosis', s02_f2_d: 'Determines Spring Warm / Summer Cool / Autumn Warm / Winter Cool from skin, iris, and lip hue.',
+    s02_f3_t: 'AR Virtual Makeup', s02_f3_d: 'Real-time compositing of lip, cheek, and eyeshadow on your face. "Try before you buy" before purchase.',
+    s02_f4_t: 'Direct Link to MUSINSA', s02_f4_d: 'Recommends products from MUSINSA Beauty matched to personal color × skin type.',
+    s02_c1_t: 'Mascot "Kirari"', s02_c1_d: 'A mirror fairy character checks your skin daily and speaks to you. Emotionally supports the habit of opening the app every day.',
+    s02_c2_t: 'Score History', s02_c2_d: 'Daily accumulating data creates a "see your changes" experience. Motivates continued care.',
+    s02_c3_t: 'Weather-linked Suggestions', s02_c3_d: 'Suggests makeup suited to "today\'s skin environment" linked to humidity, UV, and temperature data.',
+
+    s03_num: '03 — User Scenario',
+    s03_title: 'On the subway.<br><em>Complete in 3 minutes.</em>',
+    s03_lead: 'The user doesn\'t think "I\'ll use an app." They just opened a mirror—and shopping is already done.',
+    s03_scenario_label: 'User Scenario — Commuting on the subway',
+    s03_s1: 'Opens the mirror app — KIREI starts', s03_tag1: 'Habit entry',
+    s03_s2: 'Kirari: "Humidity is 38% today, a moisturizing lip would suit you♪"', s03_tag2: 'Personalized',
+    s03_s3: 'Taps screen for skin check — score is displayed', s03_tag3: 'Check',
+    s03_s4: 'AR lip color suggested by personal color — composited on face in real time', s03_tag4: 'AR experience',
+    s03_s5: 'Taps "View on MUSINSA" button → to product page', s03_tag5: 'Purchase conversion',
+    s03_s6: 'Returns to mirror after purchase', s03_tag6: 'No drop-off',
+    s03_highlight: 'Mirror → skin check → AR experience → purchase completes within one session. The user converts naturally, without feeling like they "went shopping."',
+
+    s04_num: '04 — Value to MUSINSA',
+    s04_title: 'What KIREI<br><em>Brings to MUSINSA</em>',
+    s04_lead: 'This is not a simple app partnership. Personal color × skin data fundamentally strengthens MUSINSA\'s recommendation engine.',
+    s04_th1: 'Challenge', s04_th2: 'How KIREI Solves It', s04_th3: 'Expected Impact',
+    s04_r1_a: 'Returns from color mismatch', s04_r1_b: 'AR virtual try-on before purchase', s04_r1_c: 'Lower return rate',
+    s04_r2_a: 'Non-personalized recommendations', s04_r2_b: 'Filter by personal color × skin type', s04_r2_c: 'Higher conversion',
+    s04_r3_a: 'Differentiation from competitors', s04_r3_b: 'Unique AI beauty mirror experience', s04_r3_c: 'Brand differentiation',
+    s04_r4_a: 'Return visits beyond purchase', s04_r4_b: 'Daily mirror habit × Kirari dialogue', s04_r4_c: 'DAU & session time ↑',
+    s04_r5_a: 'No skin × purchase data', s04_r5_b: 'Anonymized aggregation by skin type', s04_r5_c: 'Better recommendation accuracy',
+    s04_c1_t: 'Zero-friction conversion', s04_c1_d: 'Just opening the mirror naturally guides users to MUSINSA products. Converts without intentional advertising.',
+    s04_c2_t: 'Skin data as an asset', s04_c2_d: 'Anonymized skin score × purchase data can be used to improve MUSINSA\'s recommendation algorithm.',
+    s04_c3_t: 'Global expansion foundation', s04_c3_d: 'A joint app starting in Korea can expand with K-beauty brands to Japan, Southeast Asia, and North America.',
+
+    s05_num: '05 — Global Rollout',
+    s05_title: 'From Korea,<br><em>to the world with K-beauty</em>',
+    s05_lead: 'Starting from the MUSINSA partnership, we expand markets step by step, backed by the global credibility of K-beauty.',
+    s05_m1_phase: 'Phase 1 — First', s05_m1_name: 'Korea', s05_m1_desc: 'Launch as MUSINSA\'s official app. Validate the core experience in a market where personal color culture is mature. Development funded by MUSINSA.',
+    s05_m2_phase: 'Phase 2 — Second', s05_m2_name: 'Japan', s05_m2_desc: 'Enter Japan with Korean performance data. Position as K-beauty reverse import. Japanese UI already implemented.',
+    s05_m3_phase: 'Phase 3 — Third', s05_m3_name: 'Southeast Asia & North America', s05_m3_desc: 'Expand into markets with high K-beauty demand (Thailand, Vietnam, USA). English UI already implemented.',
+    s05_adv_label: 'Competitive Advantage',
+    s05_adv_text: 'Weather apps know today but not your face. Social media knows trends but not your skin. <strong style="color:#fff;">KIREI starts from your face.</strong>',
+
+    s06_num: '06 — Technology', s06_title: 'Already running.<br><em>Low integration cost.</em>',
+    s06_lead: 'KIREI\'s core technology is already validated at prototype stage. MUSINSA integration can be realized with API-level additions.',
+    s06_c1_t: 'AI Skin Analysis (Implemented)', s06_c1_d: 'Real-time skin analysis via MediaPipe FaceLandmarker (468 points). In-browser inference for moisture, texture, brightness. No server cost.',
+    s06_c2_t: 'AR Makeup (Implemented)', s06_c2_d: 'Real-time compositing of lip, cheek, eyeshadow, foundation, brow, and concealer. Multiply/softlight/overlay blend support.',
+    s06_c3_t: 'Multilingual (Implemented)', s06_c3_d: 'i18n for Korean, Japanese, English already implemented. Kirari\'s dialogue covers all 3 languages. Additional languages via text addition only.',
+    s06_c4_t: 'MUSINSA Integration Design', s06_c4_d: 'Logic designed to auto-convert personal color type to MUSINSA search queries. MUSINSA member ID schema also in preparation.',
+
+    s07_num: '07 — Roadmap', s07_title: 'Step-by-step <em>Value Validation</em>',
+    s07_p0_phase: 'Phase 0 — Complete', s07_p0_title: 'Technical POC · Prototype', s07_p0_desc: 'WebRTC camera, skin analysis, AR makeup, multilingual UI implemented as a working prototype. Live demo on GitHub Pages.',
+    s07_p1_phase: 'Phase 1 — In Progress', s07_p1_title: 'Personal Color Detection · Behavior Log Foundation', s07_p1_desc: 'Implementing personal color auto-detection, skin score history (Supabase), Kirari personalized dialogue, behavior log design.',
+    s07_p2_phase: 'Phase 2 — MUSINSA Partnership', s07_p2_title: 'Korea Co-development · Official App Launch', s07_p2_desc: 'MUSINSA Beauty product DB integration, MUSINSA member ID linking, personal color-based recommendations, Korea iOS/Android launch.',
+    s07_p3_phase: 'Phase 3 — Global', s07_p3_title: 'Japan & Southeast Asia Rollout', s07_p3_desc: 'Enter Japan with Korean conversion rate & return rate reduction data. Then expand to Southeast Asia & North America.',
+    s07_tag_done: '✓ Complete', s07_tag_wip: 'In Progress', s07_tag_plan: 'Planned', s07_tag_plan2: 'Planned',
+
+    s08_num: '08 — The Proposal',
+    s08_title: 'MUSINSA\'s Official<br><em>AI Beauty Partner</em>',
+    s08_lead: 'KIREI works standalone, but with MUSINSA we start with millions of users from day one. Let\'s build the first AI beauty mirror experience on a K-beauty platform together.',
+    s08_c1_t: 'Co-development', s08_c1_d: 'Complete together as an official app with MUSINSA\'s development funding. Technology from KIREI, platform & data from MUSINSA.',
+    s08_c2_t: 'Official App Launch', s08_c2_d: '"MUSINSA × KIREI" or "KIREI by MUSINSA" on Korea iOS/Android. In-app MUSINSA integration also possible.',
+    s08_c3_t: 'Data Partnership', s08_c3_d: 'Anonymized skin × purchase data utilized by both parties. Direct contribution to improving MUSINSA\'s recommendation accuracy.',
+    s08_demo_label: 'Live Prototype', s08_demo_desc: 'Experience the working AR makeup and skin analysis demo.',
+
+    footer_1: 'This document is prepared for partnership proposal purposes. Figures for market size etc. are estimates based on public materials and are not guaranteed.',
+    footer_2: 'This app does not perform medical diagnosis. Scores and check results are reference information for self-care.',
+  }
+};
+
+// 初期表示（韓国語）のテキストをキャッシュしてi18n['ko']として登録
+const koCache = {};
+document.querySelectorAll('[data-i18n]').forEach(el => {
+  koCache[el.getAttribute('data-i18n')] = el.innerHTML;
+});
+i18n['ko'] = koCache;
+
+function setLang(lang) {
+  document.querySelectorAll('.lang-switcher button').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.lang-switcher button[onclick="setLang('${lang}')"]`).classList.add('active');
+
+  const t = i18n[lang];
+  if (!t) return;
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t[key] !== undefined) el.innerHTML = t[key];
+  });
+
+  document.documentElement.lang = lang === 'ko' ? 'ko' : lang === 'ja' ? 'ja' : 'en';
+  document.body.style.fontFamily = lang === 'ko'
+    ? "'Noto Sans KR', 'Noto Sans JP', sans-serif"
+    : "'Noto Sans JP', 'Noto Sans KR', sans-serif";
+}
+
+window.setLang = setLang;
+
+})();
+</script>
+</body>
+</html>
