@@ -54,6 +54,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
   const [showMesh, setShowMesh] = useState(false);
   const [activeCategory, setActiveCategory] = useState('lip');
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [justAdded, setJustAdded] = useState(false);
 
   const [selectedBase, setSelectedBase] = useState(null);
   const [lipColor, setLipColor] = useState(null);
@@ -109,6 +110,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
       setActiveCategory(catId);
       setSelectedProduct(null);
       setSelectedColor(null);
+      setJustAdded(false);
       setSheetOpen(true);
     }
   }, [activeCategory, sheetOpen]);
@@ -356,6 +358,46 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
         )}
       </div>
 
+      {/* Floating "Add to Cart" button */}
+      {selectedProduct && selectedColor && (() => {
+        const uniqueKey = `${selectedProduct.id}_${selectedColor.id}`;
+        const isInCart = cart.cartItems.some(i => i.uniqueKey === uniqueKey);
+        return (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (isInCart) {
+                cart.dispatch({ type: 'REMOVE', payload: { uniqueKey } });
+                setJustAdded(false);
+              } else {
+                cart.dispatch({ type: 'ADD', payload: { product: selectedProduct, selectedColor } });
+                setJustAdded(true);
+                setTimeout(() => setJustAdded(false), 1200);
+              }
+            }}
+            onPointerDown={(e) => e.stopPropagation()}
+            style={{
+              position: 'absolute',
+              bottom: (cart.cartItems.length > 0 ? 52 : 0) + (sheetOpen ? SHEET_MAX : SHEET_MIN) + 8,
+              left: '50%', transform: 'translateX(-50%)',
+              background: isInCart ? 'rgba(255,255,255,0.9)' : 'linear-gradient(135deg, #a855f7, #ec4899)',
+              color: isInCart ? '#a855f7' : '#fff',
+              border: isInCart ? '1.5px solid rgba(168,85,247,0.3)' : 'none',
+              borderRadius: 24, padding: '10px 24px',
+              fontSize: 13, fontWeight: 700, cursor: 'pointer',
+              whiteSpace: 'nowrap', zIndex: 60,
+              backdropFilter: 'blur(8px)',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            {justAdded ? '\u2713 ' + (t('floating_added') || '\u8FFD\u52A0\u3057\u307E\u3057\u305F\uFF01')
+              : isInCart ? '\u2713 ' + (t('floating_in_cart') || '\u30AB\u30FC\u30C8\u306B\u8FFD\u52A0\u6E08\u307F')
+              : '\u2661 ' + (t('floating_add') || '\u30AB\u30FC\u30C8\u306B\u8FFD\u52A0')}
+          </button>
+        );
+      })()}
+
       {/* CartSummaryBar */}
       {cart.cartItems.length > 0 && (
         <CartSummaryBar items={cart.cartItems} totalPrice={cart.totalPrice}
@@ -437,26 +479,8 @@ function ProductLayer({ category, selectedProduct, selectedColor, personalColor,
               />
             </div>
           )}
-          {/* Add to cart button */}
-          {selectedColor && (() => {
-            const inCart = cart.isInCart(selectedProduct.id, selectedColor.id);
-            return (
-              <button onClick={() => {
-                if (inCart) {
-                  cart.dispatch({ type: 'REMOVE', payload: { uniqueKey: `${selectedProduct.id}_${selectedColor.id}` } });
-                } else {
-                  onAddToCart(selectedProduct, selectedColor);
-                }
-              }} style={{
-                width: '100%', marginTop: 8, padding: '10px',
-                background: inCart ? '#e2e8f0' : 'linear-gradient(135deg, #a855f7, #ec4899)',
-                color: inCart ? '#94a3b8' : '#fff',
-                border: 'none', borderRadius: 20, fontSize: 13, fontWeight: 700,
-                cursor: 'pointer', whiteSpace: 'nowrap',
-              }}>
-                {inCart ? '\u2713 ' + (t?.('cart_added') || 'Added') : (t?.('cart_add') || 'Add to Cart')}
-              </button>
-            );
+          {/* Cart button moved to floating — see below */}
+          {false && (
           })()}
         </div>
       )}
