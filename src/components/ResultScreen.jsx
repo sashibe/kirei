@@ -8,6 +8,7 @@ import CoordinateOverlay from './CoordinateOverlay.jsx';
 import { useT } from '../i18n/index.jsx';
 import { getPcColors, getSeasonText } from '../analysis/personalColor.js';
 import useWeather from '../hooks/useWeather.js';
+import { shareImage } from '../utils/share.js';
 
 export default function ResultScreen({ skinScores, personalColor, cart, capturedImage, onRestart, onSkincareAR, onBackToAR }) {
   const { t, lang } = useT();
@@ -28,6 +29,9 @@ export default function ResultScreen({ skinScores, personalColor, cart, captured
       {personalColor && pcBg && pcText && (
         <div style={{ margin: '8px 16px 12px', padding: '12px 16px',
           background: pcBg.bg, border: `1px solid ${pcBg.border}`, borderRadius: 18 }}>
+          <p style={{ fontSize: 10, color: pcBg.color, opacity: 0.7, margin: '0 0 4px', fontWeight: 600 }}>
+            {t('pc.your_type') || '\u3042\u306A\u305F\u306E\u30D1\u30FC\u30BD\u30CA\u30EB\u30AB\u30E9\u30FC'}
+          </p>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontSize: 20 }}>{pcText.emoji}</span>
             <div>
@@ -38,10 +42,17 @@ export default function ResultScreen({ skinScores, personalColor, cart, captured
         </div>
       )}
 
-      {/* Captured photo */}
+      {/* Captured photo with share button */}
       {capturedImage && (
-        <div style={{ position: 'relative' }}>
-          <img src={capturedImage} style={{ width: '100%', display: 'block', borderRadius: '0 0 24px 24px' }} alt="" />
+        <div style={{ position: 'relative', margin: '0 16px 16px' }}>
+          <img src={capturedImage} style={{ width: '100%', display: 'block', borderRadius: 20 }} alt="" />
+          <button onClick={() => shareImage(capturedImage, 'KIREI Makeup')} style={{
+            position: 'absolute', bottom: 12, right: 12,
+            background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)',
+            border: 'none', borderRadius: '50%', width: 36, height: 36,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: '#fff', fontSize: 16, cursor: 'pointer',
+          }}>{'\uD83D\uDCE4'}</button>
         </div>
       )}
 
@@ -116,7 +127,7 @@ export default function ResultScreen({ skinScores, personalColor, cart, captured
               background: '#fffbeb', border: '1.5px solid #fde68a',
               borderRadius: 14, fontSize: 13, fontWeight: 700,
               color: '#b45309', cursor: 'pointer',
-            }}>{'\uD83D\uDC57'} {t('result.view_coord') || '\u30B3\u30FC\u30C7\u3092\u898B\u308B'}</button>
+            }}>{'\uD83D\uDC57'} {t('result.view_coord') || '\u304A\u3059\u3059\u3081\u30B3\u30FC\u30C7\u3092\u898B\u308B \u2192'}</button>
           </div>
           {showCoord && (
             <CoordinateOverlay weather={weather} personalColor={personalColor} skinScores={skinScores}

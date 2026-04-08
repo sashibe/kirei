@@ -80,7 +80,7 @@ export default {
   "result.total": "合計",
   "result.total_selected": "選択中（{count}件）",
   "result.coord_hint": "今日のコーデヒント",
-  "result.view_coord": "おすすめコーデを見る",
+  "result.view_coord": "おすすめコーデを見る →",
   "result.check_skin_score": "肌スコアを確認",
   "result.disclaimer": "※本アプリは医療診断を行うものではありません。",
 

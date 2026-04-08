@@ -3,6 +3,7 @@ import Kirari from './Kirari.jsx';
 import Bubble from './Bubble.jsx';
 import useCamera from '../hooks/useCamera.js';
 import { useT } from '../i18n/index.jsx';
+import { shareImage } from '../utils/share.js';
 
 function computeFilter(skinScores, t) {
   const dullness = skinScores?.dullness?.score ?? 70;
@@ -119,6 +120,29 @@ export default function SkincareARScreen({ skinScores, onNext, onBack }) {
       }}>
         {t('skincare_ar.skin_score') || '\u808C\u30B9\u30B3\u30A2'} {skinScore}
       </div>
+
+      {/* Share button (visible when slider >= 90) */}
+      {sliderValue >= 90 && (
+        <button onClick={() => {
+          const video = videoRef.current;
+          if (!video) return;
+          const c = document.createElement('canvas');
+          c.width = video.videoWidth || 640;
+          c.height = video.videoHeight || 480;
+          const ctx = c.getContext('2d');
+          ctx.save(); ctx.translate(c.width, 0); ctx.scale(-1, 1);
+          ctx.filter = video.style.filter || 'none';
+          ctx.drawImage(video, 0, 0, c.width, c.height);
+          ctx.restore();
+          shareImage(c.toDataURL('image/jpeg', 0.92), 'KIREI Skincare');
+        }} style={{
+          position: 'absolute', top: 12, right: 12,
+          background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)',
+          border: 'none', borderRadius: '50%', width: 36, height: 36,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: '#fff', fontSize: 16, cursor: 'pointer', zIndex: 10,
+        }}>{'\uD83D\uDCE4'}</button>
+      )}
 
       {/* Back button */}
       <button onClick={onBack} style={{
