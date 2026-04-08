@@ -56,13 +56,8 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
   const [showMesh, setShowMesh] = useState(false);
   const [activeCategory, setActiveCategory] = useState('base');
 
-  // Per-category intensity (independent sliders) — must be after activeCategory
+  // Per-category intensity (independent sliders)
   const [intensities, setIntensities] = useState({ base: 70, lip: 70, eyeshadow: 70, eyebrow: 70, cheek: 70, contacts: 70 });
-  const intensity = intensities[activeCategory] ?? 70;
-  const setIntensity = useCallback((val) => {
-    setIntensities(prev => ({ ...prev, [activeCategory]: val }));
-  }, [activeCategory]);
-  const globalIntensity = Math.round(Object.values(intensities).reduce((a, b) => a + b, 0) / Object.keys(intensities).length);
   const [selectedBase, setSelectedBase] = useState(baseLook?.id ?? 'clean-natural');
   const [lipColor, setLipColor] = useState(colorLook?.lip || '#e8607c');
   const [cheekColor, setCheekColor] = useState(colorLook?.cheek || 'rgba(232,96,124,0.4)');
@@ -371,7 +366,8 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
               category={activeCategory}
               selectedProduct={selectedProduct}
               selectedColor={selectedColor}
-              intensity={intensity}
+              intensities={intensities}
+              setIntensities={setIntensities}
               onSelectProduct={(p) => {
                 setSelectedProduct(p);
                 const dc = p.colors[0];
@@ -384,7 +380,6 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
                 setSelectedColor(c);
                 applyColor(activeCategory, c.hex);
               }}
-              onIntensityChange={setIntensity}
               lang={lang}
             />
           )}
@@ -417,9 +412,6 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
             </div>
           )}
 
-          {false && ( // Removed: per-category slider is now inside ProductLayer
-            <div />
-          )}
 
           {/* Action buttons */}
           <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
@@ -451,7 +443,9 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
 // i18n text helper: handles both string and {ja,ko,en} object
 const txt = (v, lang) => (typeof v === 'object' && v !== null) ? (v[lang] ?? v.ja ?? '') : (v ?? '');
 
-function ProductLayer({ category, selectedProduct, selectedColor, intensity, onSelectProduct, onSelectColor, onIntensityChange, lang = 'ja' }) {
+function ProductLayer({ category, selectedProduct, selectedColor, intensities, setIntensities, onSelectProduct, onSelectColor, lang = 'ja' }) {
+  const intensity = intensities?.[category] ?? 70;
+  const onIntensityChange = (val) => setIntensities(prev => ({ ...prev, [category]: val }));
   const categoryProducts = PRODUCTS.filter(p => p.category === category);
   if (categoryProducts.length === 0) return <div style={{ fontSize: 12, color: '#94a3b8', textAlign: 'center', padding: 8 }}>Coming soon</div>;
 
