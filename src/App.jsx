@@ -16,6 +16,9 @@ import useCart from './hooks/useCart.js';
 import colors from './styles/theme.js';
 import { useT } from './i18n/index.jsx';
 
+// Capacitorネイティブ環境検出
+const isNative = typeof window !== 'undefined' && !!window.Capacitor?.isNativePlatform?.();
+
 // screen: 'mirror' | 'ar' | 'checkout' | 'skincare-ar' | 'skincare-routine' | 'guide'
 export default function App() {
   const { t } = useT();
@@ -140,8 +143,15 @@ export default function App() {
   );
 
   return (
-    <>
+    <div className={isNative ? 'native-app' : ''}>
       <style>{`
+        /* Capacitorネイティブ: 常にモバイル表示 */
+        .native-app .kirei-pc-wrapper { display: none !important; }
+        .native-app .kirei-mobile-wrapper {
+          display: block !important;
+          width: 100%; height: 100vh; position: fixed; top: 0; left: 0;
+        }
+
         /* === PC: iPhoneモックアップ === */
         @media (min-width: 500px) {
           .kirei-pc-wrapper {
@@ -260,6 +270,6 @@ export default function App() {
           />
         </div>
       )}
-    </>
+    </div>
   );
 }

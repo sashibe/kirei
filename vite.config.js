@@ -4,7 +4,7 @@ import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/kirei/',
+  base: process.env.CAPACITOR === 'true' ? './' : '/kirei/',
   build: {
     outDir: 'dist',
     rollupOptions: {
