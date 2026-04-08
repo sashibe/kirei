@@ -20,17 +20,17 @@ const RIGHT_BROW   = FaceLandmarker.FACE_LANDMARKS_RIGHT_EYEBROW;
 const LIPS         = FaceLandmarker.FACE_LANDMARKS_LIPS;
 const TESSELATION  = FaceLandmarker.FACE_LANDMARKS_TESSELATION;
 
-const MakeupCanvas = forwardRef(function MakeupCanvas({ getVideo, baseLook, colorLook, intensity, intensities, showMesh, glassesItem, earringItem, contactLensItem, coverFit }, ref) {
+const MakeupCanvas = forwardRef(function MakeupCanvas({ getVideo, baseLook, colorLook, intensities, showMesh, glassesItem, earringItem, contactLensItem, coverFit }, ref) {
   const canvasRef = useRef(null);
   useImperativeHandle(ref, () => canvasRef.current);
   const rafRef = useRef(null);
   const { ready, detect } = useFaceLandmarkerCtx();
 
   // props を ref に同期（ループ内で最新値参照）
-  const propsRef = useRef({ baseLook, colorLook, intensity, intensities, showMesh, glassesItem, earringItem, contactLensItem, coverFit });
+  const propsRef = useRef({ baseLook, colorLook, intensities, showMesh, glassesItem, earringItem, contactLensItem, coverFit });
   useEffect(() => {
-    propsRef.current = { baseLook, colorLook, intensity, intensities, showMesh, glassesItem, earringItem, contactLensItem, coverFit };
-  }, [baseLook, colorLook, intensity, intensities, showMesh, glassesItem, earringItem, contactLensItem, coverFit]);
+    propsRef.current = { baseLook, colorLook, intensities, showMesh, glassesItem, earringItem, contactLensItem, coverFit };
+  }, [baseLook, colorLook, intensities, showMesh, glassesItem, earringItem, contactLensItem, coverFit]);
 
   // 前回の検出結果をキャッシュ（フレームスキップ用）
   const lastLandmarksRef = useRef(null);
@@ -94,11 +94,10 @@ const MakeupCanvas = forwardRef(function MakeupCanvas({ getVideo, baseLook, colo
 
       const w = canvas.width;
       const h = canvas.height;
-      const { baseLook: base, colorLook: color, intensity: inten, intensities: perCat,
+      const { baseLook: base, colorLook: color, intensities: perCat,
               showMesh: mesh,
               glassesItem: glasses, earringItem: earring, contactLensItem: contactLens } = propsRef.current;
-      // Per-category opacity (fallback to global intensity)
-      const opa = (cat) => ((perCat?.[cat] ?? inten ?? 70) / 100);
+      const opa = (cat) => ((perCat?.[cat] ?? 70) / 100);
 
       // Layer 1: ベース（ファンデ・コンシーラー・眉）
       if (base) {
