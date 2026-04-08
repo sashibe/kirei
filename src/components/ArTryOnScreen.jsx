@@ -479,9 +479,6 @@ function ProductLayer({ category, selectedProduct, selectedColor, personalColor,
               />
             </div>
           )}
-          {/* Cart button moved to floating — see below */}
-          {false && (
-          })()}
         </div>
       )}
     </div>
