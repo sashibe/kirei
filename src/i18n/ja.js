@@ -318,4 +318,17 @@ export default {
   "kirari.pc_true_winter":   "透明感のあるブルベ冬♪ アイシーカラーやワインレッドが最高に似合う〜",
   "kirari.pc_deep_winter":   "深みのあるブルベ冬♪ ディープネイビーやチャコールで圧倒的な存在感に〜",
   "kirari.pc_fallback":      "パーソナルカラーが分かったよ♪ このタイプに合ったルックを選んだよ〜！",
+
+  // === STEP5: 新規キー ===
+  "cart_title":        "お買い物かご",
+  "cart_empty":        "カートに商品がありません",
+  "cart_total":        "合計",
+  "cart_checkout":     "商品購入へ →",
+  "checkout":          "商品を購入する",
+  "change_makeup":     "メイクを変更する →",
+  "try_makeup":        "メイクも試す →",
+  "back_to_mirror":    "ミラーに戻る",
+  "skincare_also":     "スキンケアも見る →",
+  "skincare_cta_new":  "おすすめスキンケアはこれ →",
+  "pc_match":          "PC ✓",
 };

@@ -3,28 +3,43 @@ import { useReducer, useCallback } from 'react';
 /**
  * useCart — メイク + スキンケア統合カート
  *
- * 同一 partId は 1 商品のみ（後から追加で上書き）。
- * type: 'makeup' | 'skincare' で区別。
+ * uniqueKey = productId + '_' + colorId でユニーク管理
+ * 同カテゴリ複数商品OK（リップ2本、アイシャドウ3個など）
+ * 同一商品の同一カラーは重複追加しない（トグル動作）
  */
 
 function cartReducer(state, action) {
   switch (action.type) {
-    case 'ADD':
-    case 'REPLACE': {
-      const { partId, type, product } = action.payload;
-      const filtered = state.filter(item => item.partId !== partId);
-      return [...filtered, { partId, type: type || 'makeup', product }];
+    case 'ADD': {
+      const { product, selectedColor } = action.payload;
+      const uniqueKey = `${product.id}_${selectedColor.id}`;
+      // 同一商品×同一カラーは追加しない
+      if (state.some(i => i.uniqueKey === uniqueKey)) return state;
+      return [...state, {
+        uniqueKey,
+        product,
+        selectedColor,
+        category: product.category,
+        price: product.price,
+      }];
     }
     case 'REMOVE': {
-      return state.filter(item => item.partId !== action.payload.partId);
+      return state.filter(i => i.uniqueKey !== action.payload.uniqueKey);
     }
     case 'TOGGLE': {
-      const { partId, type, product } = action.payload;
-      const exists = state.some(item => item.partId === partId);
+      const { product, selectedColor } = action.payload;
+      const uniqueKey = `${product.id}_${selectedColor.id}`;
+      const exists = state.some(i => i.uniqueKey === uniqueKey);
       if (exists) {
-        return state.filter(item => item.partId !== partId);
+        return state.filter(i => i.uniqueKey !== uniqueKey);
       }
-      return [...state, { partId, type: type || 'makeup', product }];
+      return [...state, {
+        uniqueKey,
+        product,
+        selectedColor,
+        category: product.category,
+        price: product.price,
+      }];
     }
     case 'CLEAR':
       return [];
@@ -36,19 +51,20 @@ function cartReducer(state, action) {
 export default function useCart() {
   const [cartItems, dispatch] = useReducer(cartReducer, []);
 
-  const totalPrice = cartItems.reduce((sum, item) => sum + (item.product?.price || 0), 0);
-  const makeupCount = cartItems.filter(i => i.type === 'makeup').length;
-  const skincareCount = cartItems.filter(i => i.type === 'skincare').length;
+  const totalPrice = cartItems.reduce((sum, item) => sum + (item.price || 0), 0);
+  const itemCount = cartItems.length;
 
   const isInCart = useCallback(
-    (partId) => cartItems.some(item => item.partId === partId),
+    (productId, colorId) => cartItems.some(
+      item => item.uniqueKey === `${productId}_${colorId}`
+    ),
     [cartItems]
   );
 
   const handleCheckout = useCallback(() => {
     cartItems.forEach((item, i) => {
-      const url = item.product?.affiliateUrl || item.product?.url;
-      if (url) {
+      const url = item.product?.affiliateUrl || item.product?.rakutenUrl;
+      if (url && url !== '#') {
         setTimeout(() => window.open(url, '_blank'), i * 500);
       }
     });
@@ -58,8 +74,7 @@ export default function useCart() {
     cartItems,
     dispatch,
     totalPrice,
-    makeupCount,
-    skincareCount,
+    itemCount,
     isInCart,
     handleCheckout,
   };

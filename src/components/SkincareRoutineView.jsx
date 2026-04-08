@@ -21,7 +21,7 @@ function getStepIcon(step, t) {
   return STEP_ICONS[en] || '🧴';
 }
 
-export default function SkincareRoutineView({ onNext, skinScores }) {
+export default function SkincareRoutineView({ onNext, onTryMakeup, onRestart, skinScores }) {
   const { t } = useT();
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const morningTotal = SKINCARE_ROUTINE.morning.reduce((s, r) => s + r.price, 0);
@@ -129,19 +129,32 @@ export default function SkincareRoutineView({ onNext, skinScores }) {
           whiteSpace: 'nowrap',
         }}
       >
-        {'\uD83D\uDED2'} {t('result.purchase_btn')}
+        {'\uD83D\uDED2'} {t('checkout') || '\u5546\u54C1\u3092\u8CFC\u5165\u3059\u308B'}
       </button>
 
-      {/* Secondary CTA: 結果を見る（テキストリンク風） */}
-      <button onClick={onNext} style={{
-        width: '100%', padding: 12, marginBottom: 12,
-        background: 'transparent',
-        border: '1px solid #e2e8f0', borderRadius: 14,
-        fontSize: 13, fontWeight: 600,
-        color: '#64748b', cursor: 'pointer',
-      }}>
-        {t('skincare.view_result')}
-      </button>
+      {/* Secondary CTA: メイクも試す */}
+      {onTryMakeup && (
+        <button onClick={onTryMakeup} style={{
+          width: '100%', padding: 12, marginBottom: 10,
+          background: 'transparent', border: '1.5px solid #a855f7',
+          borderRadius: 14, fontSize: 13, fontWeight: 700,
+          color: '#a855f7', cursor: 'pointer',
+        }}>
+          {'\uD83D\uDC84'} {t('try_makeup') || '\u30E1\u30A4\u30AF\u3082\u8A66\u3059 \u2192'}
+        </button>
+      )}
+
+      {/* Tertiary CTA: ミラーに戻る */}
+      {onRestart && (
+        <button onClick={onRestart} style={{
+          width: '100%', padding: 11, marginBottom: 12,
+          background: '#f8fafc', border: '1px solid #e2e8f0',
+          borderRadius: 14, fontSize: 12, fontWeight: 600,
+          color: '#64748b', cursor: 'pointer',
+        }}>
+          {'\uD83E\uDE9E'} {t('back_to_mirror') || '\u30DF\u30E9\u30FC\u306B\u623B\u308B'}
+        </button>
+      )}
 
       {showPurchaseModal && (
         <PurchaseModal

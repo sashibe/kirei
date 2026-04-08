@@ -3,7 +3,6 @@ import Kirari from './components/Kirari.jsx';
 import LanguageSwitcher from './components/LanguageSwitcher.jsx';
 import MirrorScreenLegacy from './components/MirrorScreen.jsx';
 import MirrorScreenV3 from './components/MirrorScreenV3.jsx';
-import SuggestScreen from './components/SuggestScreen.jsx';
 
 // V3ミラー切替フラグ（false で旧版に戻せる）
 const USE_MIRROR_V3 = true;
@@ -13,34 +12,32 @@ import ResultScreen from './components/ResultScreen.jsx';
 import SkincareARScreen from './components/SkincareARScreen.jsx';
 import SkincareRoutineView from './components/SkincareRoutineView.jsx';
 import { FaceLandmarkerProvider } from './contexts/FaceLandmarkerContext.jsx';
+import useCart from './hooks/useCart.js';
 import colors from './styles/theme.js';
 import { useT } from './i18n/index.jsx';
 
-// screen: 'mirror' | 'suggest' | 'ar' | 'result' | 'skincare-ar' | 'skincare-routine' | 'guide'
+// screen: 'mirror' | 'ar' | 'checkout' | 'skincare-ar' | 'skincare-routine' | 'guide'
 export default function App() {
   const { t } = useT();
   const [screen, setScreen] = useState('mirror');
   const prevScreenRef = useRef('mirror');
   const scoresRef = useRef({ skinScores: null, personalColor: null });
-  const lookRef = useRef({ baseLook: null, colorLook: null, capturedImage: null, products: null });
+  const capturedImageRef = useRef(null);
+  const cart = useCart();
 
+  // ミラー分析完了 → メイクならAR直行、スキンケアならSkincareAR
   const handleResult = useCallback(({ skinScores, personalColor, mode }) => {
     scoresRef.current = { skinScores, personalColor };
     if (mode === 'skincare') {
       setScreen('skincare-ar');
     } else {
-      setScreen('suggest');
+      setScreen('ar');
     }
   }, []);
 
-  const handleSelectLook = useCallback(({ baseLook, colorLook }) => {
-    lookRef.current = { ...lookRef.current, baseLook, colorLook };
-    setScreen('ar');
-  }, []);
-
-  const handleArDecide = useCallback(({ capturedImage, baseLook, colorLook, products }) => {
-    lookRef.current = { ...lookRef.current, baseLook, colorLook, capturedImage, products };
-    setScreen('result');
+  // ARからチェックアウト画面へ
+  const handleCheckout = useCallback(() => {
+    setScreen('checkout');
   }, []);
 
   const handleRestart = useCallback(() => {
@@ -49,6 +46,11 @@ export default function App() {
 
   const handleOpenSkincareAR = useCallback(() => {
     setScreen('skincare-ar');
+  }, []);
+
+  // キャプチャ保存（ARから）
+  const handleCapture = useCallback((dataUrl) => {
+    capturedImageRef.current = dataUrl;
   }, []);
 
   const Header = ({ overlay = false }) => (
@@ -77,9 +79,8 @@ export default function App() {
     </div>
   );
 
-  // ar, skincare-ar は height:"100%" + overflow:"hidden" で全画面（MirrorScreenと同方式）
-  const showScrollable = screen === 'suggest' || screen === 'result'
-                      || screen === 'skincare-routine';
+  // ar, skincare-ar は height:"100%" + overflow:"hidden" で全画面
+  const showScrollable = screen === 'checkout' || screen === 'skincare-routine';
 
   const content = (
     <FaceLandmarkerProvider>
@@ -91,39 +92,31 @@ export default function App() {
             <MirrorScreen onResult={handleResult} />
           </>
         )}
-        {screen === 'suggest' && (
-          <SuggestScreen
-            skinScores={scoresRef.current.skinScores}
-            personalColor={scoresRef.current.personalColor}
-            onSelectLook={handleSelectLook}
-          />
-        )}
         {screen === 'ar' && (
           <ArTryOnScreen
-            baseLook={lookRef.current.baseLook}
-            colorLook={lookRef.current.colorLook}
             personalColor={scoresRef.current.personalColor}
-            onDecide={handleArDecide}
-            onBack={() => setScreen('suggest')}
+            cart={cart}
+            onCheckout={handleCheckout}
+            onCapture={handleCapture}
+            onBack={() => setScreen('mirror')}
           />
         )}
-        {screen === 'result' && (
+        {screen === 'checkout' && (
           <ResultScreen
             skinScores={scoresRef.current.skinScores}
             personalColor={scoresRef.current.personalColor}
+            cart={cart}
+            capturedImage={capturedImageRef.current}
             onRestart={handleRestart}
             onSkincareAR={handleOpenSkincareAR}
-            baseLook={lookRef.current.baseLook}
-            colorLook={lookRef.current.colorLook}
-            capturedImage={lookRef.current.capturedImage}
-            products={lookRef.current.products}
+            onBackToAR={() => setScreen('ar')}
           />
         )}
         {screen === 'skincare-ar' && (
           <SkincareARScreen
             skinScores={scoresRef.current.skinScores}
             onNext={() => setScreen('skincare-routine')}
-            onBack={() => setScreen('result')}
+            onBack={() => setScreen('mirror')}
           />
         )}
         {screen === 'skincare-routine' && (
@@ -137,7 +130,8 @@ export default function App() {
             </button>
             <SkincareRoutineView
               skinScores={scoresRef.current.skinScores}
-              onNext={() => setScreen('result')}
+              onTryMakeup={() => setScreen('ar')}
+              onRestart={handleRestart}
             />
           </div>
         )}
@@ -178,15 +172,11 @@ export default function App() {
             border-radius: 38px; overflow: hidden; height: 844px;
             position: relative; transform: translateZ(0);
           }
-          .kirei-app-container {
-            height: 100%;
-            overflow-y: auto;
-          }
+          .kirei-app-container { height: 100%; overflow-y: auto; }
           .kirei-phone-bar {
             position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
             width: 130px; height: 4px; background: rgba(255,255,255,0.15); border-radius: 2px; z-index: 20;
           }
-          /* モバイル用非表示 */
           .kirei-mobile-wrapper { display: none; }
         }
 
@@ -196,14 +186,11 @@ export default function App() {
           .kirei-mobile-wrapper {
             width: 100%;
             height: 100dvh;
-            height: 100vh; /* dvh非対応フォールバック */
+            height: 100vh;
             position: fixed;
             top: 0; left: 0;
           }
-          .kirei-app-container {
-            width: 100%;
-            height: 100%;
-          }
+          .kirei-app-container { width: 100%; height: 100%; }
         }
         @supports (height: 100dvh) {
           @media (max-width: 499px) {

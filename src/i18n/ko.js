@@ -315,4 +315,17 @@ export default {
   "kirari.pc_true_winter":   "투명감 있는 트루 윈터♪ 아이시 컬러나 와인 레드가 최고로 어울려~",
   "kirari.pc_deep_winter":   "깊이감 있는 딥 윈터♪ 딥 네이비나 차콜로 압도적인 존재감으로~",
   "kirari.pc_fallback":      "퍼스널 컬러를 알았어♪ 이 타입에 맞는 룩을 골라봤어~!",
+
+  // === STEP5 ===
+  "cart_title":        "\uC7A5\uBC14\uAD6C\uB2C8",
+  "cart_empty":        "\uC7A5\uBC14\uAD6C\uB2C8\uAC00 \uBE44\uC5B4\uC788\uC2B5\uB2C8\uB2E4",
+  "cart_total":        "\uD569\uACC4",
+  "cart_checkout":     "\uAD6C\uB9E4\uD558\uAE30 \u2192",
+  "checkout":          "\uC0C1\uD488 \uAD6C\uB9E4\uD558\uAE30",
+  "change_makeup":     "\uBA54\uC774\uD06C\uC5C5 \uBCC0\uACBD \u2192",
+  "try_makeup":        "\uBA54\uC774\uD06C\uC5C5 \uD574\uBCF4\uAE30 \u2192",
+  "back_to_mirror":    "\uAC70\uC6B8\uB85C \uB3CC\uC544\uAC00\uAE30",
+  "skincare_also":     "\uC2A4\uD0A8\uCF00\uC5B4 \uBCF4\uAE30 \u2192",
+  "skincare_cta_new":  "\uCD94\uCC9C \uC2A4\uD0A8\uCF00\uC5B4 \uBCF4\uAE30 \u2192",
+  "pc_match":          "PC \u2713",
 };

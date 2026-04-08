@@ -315,4 +315,17 @@ export default {
   "kirari.pc_true_winter":   "You're a luminous True Winter! Icy colors and wine red suit you perfectly\u2728",
   "kirari.pc_deep_winter":   "You're a striking Deep Winter! Deep navy and charcoal give you presence\u2728",
   "kirari.pc_fallback":      "Your personal color is ready! I've picked looks that match your type\u2728",
+
+  // === STEP5 ===
+  "cart_title":        "Shopping Cart",
+  "cart_empty":        "Your cart is empty",
+  "cart_total":        "Total",
+  "cart_checkout":     "Checkout →",
+  "checkout":          "Buy Products",
+  "change_makeup":     "Change Makeup →",
+  "try_makeup":        "Try Makeup →",
+  "back_to_mirror":    "Back to Mirror",
+  "skincare_also":     "See Skincare →",
+  "skincare_cta_new":  "See Recommended Skincare →",
+  "pc_match":          "PC ✓",
 };

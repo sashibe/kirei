@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import Kirari from './Kirari.jsx';
 import MakeupCanvas from './MakeupCanvas.jsx';
+import CartSummaryBar from './CartSummaryBar.jsx';
 import useCamera from '../hooks/useCamera.js';
 import { useT } from '../i18n/index.jsx';
 import { GLASSES_ITEMS, EARRING_ITEMS, CONTACT_LENS_ITEMS } from '../data/accessories.js';
 import { BASE_LOOKS } from '../data/makeupLooks.js';
 import { PRODUCTS } from '../data/products.js';
+import { getSeasonText } from '../analysis/personalColor.js';
 
 // Vite: import all product images from assets/products/
 const productImages = import.meta.glob('../assets/products/*.jpg', { eager: true, query: '?url', import: 'default' });
@@ -29,58 +31,44 @@ const CATEGORIES = [
   { id: 'lashes',    labelKey: 'ar.cat_lashes',    icon: '\uD83E\uDEF6', comingSoon: true },
 ];
 
-const LIP_COLORS = ['#e8607c','#c05070','#d4826a','#b85050','#cf6080','#e07070'];
-const EYESHADOW_COLORS = [
-  'rgba(196,149,106,0.25)', 'rgba(232,150,122,0.25)', 'rgba(200,162,200,0.25)',
-  'rgba(139,69,19,0.20)',   'rgba(210,105,30,0.20)',  'rgba(75,0,130,0.20)',
-  'rgba(128,128,128,0.20)', 'rgba(30,30,46,0.20)',
-];
-const CHEEK_COLORS = [
-  'rgba(232,96,124,0.4)',
-  'rgba(255,150,100,0.4)',
-  'rgba(200,160,200,0.4)',
-  'rgba(255,180,120,0.4)',
-];
+const SHEET_MIN = 56;
+const SHEET_MAX = 340;
 
-// Horizontal scroll style for color palettes (Bug⑧)
-const SCROLL_ROW = {
-  display: 'flex', gap: 8, flexWrap: 'nowrap',
-  overflowX: 'auto', padding: '4px 2px',
-  scrollbarWidth: 'none', msOverflowStyle: 'none',
-  WebkitOverflowScrolling: 'touch',
-};
+// i18n text helper
+const txt = (v, lang) => (typeof v === 'object' && v !== null) ? (v[lang] ?? v.ja ?? '') : (v ?? '');
 
-export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack }) {
+// PC連動ソート
+function sortByPC(products, season) {
+  if (!season) return products;
+  return [...products].sort((a, b) => {
+    const aMatch = a.season === season ? 1 : 0;
+    const bMatch = b.season === season ? 1 : 0;
+    return bMatch - aMatch;
+  });
+}
+
+export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCapture, onBack }) {
   const { t, lang } = useT();
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [showMesh, setShowMesh] = useState(false);
-  const [activeCategory, setActiveCategory] = useState('base');
+  const [activeCategory, setActiveCategory] = useState('lip');
+  const [sheetOpen, setSheetOpen] = useState(false);
 
-  // Per-category intensity (independent sliders)
-  const [intensities, setIntensities] = useState({ base: 70, lip: 70, eyeshadow: 70, eyebrow: 70, cheek: 70, contacts: 70 });
-  const [selectedBase, setSelectedBase] = useState(baseLook?.id ?? 'clean-natural');
-  const [lipColor, setLipColor] = useState(colorLook?.lip || '#e8607c');
-  const [cheekColor, setCheekColor] = useState(colorLook?.cheek || 'rgba(232,96,124,0.4)');
-  const [eyeshadowColor, setEyeshadowColor] = useState(colorLook?.eyeshadow || 'rgba(196,149,106,0.25)');
-  const [browColor, setBrowColor] = useState(null); // null = use baseLook default
+  const [selectedBase, setSelectedBase] = useState('clean-natural');
+  const [lipColor, setLipColor] = useState('#e8607c');
+  const [cheekColor, setCheekColor] = useState('rgba(232,96,124,0.4)');
+  const [eyeshadowColor, setEyeshadowColor] = useState('rgba(196,149,106,0.25)');
+  const [browColor, setBrowColor] = useState(null);
   const [selectedGlasses, setSelectedGlasses] = useState('none');
   const [selectedEarring, setSelectedEarring] = useState('none');
   const [selectedContactLens, setSelectedContactLens] = useState('none');
   const [beforeAfter, setBeforeAfter] = useState(false);
-  const [panelHeight, setPanelHeight] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
 
-  // Reset product/color selection when switching categories
-  const handleCategoryChange = useCallback((catId) => {
-    setActiveCategory(catId);
-    setSelectedProduct(null);
-    setSelectedColor(null);
-  }, []);
-
   const canvasRef = useRef(null);
-  const panelRef = useRef(null);
   const customContactRef = useRef(null);
+  const touchStartY = useRef(0);
   const { videoRef, isActive, error: cameraError } = useCamera({ enabled: true });
 
   useEffect(() => {
@@ -92,25 +80,11 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
     return () => video.removeEventListener('loadeddata', onPlaying);
   }, [isActive, videoRef]);
 
-  // Panel height observer for kirari positioning
-  useEffect(() => {
-    const el = panelRef.current;
-    if (!el) return;
-    const ro = new ResizeObserver(entries => setPanelHeight(entries[0].contentRect.height));
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-
   const getVideo = useCallback(() => videoRef.current, [videoRef]);
   const cameraLive = isActive && !cameraError && videoPlaying;
 
-  const currentBase = BASE_LOOKS.find(l => l.id === selectedBase) ?? baseLook;
-  const activeColorLook = {
-    ...colorLook,
-    lip: lipColor,
-    cheek: cheekColor,
-    eyeshadow: eyeshadowColor,
-  };
+  const currentBase = BASE_LOOKS.find(l => l.id === selectedBase) ?? BASE_LOOKS[0];
+  const activeColorLook = { lip: lipColor, cheek: cheekColor, eyeshadow: eyeshadowColor };
 
   const glassesItem = GLASSES_ITEMS.find(i => i.id === selectedGlasses);
   const earringItem = EARRING_ITEMS.find(i => i.id === selectedEarring);
@@ -118,138 +92,112 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
     ? customContactRef.current
     : CONTACT_LENS_ITEMS.find(i => i.id === selectedContactLens);
 
-  const baseName = currentBase?.name
-    ? (typeof currentBase.name === 'object' ? t(currentBase.name) : currentBase.name)
-    : '';
-  const colorName = colorLook?.name
-    ? (typeof colorLook.name === 'object' ? t(colorLook.name) : colorLook.name)
-    : t('ar.look_fallback');
-
   const handlePointerDown = useCallback(() => setBeforeAfter(true), []);
   const handlePointerUp = useCallback(() => setBeforeAfter(false), []);
 
-  const handleDecide = () => {
+  // カテゴリタップ → 展開
+  const handleCategoryTap = useCallback((catId) => {
+    if (catId === activeCategory && sheetOpen) {
+      setSheetOpen(false);
+    } else {
+      setActiveCategory(catId);
+      setSelectedProduct(null);
+      setSelectedColor(null);
+      setSheetOpen(true);
+    }
+  }, [activeCategory, sheetOpen]);
+
+  // カメラエリアタップで縮小
+  const handleCameraTap = useCallback(() => {
+    if (sheetOpen) setSheetOpen(false);
+  }, [sheetOpen]);
+
+  // 📷 キャプチャ
+  const capturePhoto = useCallback(() => {
     const video = videoRef.current;
     const arCanvas = canvasRef.current;
-    const captureCanvas = document.createElement('canvas');
-    captureCanvas.width = video.videoWidth || 640;
-    captureCanvas.height = video.videoHeight || 480;
-    const cctx = captureCanvas.getContext('2d');
-    cctx.save();
-    cctx.translate(captureCanvas.width, 0);
-    cctx.scale(-1, 1);
-    cctx.drawImage(video, 0, 0, captureCanvas.width, captureCanvas.height);
-    cctx.restore();
+    if (!video) return;
+    const c = document.createElement('canvas');
+    c.width = video.videoWidth || 640;
+    c.height = video.videoHeight || 480;
+    const ctx = c.getContext('2d');
+    ctx.save(); ctx.translate(c.width, 0); ctx.scale(-1, 1);
+    ctx.drawImage(video, 0, 0, c.width, c.height);
+    ctx.restore();
     if (arCanvas) {
-      cctx.save();
-      cctx.translate(captureCanvas.width, 0);
-      cctx.scale(-1, 1);
-      cctx.drawImage(arCanvas, 0, 0, captureCanvas.width, captureCanvas.height);
-      cctx.restore();
+      ctx.save(); ctx.translate(c.width, 0); ctx.scale(-1, 1);
+      ctx.drawImage(arCanvas, 0, 0, c.width, c.height);
+      ctx.restore();
     }
-    const dataUrl = captureCanvas.toDataURL('image/jpeg', 0.92);
-    const accessoryProducts = [
-      ...(glassesItem && glassesItem.id !== 'none'
-        ? [{ emoji: glassesItem.emoji, name: glassesItem.name, shade: glassesItem.shape || '', price: glassesItem.price, category: 'glasses' }] : []),
-      ...(earringItem && earringItem.id !== 'none'
-        ? [{ emoji: earringItem.emoji, name: earringItem.name, shade: earringItem.type || '', price: earringItem.price, category: 'earring' }] : []),
-      ...(contactLensItem && contactLensItem.id !== 'none'
-        ? [{ emoji: contactLensItem.emoji, name: contactLensItem.name, shade: '', price: contactLensItem.price, category: 'contacts' }] : []),
-    ];
-    onDecide({
-      capturedImage: dataUrl,
-      baseLook: currentBase,
-      colorLook: { ...colorLook, lip: lipColor, cheek: cheekColor },
-      products: [
-        ...(currentBase?.products || []),
-        ...(colorLook?.products || []),
-        ...accessoryProducts,
-      ],
-    });
-  };
+    onCapture?.(c.toDataURL('image/jpeg', 0.92));
+  }, [videoRef, onCapture]);
 
-  // Apply color from product selection to AR
+  // カラー適用
   const applyColor = useCallback((category, hex) => {
-    if (category === 'base') {
-      // ベースカラーとして適用
-      // currentBaseのbase colorを上書き（簡易実装）
-    }
+    if (category === 'base') { /* future */ }
     else if (category === 'lip') setLipColor(hex);
     else if (category === 'eyebrow') setBrowColor(hex);
     else if (category === 'eyeshadow') setEyeshadowColor(`rgba(${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)},0.25)`);
     else if (category === 'cheek') setCheekColor(`rgba(${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)},0.4)`);
     else if (category === 'contacts') {
-      // Match by color or create custom item for drawContactLens
       const item = CONTACT_LENS_ITEMS.find(i => i.color === hex);
-      if (item) {
-        setSelectedContactLens(item.id);
-      } else {
-        // Custom color from product palette — create ad-hoc lens item
-        setSelectedContactLens('custom');
-        customContactRef.current = { id: 'custom', color: hex, name: 'Custom', emoji: '\uD83D\uDC41\uFE0F' };
-      }
+      if (item) { setSelectedContactLens(item.id); }
+      else { setSelectedContactLens('custom'); customContactRef.current = { id: 'custom', color: hex }; }
     }
   }, []);
 
+  // カート追加 → 自動縮小
+  const handleAddToCart = useCallback((product, color) => {
+    cart.dispatch({ type: 'ADD', payload: { product, selectedColor: color } });
+    setTimeout(() => setSheetOpen(false), 400);
+  }, [cart]);
+
+  // BottomSheet スワイプ
+  const onTouchStart = (e) => { touchStartY.current = e.touches[0].clientY; };
+  const onTouchEnd = (e) => {
+    const dy = e.changedTouches[0].clientY - touchStartY.current;
+    if (dy < -30) setSheetOpen(true);
+    if (dy > 30) setSheetOpen(false);
+  };
+
+  // PC season
+  const pcSeason = personalColor?.season;
+  const pcText = personalColor?.subtypeId ? getSeasonText(personalColor.subtypeId, lang) : null;
+
   return (
-    <div style={{
-      position: 'relative', width: '100%', height: '100%',
-      background: '#000', overflow: 'hidden',
-    }}>
+    <div style={{ position: 'relative', width: '100%', height: '100%', background: '#000', overflow: 'hidden' }}>
 
-      {/* Video: objectFit cover fills container */}
-      <video
-        ref={videoRef}
-        style={{
-          position: 'absolute', inset: 0,
-          width: '100%', height: '100%',
-          objectFit: 'cover',
-          transform: 'scaleX(-1)',
-          display: cameraLive ? 'block' : 'none',
-        }}
-        playsInline muted autoPlay
-        onPointerDown={handlePointerDown}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
-      />
+      {/* Camera full-screen */}
+      <video ref={videoRef} style={{
+        position: 'absolute', inset: 0, width: '100%', height: '100%',
+        objectFit: 'cover', transform: 'scaleX(-1)',
+        display: cameraLive ? 'block' : 'none',
+      }} playsInline muted autoPlay />
 
-      {/* AR Canvas: sized to match objectFit:cover positioning */}
+      {/* Tap overlay to close sheet */}
+      <div onClick={handleCameraTap} onPointerDown={handlePointerDown} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp}
+        style={{ position: 'absolute', inset: 0, zIndex: 1 }} />
+
+      {/* AR Canvas */}
       {cameraLive && !beforeAfter && (
-        <MakeupCanvas
-          ref={canvasRef}
-          getVideo={getVideo}
+        <MakeupCanvas ref={canvasRef} getVideo={getVideo}
           baseLook={browColor ? { ...currentBase, brow: browColor } : currentBase}
-          colorLook={activeColorLook}
-          intensity={70}
-          showMesh={showMesh}
-          glassesItem={glassesItem}
-          earringItem={earringItem}
-          contactLensItem={contactLensItem}
-          coverFit
-        />
+          colorLook={activeColorLook} intensity={70}
+          showMesh={showMesh} glassesItem={glassesItem} earringItem={earringItem}
+          contactLensItem={contactLensItem} coverFit />
       )}
 
-      {/* Before/After indicator */}
       {beforeAfter && (
-        <div style={{
-          position: 'absolute', top: '50%', left: '50%',
-          transform: 'translate(-50%, -50%)',
-          background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)',
-          borderRadius: 16, padding: '10px 20px',
-          color: '#fff', fontSize: 14, fontWeight: 700,
-          pointerEvents: 'none', zIndex: 5,
-        }}>
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
+          background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', borderRadius: 16,
+          padding: '10px 20px', color: '#fff', fontSize: 14, fontWeight: 700, pointerEvents: 'none', zIndex: 5 }}>
           Before
         </div>
       )}
 
-      {/* Placeholder when camera not live */}
       {!cameraLive && (
-        <div style={{
-          position: 'absolute', inset: 0,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: 'linear-gradient(180deg, #1a1025 0%, #0f0a1a 100%)',
-        }}>
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: 'linear-gradient(180deg, #1a1025 0%, #0f0a1a 100%)' }}>
           <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
             <div style={{ fontSize: 40, marginBottom: 8 }}>{'\uD83D\uDCF7'}</div>
             <p style={{ fontSize: 13 }}>Loading camera...</p>
@@ -257,281 +205,231 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
         </div>
       )}
 
-      {/* Top-left: Look name label */}
-      <div style={{
-        position: 'absolute', top: 12, left: 12,
-        background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(8px)',
-        borderRadius: 12, padding: '6px 12px',
-        maxWidth: '55%', zIndex: 2,
-      }}>
-        {baseName && (
-          <p style={{ fontSize: 9, margin: '0 0 1px', color: 'rgba(255,255,255,0.6)',
-            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {baseName}
-          </p>
-        )}
-        <p style={{ fontSize: 12, fontWeight: 700, margin: 0, color: '#fff',
-          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          {colorName}
-        </p>
-      </div>
-
-      {/* Top-right: Mesh toggle */}
-      {cameraLive && (
-        <button onClick={() => setShowMesh(v => !v)} style={{
-          position: 'absolute', top: 12, right: 12,
-          background: showMesh ? 'rgba(168,85,247,0.7)' : 'rgba(0,0,0,0.4)',
-          backdropFilter: 'blur(8px)',
-          border: showMesh ? '1px solid #a855f7' : '1px solid rgba(255,255,255,0.2)',
-          borderRadius: 10, padding: '5px 10px',
-          fontSize: 10, fontWeight: 600, color: '#fff', cursor: 'pointer', zIndex: 2,
-        }}>
-          {showMesh ? '\u25C9 Mesh ON' : '\u25CB Mesh'}
-        </button>
+      {/* Top-left: PC badge */}
+      {pcText && (
+        <div style={{ position: 'absolute', top: 12, left: 12, background: (pcText.color || '#a855f7') + '30',
+          backdropFilter: 'blur(8px)', borderRadius: 12, padding: '4px 10px', zIndex: 10 }}>
+          <span style={{ fontSize: 12 }}>{pcText.emoji}</span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: pcText.color, marginLeft: 4 }}>{pcText.main}</span>
+        </div>
       )}
+
+      {/* Top-right: Capture + Mesh + Back */}
+      <div style={{ position: 'absolute', top: 12, right: 12, display: 'flex', gap: 8, zIndex: 10 }}>
+        <button onClick={capturePhoto} style={{
+          background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(8px)', border: 'none',
+          borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: '#fff', fontSize: 16, cursor: 'pointer',
+        }}>{'\uD83D\uDCF7'}</button>
+        <button onClick={() => setShowMesh(v => !v)} style={{
+          background: showMesh ? 'rgba(168,85,247,0.7)' : 'rgba(0,0,0,0.3)', backdropFilter: 'blur(8px)',
+          border: showMesh ? '1px solid #a855f7' : '1px solid rgba(255,255,255,0.2)',
+          borderRadius: 10, padding: '5px 8px', fontSize: 9, fontWeight: 600, color: '#fff', cursor: 'pointer',
+        }}>{showMesh ? 'Mesh' : 'Mesh'}</button>
+      </div>
 
       {/* Back button */}
       <button onClick={onBack} style={{
-        position: 'absolute', top: 48, left: 12,
-        background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(8px)',
-        border: 'none', borderRadius: 20, color: '#fff',
-        padding: '6px 14px', fontSize: 13, cursor: 'pointer',
-        fontWeight: 600, zIndex: 2,
-      }}>
-        {'\u2190'} {t('ar.back_to_looks')}
-      </button>
+        position: 'absolute', top: 52, right: 12, background: 'rgba(0,0,0,0.3)',
+        backdropFilter: 'blur(8px)', border: 'none', borderRadius: 20, color: '#fff',
+        padding: '5px 12px', fontSize: 12, cursor: 'pointer', fontWeight: 600, zIndex: 10,
+      }}>{'\u2190'} {t('back_to_mirror') || '\u623B\u308B'}</button>
 
-      {/* Kirari bubble (above panel) */}
-      <div style={{
-        position: 'absolute', bottom: panelHeight + 8, left: 12, right: 12,
-        transition: 'bottom 0.2s ease',
-        background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)',
-        borderRadius: 16, padding: '8px 12px',
-        display: 'flex', alignItems: 'center', gap: 8, zIndex: 2,
-      }}>
-        <Kirari size={28} expression="sparkle" />
-        <p style={{ fontSize: 12, color: '#334155', margin: 0, lineHeight: 1.5, flex: 1 }}>
-          {beforeAfter
-            ? (t('ar.before_after_hint') || '\u9577\u62BC\u3057\u3067\u7D20\u9854\u3068\u6BD4\u3079\u3089\u308C\u308B\u3088\u2728')
-            : t('ar.color_comment', { name: colorName })}
-        </p>
-      </div>
-
-      {/* Bottom panel overlay */}
-      <div ref={panelRef} style={{
-        position: 'absolute', bottom: 0, left: 0, right: 0,
-        background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(16px)',
-        borderRadius: '20px 20px 0 0',
-        maxHeight: '35vh', overflowY: 'auto',
-        zIndex: 3,
-      }}>
-        {/* Category tabs */}
+      {/* Kirari bubble */}
+      {!sheetOpen && (
         <div style={{
-          display: 'flex', gap: 0,
-          borderBottom: '1px solid #ede9fe',
-          position: 'sticky', top: 0, background: 'rgba(255,255,255,0.95)',
-          backdropFilter: 'blur(8px)', zIndex: 1,
+          position: 'absolute', bottom: SHEET_MIN + (cart.cartItems.length > 0 ? 52 : 0) + 8,
+          left: 12, right: 12, transition: 'bottom 0.2s ease',
+          background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)',
+          borderRadius: 16, padding: '8px 12px',
+          display: 'flex', alignItems: 'center', gap: 8, zIndex: 2,
         }}>
+          <Kirari size={28} expression="sparkle" />
+          <p style={{ fontSize: 12, color: '#334155', margin: 0, lineHeight: 1.5, flex: 1 }}>
+            {t('ar.color_comment', { name: '' })}
+          </p>
+        </div>
+      )}
+
+      {/* BottomSheet */}
+      <div style={{
+        position: 'absolute', bottom: cart.cartItems.length > 0 ? 52 : 0,
+        left: 0, right: 0,
+        background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(16px)',
+        borderRadius: '20px 20px 0 0', boxShadow: '0 -4px 24px rgba(0,0,0,0.08)',
+        maxHeight: sheetOpen ? `${SHEET_MAX}px` : `${SHEET_MIN}px`,
+        transition: 'max-height 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+        overflow: 'hidden', zIndex: 50,
+      }}>
+        {/* Drag handle */}
+        <div onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}
+          onClick={() => setSheetOpen(!sheetOpen)}
+          style={{ display: 'flex', justifyContent: 'center', padding: '6px 0 2px', cursor: 'pointer' }}>
+          <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.15)' }} />
+        </div>
+
+        {/* Category tabs */}
+        <div style={{ display: 'flex', gap: 0, borderBottom: sheetOpen ? '1px solid #ede9fe' : 'none' }}>
           {CATEGORIES.map(cat => (
-            <button key={cat.id}
-              onClick={() => !cat.comingSoon && handleCategoryChange(cat.id)}
-              style={{
-                flex: 1, padding: '8px 2px', minWidth: 0,
-                background: activeCategory === cat.id ? 'rgba(168,85,247,0.1)' : 'transparent',
-                border: 'none',
-                borderBottom: activeCategory === cat.id ? '2.5px solid #a855f7' : '2.5px solid transparent',
-                color: cat.comingSoon ? '#cbd5e1' : activeCategory === cat.id ? '#a855f7' : '#94a3b8',
-                fontSize: 9, fontWeight: activeCategory === cat.id ? 700 : 400,
-                cursor: cat.comingSoon ? 'default' : 'pointer',
-                opacity: cat.comingSoon ? 0.5 : 1, position: 'relative',
-              }}>
-              <div style={{ fontSize: 14 }}>{cat.icon}</div>
+            <button key={cat.id} onClick={() => !cat.comingSoon && handleCategoryTap(cat.id)} style={{
+              flex: 1, padding: '6px 2px', minWidth: 0,
+              background: activeCategory === cat.id ? 'rgba(168,85,247,0.1)' : 'transparent',
+              border: 'none',
+              borderBottom: activeCategory === cat.id ? '2px solid #a855f7' : '2px solid transparent',
+              color: cat.comingSoon ? '#cbd5e1' : activeCategory === cat.id ? '#a855f7' : '#94a3b8',
+              fontSize: 8, fontWeight: activeCategory === cat.id ? 700 : 400,
+              cursor: cat.comingSoon ? 'default' : 'pointer',
+              opacity: cat.comingSoon ? 0.5 : 1, position: 'relative',
+            }}>
+              <div style={{ fontSize: 13 }}>{cat.icon}</div>
               <div>{t(cat.labelKey)}</div>
               {cat.comingSoon && (
-                <span style={{
-                  position: 'absolute', top: 2, right: 2,
-                  fontSize: 7, background: '#a855f7', color: '#fff',
-                  borderRadius: 4, padding: '1px 3px', fontWeight: 700,
-                }}>SOON</span>
+                <span style={{ position: 'absolute', top: 1, right: 1, fontSize: 6, background: '#a855f7',
+                  color: '#fff', borderRadius: 3, padding: '0 2px', fontWeight: 700 }}>SOON</span>
               )}
             </button>
           ))}
         </div>
 
-        {/* Category content */}
-        <div style={{ padding: '10px 14px 12px' }}>
-          {/* 3-layer product UI for base/lip/eyeshadow/cheek/contacts */}
-          {['base', 'lip', 'eyeshadow', 'eyebrow', 'cheek', 'contacts'].includes(activeCategory) && (
-            <ProductLayer
-              category={activeCategory}
-              selectedProduct={selectedProduct}
-              selectedColor={selectedColor}
-              intensities={intensities}
-              setIntensities={setIntensities}
-              onSelectProduct={(p) => {
-                setSelectedProduct(p);
-                const dc = p.colors[0];
-                if (dc) {
-                  setSelectedColor(dc);
-                  applyColor(activeCategory, dc.hex);
-                }
-              }}
-              onSelectColor={(c) => {
-                setSelectedColor(c);
-                applyColor(activeCategory, c.hex);
-              }}
-              lang={lang}
-            />
-          )}
-
-          {activeCategory === 'glasses' && (
-            <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
-              {GLASSES_ITEMS.map(item => (
-                <button key={item.id} onClick={() => setSelectedGlasses(item.id)} style={{
-                  padding: '6px 10px', borderRadius: 10, fontSize: 11, fontWeight: 600,
-                  background: selectedGlasses === item.id ? 'rgba(168,85,247,0.15)' : 'rgba(139,92,246,0.04)',
-                  border: selectedGlasses === item.id ? '2px solid #a855f7' : '1px solid #ede9fe',
-                  color: selectedGlasses === item.id ? '#a855f7' : '#64748b',
-                  cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
-                }}>{item.emoji} {item.name}</button>
-              ))}
-            </div>
-          )}
-
-          {activeCategory === 'earring' && (
-            <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
-              {EARRING_ITEMS.map(item => (
-                <button key={item.id} onClick={() => setSelectedEarring(item.id)} style={{
-                  padding: '6px 10px', borderRadius: 10, fontSize: 11, fontWeight: 600,
-                  background: selectedEarring === item.id ? 'rgba(168,85,247,0.15)' : 'rgba(139,92,246,0.04)',
-                  border: selectedEarring === item.id ? '2px solid #a855f7' : '1px solid #ede9fe',
-                  color: selectedEarring === item.id ? '#a855f7' : '#64748b',
-                  cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
-                }}>{item.emoji} {item.name}</button>
-              ))}
-            </div>
-          )}
-
-
-          {/* Action buttons */}
-          <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-            <button onClick={onBack} style={{
-              flex: '0 0 auto', padding: '10px 16px',
-              background: 'transparent', border: '1px solid #e2e8f0',
-              borderRadius: 14, fontSize: 12, fontWeight: 600,
-              color: '#64748b', cursor: 'pointer', whiteSpace: 'nowrap',
-            }}>
-              {t('ar.try_another')}
-            </button>
-            <button onClick={handleDecide} style={{
-              flex: 1, padding: '10px 16px',
-              background: 'linear-gradient(135deg, #a855f7, #ec4899)',
-              border: 'none', borderRadius: 14, fontSize: 13, fontWeight: 700,
-              color: '#fff', cursor: 'pointer', whiteSpace: 'nowrap',
-              boxShadow: '0 4px 16px rgba(168,85,247,0.25)',
-            }}>
-              {t('ar.decide')}
-            </button>
+        {/* Expanded content */}
+        {sheetOpen && (
+          <div style={{ padding: '8px 12px 12px', overflowY: 'auto', maxHeight: SHEET_MAX - SHEET_MIN - 20 }}>
+            {['base','lip','eyeshadow','eyebrow','cheek','contacts'].includes(activeCategory) && (
+              <ProductLayer
+                category={activeCategory}
+                selectedProduct={selectedProduct} selectedColor={selectedColor}
+                personalColor={personalColor} cart={cart}
+                onSelectProduct={(p) => {
+                  setSelectedProduct(p);
+                  const dc = p.colors[0];
+                  if (dc) { setSelectedColor(dc); applyColor(activeCategory, dc.hex); }
+                }}
+                onSelectColor={(c) => { setSelectedColor(c); applyColor(activeCategory, c.hex); }}
+                onAddToCart={handleAddToCart}
+                lang={lang}
+              />
+            )}
+            {activeCategory === 'glasses' && (
+              <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
+                {GLASSES_ITEMS.map(item => (
+                  <button key={item.id} onClick={() => setSelectedGlasses(item.id)} style={{
+                    padding: '6px 10px', borderRadius: 10, fontSize: 11, fontWeight: 600,
+                    background: selectedGlasses === item.id ? 'rgba(168,85,247,0.15)' : 'rgba(139,92,246,0.04)',
+                    border: selectedGlasses === item.id ? '2px solid #a855f7' : '1px solid #ede9fe',
+                    color: selectedGlasses === item.id ? '#a855f7' : '#64748b',
+                    cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
+                  }}>{item.emoji} {item.name}</button>
+                ))}
+              </div>
+            )}
+            {activeCategory === 'earring' && (
+              <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
+                {EARRING_ITEMS.map(item => (
+                  <button key={item.id} onClick={() => setSelectedEarring(item.id)} style={{
+                    padding: '6px 10px', borderRadius: 10, fontSize: 11, fontWeight: 600,
+                    background: selectedEarring === item.id ? 'rgba(168,85,247,0.15)' : 'rgba(139,92,246,0.04)',
+                    border: selectedEarring === item.id ? '2px solid #a855f7' : '1px solid #ede9fe',
+                    color: selectedEarring === item.id ? '#a855f7' : '#64748b',
+                    cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
+                  }}>{item.emoji} {item.name}</button>
+                ))}
+              </div>
+            )}
           </div>
-        </div>
+        )}
       </div>
+
+      {/* CartSummaryBar */}
+      {cart.cartItems.length > 0 && (
+        <CartSummaryBar items={cart.cartItems} totalPrice={cart.totalPrice}
+          onCheckout={onCheckout} />
+      )}
     </div>
   );
 }
 
-// === 3-Layer Product UI ===
-// i18n text helper: handles both string and {ja,ko,en} object
-const txt = (v, lang) => (typeof v === 'object' && v !== null) ? (v[lang] ?? v.ja ?? '') : (v ?? '');
-
-function ProductLayer({ category, selectedProduct, selectedColor, intensities, setIntensities, onSelectProduct, onSelectColor, lang = 'ja' }) {
-  const intensity = intensities?.[category] ?? 70;
-  const onIntensityChange = (val) => setIntensities(prev => ({ ...prev, [category]: val }));
-  const categoryProducts = PRODUCTS.filter(p => p.category === category);
+// === ProductLayer ===
+function ProductLayer({ category, selectedProduct, selectedColor, personalColor, cart, onSelectProduct, onSelectColor, onAddToCart, lang = 'ja' }) {
+  const categoryProducts = sortByPC(PRODUCTS.filter(p => p.category === category), personalColor?.season);
   if (categoryProducts.length === 0) return <div style={{ fontSize: 12, color: '#94a3b8', textAlign: 'center', padding: 8 }}>Coming soon</div>;
 
   return (
     <div>
-      {/* Layer 2: Product cards (horizontal scroll) */}
-      <div style={{
-        display: 'flex', overflowX: 'auto', gap: 10, padding: '0 2px 8px',
-        scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch',
-        touchAction: 'pan-x',
-      }}>
+      {/* Product cards */}
+      <div style={{ display: 'flex', overflowX: 'auto', gap: 10, padding: '0 2px 8px',
+        scrollbarWidth: 'none', touchAction: 'pan-x' }}>
         {categoryProducts.map(product => (
           <div key={product.id} onClick={() => onSelectProduct(product)} style={{
-            flexShrink: 0, width: 72, cursor: 'pointer',
+            flexShrink: 0, width: 72, cursor: 'pointer', position: 'relative',
             opacity: selectedProduct?.id === product.id ? 1 : 0.6,
-            transition: 'all 0.15s ease',
           }}>
+            {/* PC match badge */}
+            {product.season && product.season === personalColor?.season && (
+              <div style={{ position: 'absolute', top: 2, right: 2, zIndex: 1,
+                background: '#a855f7', color: '#fff', fontSize: 7, fontWeight: 700,
+                padding: '1px 4px', borderRadius: 4 }}>PC {'\u2713'}</div>
+            )}
             {getProductImage(product) ? (
-              <div style={{
-                width: 72, height: 72, borderRadius: 12, overflow: 'hidden',
-                border: selectedProduct?.id === product.id ? '2px solid #a855f7' : '2px solid #ede9fe',
-              }}>
+              <div style={{ width: 72, height: 72, borderRadius: 12, overflow: 'hidden',
+                border: selectedProduct?.id === product.id ? '2px solid #a855f7' : '2px solid #ede9fe' }}>
                 <img src={getProductImage(product)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
             ) : (
-              <div style={{
-                width: 72, height: 72, borderRadius: 12,
+              <div style={{ width: 72, height: 72, borderRadius: 12,
                 background: `linear-gradient(135deg, ${product.baseColor}40, ${product.baseColor}20)`,
                 border: selectedProduct?.id === product.id ? '2px solid #a855f7' : '2px solid #ede9fe',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
+                display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <div style={{ display: 'flex', gap: 2 }}>
-                  {product.colors.slice(0, 3).map(c => (
+                  {product.colors.slice(0,3).map(c => (
                     <div key={c.id} style={{ width: 14, height: 14, borderRadius: '50%', background: c.hex }} />
                   ))}
                 </div>
               </div>
             )}
             <p style={{ fontSize: 9, fontWeight: 600, marginTop: 3, color: '#334155',
-              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {txt(product.name, lang)}
-            </p>
-            <p style={{ fontSize: 9, color: '#a855f7', fontWeight: 700, margin: 0 }}>
-              {'\u00A5'}{product.price.toLocaleString()}
-            </p>
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{txt(product.name, lang)}</p>
+            <p style={{ fontSize: 9, color: '#a855f7', fontWeight: 700, margin: 0 }}>{'\u00A5'}{product.price.toLocaleString()}</p>
           </div>
         ))}
       </div>
 
-      {/* Layer 3: Color palette + slider */}
+      {/* Color palette + cart button */}
       {selectedProduct && selectedProduct.colors.length > 0 && (
         <div style={{ borderTop: '1px solid #f1f0ff', paddingTop: 8 }}>
-          <p style={{ fontSize: 11, color: '#64748b', margin: '0 0 6px', fontWeight: 600 }}>
-            {txt(selectedProduct.name, lang)}
-          </p>
-          <div style={{
-            display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4,
-            scrollbarWidth: 'none', touchAction: 'pan-x',
-          }}>
+          <p style={{ fontSize: 11, color: '#64748b', margin: '0 0 6px', fontWeight: 600 }}>{txt(selectedProduct.name, lang)}</p>
+          <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4, scrollbarWidth: 'none', touchAction: 'pan-x' }}>
             {selectedProduct.colors.map(color => (
-              <div key={color.id} onClick={() => onSelectColor(color)} title={color.name} style={{
-                flexShrink: 0, width: 32, height: 32, borderRadius: '50%',
-                background: color.hex, cursor: 'pointer',
+              <div key={color.id} onClick={() => onSelectColor(color)} style={{
+                flexShrink: 0, width: 32, height: 32, borderRadius: '50%', background: color.hex, cursor: 'pointer',
                 border: selectedColor?.id === color.id ? '3px solid #a855f7' : '2px solid rgba(139,92,246,0.15)',
                 boxShadow: selectedColor?.id === color.id ? '0 0 10px rgba(168,85,247,0.4)' : 'none',
-                transition: 'all 0.15s',
               }} />
             ))}
           </div>
           {selectedColor && (
             <p style={{ fontSize: 9, color: '#94a3b8', margin: '4px 0 0' }}>{txt(selectedColor.name, lang)}</p>
           )}
-          {category !== 'contacts' && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
-            <span style={{ fontSize: 10, color: '#64748b', whiteSpace: 'nowrap', fontWeight: 600 }}>
-              {'\u6FC3\u3055'}
-            </span>
-            <input type="range" min={0} max={100} value={intensity}
-              onChange={e => onIntensityChange(Number(e.target.value))}
-              style={{ flex: 1, accentColor: '#a855f7' }}
-            />
-            <span style={{ fontSize: 11, color: '#a855f7', fontWeight: 700, minWidth: 28 }}>
-              {intensity}%
-            </span>
-          </div>
-          )}
+          {/* Add to cart button */}
+          {selectedColor && (() => {
+            const inCart = cart.isInCart(selectedProduct.id, selectedColor.id);
+            return (
+              <button onClick={() => {
+                if (inCart) {
+                  cart.dispatch({ type: 'REMOVE', payload: { uniqueKey: `${selectedProduct.id}_${selectedColor.id}` } });
+                } else {
+                  onAddToCart(selectedProduct, selectedColor);
+                }
+              }} style={{
+                width: '100%', marginTop: 8, padding: '10px',
+                background: inCart ? '#e2e8f0' : 'linear-gradient(135deg, #a855f7, #ec4899)',
+                color: inCart ? '#94a3b8' : '#fff',
+                border: 'none', borderRadius: 20, fontSize: 13, fontWeight: 700,
+                cursor: 'pointer', whiteSpace: 'nowrap',
+              }}>
+                {inCart ? '\u2713 \u30AB\u30FC\u30C8\u306B\u8FFD\u52A0\u6E08\u307F' : '\u30AB\u30FC\u30C8\u306B\u8FFD\u52A0'}
+              </button>
+            );
+          })()}
         </div>
       )}
     </div>
