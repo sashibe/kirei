@@ -193,26 +193,23 @@ function drawMeshOverlay(ctx, lms, w, h) {
     ctx.stroke();
   }
 
-  // デバッグ: チーク・眉のランドマーク位置を表示
+  // デバッグ: 計算チーク位置を表示（目尻+口角の中間→耳方向20%オフセット）
   ctx.globalAlpha = 1;
-  // チーク位置 #205(赤), #425(赤)
-  for (const idx of [205, 425]) {
+  const cheekDebug = [
+    { eye: lms[33],  mouth: lms[61],  ear: lms[234], label: 'R' },
+    { eye: lms[263], mouth: lms[291], ear: lms[454], label: 'L' },
+  ];
+  for (const { eye, mouth, ear, label } of cheekDebug) {
+    const midX = (mx(eye) + mx(mouth)) / 2;
+    const midY = (my(eye) + my(mouth)) / 2;
+    const cx = midX + (mx(ear) - midX) * 0.2;
+    const cy = midY;
     ctx.fillStyle = 'red';
     ctx.beginPath();
-    ctx.arc(mx(lms[idx]), my(lms[idx]), 6, 0, Math.PI * 2);
+    ctx.arc(cx, cy, 6, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = '#fff';
     ctx.font = '10px sans-serif';
-    ctx.fillText(`#${idx}`, mx(lms[idx]) + 8, my(lms[idx]) + 4);
-  }
-  // 比較: 旧チーク位置 #234(緑), #454(緑)
-  for (const idx of [234, 454]) {
-    ctx.fillStyle = 'lime';
-    ctx.beginPath();
-    ctx.arc(mx(lms[idx]), my(lms[idx]), 5, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = '#fff';
-    ctx.font = '10px sans-serif';
-    ctx.fillText(`#${idx}`, mx(lms[idx]) + 8, my(lms[idx]) + 4);
+    ctx.fillText(`cheek${label}`, cx + 8, cy + 4);
   }
 }
