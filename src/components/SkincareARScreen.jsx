@@ -4,6 +4,7 @@ import Bubble from './Bubble.jsx';
 import useCamera from '../hooks/useCamera.js';
 import { useT } from '../i18n/index.jsx';
 import { shareImage } from '../utils/share.js';
+import { addWatermark } from '../utils/watermark.js';
 
 function computeFilter(skinScores, t) {
   const dullness = skinScores?.dullness?.score ?? 70;
@@ -134,6 +135,7 @@ export default function SkincareARScreen({ skinScores, onNext, onBack }) {
           ctx.filter = video.style.filter || 'none';
           ctx.drawImage(video, 0, 0, c.width, c.height);
           ctx.restore();
+          addWatermark(c);
           shareImage(c.toDataURL('image/jpeg', 0.92), 'KIREI Skincare');
         }} style={{
           position: 'absolute', top: 12, right: 12,

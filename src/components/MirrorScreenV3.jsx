@@ -17,6 +17,7 @@ import { logEvent, getPrevScore } from '../utils/logger.js';
 import { saveScore } from '../lib/scoreHistory.js';
 import { useGuestId } from '../hooks/useGuestId.js';
 import { shareImage, saveImage } from '../utils/share.js';
+import { addWatermark } from '../utils/watermark.js';
 
 const STAGE = { SEARCHING: 'searching', DETECTED: 'detected', READY: 'ready', SHUTTER: 'shutter', SCANNING: 'scanning' };
 
@@ -531,6 +532,7 @@ export default function MirrorScreenV3({ onResult }) {
                     ctx.save(); ctx.translate(canvas.width, 0); ctx.scale(-1, 1);
                     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                     ctx.restore();
+                    addWatermark(canvas);
                     const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
                     await shareImage(dataUrl, 'KIREI - My Skin Score');
                   }}
@@ -541,24 +543,29 @@ export default function MirrorScreenV3({ onResult }) {
                   }}
                 >📤</button>
               </div>
+              {/* Primary: メイクを試す */}
               <button
-                className="btn-primary"
-                onClick={() => { setSkinScores(null); setPersonalColor(null); setStage(null); setChecking(false); setFrozenFrame(null); }}
+                onClick={() => onResult({ skinScores, personalColor, mode: 'makeup' })}
                 style={{
-                  width: "100%", padding: "12px 0", border: "none", borderRadius: 14, fontSize: 14, fontWeight: 700, color: "#fff", cursor: "pointer",
-                  background: "#a855f7", opacity: 0.7,
+                  width: "100%", padding: 14,
+                  background: "linear-gradient(135deg, #a855f7, #ec4899)",
+                  border: "none", borderRadius: 14,
+                  fontSize: 14, fontWeight: 700, color: "#fff",
+                  cursor: "pointer",
                   boxShadow: "0 4px 16px rgba(168,85,247,0.25)",
+                  marginBottom: 4,
                 }}
               >
-                {t("mirror.recheck")}
+                {'\uD83D\uDC84'} {t("mirror.try_makeup")}
               </button>
+              {/* Secondary: スキンケアを始める */}
               <button
                 onClick={() => onResult({ skinScores, personalColor, mode: 'skincare' })}
                 style={{
-                  width: "100%", padding: 14,
+                  width: "100%", padding: 12,
                   background: "linear-gradient(135deg, #22c55e, #16a34a)",
                   border: "none", borderRadius: 14,
-                  fontSize: 14, fontWeight: 700, color: "#fff",
+                  fontSize: 13, fontWeight: 700, color: "#fff",
                   cursor: "pointer",
                   boxShadow: "0 4px 20px rgba(34,197,94,0.3)",
                   marginBottom: 4,
@@ -566,18 +573,19 @@ export default function MirrorScreenV3({ onResult }) {
               >
                 {'\u2728'} {t("mirror.start_skincare")}
               </button>
+              {/* Tertiary: ミラーに戻る */}
               <button
-                onClick={() => onResult({ skinScores, personalColor, mode: 'makeup' })}
+                onClick={() => { setSkinScores(null); setPersonalColor(null); setStage(null); setChecking(false); setFrozenFrame(null); }}
                 style={{
-                  width: "100%", padding: 11,
+                  width: "100%", padding: 10,
                   background: "rgba(255,255,255,0.85)",
-                  border: "1px solid rgba(168,85,247,0.3)",
+                  border: "1px solid rgba(168,85,247,0.2)",
                   borderRadius: 14,
-                  fontSize: 13, fontWeight: 600,
-                  color: "#a855f7", cursor: "pointer",
+                  fontSize: 12, fontWeight: 600,
+                  color: "#94a3b8", cursor: "pointer",
                 }}
               >
-                {'\uD83D\uDC84'} {t("mirror.try_makeup")}
+                {'\uD83E\uDE9E'} {t("mirror.recheck")}
               </button>
               <p style={{ fontSize: 8, color: "#94a3b8", margin: 0 }}>{t("mirror.disclaimer")}</p>
             </>

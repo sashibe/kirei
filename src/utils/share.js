@@ -1,6 +1,7 @@
 /**
  * share.js — スクリーンショット撮影 + シェア/保存ユーティリティ
  */
+import { addWatermark } from './watermark.js';
 
 /**
  * video + canvas を合成してdataURLを返す
@@ -19,6 +20,7 @@ export function captureFrame(videoEl, canvasEl) {
     ctx.drawImage(canvasEl, 0, 0, c.width, c.height);
     ctx.restore();
   }
+  addWatermark(c);
   return c.toDataURL('image/jpeg', 0.92);
 }
 
