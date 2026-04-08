@@ -268,12 +268,29 @@ export default function useKirari({ weather = null, isChecking = false, t = (k) 
       const interval = getInterval(elapsed);
 
       repeatTimerRef.current = setTimeout(() => {
-        // 30%の確率で天気予報セリフを再表示
-        const newForecast = buildWeatherForecast(weather, lang);
-        if (newForecast && Math.random() < 0.3) {
-          show(newForecast);
-          lastKeyRef.current = '__forecast__';
-        } else {
+        const roll = Math.random();
+        // 20%: タップ促進メッセージ
+        if (roll < 0.2) {
+          const tapMsg = lang === 'ko' ? '\uD83D\uDC46 \uD654\uBA74\uC744 \uD0ED\uD558\uBA74 \uBA54\uC774\uD06C\uC5C5\uACFC \uC2A4\uD0A8\uCF00\uC5B4\uB97C \uCCB4\uD5D8\uD560 \uC218 \uC788\uC5B4\u266A'
+            : lang === 'en' ? '\uD83D\uDC46 Tap the screen to try makeup & skincare\u266A'
+            : '\uD83D\uDC46 \u753B\u9762\u30BF\u30C3\u30D7\u3067\u30E1\u30A4\u30AF\u3068\u30B9\u30AD\u30F3\u30B1\u30A2\u3092\u8A66\u305B\u308B\u3088\uFF01';
+          show(tapMsg);
+          lastKeyRef.current = '__tap__';
+        }
+        // 25%: 天気予報セリフ
+        else if (roll < 0.45) {
+          const newForecast = buildWeatherForecast(weather, lang);
+          if (newForecast) {
+            show(newForecast);
+            lastKeyRef.current = '__forecast__';
+          } else {
+            const key = pickLine(pool.filter(k => k !== lastKeyRef.current));
+            show(t(key));
+            lastKeyRef.current = key;
+          }
+        }
+        // 55%: 通常セリフ
+        else {
           const key = pickLine(pool.filter(k => k !== lastKeyRef.current));
           show(t(key));
           lastKeyRef.current = key;
