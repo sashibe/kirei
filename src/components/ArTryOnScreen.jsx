@@ -29,7 +29,7 @@ const CATEGORIES = [
   { id: 'contacts',  labelKey: 'ar.cat_contacts',  icon: '\uD83D\uDC41\uFE0F' },
   { id: 'glasses',   labelKey: 'ar.cat_glasses',   icon: '\uD83D\uDC53' },
   { id: 'earring',   labelKey: 'ar.cat_earring',   icon: '\uD83D\uDC8D' },
-  { id: 'lashes',    labelKey: 'ar.cat_lashes',    icon: '\uD83E\uDEF6', comingSoon: true },
+  { id: 'lashes',    labelKey: 'ar.cat_lashes',    icon: '\u2728' },
 ];
 
 const SHEET_MIN = 56;
@@ -84,10 +84,11 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
   const getVideo = useCallback(() => videoRef.current, [videoRef]);
   const cameraLive = isActive && !cameraError && videoPlaying;
 
-  const currentBase = selectedBase ? (BASE_LOOKS.find(l => l.id === selectedBase) ?? null) : null;
-  const activeColorLook = (lipColor || cheekColor || eyeshadowColor)
-    ? { lip: lipColor, cheek: cheekColor, eyeshadow: eyeshadowColor }
-    : null;
+  const [baseColor, setBaseColor] = useState(null);
+  const currentBase = selectedBase
+    ? (BASE_LOOKS.find(l => l.id === selectedBase) ?? BASE_LOOKS[0])
+    : (baseColor ? { base: baseColor, brow: browColor } : null);
+  const activeColorLook = { lip: lipColor, cheek: cheekColor, eyeshadow: eyeshadowColor };
 
   const glassesItem = GLASSES_ITEMS.find(i => i.id === selectedGlasses);
   const earringItem = EARRING_ITEMS.find(i => i.id === selectedEarring);
@@ -150,7 +151,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
 
   // カラー適用
   const applyColor = useCallback((category, hex) => {
-    if (category === 'base') { /* future */ }
+    if (category === 'base') { setBaseColor(hex); }
     else if (category === 'lip') setLipColor(hex);
     else if (category === 'eyebrow') setBrowColor(hex);
     else if (category === 'eyeshadow') setEyeshadowColor(`rgba(${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)},0.25)`);
@@ -262,21 +263,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
         padding: '5px 12px', fontSize: 12, cursor: 'pointer', fontWeight: 600, zIndex: 10,
       }}>{'\u2190'} {t('back_to_mirror') || '\u623B\u308B'}</button>
 
-      {/* Kirari bubble */}
-      {!sheetOpen && (
-        <div style={{
-          position: 'absolute', bottom: SHEET_MIN + (cart.cartItems.length > 0 ? 52 : 0) + 8,
-          left: 12, right: 12, transition: 'bottom 0.2s ease',
-          background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)',
-          borderRadius: 16, padding: '8px 12px',
-          display: 'flex', alignItems: 'center', gap: 8, zIndex: 2,
-        }}>
-          <Kirari size={28} expression="sparkle" />
-          <p style={{ fontSize: 12, color: '#334155', margin: 0, lineHeight: 1.5, flex: 1 }}>
-            {t('ar.color_comment', { name: '' })}
-          </p>
-        </div>
-      )}
+      {/* Kirari removed — menu has enough info */}
 
       {/* BottomSheet */}
       <div style={{
@@ -321,7 +308,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
         {/* Expanded content */}
         {sheetOpen && (
           <div style={{ padding: '8px 12px 12px', overflowY: 'auto', maxHeight: SHEET_MAX - SHEET_MIN - 20 }}>
-            {['base','lip','eyeshadow','eyebrow','cheek','contacts'].includes(activeCategory) && (
+            {['base','lip','eyeshadow','eyebrow','cheek','contacts','lashes'].includes(activeCategory) && (
               <ProductLayer
                 category={activeCategory}
                 selectedProduct={selectedProduct} selectedColor={selectedColor}
@@ -435,6 +422,17 @@ function ProductLayer({ category, selectedProduct, selectedColor, personalColor,
           </div>
           {selectedColor && (
             <p style={{ fontSize: 9, color: '#94a3b8', margin: '4px 0 0' }}>{txt(selectedColor.name, lang)}</p>
+          )}
+          {/* Intensity slider (not for contacts/lashes) */}
+          {!['contacts', 'lashes'].includes(category) && selectedColor && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
+              <span style={{ fontSize: 10, color: '#64748b', whiteSpace: 'nowrap', fontWeight: 600 }}>
+                {t?.('ar.intensity') || '\u6FC3\u3055'}
+              </span>
+              <input type="range" min={0} max={100} defaultValue={70}
+                style={{ flex: 1, accentColor: '#a855f7' }}
+              />
+            </div>
           )}
           {/* Add to cart button */}
           {selectedColor && (() => {
