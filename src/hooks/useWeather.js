@@ -48,10 +48,12 @@ async function fetchWeather(lat, lon) {
   });
   const tomorrowCode = tomorrowNoon >= 0 ? data.hourly.weather_code[tomorrowNoon] : null;
 
-  // 今日の最高/最低気温, UV最大値
+  // 今日・明日の最高/最低気温, UV最大値
   const todayMax = data.daily?.temperature_2m_max?.[0] ?? null;
   const todayMin = data.daily?.temperature_2m_min?.[0] ?? null;
   const todayUvMax = data.daily?.uv_index_max?.[0] ?? null;
+  const tomorrowMax = data.daily?.temperature_2m_max?.[1] ?? null;
+  const tomorrowMin = data.daily?.temperature_2m_min?.[1] ?? null;
 
   return {
     temp: data.current.temperature_2m,
@@ -64,6 +66,8 @@ async function fetchWeather(lat, lon) {
     todayMax,
     todayMin,
     todayUvMax,
+    tomorrowMax,
+    tomorrowMin,
   };
 }
 

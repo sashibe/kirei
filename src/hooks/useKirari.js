@@ -27,81 +27,97 @@ const RANDOM_KEYS = [
   'kirari.random_dull',
 ];
 
-// 天気予報セリフを動的生成（地名・天気・降水確率を含む）
+// 天気予報セリフを動的生成（日付・地名・時間帯を考慮）
 function buildWeatherForecast(weather, lang = 'ja') {
   if (!weather) return null;
-  const { weatherCode, afternoonRainMax, tomorrowCode, locationName, temp, rainProb } = weather;
-
+  const w = weather;
   const texts = WEATHER_TEXT[lang] || WEATHER_TEXT.ja;
-  const emoji = WEATHER_EMOJI[weatherCode] || '🌤️';
-  const loc = locationName || '';
+  const loc = w.locationName || '';
+  const hour = new Date().getHours();
+  const isMorning = hour >= 5 && hour < 12;
+  const isAfternoon = hour >= 12 && hour < 18;
+  const isEvening = hour >= 18 || hour < 5;
+
+  // 日付文字列
+  const today = new Date();
+  const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
+  const fmtDate = (d, l) => {
+    const m = d.getMonth() + 1, day = d.getDate();
+    if (l === 'ja') return `${m}/${day}`;
+    if (l === 'ko') return `${m}/${day}`;
+    return `${d.toLocaleDateString('en', { month: 'short', day: 'numeric' })}`;
+  };
+  const todayStr = fmtDate(today, lang);
+  const tmrStr = fmtDate(tomorrow, lang);
 
   const lines = [];
+  const L = (ja, ko, en) => lines.push(lang === 'ko' ? ko : lang === 'en' ? en : ja);
 
-  // 現在の天気
-  const currentText = texts[weatherCode] || '';
-  if (currentText && loc) {
-    if (lang === 'ja') lines.push(`${loc}の今日の天気は${emoji}${currentText}だよ♪`);
-    else if (lang === 'ko') lines.push(`${loc} 오늘 날씨는 ${emoji}${currentText}♪`);
-    else lines.push(`Today in ${loc}: ${emoji} ${currentText}♪`);
+  // --- 今日の天気（常時） ---
+  const cText = texts[w.weatherCode] || '';
+  const cEmoji = WEATHER_EMOJI[w.weatherCode] || '🌤️';
+  if (cText && loc) {
+    L(`${todayStr} ${loc}の天気は${cEmoji}${cText}だよ♪`,
+      `${todayStr} ${loc} 날씨는 ${cEmoji}${cText}♪`,
+      `${todayStr} ${loc}: ${cEmoji} ${cText}♪`);
   }
 
-  // 午後の降水確率
-  if (afternoonRainMax != null && afternoonRainMax >= 40) {
-    if (lang === 'ja') lines.push(`午後の降水確率は${afternoonRainMax}%☂️ 傘を忘れずにね！`);
-    else if (lang === 'ko') lines.push(`오후 강수 확률 ${afternoonRainMax}%☂️ 우산 잊지 마세요!`);
-    else lines.push(`Afternoon rain chance: ${afternoonRainMax}%☂️ Don't forget your umbrella!`);
+  // --- 朝: 今日の最高気温 + コーデ提案 ---
+  if (isMorning && w.todayMax != null) {
+    if (w.todayMax >= 30)
+      L(`今日(${todayStr})${loc}の最高気温は${w.todayMax}°C🌡️ 暑くなるよ！水分補給を忘れずに`,
+        `오늘(${todayStr}) ${loc} 최고기온 ${w.todayMax}°C🌡️ 더워질 거야! 수분 보충 잊지 마세요`,
+        `${todayStr} ${loc} high: ${w.todayMax}°C🌡️ It'll be hot! Stay hydrated`);
+    else if (w.todayMax <= 15)
+      L(`今日(${todayStr})${loc}の最高気温は${w.todayMax}°C🧥 暖かくしてお出かけしてね♪`,
+        `오늘(${todayStr}) ${loc} 최고기온 ${w.todayMax}°C🧥 따뜻하게 입고 나가세요♪`,
+        `${todayStr} ${loc} high: ${w.todayMax}°C🧥 Dress warmly!`);
   }
 
-  // 明日の天気
-  if (tomorrowCode != null) {
-    const tmrText = texts[tomorrowCode] || '';
-    const tmrEmoji = WEATHER_EMOJI[tomorrowCode] || '🌤️';
-    if (tmrText) {
-      if (lang === 'ja') lines.push(`明日は${tmrEmoji}${tmrText}の予報♪`);
-      else if (lang === 'ko') lines.push(`내일은 ${tmrEmoji}${tmrText} 예보♪`);
-      else lines.push(`Tomorrow: ${tmrEmoji} ${tmrText}♪`);
-    }
+  // --- 朝: 最低気温 + 寒暖差 ---
+  if (isMorning && w.todayMin != null && w.todayMin <= 10)
+    L(`今朝の${loc}は${w.todayMin}°C❄️ 冷え込むから暖かくしてね！`,
+      `오늘 아침 ${loc} ${w.todayMin}°C❄️ 추우니 따뜻하게!`,
+      `This morning in ${loc}: ${w.todayMin}°C❄️ Bundle up!`);
+
+  if (isMorning && w.todayMax != null && w.todayMin != null && (w.todayMax - w.todayMin) >= 12)
+    L(`${loc}は${w.todayMin}°C→${w.todayMax}°C 寒暖差が大きい日☀️ 薄手の羽織り物があるといいかも♪`,
+      `${loc} ${w.todayMin}°C→${w.todayMax}°C 기온차가 큰 날☀️ 가벼운 겉옷 챙기세요♪`,
+      `${loc}: ${w.todayMin}°C→${w.todayMax}°C Big temp swing☀️ Bring a light layer♪`);
+
+  // --- 午前〜午後: 降水確率 ---
+  if ((isMorning || isAfternoon) && w.afternoonRainMax != null && w.afternoonRainMax >= 40)
+    L(`${loc}の午後の降水確率は${w.afternoonRainMax}%☂️ お出かけの際は傘を忘れずに！`,
+      `${loc} 오후 강수 확률 ${w.afternoonRainMax}%☂️ 외출 시 우산 잊지 마세요!`,
+      `${loc} afternoon rain: ${w.afternoonRainMax}%☂️ Don't forget your umbrella!`);
+
+  // --- 日中: UV指数 ---
+  if (!isEvening && w.todayUvMax != null && w.todayUvMax >= 6)
+    L(`今日(${todayStr})${loc}のUV指数は${Math.round(w.todayUvMax)}☀️ 日焼け対策は万全に！`,
+      `오늘(${todayStr}) ${loc} UV지수 ${Math.round(w.todayUvMax)}☀️ 자외선 차단 철저히!`,
+      `${todayStr} ${loc} UV: ${Math.round(w.todayUvMax)}☀️ Sun protection is a must!`);
+
+  // --- 夕方〜夜: 明日の天気予報 ---
+  if (isEvening && w.tomorrowCode != null) {
+    const tmrText = texts[w.tomorrowCode] || '';
+    const tmrEmoji = WEATHER_EMOJI[w.tomorrowCode] || '🌤️';
+    if (tmrText)
+      L(`明日(${tmrStr})${loc}は${tmrEmoji}${tmrText}の予報♪`,
+        `내일(${tmrStr}) ${loc}은 ${tmrEmoji}${tmrText} 예보♪`,
+        `Tomorrow(${tmrStr}) ${loc}: ${tmrEmoji} ${tmrText}♪`);
   }
 
-  // 最高気温
-  if (weather.todayMax != null) {
-    if (weather.todayMax >= 30) {
-      if (lang === 'ja') lines.push(`今日の予想最高気温は${weather.todayMax}°C🌡️ 暑くなるから水分補給を忘れずに！`);
-      else if (lang === 'ko') lines.push(`오늘 예상 최고기온 ${weather.todayMax}°C🌡️ 수분 보충 잊지 마세요!`);
-      else lines.push(`Today's high: ${weather.todayMax}°C🌡️ Stay hydrated!`);
-    } else if (weather.todayMax <= 15) {
-      if (lang === 'ja') lines.push(`今日の予想最高気温は${weather.todayMax}°C🧥 暖かくしてお出かけしてね♪`);
-      else if (lang === 'ko') lines.push(`오늘 예상 최고기온 ${weather.todayMax}°C🧥 따뜻하게 입고 나가세요♪`);
-      else lines.push(`Today's high: ${weather.todayMax}°C🧥 Dress warmly!`);
-    }
-  }
+  // --- 夕方〜夜: 明日の気温（当日ではなく翌日） ---
+  if (isEvening && w.tomorrowMax != null)
+    L(`明日(${tmrStr})${loc}の最高気温は${w.tomorrowMax}°C の予報♪`,
+      `내일(${tmrStr}) ${loc} 최고기온 ${w.tomorrowMax}°C 예보♪`,
+      `Tomorrow(${tmrStr}) ${loc} high: ${w.tomorrowMax}°C♪`);
 
-  // 最低気温（寒暖差注意）
-  if (weather.todayMax != null && weather.todayMin != null) {
-    const diff = weather.todayMax - weather.todayMin;
-    if (diff >= 12) {
-      if (lang === 'ja') lines.push(`最低${weather.todayMin}°C〜最高${weather.todayMax}°C 寒暖差が大きいから薄手の羽織り物があるといいかも♪`);
-      else if (lang === 'ko') lines.push(`최저${weather.todayMin}°C~최고${weather.todayMax}°C 기온차가 크니까 가벼운 겉옷을 챙기세요♪`);
-      else lines.push(`Low ${weather.todayMin}°C / High ${weather.todayMax}°C — Big temp swing! Bring a light layer♪`);
-    }
-    if (weather.todayMin <= 10) {
-      if (lang === 'ja') lines.push(`朝の最低気温は${weather.todayMin}°C❄️ 朝は冷え込むから体調に気をつけてね！`);
-      else if (lang === 'ko') lines.push(`아침 최저기온 ${weather.todayMin}°C❄️ 아침은 추우니 건강 조심!`);
-      else lines.push(`Morning low: ${weather.todayMin}°C❄️ Bundle up in the morning!`);
-    }
-  }
-
-  // UV指数（日中最大値）
-  if (weather.todayUvMax != null && weather.todayUvMax >= 6) {
-    if (lang === 'ja') lines.push(`今日のUV指数は${Math.round(weather.todayUvMax)}☀️ 日焼け対策は万全に！`);
-    else if (lang === 'ko') lines.push(`오늘 UV 지수 ${Math.round(weather.todayUvMax)}☀️ 자외선 차단 철저히!`);
-    else lines.push(`Today's UV index: ${Math.round(weather.todayUvMax)}☀️ Sun protection is a must!`);
-  } else if (weather.uvIndex >= 6) {
-    if (lang === 'ja') lines.push('UV指数が高め☀️ 日焼け止めを塗ろうね！');
-    else if (lang === 'ko') lines.push('UV 지수가 높아요☀️ 자외선 차단제 잊지 마세요!');
-    else lines.push('High UV index☀️ Apply sunscreen!');
-  }
+  // --- 常時: 現在気温（軽い情報） ---
+  if (loc)
+    L(`今の${loc}の気温は${w.temp}°C${cEmoji}`,
+      `지금 ${loc} 기온은 ${w.temp}°C${cEmoji}`,
+      `Current temp in ${loc}: ${w.temp}°C${cEmoji}`);
 
   return lines.length > 0 ? lines[Math.floor(Math.random() * lines.length)] : null;
 }
