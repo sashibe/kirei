@@ -203,8 +203,8 @@ export function drawCheek(ctx, lms, w, h, colorStr, opacity) {
   const rw = Math.max(eyeW * 1.0, 20); // 横半径
   const rh = rw * 0.65; // 縦半径（楕円）
 
-  // 左頬: #50, 右頬: #280
-  for (const cheekIdx of [50, 280]) {
+  // 右頬: #205, 左頬: #425
+  for (const cheekIdx of [205, 425]) {
     const cheek = lms[cheekIdx];
     const cx = lmX(cheek, w);
     const cy = lmY(cheek, h);
@@ -343,11 +343,12 @@ export function drawBrow(ctx, lms, w, h, colorStr, opacity) {
   const opa = opacity * alpha;
   ctx.save();
 
+  const eyeW = Math.abs(lmX(lms[133], w) - lmX(lms[33], w));
   for (const conns of [LEFT_EYEBROW, RIGHT_EYEBROW]) {
-    ctx.globalAlpha = opa * 0.5;
+    ctx.globalAlpha = opa * 0.7;
     ctx.globalCompositeOperation = 'multiply';
     ctx.strokeStyle = hex;
-    ctx.lineWidth = 3;
+    ctx.lineWidth = Math.max(eyeW * 0.08, 1.5);
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.beginPath();
