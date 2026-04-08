@@ -8,6 +8,7 @@ import { GLASSES_ITEMS, EARRING_ITEMS, CONTACT_LENS_ITEMS } from '../data/access
 import { BASE_LOOKS } from '../data/makeupLooks.js';
 import { PRODUCTS } from '../data/products.js';
 import { getSeasonText } from '../analysis/personalColor.js';
+import { captureFrame, shareImage, saveImage } from '../utils/share.js';
 
 // Vite: import all product images from assets/products/
 const productImages = import.meta.glob('../assets/products/*.jpg', { eager: true, query: '?url', import: 'default' });
@@ -114,25 +115,38 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
     if (sheetOpen) setSheetOpen(false);
   }, [sheetOpen]);
 
-  // 📷 キャプチャ
-  const capturePhoto = useCallback(() => {
-    const video = videoRef.current;
-    const arCanvas = canvasRef.current;
-    if (!video) return;
-    const c = document.createElement('canvas');
-    c.width = video.videoWidth || 640;
-    c.height = video.videoHeight || 480;
-    const ctx = c.getContext('2d');
-    ctx.save(); ctx.translate(c.width, 0); ctx.scale(-1, 1);
-    ctx.drawImage(video, 0, 0, c.width, c.height);
-    ctx.restore();
-    if (arCanvas) {
-      ctx.save(); ctx.translate(c.width, 0); ctx.scale(-1, 1);
-      ctx.drawImage(arCanvas, 0, 0, c.width, c.height);
-      ctx.restore();
-    }
-    onCapture?.(c.toDataURL('image/jpeg', 0.92));
+  // 📷 キャプチャ + シェア
+  const [shareStatus, setShareStatus] = useState(null);
+  const doCapture = useCallback(() => {
+    const dataUrl = captureFrame(videoRef.current, canvasRef.current);
+    if (dataUrl) onCapture?.(dataUrl);
+    return dataUrl;
   }, [videoRef, onCapture]);
+
+  // タップ → シェアシート
+  const handleShare = useCallback(async () => {
+    const dataUrl = doCapture();
+    if (!dataUrl) return;
+    const result = await shareImage(dataUrl);
+    setShareStatus(result);
+    setTimeout(() => setShareStatus(null), 2000);
+  }, [doCapture]);
+
+  // 長押し → 保存
+  const shareTimerRef = useRef(null);
+  const handleShareDown = useCallback(() => {
+    shareTimerRef.current = setTimeout(() => {
+      const dataUrl = doCapture();
+      if (dataUrl) {
+        saveImage(dataUrl);
+        setShareStatus('saved');
+        setTimeout(() => setShareStatus(null), 2000);
+      }
+    }, 600);
+  }, [doCapture]);
+  const handleShareUp = useCallback(() => {
+    if (shareTimerRef.current) clearTimeout(shareTimerRef.current);
+  }, []);
 
   // カラー適用
   const applyColor = useCallback((category, hex) => {
@@ -197,6 +211,17 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
         </div>
       )}
 
+      {/* Share status toast */}
+      {shareStatus && (
+        <div style={{ position: 'absolute', top: '15%', left: '50%', transform: 'translateX(-50%)',
+          background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)', borderRadius: 20,
+          padding: '8px 20px', color: '#fff', fontSize: 13, fontWeight: 600, pointerEvents: 'none', zIndex: 50,
+        }}>
+          {shareStatus === 'saved' ? '\u2705 \u4FDD\u5B58\u3057\u307E\u3057\u305F' :
+           shareStatus === 'shared' ? '\u2705 \u30B7\u30A7\u30A2\u3057\u307E\u3057\u305F' : ''}
+        </div>
+      )}
+
       {!cameraLive && (
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
           background: 'linear-gradient(180deg, #1a1025 0%, #0f0a1a 100%)' }}>
@@ -218,7 +243,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
 
       {/* Top-right: Capture + Mesh + Back */}
       <div style={{ position: 'absolute', top: 12, right: 12, display: 'flex', gap: 8, zIndex: 10 }}>
-        <button onClick={capturePhoto} style={{
+        <button onClick={handleShare} onPointerDown={handleShareDown} onPointerUp={handleShareUp} onPointerCancel={handleShareUp} style={{
           background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(8px)', border: 'none',
           borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
           color: '#fff', fontSize: 16, cursor: 'pointer',

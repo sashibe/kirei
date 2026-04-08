@@ -16,6 +16,7 @@ import { getPcLine, getScoreDeltaLine } from '../data/kirariDialogues.js';
 import { logEvent, getPrevScore } from '../utils/logger.js';
 import { saveScore } from '../lib/scoreHistory.js';
 import { useGuestId } from '../hooks/useGuestId.js';
+import { shareImage, saveImage } from '../utils/share.js';
 
 const STAGE = { SEARCHING: 'searching', DETECTED: 'detected', READY: 'ready', SHUTTER: 'shutter', SCANNING: 'scanning' };
 
@@ -507,17 +508,39 @@ export default function MirrorScreenV3({ onResult }) {
             </>
           ) : skinScores ? (
             <>
-              <button
-                onClick={() => setShowScores(s => !s)}
-                style={{
-                  ...glassStyle, border: "none", borderRadius: 20, padding: "4px 14px",
-                  fontSize: 10, fontWeight: 600, color: "#64748b", cursor: "pointer",
-                  display: "flex", alignItems: "center", gap: 4, marginBottom: 2,
-                }}
-              >
-                <span style={{ fontSize: 12 }}>{showScores ? "👁" : "👁‍🗨"}</span>
-                {showScores ? t("mirror.hide_scores") : t("mirror.show_scores")}
-              </button>
+              <div style={{ display: 'flex', gap: 6, marginBottom: 2 }}>
+                <button
+                  onClick={() => setShowScores(s => !s)}
+                  style={{
+                    ...glassStyle, border: "none", borderRadius: 20, padding: "4px 14px",
+                    fontSize: 10, fontWeight: 600, color: "#64748b", cursor: "pointer",
+                    display: "flex", alignItems: "center", gap: 4,
+                  }}
+                >
+                  <span style={{ fontSize: 12 }}>{showScores ? "👁" : "👁‍🗨"}</span>
+                  {showScores ? t("mirror.hide_scores") : t("mirror.show_scores")}
+                </button>
+                <button
+                  onClick={async () => {
+                    const canvas = document.createElement('canvas');
+                    const video = cameraRef.current?.videoEl;
+                    if (!video) return;
+                    canvas.width = video.videoWidth || 640;
+                    canvas.height = video.videoHeight || 480;
+                    const ctx = canvas.getContext('2d');
+                    ctx.save(); ctx.translate(canvas.width, 0); ctx.scale(-1, 1);
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    ctx.restore();
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+                    await shareImage(dataUrl, 'KIREI - My Skin Score');
+                  }}
+                  style={{
+                    ...glassStyle, border: "none", borderRadius: 20, padding: "4px 12px",
+                    fontSize: 14, color: "#64748b", cursor: "pointer",
+                    display: "flex", alignItems: "center",
+                  }}
+                >📤</button>
+              </div>
               <button
                 className="btn-primary"
                 onClick={() => { setSkinScores(null); setPersonalColor(null); setStage(null); setChecking(false); setFrozenFrame(null); }}
