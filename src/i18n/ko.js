@@ -328,4 +328,7 @@ export default {
   "skincare_also":     "\uC2A4\uD0A8\uCF00\uC5B4 \uBCF4\uAE30 \u2192",
   "skincare_cta_new":  "\uCD94\uCC9C \uC2A4\uD0A8\uCF00\uC5B4 \uBCF4\uAE30 \u2192",
   "pc_match":          "PC \u2713",
+  "cart_items_count":  "{n}\uAC1C",
+  "cart_add":          "\uCE74\uD2B8\uC5D0 \uCD94\uAC00",
+  "cart_added":        "\uCE74\uD2B8\uC5D0 \uCD94\uAC00\uB428",
 };

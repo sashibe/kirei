@@ -327,5 +327,8 @@ export default {
   "back_to_mirror":    "Back to Mirror",
   "skincare_also":     "See Skincare →",
   "skincare_cta_new":  "See Recommended Skincare →",
-  "pc_match":          "PC ✓",
+  "pc_match":          "PC \u2713",
+  "cart_items_count":  "{n} items",
+  "cart_add":          "Add to Cart",
+  "cart_added":        "Added to Cart",
 };

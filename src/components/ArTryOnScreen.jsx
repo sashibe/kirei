@@ -308,7 +308,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
                 }}
                 onSelectColor={(c) => { setSelectedColor(c); applyColor(activeCategory, c.hex); }}
                 onAddToCart={handleAddToCart}
-                lang={lang}
+                lang={lang} t={t}
               />
             )}
             {activeCategory === 'glasses' && (
@@ -351,7 +351,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
 }
 
 // === ProductLayer ===
-function ProductLayer({ category, selectedProduct, selectedColor, personalColor, cart, onSelectProduct, onSelectColor, onAddToCart, lang = 'ja' }) {
+function ProductLayer({ category, selectedProduct, selectedColor, personalColor, cart, onSelectProduct, onSelectColor, onAddToCart, lang = 'ja', t }) {
   const categoryProducts = sortByPC(PRODUCTS.filter(p => p.category === category), personalColor?.season);
   if (categoryProducts.length === 0) return <div style={{ fontSize: 12, color: '#94a3b8', textAlign: 'center', padding: 8 }}>Coming soon</div>;
 
@@ -428,7 +428,7 @@ function ProductLayer({ category, selectedProduct, selectedColor, personalColor,
                 border: 'none', borderRadius: 20, fontSize: 13, fontWeight: 700,
                 cursor: 'pointer', whiteSpace: 'nowrap',
               }}>
-                {inCart ? '\u2713 \u30AB\u30FC\u30C8\u306B\u8FFD\u52A0\u6E08\u307F' : '\u30AB\u30FC\u30C8\u306B\u8FFD\u52A0'}
+                {inCart ? '\u2713 ' + (t?.('cart_added') || 'Added') : (t?.('cart_add') || 'Add to Cart')}
               </button>
             );
           })()}

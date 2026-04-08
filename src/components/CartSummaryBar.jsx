@@ -1,7 +1,10 @@
+import { useT } from '../i18n/index.jsx';
+
 /**
  * CartSummaryBar — カート固定バー（ARトライオン下部）
  */
 export default function CartSummaryBar({ items, totalPrice, onCheckout }) {
+  const { t } = useT();
   if (!items || items.length === 0) return null;
 
   return (
@@ -16,7 +19,7 @@ export default function CartSummaryBar({ items, totalPrice, onCheckout }) {
     }}>
       <div style={{ flex: 1 }}>
         <span style={{ fontSize: 13, fontWeight: 700 }}>
-          {'\uD83D\uDED2'} {items.length}{'\u70B9'}
+          {'\uD83D\uDED2'} {t('cart_items_count', { n: String(items.length) }) || `${items.length} items`}
         </span>
         <span style={{ fontSize: 13, color: '#a855f7', fontWeight: 700, marginLeft: 8 }}>
           {'\u00A5'}{totalPrice.toLocaleString()}
@@ -28,7 +31,7 @@ export default function CartSummaryBar({ items, totalPrice, onCheckout }) {
         padding: '8px 16px', fontSize: 12, fontWeight: 700,
         cursor: 'pointer', whiteSpace: 'nowrap',
       }}>
-        {'\u5546\u54C1\u8CFC\u5165\u3078 \u2192'}
+        {t('cart_checkout') || 'Checkout \u2192'}
       </button>
     </div>
   );

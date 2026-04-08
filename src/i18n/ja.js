@@ -330,5 +330,8 @@ export default {
   "back_to_mirror":    "ミラーに戻る",
   "skincare_also":     "スキンケアも見る →",
   "skincare_cta_new":  "おすすめスキンケアはこれ →",
-  "pc_match":          "PC ✓",
+  "pc_match":          "PC \u2713",
+  "cart_items_count":  "{n}\u70B9",
+  "cart_add":          "\u30AB\u30FC\u30C8\u306B\u8FFD\u52A0",
+  "cart_added":        "\u30AB\u30FC\u30C8\u306B\u8FFD\u52A0\u6E08\u307F",
 };
