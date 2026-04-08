@@ -166,12 +166,12 @@ export function drawEyeshadow(ctx, lms, w, h, colorStr, opacity) {
     cy = (cy / indices.length) * h;
 
     const grad = ctx.createLinearGradient(cx, minY * h, cx, maxY * h);
-    grad.addColorStop(0, hex + 'B0');
-    grad.addColorStop(0.6, hex + '60');
-    grad.addColorStop(1, hex + '10');
+    grad.addColorStop(0, hex + 'E0');
+    grad.addColorStop(0.5, hex + '90');
+    grad.addColorStop(1, hex + '20');
 
-    ctx.globalAlpha = opa * 0.55;
-    ctx.globalCompositeOperation = 'multiply';
+    ctx.globalAlpha = opa * 0.6;
+    ctx.globalCompositeOperation = 'source-over';
     ctx.fillStyle = grad;
 
     traceIndices(ctx, lms, indices, w, h);
