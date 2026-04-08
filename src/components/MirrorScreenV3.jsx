@@ -44,7 +44,7 @@ export default function MirrorScreenV3({ onResult }) {
   const weather = useWeather();
 
   // キラリ アンビエント出現（Step 2 + 天気連動 Step 3）
-  const kirariAmbient = useKirari({ weather, isChecking: checking, t });
+  const kirariAmbient = useKirari({ weather, isChecking: checking, t, lang });
 
   // 行動ログ: ミラー画面の滞在時間計測
   useEffect(() => {

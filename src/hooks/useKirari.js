@@ -6,6 +6,7 @@ import {
   getTimeBasedLine,
   pickLine,
 } from '../data/kirariDialogues.js';
+import { WEATHER_TEXT, WEATHER_EMOJI } from './useWeather.js';
 
 // --- セリフパターン定義（翻訳キー） ---
 
@@ -25,6 +26,53 @@ const RANDOM_KEYS = [
   'kirari.random_lip',
   'kirari.random_dull',
 ];
+
+// 天気予報セリフを動的生成（地名・天気・降水確率を含む）
+function buildWeatherForecast(weather, lang = 'ja') {
+  if (!weather) return null;
+  const { weatherCode, afternoonRainMax, tomorrowCode, locationName, temp, rainProb } = weather;
+
+  const texts = WEATHER_TEXT[lang] || WEATHER_TEXT.ja;
+  const emoji = WEATHER_EMOJI[weatherCode] || '🌤️';
+  const loc = locationName || '';
+
+  const lines = [];
+
+  // 現在の天気
+  const currentText = texts[weatherCode] || '';
+  if (currentText && loc) {
+    if (lang === 'ja') lines.push(`${loc}の今日の天気は${emoji}${currentText}だよ♪`);
+    else if (lang === 'ko') lines.push(`${loc} 오늘 날씨는 ${emoji}${currentText}♪`);
+    else lines.push(`Today in ${loc}: ${emoji} ${currentText}♪`);
+  }
+
+  // 午後の降水確率
+  if (afternoonRainMax != null && afternoonRainMax >= 40) {
+    if (lang === 'ja') lines.push(`午後の降水確率は${afternoonRainMax}%☂️ 傘を忘れずにね！`);
+    else if (lang === 'ko') lines.push(`오후 강수 확률 ${afternoonRainMax}%☂️ 우산 잊지 마세요!`);
+    else lines.push(`Afternoon rain chance: ${afternoonRainMax}%☂️ Don't forget your umbrella!`);
+  }
+
+  // 明日の天気
+  if (tomorrowCode != null) {
+    const tmrText = texts[tomorrowCode] || '';
+    const tmrEmoji = WEATHER_EMOJI[tomorrowCode] || '🌤️';
+    if (tmrText) {
+      if (lang === 'ja') lines.push(`明日は${tmrEmoji}${tmrText}の予報♪`);
+      else if (lang === 'ko') lines.push(`내일은 ${tmrEmoji}${tmrText} 예보♪`);
+      else lines.push(`Tomorrow: ${tmrEmoji} ${tmrText}♪`);
+    }
+  }
+
+  // UV注意
+  if (weather.uvIndex >= 6) {
+    if (lang === 'ja') lines.push('UV指数が高め☀️ 日焼け止めを塗ろうね！');
+    else if (lang === 'ko') lines.push('UV 지수가 높아요☀️ 자외선 차단제 잊지 마세요!');
+    else lines.push('High UV index☀️ Apply sunscreen!');
+  }
+
+  return lines.length > 0 ? lines[Math.floor(Math.random() * lines.length)] : null;
+}
 
 // 天気連動 → 翻訳キー
 function getWeatherKey(weather) {
@@ -131,7 +179,7 @@ function getInterval(elapsedMs) {
  * @param {Function} options.t - 翻訳関数
  * @returns {{ message: string|null, visible: boolean, dismiss: () => void }}
  */
-export default function useKirari({ weather = null, isChecking = false, t = (k) => k } = {}) {
+export default function useKirari({ weather = null, isChecking = false, t = (k) => k, lang = 'ja' } = {}) {
   const [message, setMessage] = useState(null);
   const [visible, setVisible] = useState(false);
   const hideTimerRef = useRef(null);
@@ -168,9 +216,17 @@ export default function useKirari({ weather = null, isChecking = false, t = (k) 
     // 初回セリフを優先順位で選出
     const firstKey = selectFirstLineKey(streak, weatherKey);
 
+    // 天気予報セリフ（動的生成）
+    const forecastText = buildWeatherForecast(weather, lang);
+
     // 初回は3秒後に表示（毎回表示）
     const firstTimer = setTimeout(() => {
-      show(t(firstKey));
+      // 天気系キーの場合は予報セリフを優先
+      if (forecastText && firstKey?.includes('weather')) {
+        show(forecastText);
+      } else {
+        show(t(firstKey));
+      }
       lastKeyRef.current = firstKey;
       scheduleNext();
     }, 3000);
