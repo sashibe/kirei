@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Kirari from './Kirari.jsx';
 import Bubble from './Bubble.jsx';
 import { COLOR_LOOKS, BASE_LOOKS, recommendLooks } from '../data/makeupLooks.js';
-import { getPcColors } from '../analysis/personalColor.js';
+import { getPcColors, getSeasonText } from '../analysis/personalColor.js';
 import { useT } from '../i18n/index.jsx';
 
 function sortLooksByPc(looks, personalColor) {
@@ -17,7 +17,7 @@ function sortLooksByPc(looks, personalColor) {
 const PC_ICONS = { spring: '🌸', summer: '🌊', autumn: '🍂', winter: '❄️' };
 
 export default function SuggestScreen({ skinScores, personalColor, onSelectLook }) {
-  const { t } = useT();
+  const { t, lang } = useT();
   const [explorerOpen, setExplorerOpen] = useState(false);
   const [explorerTab, setExplorerTab] = useState(0); // 0=Base 1=Color
 
@@ -31,7 +31,7 @@ export default function SuggestScreen({ skinScores, personalColor, onSelectLook 
         personalColor={personalColor}
         skinScores={skinScores}
         onTry={() => onSelectLook({ baseLook, colorLook })}
-        t={t}
+        t={t} lang={lang}
       />
 
       <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 0' }}>
@@ -89,10 +89,10 @@ export default function SuggestScreen({ skinScores, personalColor, onSelectLook 
   );
 }
 
-function HeroCard({ baseLook, colorLook, personalColor, skinScores, onTry, t }) {
+function HeroCard({ baseLook, colorLook, personalColor, skinScores, onTry, t, lang }) {
   const pcColors = personalColor ? getPcColors(personalColor.season) : null;
   const swatches = [colorLook.lip, colorLook.cheek, colorLook.eyeshadow].filter(Boolean);
-  const reason = buildHeroReason(personalColor, skinScores, baseLook, colorLook, t);
+  const reason = buildHeroReason(personalColor, skinScores, baseLook, colorLook, t, lang);
 
   return (
     <div style={{ margin: '0 16px 8px' }}>
@@ -111,23 +111,23 @@ function HeroCard({ baseLook, colorLook, personalColor, skinScores, onTry, t }) 
         border: '1.5px solid #ede9fe',
         boxShadow: '0 4px 16px rgba(139,92,246,0.10)',
       }}>
-        {pcColors && personalColor && (
+        {pcColors && personalColor && (() => { const pc = getSeasonText(personalColor.subtypeId, lang); return (
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
-            background: (personalColor.color || pcColors.color) + '18',
-            border: `1.5px solid ${personalColor.color || pcColors.border}`,
+            background: (pc.color || pcColors.color) + '18',
+            border: `1.5px solid ${pc.color || pcColors.border}`,
             borderRadius: 20, padding: '5px 12px', marginBottom: 10,
           }}>
             <span style={{ fontSize: 14 }}>
-              {personalColor.emoji || PC_ICONS[personalColor.season] || '✨'}
+              {pc.emoji || PC_ICONS[personalColor.season] || '✨'}
             </span>
             <div>
-              <span style={{ fontSize: 12, fontWeight: 800, color: personalColor.color || pcColors.color }}>
-                {personalColor.main || t(personalColor.label)}
+              <span style={{ fontSize: 12, fontWeight: 800, color: pc.color || pcColors.color }}>
+                {pc.main}
               </span>
-              {personalColor.sub && (
+              {pc.sub && (
                 <span style={{ fontSize: 9, color: '#94a3b8', fontWeight: 600, marginLeft: 4 }}>
-                  {personalColor.sub}
+                  {pc.sub}
                 </span>
               )}
               <span style={{ fontSize: 10, color: '#94a3b8', marginLeft: 4 }}>
@@ -135,7 +135,7 @@ function HeroCard({ baseLook, colorLook, personalColor, skinScores, onTry, t }) 
               </span>
             </div>
           </div>
-        )}
+        ); })()}
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4, gap: 8 }}>
           <div style={{ minWidth: 0, flex: 1 }}>
@@ -179,10 +179,11 @@ function HeroCard({ baseLook, colorLook, personalColor, skinScores, onTry, t }) 
   );
 }
 
-function buildHeroReason(personalColor, skinScores, baseLook, colorLook, t) {
+function buildHeroReason(personalColor, skinScores, baseLook, colorLook, t, lang) {
   const dullness = skinScores?.dullness?.score ?? 70;
   const season = personalColor?.season;
-  const label = personalColor?.main || (personalColor?.label ? t(personalColor.label) : '');
+  const pc = personalColor?.subtypeId ? getSeasonText(personalColor.subtypeId, lang) : null;
+  const label = pc?.main || (personalColor?.label ? t(personalColor.label) : '');
 
   if (dullness < 60 && season) {
     return t('suggest.hero_reason_dullness', { pc: label, base: t(baseLook.name), color: t(colorLook.name) });

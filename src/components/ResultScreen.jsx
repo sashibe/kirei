@@ -8,7 +8,7 @@ import CoordinateOverlay from './CoordinateOverlay.jsx';
 import { useT } from '../i18n/index.jsx';
 import { SKIN_SCORES } from '../data/scores.js';
 import { getCoordHint, getPcLine } from '../data/kirariDialogues.js';
-import { getPcColors, getPcIcon } from '../analysis/personalColor.js';
+import { getPcColors, getPcIcon, getSeasonText } from '../analysis/personalColor.js';
 import useWeather from '../hooks/useWeather.js';
 import ScoreHistory from './ScoreHistory.jsx';
 
@@ -26,7 +26,7 @@ function generateLookComment(colorLook, baseLook, t) {
 }
 
 export default function ResultScreen({ skinScores: propSkin, personalColor = null, onRestart, onSkincareAR, baseLook = null, colorLook = null, capturedImage = null, products: productsProp = null }) {
-  const { t } = useT();
+  const { t, lang } = useT();
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showCoord, setShowCoord] = useState(false);
   const [showSkinScores, setShowSkinScores] = useState(false);
@@ -90,19 +90,21 @@ export default function ResultScreen({ skinScores: propSkin, personalColor = nul
               <p style={{ fontSize: 10, color: pcBg.color, opacity: 0.7, margin: '0 0 2px', fontWeight: 600 }}>
                 {t('pc.your_type')}
               </p>
+              {(() => { const pc = getSeasonText(personalColor.subtypeId, lang); return (
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ fontSize: 20 }}>{personalColor.emoji || getPcIcon(personalColor.season)}</span>
+                <span style={{ fontSize: 20 }}>{pc.emoji || getPcIcon(personalColor.season)}</span>
                 <div>
-                  <p style={{ fontSize: 16, fontWeight: 800, color: personalColor.color || pcBg.color, margin: 0 }}>
-                    {personalColor.main || t(personalColor.label)}
+                  <p style={{ fontSize: 16, fontWeight: 800, color: pc.color || pcBg.color, margin: 0 }}>
+                    {pc.main}
                   </p>
-                  {personalColor.sub && (
+                  {pc.sub && (
                     <p style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600, margin: '2px 0 0' }}>
-                      {personalColor.sub}
+                      {pc.sub}
                     </p>
                   )}
                 </div>
               </div>
+              ); })()}
             </div>
             {personalColor.confidence < 0.6 && (
               <span style={{ fontSize: 9, color: '#94a3b8' }}>
@@ -110,9 +112,11 @@ export default function ResultScreen({ skinScores: propSkin, personalColor = nul
               </span>
             )}
           </div>
+          {(() => { const pc = getSeasonText(personalColor.subtypeId, lang); return (
           <p style={{ fontSize: 11, color: '#475569', margin: '0 0 10px', lineHeight: 1.6 }}>
-            {personalColor.desc || t(personalColor.desc)}
+            {pc.desc}
           </p>
+          ); })()}
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
             <Kirari size={32} expression="sparkle" bounce />
             <Bubble>
