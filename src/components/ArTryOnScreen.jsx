@@ -34,6 +34,7 @@ const CATEGORIES = [
 
 const SHEET_MIN = 56;
 const SHEET_MAX = 400;
+const MAKEUP_CATEGORIES = ['lip', 'eyeshadow', 'cheek', 'base', 'eyebrow'];
 
 // i18n text helper
 const txt = (v, lang) => (typeof v === 'object' && v !== null) ? (v[lang] ?? v.ja ?? '') : (v ?? '');
@@ -337,6 +338,10 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
                 selectedProduct={selectedProduct} selectedColor={selectedColor}
                 personalColor={personalColor} cart={cart}
                 onSelectProduct={(p) => {
+                  // メイク系で別商品に切替 → 確認チェック
+                  if (MAKEUP_CATEGORIES.includes(activeCategory) && selectedProduct && selectedProduct.id !== p.id) {
+                    checkPending();
+                  }
                   setSelectedProduct(p);
                   const dc = p.colors[0];
                   if (dc) { setSelectedColor(dc); applyColor(activeCategory, dc.hex); }
