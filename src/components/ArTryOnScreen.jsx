@@ -33,7 +33,7 @@ const CATEGORIES = [
 ];
 
 const SHEET_MIN = 56;
-const SHEET_MAX = 340;
+const SHEET_MAX = 400;
 
 // i18n text helper
 const txt = (v, lang) => (typeof v === 'object' && v !== null) ? (v[lang] ?? v.ja ?? '') : (v ?? '');
