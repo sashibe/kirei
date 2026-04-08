@@ -193,5 +193,26 @@ function drawMeshOverlay(ctx, lms, w, h) {
     ctx.stroke();
   }
 
+  // デバッグ: チーク・眉のランドマーク位置を表示
   ctx.globalAlpha = 1;
+  // チーク位置 #205(赤), #425(赤)
+  for (const idx of [205, 425]) {
+    ctx.fillStyle = 'red';
+    ctx.beginPath();
+    ctx.arc(mx(lms[idx]), my(lms[idx]), 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = '10px sans-serif';
+    ctx.fillText(`#${idx}`, mx(lms[idx]) + 8, my(lms[idx]) + 4);
+  }
+  // 比較: 旧チーク位置 #234(緑), #454(緑)
+  for (const idx of [234, 454]) {
+    ctx.fillStyle = 'lime';
+    ctx.beginPath();
+    ctx.arc(mx(lms[idx]), my(lms[idx]), 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = '10px sans-serif';
+    ctx.fillText(`#${idx}`, mx(lms[idx]) + 8, my(lms[idx]) + 4);
+  }
 }
