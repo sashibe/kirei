@@ -177,7 +177,7 @@ export default {
   "skincare_ar.why_personal_dullness": "Your dullness score is {score}. Focused care tends to show clear differences in 2 weeks.",
   "skincare_ar.why_personal_pores":    "Your pore score is {score}. Keep up moisturizing care and pores will tighten over time.",
   "skincare_ar.why_encouragement": "Following the routine above for 2 weeks makes skin changes easier to feel♪",
-  "skincare_ar.cta":               "Start This Routine →",
+  "skincare_ar.cta":               "Start Skincare →",
   "skincare_ar.day":               "d",
   "skincare_ar.two_weeks":         "2 weeks",
   "skincare_ar.turnover_label":    "Skin turnover (about 28 days)",

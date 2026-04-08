@@ -177,7 +177,7 @@ export default {
   "skincare_ar.why_personal_dullness": "あなたのくすみスコアは{score}点。集中ケアで2週間後に差が出やすいポイントです。",
   "skincare_ar.why_personal_pores":    "あなたの毛穴スコアは{score}点。保湿ケアを続けると毛穴が引き締まってきますよ。",
   "skincare_ar.why_encouragement": "上のルーティンを2週間続けることで、肌の変化を実感しやすくなりますよ♪",
-  "skincare_ar.cta":               "このルーティンを始める →",
+  "skincare_ar.cta":               "スキンケアを始める →",
   "skincare_ar.day":               "日",
   "skincare_ar.two_weeks":         "2週間後",
   "skincare_ar.turnover_label":    "肌のターンオーバー（約28日）",

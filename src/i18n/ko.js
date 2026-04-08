@@ -177,7 +177,7 @@ export default {
   "skincare_ar.why_personal_dullness": "너의 칙칙함 점수는 {score}점. 집중 케어로 2주 후에 차이가 잘 나타나는 포인트야.",
   "skincare_ar.why_personal_pores":    "너의 모공 점수는 {score}점. 보습 케어를 계속하면 모공이 조여져요.",
   "skincare_ar.why_encouragement": "위 루틴을 2주 동안 계속하면 피부 변화를 실감하기 쉬워져요♪",
-  "skincare_ar.cta":               "이 루틴 시작하기 →",
+  "skincare_ar.cta":               "스킨케어 시작하기 →",
   "skincare_ar.day":               "일",
   "skincare_ar.two_weeks":         "2주 후",
   "skincare_ar.turnover_label":    "피부 턴오버 (약 28일)",
