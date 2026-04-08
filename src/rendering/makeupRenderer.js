@@ -564,6 +564,57 @@ export function drawEarrings(ctx, landmarks, item, canvasW, canvasH) {
 }
 
 /**
+ * つけまつげ — 上まぶた縁に太いストロークで目力アップ
+ * 目頭→目尻に沿ったカーブを描画
+ */
+// 上まぶた縁ランドマーク（目頭→目尻の順）
+const RIGHT_UPPER_LID = [33, 246, 161, 160, 159, 158, 157, 173, 133];
+const LEFT_UPPER_LID  = [362, 398, 384, 385, 386, 387, 388, 466, 263];
+
+export function drawLashes(ctx, landmarks, item, canvasW, canvasH, opacity = 0.7) {
+  if (!item || item.id === 'none') return;
+
+  const w = canvasW;
+  const h = canvasH;
+  const eyeW = Math.abs(lmX(landmarks[133], w) - lmX(landmarks[33], w));
+  const lineW = Math.max(eyeW * 0.04, 1.5);
+  const color = item.color || '#1a1a1a';
+
+  for (const lidPoints of [RIGHT_UPPER_LID, LEFT_UPPER_LID]) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = opacity * 0.85;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lineW;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    // まぶた縁ライン
+    ctx.beginPath();
+    lidPoints.forEach((idx, i) => {
+      const x = lmX(landmarks[idx], w);
+      const y = lmY(landmarks[idx], h);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    // 外側を太く（目尻強調 — つけまつげの目尻ボリューム表現）
+    ctx.lineWidth = lineW * 1.8;
+    ctx.globalAlpha = opacity * 0.5;
+    ctx.beginPath();
+    const outerStart = Math.floor(lidPoints.length * 0.5);
+    for (let i = outerStart; i < lidPoints.length; i++) {
+      const x = lmX(landmarks[lidPoints[i]], w);
+      const y = lmY(landmarks[lidPoints[i]], h);
+      i === outerStart ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    ctx.restore();
+  }
+}
+
+/**
  * カラコン — 瞳中心 #468(左) / #473(右) に虹彩オーバーレイ
  */
 export function drawContactLens(ctx, landmarks, item, canvasW, canvasH, opacity = 0.7) {

@@ -63,6 +63,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
   const [selectedGlasses, setSelectedGlasses] = useState('none');
   const [selectedEarring, setSelectedEarring] = useState('none');
   const [selectedContactLens, setSelectedContactLens] = useState('none');
+  const [lashesColor, setLashesColor] = useState(null);
   const [beforeAfter, setBeforeAfter] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
@@ -95,6 +96,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
   const contactLensItem = selectedContactLens === 'custom'
     ? customContactRef.current
     : CONTACT_LENS_ITEMS.find(i => i.id === selectedContactLens);
+  const lashesItem = lashesColor ? { id: 'custom', color: lashesColor } : null;
 
   const handlePointerDown = useCallback(() => setBeforeAfter(true), []);
   const handlePointerUp = useCallback(() => setBeforeAfter(false), []);
@@ -156,6 +158,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
     else if (category === 'eyebrow') setBrowColor(hex);
     else if (category === 'eyeshadow') setEyeshadowColor(`rgba(${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)},0.25)`);
     else if (category === 'cheek') setCheekColor(`rgba(${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)},0.4)`);
+    else if (category === 'lashes') { setLashesColor(hex); }
     else if (category === 'contacts') {
       const item = CONTACT_LENS_ITEMS.find(i => i.color === hex);
       if (item) { setSelectedContactLens(item.id); }
@@ -201,7 +204,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
           baseLook={browColor ? { ...currentBase, brow: browColor } : currentBase}
           colorLook={activeColorLook} intensity={70}
           showMesh={showMesh} glassesItem={glassesItem} earringItem={earringItem}
-          contactLensItem={contactLensItem} coverFit />
+          contactLensItem={contactLensItem} lashesItem={lashesItem} coverFit />
       )}
 
       {beforeAfter && (
