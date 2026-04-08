@@ -20,17 +20,17 @@ const RIGHT_BROW   = FaceLandmarker.FACE_LANDMARKS_RIGHT_EYEBROW;
 const LIPS         = FaceLandmarker.FACE_LANDMARKS_LIPS;
 const TESSELATION  = FaceLandmarker.FACE_LANDMARKS_TESSELATION;
 
-const MakeupCanvas = forwardRef(function MakeupCanvas({ getVideo, baseLook, colorLook, intensity, showMesh, glassesItem, earringItem, contactLensItem, coverFit }, ref) {
+const MakeupCanvas = forwardRef(function MakeupCanvas({ getVideo, baseLook, colorLook, intensity, intensities, showMesh, glassesItem, earringItem, contactLensItem, coverFit }, ref) {
   const canvasRef = useRef(null);
   useImperativeHandle(ref, () => canvasRef.current);
   const rafRef = useRef(null);
   const { ready, detect } = useFaceLandmarkerCtx();
 
   // props を ref に同期（ループ内で最新値参照）
-  const propsRef = useRef({ baseLook, colorLook, intensity, showMesh, glassesItem, earringItem, contactLensItem, coverFit });
+  const propsRef = useRef({ baseLook, colorLook, intensity, intensities, showMesh, glassesItem, earringItem, contactLensItem, coverFit });
   useEffect(() => {
-    propsRef.current = { baseLook, colorLook, intensity, showMesh, glassesItem, earringItem, contactLensItem, coverFit };
-  }, [baseLook, colorLook, intensity, showMesh, glassesItem, earringItem, contactLensItem, coverFit]);
+    propsRef.current = { baseLook, colorLook, intensity, intensities, showMesh, glassesItem, earringItem, contactLensItem, coverFit };
+  }, [baseLook, colorLook, intensity, intensities, showMesh, glassesItem, earringItem, contactLensItem, coverFit]);
 
   // 前回の検出結果をキャッシュ（フレームスキップ用）
   const lastLandmarksRef = useRef(null);
@@ -94,22 +94,24 @@ const MakeupCanvas = forwardRef(function MakeupCanvas({ getVideo, baseLook, colo
 
       const w = canvas.width;
       const h = canvas.height;
-      const { baseLook: base, colorLook: color, intensity: inten, showMesh: mesh,
+      const { baseLook: base, colorLook: color, intensity: inten, intensities: perCat,
+              showMesh: mesh,
               glassesItem: glasses, earringItem: earring, contactLensItem: contactLens } = propsRef.current;
-      const opacity = (inten || 70) / 100;
+      // Per-category opacity (fallback to global intensity)
+      const opa = (cat) => ((perCat?.[cat] ?? inten ?? 70) / 100);
 
       // Layer 1: ベース（ファンデ・コンシーラー・眉）
       if (base) {
-        if (base.base)      drawFoundation(ctx, lms, w, h, base.base, opacity);
-        if (base.concealer) drawConcealer(ctx, lms, w, h, base.concealer, opacity);
-        if (base.brow)      drawBrow(ctx, lms, w, h, base.brow, opacity);
+        if (base.base)      drawFoundation(ctx, lms, w, h, base.base, opa('base'));
+        if (base.concealer) drawConcealer(ctx, lms, w, h, base.concealer, opa('base'));
+        if (base.brow)      drawBrow(ctx, lms, w, h, base.brow, opa('eyebrow'));
       }
 
       // Layer 2: カラー（アイシャドウ・チーク・リップ）
       if (color) {
-        if (color.cheek)     drawCheek(ctx, lms, w, h, color.cheek, opacity);
-        if (color.eyeshadow) drawEyeshadow(ctx, lms, w, h, color.eyeshadow, opacity);
-        if (color.lip)       drawLip(ctx, lms, w, h, color.lip, opacity);
+        if (color.cheek)     drawCheek(ctx, lms, w, h, color.cheek, opa('cheek'));
+        if (color.eyeshadow) drawEyeshadow(ctx, lms, w, h, color.eyeshadow, opa('eyeshadow'));
+        if (color.lip)       drawLip(ctx, lms, w, h, color.lip, opa('lip'));
       }
 
       // Layer 3: アクセサリー描画
