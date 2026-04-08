@@ -253,8 +253,8 @@ export default function useKirari({ weather = null, isChecking = false, t = (k) 
 
     // 初回は3秒後に表示（毎回表示）
     const firstTimer = setTimeout(() => {
-      // 天気系キーの場合は予報セリフを優先
-      if (forecastText && firstKey?.includes('weather')) {
+      // 天気データがあれば天気予報セリフを優先
+      if (forecastText) {
         show(forecastText);
       } else {
         show(t(firstKey));
@@ -268,9 +268,16 @@ export default function useKirari({ weather = null, isChecking = false, t = (k) 
       const interval = getInterval(elapsed);
 
       repeatTimerRef.current = setTimeout(() => {
-        const key = pickLine(pool.filter(k => k !== lastKeyRef.current));
-        show(t(key));
-        lastKeyRef.current = key;
+        // 30%の確率で天気予報セリフを再表示
+        const newForecast = buildWeatherForecast(weather, lang);
+        if (newForecast && Math.random() < 0.3) {
+          show(newForecast);
+          lastKeyRef.current = '__forecast__';
+        } else {
+          const key = pickLine(pool.filter(k => k !== lastKeyRef.current));
+          show(t(key));
+          lastKeyRef.current = key;
+        }
         scheduleNext();
       }, interval);
     }
