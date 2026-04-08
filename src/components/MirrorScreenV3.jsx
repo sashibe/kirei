@@ -11,7 +11,7 @@ import { useFaceLandmarkerCtx } from '../contexts/FaceLandmarkerContext.jsx';
 import { useT } from '../i18n/index.jsx';
 import { SKIN_SCORES } from '../data/scores.js';
 import { analyzeSkin, analyzeSkinWithLandmarks } from '../analysis/skinAnalyzer.js';
-import { analyzePersonalColor, getPcColors, getPcIcon } from '../analysis/personalColor.js';
+import { analyzePersonalColor, getPcColors, getPcIcon, getSeasonText } from '../analysis/personalColor.js';
 import { getPcLine, getScoreDeltaLine } from '../data/kirariDialogues.js';
 import { logEvent, getPrevScore } from '../utils/logger.js';
 import { saveScore } from '../lib/scoreHistory.js';
@@ -446,20 +446,22 @@ export default function MirrorScreenV3({ onResult }) {
             borderRadius: 20, padding: "6px 14px",
             boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
           }}>
-            <span style={{ fontSize: 16 }}>{personalColor.emoji || getPcIcon(personalColor.season)}</span>
+            {(() => { const pc = getSeasonText(personalColor.subtypeId, lang); return (<>
+            <span style={{ fontSize: 16 }}>{pc.emoji || getPcIcon(personalColor.season)}</span>
             <div>
               <div style={{
                 fontSize: 13, fontWeight: 800,
-                color: personalColor.color || getPcColors(personalColor.season).color,
+                color: pc.color || getPcColors(personalColor.season).color,
               }}>
-                {personalColor.main || t(personalColor.label)}
+                {pc.main || t(personalColor.label)}
               </div>
-              {personalColor.sub && (
+              {pc.sub && (
                 <div style={{ fontSize: 9, color: '#94a3b8', fontWeight: 600, marginTop: 1 }}>
-                  {personalColor.sub}
+                  {pc.sub}
                 </div>
               )}
             </div>
+            </>); })()}
             {personalColor.confidence < 0.6 && (
               <span style={{ fontSize: 8, color: '#94a3b8' }}>{t("pc.reference")}</span>
             )}

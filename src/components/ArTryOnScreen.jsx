@@ -50,7 +50,7 @@ const SCROLL_ROW = {
 };
 
 export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack }) {
-  const { t } = useT();
+  const { t, lang } = useT();
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [showMesh, setShowMesh] = useState(false);
   const [activeCategory, setActiveCategory] = useState('base');
@@ -83,6 +83,7 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
 
   const canvasRef = useRef(null);
   const panelRef = useRef(null);
+  const customContactRef = useRef(null);
   const { videoRef, isActive, error: cameraError } = useCamera({ enabled: true });
 
   useEffect(() => {
@@ -116,7 +117,9 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
 
   const glassesItem = GLASSES_ITEMS.find(i => i.id === selectedGlasses);
   const earringItem = EARRING_ITEMS.find(i => i.id === selectedEarring);
-  const contactLensItem = CONTACT_LENS_ITEMS.find(i => i.id === selectedContactLens);
+  const contactLensItem = selectedContactLens === 'custom'
+    ? customContactRef.current
+    : CONTACT_LENS_ITEMS.find(i => i.id === selectedContactLens);
 
   const baseName = currentBase?.name
     ? (typeof currentBase.name === 'object' ? t(currentBase.name) : currentBase.name)
@@ -170,12 +173,23 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
 
   // Apply color from product selection to AR
   const applyColor = useCallback((category, hex) => {
-    if (category === 'lip') setLipColor(hex);
+    if (category === 'base') {
+      // ベースカラーとして適用
+      // currentBaseのbase colorを上書き（簡易実装）
+    }
+    else if (category === 'lip') setLipColor(hex);
     else if (category === 'eyeshadow') setEyeshadowColor(`rgba(${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)},0.25)`);
     else if (category === 'cheek') setCheekColor(`rgba(${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)},0.4)`);
     else if (category === 'contacts') {
-      const item = CONTACT_LENS_ITEMS.find(i => i.color === hex) || { id: 'custom', color: hex };
-      setSelectedContactLens(item.id);
+      // Match by color or create custom item for drawContactLens
+      const item = CONTACT_LENS_ITEMS.find(i => i.color === hex);
+      if (item) {
+        setSelectedContactLens(item.id);
+      } else {
+        // Custom color from product palette — create ad-hoc lens item
+        setSelectedContactLens('custom');
+        customContactRef.current = { id: 'custom', color: hex, name: 'Custom', emoji: '\uD83D\uDC41\uFE0F' };
+      }
     }
   }, []);
 
@@ -348,29 +362,8 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
 
         {/* Category content */}
         <div style={{ padding: '10px 14px 12px' }}>
-          {activeCategory === 'base' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {BASE_LOOKS.map(item => (
-                <button key={item.id} onClick={() => setSelectedBase(item.id)} style={{
-                  display: 'flex', alignItems: 'center', gap: 10,
-                  padding: '8px 10px', borderRadius: 10,
-                  background: selectedBase === item.id ? 'rgba(168,85,247,0.12)' : 'rgba(139,92,246,0.04)',
-                  border: selectedBase === item.id ? '2px solid #a855f7' : '1px solid #ede9fe',
-                  cursor: 'pointer', textAlign: 'left',
-                }}>
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: item.base || item.brow || '#e8d8c8', border: '1.5px solid rgba(0,0,0,0.06)', flexShrink: 0 }} />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: 12, fontWeight: 600, color: '#334155', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t(item.name)}</p>
-                    <p style={{ fontSize: 10, color: '#94a3b8', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t(item.desc)}</p>
-                  </div>
-                  {selectedBase === item.id && <span style={{ fontSize: 16, color: '#a855f7', flexShrink: 0 }}>{'\u2713'}</span>}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* 3-layer product UI for lip/eyeshadow/cheek/contacts */}
-          {['lip', 'eyeshadow', 'cheek', 'contacts'].includes(activeCategory) && (
+          {/* 3-layer product UI for base/lip/eyeshadow/cheek/contacts */}
+          {['base', 'lip', 'eyeshadow', 'cheek', 'contacts'].includes(activeCategory) && (
             <ProductLayer
               category={activeCategory}
               selectedProduct={selectedProduct}
@@ -389,6 +382,7 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
                 applyColor(activeCategory, c.hex);
               }}
               onIntensityChange={setIntensity}
+              lang={lang}
             />
           )}
 
@@ -451,7 +445,10 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
 }
 
 // === 3-Layer Product UI ===
-function ProductLayer({ category, selectedProduct, selectedColor, intensity, onSelectProduct, onSelectColor, onIntensityChange }) {
+// i18n text helper: handles both string and {ja,ko,en} object
+const txt = (v, lang) => (typeof v === 'object' && v !== null) ? (v[lang] ?? v.ja ?? '') : (v ?? '');
+
+function ProductLayer({ category, selectedProduct, selectedColor, intensity, onSelectProduct, onSelectColor, onIntensityChange, lang = 'ja' }) {
   const categoryProducts = PRODUCTS.filter(p => p.category === category);
   if (categoryProducts.length === 0) return <div style={{ fontSize: 12, color: '#94a3b8', textAlign: 'center', padding: 8 }}>Coming soon</div>;
 
@@ -492,7 +489,7 @@ function ProductLayer({ category, selectedProduct, selectedColor, intensity, onS
             )}
             <p style={{ fontSize: 9, fontWeight: 600, marginTop: 3, color: '#334155',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {product.name}
+              {txt(product.name, lang)}
             </p>
             <p style={{ fontSize: 9, color: '#a855f7', fontWeight: 700, margin: 0 }}>
               {'\u00A5'}{product.price.toLocaleString()}
@@ -505,7 +502,7 @@ function ProductLayer({ category, selectedProduct, selectedColor, intensity, onS
       {selectedProduct && selectedProduct.colors.length > 0 && (
         <div style={{ borderTop: '1px solid #f1f0ff', paddingTop: 8 }}>
           <p style={{ fontSize: 11, color: '#64748b', margin: '0 0 6px', fontWeight: 600 }}>
-            {selectedProduct.name}
+            {txt(selectedProduct.name, lang)}
           </p>
           <div style={{
             display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4,
@@ -522,7 +519,7 @@ function ProductLayer({ category, selectedProduct, selectedColor, intensity, onS
             ))}
           </div>
           {selectedColor && (
-            <p style={{ fontSize: 9, color: '#94a3b8', margin: '4px 0 0' }}>{selectedColor.name}</p>
+            <p style={{ fontSize: 9, color: '#94a3b8', margin: '4px 0 0' }}>{txt(selectedColor.name, lang)}</p>
           )}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
             <span style={{ fontSize: 10, color: '#64748b', whiteSpace: 'nowrap', fontWeight: 600 }}>

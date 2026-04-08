@@ -16,25 +16,33 @@ const THRESHOLDS = {
   chromaLow: 18,
 };
 
-// --- 16タイプ表記 ---
+// --- 16タイプ表記（i18n対応） ---
 export const SEASON_DISPLAY = {
-  'spring-light':  { main: 'イエベ春', sub: 'ライトスプリング',     color: '#F59E0B', emoji: '🌸', desc: '明るく軽やかな暖色が得意' },
-  'spring-warm':   { main: 'イエベ春', sub: 'ウォームスプリング',   color: '#F59E0B', emoji: '🌸', desc: '鮮やかで温かみのある色が得意' },
-  'spring-clear':  { main: 'イエベ春', sub: 'クリアスプリング',     color: '#F59E0B', emoji: '🌸', desc: '華やかでクリアな暖色が得意' },
-  'spring-muted':  { main: 'イエベ春', sub: 'ソフトスプリング',     color: '#F59E0B', emoji: '🌸', desc: 'やわらかくナチュラルな暖色が得意' },
-  'summer-light':  { main: 'ブルベ夏', sub: 'ライトサマー',         color: '#94A3B8', emoji: '🌿', desc: '明るく涼やかな淡色が得意' },
-  'summer-cool':   { main: 'ブルベ夏', sub: 'クールサマー',         color: '#94A3B8', emoji: '🌿', desc: '洗練された青みのある色が得意' },
-  'summer-soft':   { main: 'ブルベ夏', sub: 'ソフトサマー',         color: '#94A3B8', emoji: '🌿', desc: 'くすみのある穏やかな色が得意' },
-  'summer-medium': { main: 'ブルベ夏', sub: 'ミディアムサマー',     color: '#94A3B8', emoji: '🌿', desc: '中間的な青みカラーが得意' },
-  'autumn-soft':   { main: 'イエベ秋', sub: 'ソフトオータム',       color: '#D97706', emoji: '🍂', desc: 'やわらかく落ち着いた暖色が得意' },
-  'autumn-warm':   { main: 'イエベ秋', sub: 'ウォームオータム',     color: '#D97706', emoji: '🍂', desc: '深みのある温かい色が得意' },
-  'autumn-muted':  { main: 'イエベ秋', sub: 'ミューテッドオータム', color: '#D97706', emoji: '🍂', desc: 'くすみのあるアースカラーが得意' },
-  'autumn-deep':   { main: 'イエベ秋', sub: 'ディープオータム',     color: '#D97706', emoji: '🍂', desc: '深く濃い暖色が得意' },
-  'winter-clear':  { main: 'ブルベ冬', sub: 'クリアウィンター',     color: '#6366F1', emoji: '❄️', desc: '鮮やかでシャープな色が得意' },
-  'winter-cool':   { main: 'ブルベ冬', sub: 'クールウィンター',     color: '#6366F1', emoji: '❄️', desc: '冷たくクールな色が得意' },
-  'winter-deep':   { main: 'ブルベ冬', sub: 'ディープウィンター',   color: '#6366F1', emoji: '❄️', desc: '深みのある強い色が得意' },
-  'winter-vivid':  { main: 'ブルベ冬', sub: 'ビビッドウィンター',   color: '#6366F1', emoji: '❄️', desc: '原色・モノトーンが得意' },
+  'spring-light':  { main: { ja: 'イエベ春', ko: '웜 봄', en: 'Warm Spring' }, sub: { ja: 'ライトスプリング', ko: '라이트 스프링', en: 'Light Spring' }, color: '#F59E0B', emoji: '🌸', desc: { ja: '明るく軽やかな暖色が得意', ko: '밝고 가벼운 웜톤이 잘 어울려요', en: 'Bright, light warm tones suit you' } },
+  'spring-warm':   { main: { ja: 'イエベ春', ko: '웜 봄', en: 'Warm Spring' }, sub: { ja: 'ウォームスプリング', ko: '웜 스프링', en: 'Warm Spring' }, color: '#F59E0B', emoji: '🌸', desc: { ja: '鮮やかで温かみのある色が得意', ko: '선명하고 따뜻한 색이 잘 어울려요', en: 'Vivid, warm colors suit you' } },
+  'spring-clear':  { main: { ja: 'イエベ春', ko: '웜 봄', en: 'Warm Spring' }, sub: { ja: 'クリアスプリング', ko: '클리어 스프링', en: 'Clear Spring' }, color: '#F59E0B', emoji: '🌸', desc: { ja: '華やかでクリアな暖色が得意', ko: '화사하고 클리어한 웜톤이 잘 어울려요', en: 'Gorgeous, clear warm tones suit you' } },
+  'spring-muted':  { main: { ja: 'イエベ春', ko: '웜 봄', en: 'Warm Spring' }, sub: { ja: 'ソフトスプリング', ko: '소프트 스프링', en: 'Soft Spring' }, color: '#F59E0B', emoji: '🌸', desc: { ja: 'やわらかくナチュラルな暖色が得意', ko: '부드럽고 내추럴한 웜톤이 잘 어울려요', en: 'Soft, natural warm tones suit you' } },
+  'summer-light':  { main: { ja: 'ブルベ夏', ko: '쿨 여름', en: 'Cool Summer' }, sub: { ja: 'ライトサマー', ko: '라이트 서머', en: 'Light Summer' }, color: '#94A3B8', emoji: '🌿', desc: { ja: '明るく涼やかな淡色が得意', ko: '밝고 시원한 파스텔이 잘 어울려요', en: 'Bright, cool pastels suit you' } },
+  'summer-cool':   { main: { ja: 'ブルベ夏', ko: '쿨 여름', en: 'Cool Summer' }, sub: { ja: 'クールサマー', ko: '쿨 서머', en: 'Cool Summer' }, color: '#94A3B8', emoji: '🌿', desc: { ja: '洗練された青みのある色が得意', ko: '세련된 블루톤이 잘 어울려요', en: 'Refined blue-toned colors suit you' } },
+  'summer-soft':   { main: { ja: 'ブルベ夏', ko: '쿨 여름', en: 'Cool Summer' }, sub: { ja: 'ソフトサマー', ko: '소프트 서머', en: 'Soft Summer' }, color: '#94A3B8', emoji: '🌿', desc: { ja: 'くすみのある穏やかな色が得意', ko: '뮤트된 차분한 색이 잘 어울려요', en: 'Muted, calm colors suit you' } },
+  'summer-medium': { main: { ja: 'ブルベ夏', ko: '쿨 여름', en: 'Cool Summer' }, sub: { ja: 'ミディアムサマー', ko: '미디엄 서머', en: 'Medium Summer' }, color: '#94A3B8', emoji: '🌿', desc: { ja: '中間的な青みカラーが得意', ko: '중간 톤의 쿨 컬러가 잘 어울려요', en: 'Medium cool colors suit you' } },
+  'autumn-soft':   { main: { ja: 'イエベ秋', ko: '웜 가을', en: 'Warm Autumn' }, sub: { ja: 'ソフトオータム', ko: '소프트 오텀', en: 'Soft Autumn' }, color: '#D97706', emoji: '🍂', desc: { ja: 'やわらかく落ち着いた暖色が得意', ko: '부드럽고 차분한 웜톤이 잘 어울려요', en: 'Soft, calm warm tones suit you' } },
+  'autumn-warm':   { main: { ja: 'イエベ秋', ko: '웜 가을', en: 'Warm Autumn' }, sub: { ja: 'ウォームオータム', ko: '웜 오텀', en: 'Warm Autumn' }, color: '#D97706', emoji: '🍂', desc: { ja: '深みのある温かい色が得意', ko: '깊이 있는 따뜻한 색이 잘 어울려요', en: 'Deep, warm colors suit you' } },
+  'autumn-muted':  { main: { ja: 'イエベ秋', ko: '웜 가을', en: 'Warm Autumn' }, sub: { ja: 'ミューテッドオータム', ko: '뮤티드 오텀', en: 'Muted Autumn' }, color: '#D97706', emoji: '🍂', desc: { ja: 'くすみのあるアースカラーが得意', ko: '뮤트된 어스 컬러가 잘 어울려요', en: 'Muted earth colors suit you' } },
+  'autumn-deep':   { main: { ja: 'イエベ秋', ko: '웜 가을', en: 'Warm Autumn' }, sub: { ja: 'ディープオータム', ko: '딥 오텀', en: 'Deep Autumn' }, color: '#D97706', emoji: '🍂', desc: { ja: '深く濃い暖色が得意', ko: '깊고 진한 웜톤이 잘 어울려요', en: 'Deep, rich warm tones suit you' } },
+  'winter-clear':  { main: { ja: 'ブルベ冬', ko: '쿨 겨울', en: 'Cool Winter' }, sub: { ja: 'クリアウィンター', ko: '클리어 윈터', en: 'Clear Winter' }, color: '#6366F1', emoji: '❄️', desc: { ja: '鮮やかでシャープな色が得意', ko: '선명하고 샤프한 색이 잘 어울려요', en: 'Vivid, sharp colors suit you' } },
+  'winter-cool':   { main: { ja: 'ブルベ冬', ko: '쿨 겨울', en: 'Cool Winter' }, sub: { ja: 'クールウィンター', ko: '쿨 윈터', en: 'Cool Winter' }, color: '#6366F1', emoji: '❄️', desc: { ja: '冷たくクールな色が得意', ko: '차갑고 쿨한 색이 잘 어울려요', en: 'Cool, icy colors suit you' } },
+  'winter-deep':   { main: { ja: 'ブルベ冬', ko: '쿨 겨울', en: 'Cool Winter' }, sub: { ja: 'ディープウィンター', ko: '딥 윈터', en: 'Deep Winter' }, color: '#6366F1', emoji: '❄️', desc: { ja: '深みのある強い色が得意', ko: '깊이 있는 강한 색이 잘 어울려요', en: 'Deep, bold colors suit you' } },
+  'winter-vivid':  { main: { ja: 'ブルベ冬', ko: '쿨 겨울', en: 'Cool Winter' }, sub: { ja: 'ビビッドウィンター', ko: '비비드 윈터', en: 'Vivid Winter' }, color: '#6366F1', emoji: '❄️', desc: { ja: '原色・モノトーンが得意', ko: '원색·모노톤이 잘 어울려요', en: 'Primary colors & monotone suit you' } },
 };
+
+// i18nヘルパー: main/sub/descをlangで取得
+export function getSeasonText(subtypeId, lang = 'ja') {
+  const d = SEASON_DISPLAY[subtypeId];
+  if (!d) return { main: '', sub: '', desc: '' };
+  const l = (obj) => (typeof obj === 'object' && obj !== null) ? (obj[lang] ?? obj.ja ?? '') : (obj ?? '');
+  return { main: l(d.main), sub: l(d.sub), desc: l(d.desc), color: d.color, emoji: d.emoji };
+}
 
 // --- シーズン別ルック対応表 ---
 export const SEASON_LOOK_MAP = {
@@ -180,6 +188,7 @@ export function analyzePersonalColor(imageData, landmarks) {
   return {
     season,
     subtypeId,
+    // i18n objects — use getSeasonText(subtypeId, lang) for display
     main: display?.main ?? season,
     sub: display?.sub ?? '',
     desc: display?.desc ?? '',
