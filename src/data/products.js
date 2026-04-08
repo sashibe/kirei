@@ -947,5 +947,31 @@ export const PRODUCTS = [
     "baseColor": "#4A2810",
     "season": null,
     "localImage": "colorcon_laviere_koda.jpg"
+  },
+  {
+    "id": "eyebrow-001", "category": "eyebrow",
+    "name": "アイブロウ ペンシル",
+    "price": 1320, "image": "", "affiliateUrl": "#",
+    "colors": [
+      { "id": "c01", "name": "ナチュラルブラウン", "hex": "#7A5030" },
+      { "id": "c02", "name": "アッシュブラウン",   "hex": "#6A6050" },
+      { "id": "c03", "name": "ダークブラウン",     "hex": "#4A3020" },
+      { "id": "c04", "name": "グレーブラウン",     "hex": "#706860" },
+      { "id": "c05", "name": "ブラック",           "hex": "#282828" }
+    ],
+    "baseColor": "#7A5030", "season": null
+  },
+  {
+    "id": "eyebrow-002", "category": "eyebrow",
+    "name": "眉マスカラ",
+    "price": 880, "image": "", "affiliateUrl": "#",
+    "colors": [
+      { "id": "c01", "name": "ナチュラルブラウン", "hex": "#7A5030" },
+      { "id": "c02", "name": "アッシュブラウン",   "hex": "#6A6050" },
+      { "id": "c03", "name": "ダークブラウン",     "hex": "#4A3020" },
+      { "id": "c04", "name": "グレーブラウン",     "hex": "#706860" },
+      { "id": "c05", "name": "ブラック",           "hex": "#282828" }
+    ],
+    "baseColor": "#7A5030", "season": null
   }
 ];
