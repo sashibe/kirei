@@ -21,6 +21,7 @@ const CATEGORIES = [
   { id: 'base',      labelKey: 'ar.cat_base',      icon: '\uD83E\uDDF4' },
   { id: 'lip',       labelKey: 'ar.cat_lip',       icon: '\uD83D\uDC84' },
   { id: 'eyeshadow', labelKey: 'ar.cat_eyeshadow', icon: '\u2728' },
+  { id: 'eyebrow',   labelKey: 'ar.cat_eyebrow',   icon: '\uD83D\uDD8A\uFE0F' },
   { id: 'cheek',     labelKey: 'ar.cat_cheek',     icon: '\uD83C\uDF38' },
   { id: 'contacts',  labelKey: 'ar.cat_contacts',  icon: '\uD83D\uDC41\uFE0F' },
   { id: 'glasses',   labelKey: 'ar.cat_glasses',   icon: '\uD83D\uDC53' },
@@ -56,7 +57,7 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
   const [activeCategory, setActiveCategory] = useState('base');
 
   // Per-category intensity (independent sliders) — must be after activeCategory
-  const [intensities, setIntensities] = useState({ base: 70, lip: 70, eyeshadow: 70, cheek: 70, contacts: 70 });
+  const [intensities, setIntensities] = useState({ base: 70, lip: 70, eyeshadow: 70, eyebrow: 70, cheek: 70, contacts: 70 });
   const intensity = intensities[activeCategory] ?? 70;
   const setIntensity = useCallback((val) => {
     setIntensities(prev => ({ ...prev, [activeCategory]: val }));
@@ -66,6 +67,7 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
   const [lipColor, setLipColor] = useState(colorLook?.lip || '#e8607c');
   const [cheekColor, setCheekColor] = useState(colorLook?.cheek || 'rgba(232,96,124,0.4)');
   const [eyeshadowColor, setEyeshadowColor] = useState(colorLook?.eyeshadow || 'rgba(196,149,106,0.25)');
+  const [browColor, setBrowColor] = useState(null); // null = use baseLook default
   const [selectedGlasses, setSelectedGlasses] = useState('none');
   const [selectedEarring, setSelectedEarring] = useState('none');
   const [selectedContactLens, setSelectedContactLens] = useState('none');
@@ -178,6 +180,7 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
       // currentBaseのbase colorを上書き（簡易実装）
     }
     else if (category === 'lip') setLipColor(hex);
+    else if (category === 'eyebrow') setBrowColor(hex);
     else if (category === 'eyeshadow') setEyeshadowColor(`rgba(${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)},0.25)`);
     else if (category === 'cheek') setCheekColor(`rgba(${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)},0.4)`);
     else if (category === 'contacts') {
@@ -220,7 +223,7 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
         <MakeupCanvas
           ref={canvasRef}
           getVideo={getVideo}
-          baseLook={currentBase}
+          baseLook={browColor ? { ...currentBase, brow: browColor } : currentBase}
           colorLook={activeColorLook}
           intensity={globalIntensity}
           showMesh={showMesh}
@@ -363,7 +366,7 @@ export default function ArTryOnScreen({ baseLook, colorLook, onDecide, onBack })
         {/* Category content */}
         <div style={{ padding: '10px 14px 12px' }}>
           {/* 3-layer product UI for base/lip/eyeshadow/cheek/contacts */}
-          {['base', 'lip', 'eyeshadow', 'cheek', 'contacts'].includes(activeCategory) && (
+          {['base', 'lip', 'eyeshadow', 'eyebrow', 'cheek', 'contacts'].includes(activeCategory) && (
             <ProductLayer
               category={activeCategory}
               selectedProduct={selectedProduct}
