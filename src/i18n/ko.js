@@ -331,7 +331,6 @@ export default {
   "cart_items_count":  "{n}\uAC1C",
   "cart_add":          "\uCE74\uD2B8\uC5D0 \uCD94\uAC00",
   "cart_added":        "\uCE74\uD2B8\uC5D0 \uCD94\uAC00\uB428",
-  "floating_add":      "\u2661 \uCE74\uD2B8\uC5D0 \uCD94\uAC00",
-  "floating_added":    "\u2713 \uCD94\uAC00\uB428!",
-  "floating_in_cart":  "\u2713 \uCE74\uD2B8\uC5D0 \uB2F4\uAE40",
+  "confirm_add":       "\uCE74\uD2B8\uC5D0 \uCD94\uAC00",
+  "confirm_skip":      "\uB2E4\uB978 \uC0C1\uD488 \uBCF4\uAE30",
 };

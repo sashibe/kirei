@@ -334,7 +334,6 @@ export default {
   "cart_items_count":  "{n}\u70B9",
   "cart_add":          "\u30AB\u30FC\u30C8\u306B\u8FFD\u52A0",
   "cart_added":        "\u30AB\u30FC\u30C8\u306B\u8FFD\u52A0\u6E08\u307F",
-  "floating_add":      "\u2661 \u30AB\u30FC\u30C8\u306B\u8FFD\u52A0",
-  "floating_added":    "\u2713 \u8FFD\u52A0\u3057\u307E\u3057\u305F\uFF01",
-  "floating_in_cart":  "\u2713 \u30AB\u30FC\u30C8\u306B\u8FFD\u52A0\u6E08\u307F",
+  "confirm_add":       "\u30AB\u30FC\u30C8\u306B\u8FFD\u52A0",
+  "confirm_skip":      "\u4ED6\u306E\u5546\u54C1\u3092\u8A66\u3059",
 };

@@ -55,6 +55,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
   const [activeCategory, setActiveCategory] = useState('lip');
   const [sheetOpen, setSheetOpen] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
+  const [pendingItem, setPendingItem] = useState(null);
 
   const [selectedBase, setSelectedBase] = useState(null);
   const [lipColor, setLipColor] = useState(null);
@@ -103,22 +104,39 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
   const handlePointerUp = useCallback(() => setBeforeAfter(false), []);
 
   // カテゴリタップ → 展開
+  // 未カート商品の確認チェック
+  const checkPending = useCallback(() => {
+    if (selectedProduct && selectedColor) {
+      const uk = `${selectedProduct.id}_${selectedColor.id}`;
+      if (!cart.cartItems.some(i => i.uniqueKey === uk)) {
+        setPendingItem({ product: selectedProduct, selectedColor, uniqueKey: uk });
+        return;
+      }
+    }
+    setPendingItem(null);
+  }, [selectedProduct, selectedColor, cart.cartItems]);
+
   const handleCategoryTap = useCallback((catId) => {
     if (catId === activeCategory && sheetOpen) {
+      checkPending();
       setSheetOpen(false);
     } else {
+      checkPending();
       setActiveCategory(catId);
       setSelectedProduct(null);
       setSelectedColor(null);
       setJustAdded(false);
       setSheetOpen(true);
     }
-  }, [activeCategory, sheetOpen]);
+  }, [activeCategory, sheetOpen, checkPending]);
 
   // カメラエリアタップで縮小
   const handleCameraTap = useCallback(() => {
-    if (sheetOpen) setSheetOpen(false);
-  }, [sheetOpen]);
+    if (sheetOpen) {
+      checkPending();
+      setSheetOpen(false);
+    }
+  }, [sheetOpen, checkPending]);
 
   // 📷 キャプチャ + シェア
   const [shareStatus, setShareStatus] = useState(null);
@@ -358,45 +376,47 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
         )}
       </div>
 
-      {/* Floating "Add to Cart" button */}
-      {selectedProduct && selectedColor && (() => {
-        const uniqueKey = `${selectedProduct.id}_${selectedColor.id}`;
-        const isInCart = cart.cartItems.some(i => i.uniqueKey === uniqueKey);
-        return (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              if (isInCart) {
-                cart.dispatch({ type: 'REMOVE', payload: { uniqueKey } });
-                setJustAdded(false);
-              } else {
-                cart.dispatch({ type: 'ADD', payload: { product: selectedProduct, selectedColor } });
-                setJustAdded(true);
-                setTimeout(() => setJustAdded(false), 1200);
-              }
-            }}
-            onPointerDown={(e) => e.stopPropagation()}
-            style={{
-              position: 'absolute',
-              bottom: (cart.cartItems.length > 0 ? 52 : 0) + (sheetOpen ? SHEET_MAX : SHEET_MIN) + 8,
-              left: '50%', transform: 'translateX(-50%)',
-              background: isInCart ? 'rgba(255,255,255,0.9)' : 'linear-gradient(135deg, #a855f7, #ec4899)',
-              color: isInCart ? '#a855f7' : '#fff',
-              border: isInCart ? '1.5px solid rgba(168,85,247,0.3)' : 'none',
-              borderRadius: 24, padding: '10px 24px',
-              fontSize: 13, fontWeight: 700, cursor: 'pointer',
-              whiteSpace: 'nowrap', zIndex: 60,
-              backdropFilter: 'blur(8px)',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
-              transition: 'all 0.2s ease',
-            }}
-          >
-            {justAdded ? '\u2713 ' + (t('floating_added') || '\u8FFD\u52A0\u3057\u307E\u3057\u305F\uFF01')
-              : isInCart ? '\u2713 ' + (t('floating_in_cart') || '\u30AB\u30FC\u30C8\u306B\u8FFD\u52A0\u6E08\u307F')
-              : '\u2661 ' + (t('floating_add') || '\u30AB\u30FC\u30C8\u306B\u8FFD\u52A0')}
-          </button>
-        );
-      })()}
+      {/* Confirm bar: カート追加確認 */}
+      {pendingItem && (
+        <div style={{
+          position: 'absolute',
+          bottom: (cart.cartItems.length > 0 ? 52 : 0) + (sheetOpen ? SHEET_MAX : SHEET_MIN),
+          left: 0, right: 0,
+          background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(12px)',
+          borderTop: '1px solid rgba(168,85,247,0.12)',
+          padding: '12px 16px', zIndex: 55,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+            <div style={{ width: 28, height: 28, borderRadius: '50%',
+              background: pendingItem.selectedColor.hex,
+              border: '2px solid rgba(168,85,247,0.2)', flexShrink: 0 }} />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a2e',
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {txt(pendingItem.product.name, lang)}
+              </div>
+              <div style={{ fontSize: 11, color: '#7c7291' }}>
+                {txt(pendingItem.selectedColor.name, lang)}{'\u3000'}{'\u00A5'}{pendingItem.product.price.toLocaleString()}
+              </div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button onClick={() => {
+              cart.dispatch({ type: 'ADD', payload: { product: pendingItem.product, selectedColor: pendingItem.selectedColor } });
+              setPendingItem(null);
+            }} style={{
+              flex: 1, background: 'linear-gradient(135deg, #a855f7, #ec4899)',
+              color: '#fff', border: 'none', borderRadius: 20,
+              padding: '10px 0', fontSize: 13, fontWeight: 700, cursor: 'pointer',
+            }}>{t('confirm_add') || '\u30AB\u30FC\u30C8\u306B\u8FFD\u52A0'}</button>
+            <button onClick={() => setPendingItem(null)} style={{
+              flex: 1, background: 'transparent', color: '#7c7291',
+              border: '1.5px solid rgba(168,85,247,0.2)', borderRadius: 20,
+              padding: '10px 0', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+            }}>{t('confirm_skip') || '\u4ED6\u306E\u5546\u54C1\u3092\u8A66\u3059'}</button>
+          </div>
+        </div>
+      )}
 
       {/* CartSummaryBar */}
       {cart.cartItems.length > 0 && (

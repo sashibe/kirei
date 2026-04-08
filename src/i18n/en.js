@@ -331,7 +331,6 @@ export default {
   "cart_items_count":  "{n} items",
   "cart_add":          "Add to Cart",
   "cart_added":        "Added to Cart",
-  "floating_add":      "\u2661 Add to cart",
-  "floating_added":    "\u2713 Added!",
-  "floating_in_cart":  "\u2713 In cart",
+  "confirm_add":       "Add to cart",
+  "confirm_skip":      "Try another",
 };
