@@ -192,7 +192,8 @@ export function drawEyeshadow(ctx, lms, w, h, colorStr, opacity) {
 }
 
 /**
- * チーク — 頬骨ランドマーク(#50,#280)に楕円グラデーション
+ * チーク — 頬骨ランドマーク(#205,#425)に楕円グラデーション
+ * source-over + 低alpha で自然な血色感を表現
  */
 export function drawCheek(ctx, lms, w, h, colorStr, opacity) {
   const { hex, alpha } = parseColor(colorStr);
@@ -200,8 +201,8 @@ export function drawCheek(ctx, lms, w, h, colorStr, opacity) {
 
   // 目幅を基準にチーク楕円サイズを決定
   const eyeW = Math.abs(lmX(lms[133], w) - lmX(lms[33], w));
-  const rw = Math.max(eyeW * 1.0, 20); // 横半径
-  const rh = rw * 0.65; // 縦半径（楕円）
+  const rw = Math.max(eyeW * 0.8, 16); // 横半径（控えめ）
+  const rh = rw * 0.6; // 縦半径（楕円）
 
   // 右頬: #205, 左頬: #425
   for (const cheekIdx of [205, 425]) {
@@ -210,29 +211,18 @@ export function drawCheek(ctx, lms, w, h, colorStr, opacity) {
     const cy = lmY(cheek, h);
 
     ctx.save();
-    ctx.globalCompositeOperation = 'multiply';
-    ctx.globalAlpha = opa * 0.5;
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = opa * 0.35;
 
-    // 楕円変形してグラデーション描画
+    // 楕円グラデーション（中心が濃く、端がフェードアウト）
     const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, rw);
-    grad.addColorStop(0, hex + '80');
-    grad.addColorStop(0.5, hex + '40');
+    grad.addColorStop(0, hex);
+    grad.addColorStop(0.5, hex + 'A0');
     grad.addColorStop(1, hex + '00');
     ctx.fillStyle = grad;
 
     ctx.beginPath();
     ctx.ellipse(cx, cy, rw, rh, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // ソフトハイライト
-    ctx.globalCompositeOperation = 'screen';
-    ctx.globalAlpha = opa * 0.1;
-    const hl = ctx.createRadialGradient(cx, cy - rh * 0.2, 0, cx, cy, rw * 0.6);
-    hl.addColorStop(0, 'rgba(255,255,255,0.3)');
-    hl.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.fillStyle = hl;
-    ctx.beginPath();
-    ctx.ellipse(cx, cy, rw * 0.6, rh * 0.6, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
   }
