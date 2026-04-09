@@ -35,12 +35,14 @@ export default function SkincareRoutineView({ onNext, onTryMakeup, onRestart, sk
       name:  item.product,
       shade: item.step,
       price: item.price,
+      timing: 'morning',
     })),
     ...SKINCARE_ROUTINE.night.map(item => ({
       emoji: getStepIcon(item.step, t),
       name:  item.product,
       shade: item.step,
       price: item.price,
+      timing: 'night',
     })),
   ];
 

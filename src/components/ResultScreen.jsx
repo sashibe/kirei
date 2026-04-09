@@ -45,14 +45,17 @@ export default function ResultScreen({ skinScores, personalColor, cart, captured
       {/* Captured photo with share button */}
       {capturedImage && (
         <div style={{ position: 'relative', margin: '0 16px 16px' }}>
-          <img src={capturedImage} style={{ width: '100%', display: 'block', borderRadius: 20 }} alt="" />
+          <div style={{ width: '100%', aspectRatio: '3/4', borderRadius: 20, overflow: 'hidden' }}>
+            <img src={capturedImage} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} alt="" />
+          </div>
           <button onClick={() => shareImage(capturedImage, 'KIREI Makeup')} style={{
             position: 'absolute', bottom: 12, right: 12,
             background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)',
-            border: 'none', borderRadius: '50%', width: 36, height: 36,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: '#fff', fontSize: 16, cursor: 'pointer',
-          }}>{'\uD83D\uDCE4'}</button>
+            border: 'none', borderRadius: 20,
+            padding: '6px 12px',
+            display: 'flex', alignItems: 'center', gap: 4,
+            color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer',
+          }}>{'\uD83D\uDCE4'} シェア</button>
         </div>
       )}
 
@@ -86,7 +89,8 @@ export default function ResultScreen({ skinScores, personalColor, cart, captured
                   border: '2px solid rgba(168,85,247,0.15)' }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a2e',
-                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{txt(item.product?.name)}</div>
+                    display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden' }}>{txt(item.product?.name)}</div>
                   <div style={{ fontSize: 11, color: '#7c7291' }}>{txt(item.selectedColor?.name)}</div>
                 </div>
                 <div style={{ fontSize: 13, fontWeight: 700, color: '#a855f7', whiteSpace: 'nowrap' }}>
@@ -106,6 +110,9 @@ export default function ResultScreen({ skinScores, personalColor, cart, captured
               fontSize: 14, fontWeight: 700, color: '#fff', cursor: 'pointer',
               boxShadow: '0 4px 16px rgba(168,85,247,0.25)',
             }}>{'\uD83D\uDED2'} {t('checkout') || '\u5546\u54C1\u3092\u8CFC\u5165\u3059\u308B'}</button>
+            <p style={{ fontSize: 10, color: '#94a3b8', textAlign: 'center', margin: '6px 0 0' }}>
+              {t('result.purchase_note') || '\u203B\u5916\u90E8\u30B5\u30A4\u30C8\uff08MUSINSA\uff09\u306B\u79FB\u52D5\u3057\u307E\u3059'}
+            </p>
           </>
         )}
       </div>

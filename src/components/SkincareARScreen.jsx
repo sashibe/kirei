@@ -140,10 +140,11 @@ export default function SkincareARScreen({ skinScores, onNext, onBack }) {
         }} style={{
           position: 'absolute', top: 12, right: 12,
           background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)',
-          border: 'none', borderRadius: '50%', width: 36, height: 36,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: '#fff', fontSize: 16, cursor: 'pointer', zIndex: 10,
-        }}>{'\uD83D\uDCE4'}</button>
+          border: 'none', borderRadius: 20,
+          padding: '6px 12px',
+          display: 'flex', alignItems: 'center', gap: 4,
+          color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', zIndex: 10,
+        }}>{'\uD83D\uDCE4'} シェア</button>
       )}
 
       {/* Back button */}
