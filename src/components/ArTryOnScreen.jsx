@@ -22,6 +22,38 @@ function hexToRgba(hex, a) {
   return `rgba(${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)},${a})`;
 }
 
+// ヨイショメッセージ（カテゴリ別・多言語）
+function getYoishoMessage(category, lang) {
+  const L = (ja, ko, en) => lang === 'ko' ? ko : lang === 'en' ? en : ja;
+  const POOLS = {
+    lip: [
+      L('そのリップ、似合ってる！', '그 립스틱, 잘 어울려!', 'That lip color suits you!'),
+      L('その色、顔がパッと明るくなるね！', '그 색깔, 얼굴이 확 밝아지네!', 'That color really brightens your face!'),
+      L('いい色♪ 唇が華やかになったよ！', '좋은 색이야♪ 입술이 화사해졌어!', 'Lovely color♪ Your lips look vibrant!'),
+    ],
+    eyeshadow: [
+      L('目元に深みが出ていい感じ♪', '눈에 깊이가 생겨서 좋은 느낌♪', 'Adds such depth to your eyes♪'),
+      L('その色、瞳がキラキラして見える！', '그 색, 눈동자가 반짝반짝해 보여!', 'Your eyes sparkle with that shade!'),
+      L('アイシャドウで印象が変わったね！', '아이섀도로 인상이 달라졌네!', 'The eyeshadow really changes your look!'),
+    ],
+    cheek: [
+      L('血色感アップ！自然でかわいい♪', '혈색감이 올라갔어! 자연스럽고 귀여워♪', 'Rosy cheeks! So natural and cute♪'),
+      L('ほんのりピンクで健康的な感じ♪', '살짝 핑크로 건강한 느낌♪', 'A hint of pink — so healthy-looking♪'),
+      L('チークで顔の立体感が出てるよ！', '블러셔로 얼굴에 입체감이 생겼어!', 'The blush adds such nice dimension!'),
+    ],
+    base: [
+      L('肌がトーンアップして透明感あるね！', '피부가 톤업되어서 투명감이 있어!', 'Your skin looks brighter and radiant!'),
+      L('ベースメイクで肌がなめらかに見える♪', '베이스 메이크업으로 피부가 매끄럽게 보여♪', 'Foundation makes your skin look so smooth♪'),
+    ],
+    eyebrow: [
+      L('眉が整うと顔全体が引き締まるね！', '눈썹이 정돈되니 얼굴 전체가 조여드네!', 'Neat brows frame your whole face beautifully!'),
+      L('ナチュラルな眉、いい感じ♪', '자연스러운 눈썹, 좋은 느낌♪', 'Natural brows look so good on you♪'),
+    ],
+  };
+  const pool = POOLS[category] || POOLS.lip;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
 // デフォルト適用商品（ARページ起動時に自動適用: 各カテゴリ先頭商品）
 const _DEFAULT_BASE = PRODUCTS.find(p => p.id === 'lesthemo_10000033');
 const _DEFAULT_BASE_COLOR = _DEFAULT_BASE?.colors?.[0] ?? null; // c01 ライト #F5E0CC
@@ -114,66 +146,36 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
   const touchStartY = useRef(0);
   const { videoRef, isActive, error: cameraError } = useCamera({ enabled: true });
 
-  // キラリ ARプリセット時間差メッセージ
+  // キラリ ARメッセージ制御
   const [arKirariMsg, setArKirariMsg] = useState(null);
   const [arKirariVisible, setArKirariVisible] = useState(false);
-  const arKirariTimersRef = useRef([]);
+  const kirariHideTimerRef = useRef(null);
+  const arMountTimersRef = useRef([]);
 
-  // ヨイショメッセージプール（言語対応）
+  const showKirariMsg = useCallback((msg, duration = 5000) => {
+    if (kirariHideTimerRef.current) clearTimeout(kirariHideTimerRef.current);
+    setArKirariMsg(msg);
+    setArKirariVisible(true);
+    kirariHideTimerRef.current = setTimeout(() => setArKirariVisible(false), duration);
+  }, []);
+
+  // 起動時 時間差メッセージ: 0.5s→intro / 6s→ヨイショ / 11.5s→操作ガイド
   useEffect(() => {
     const L = (ja, ko, en) => lang === 'ko' ? ko : lang === 'en' ? en : ja;
-    const YOISHO_POOL = {
-      lip: [
-        L('そのリップ、似合ってる！', '그 립스틱, 잘 어울려!', 'That lip color looks great on you!'),
-        L('その色、顔がパッと明るくなるね！', '그 색깔, 얼굴이 확 밝아지네!', 'That color brightens your whole face!'),
-        L('いい色♪ 唇が華やかになったよ！', '좋은 색이야♪ 입술이 화사해졌어!', 'Lovely color♪ Your lips look so vibrant!'),
-      ],
-      eyeshadow: [
-        L('目元に深みが出ていい感じ♪', '눈에 깊이가 생겨서 좋은 느낌♪', 'Adds depth to your eyes — love it♪'),
-        L('その色、瞳がキラキラして見える！', '그 색, 눈동자가 반짝반짝해 보여!', 'That shade makes your eyes sparkle!'),
-        L('アイシャドウで印象が変わったね！', '아이섀도로 인상이 달라졌네!', 'The eyeshadow really changes your look!'),
-      ],
-      cheek: [
-        L('血色感アップ！自然でかわいい♪', '혈색감이 올라갔어! 자연스럽고 귀여워♪', 'Great color! Natural and cute♪'),
-        L('ほんのりピンクで健康的な感じ♪', '살짝 핑크로 건강한 느낌♪', 'A hint of pink — so healthy-looking♪'),
-        L('チークで顔の立体感が出てるよ！', '블러셔로 얼굴에 입체감이 생겼어!', 'The blush adds such nice dimension!'),
-      ],
-      base: [
-        L('肌がトーンアップして透明感あるね！', '피부가 톤업되어서 투명감이 있어!', 'Your skin looks brighter and more radiant!'),
-        L('ベースメイクで肌がなめらかに見える♪', '베이스 메이크업으로 피부가 매끄럽게 보여♪', 'Foundation makes your skin look so smooth♪'),
-      ],
-      eyebrow: [
-        L('眉が整うと顔全体が引き締まるね！', '눈썹이 정돈되니 얼굴 전체가 조여드네!', 'Neat brows frame your whole face beautifully!'),
-        L('ナチュラルな眉、いい感じ♪', '자연스러운 눈썹, 좋은 느낌♪', 'Natural brows look so good on you♪'),
-      ],
-    };
-
-    const cats = Object.keys(YOISHO_POOL);
-    const randCat = cats[Math.floor(Math.random() * cats.length)];
-    const pool = YOISHO_POOL[randCat];
-    const yoishoMsg = pool[Math.floor(Math.random() * pool.length)];
-
     const msg0 = L('✨ あなたに似合うメイクをセットしてみたよ♪', '✨ 어울리는 메이크업을 세팅해 봤어♪', '✨ I set up a makeup look that suits you♪');
     const msg2 = L('他のアイテムも試せるよ！メニューをタップしてね♪', '다른 아이템도 시도해 봐! 메뉴를 탭해 봐♪', 'Try other items too! Tap the menu♪');
+    const cats = ['lip', 'eyeshadow', 'cheek', 'base', 'eyebrow'];
+    const yoishoMsg = getYoishoMessage(cats[Math.floor(Math.random() * cats.length)], lang);
 
-    const show = (msg) => {
-      setArKirariMsg(msg);
-      setArKirariVisible(true);
-    };
-    const hide = () => setArKirariVisible(false);
-
-    const timers = [
-      setTimeout(() => show(msg0), 100),
-      setTimeout(() => hide(), 3100),
-      setTimeout(() => show(yoishoMsg), 3200),
-      setTimeout(() => hide(), 6200),
-      setTimeout(() => show(msg2), 6300),
-      setTimeout(() => hide(), 9300),
-      setTimeout(() => setArKirariMsg(null), 9600),
-    ];
-    arKirariTimersRef.current = timers;
-    return () => timers.forEach(clearTimeout);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    const DISPLAY = 5000; // ミラー画面と同じ5秒表示
+    const GAP = 500;      // メッセージ間のギャップ
+    const t0 = setTimeout(() => showKirariMsg(msg0, DISPLAY), 500);
+    const t1 = setTimeout(() => showKirariMsg(yoishoMsg, DISPLAY), 500 + DISPLAY + GAP);
+    const t2 = setTimeout(() => showKirariMsg(msg2, DISPLAY), 500 + (DISPLAY + GAP) * 2);
+    const t3 = setTimeout(() => setArKirariMsg(null), 500 + (DISPLAY + GAP) * 3);
+    arMountTimersRef.current = [t0, t1, t2, t3];
+    return () => arMountTimersRef.current.forEach(clearTimeout);
+  }, [showKirariMsg]); // showKirariMsg は安定（[] deps useCallback）
 
   useEffect(() => {
     const video = videoRef.current;
@@ -459,7 +461,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
       {arKirariMsg && (
         <div style={{
           position: 'absolute',
-          bottom: (cart.cartItems.length > 0 ? 52 : 0) + (sheetOpen ? SHEET_MAX : SHEET_MIN) + 12,
+          bottom: (cart.cartItems.length > 0 ? 52 : 0) + SHEET_MIN + 8,
           left: 12, right: 12,
           display: 'flex', alignItems: 'flex-end', gap: 8,
           opacity: arKirariVisible ? 1 : 0,
@@ -515,6 +517,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
                     setSelectedColor(dc);
                     applyColor(activeCategory, dc.hex);
                     setAppliedItems(prev => ({ ...prev, [activeCategory]: { product: p, selectedColor: dc } }));
+                    showKirariMsg(getYoishoMessage(activeCategory, lang));
                   }
                 }}
                 onSelectColor={(c) => {
@@ -525,6 +528,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
                   if (selectedProduct) {
                     setAppliedItems(prev => ({ ...prev, [activeCategory]: { product: selectedProduct, selectedColor: c } }));
                   }
+                  showKirariMsg(getYoishoMessage(activeCategory, lang));
                 }}
                 onAddToCart={handleAddToCart}
                 lang={lang} t={t}
