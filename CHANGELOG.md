@@ -1,5 +1,33 @@
 # CHANGELOG
 
+## 2026-04-09 — feat: ARフルメイクプリセット自動適用 + 描画濃度UP + キラリ時間差メッセージ
+
+### ArTryOnScreen
+- **フルメイクプリセット**: 起動時に5カテゴリ（base/lip/eyeshadow/eyebrow/cheek）の先頭商品を自動適用
+  - `_DEFAULT_LIP` / `_DEFAULT_EYESHADOW` / `_DEFAULT_EYEBROW` / `_DEFAULT_CHEEK` 定数追加
+  - `hexToRgba()` ヘルパー追加（eyeshadow/cheekのrgba変換に使用）
+  - `appliedItems` 初期値を5カテゴリすべてに拡張
+- **キラリ時間差メッセージ**: AR画面オープン時に3ステップで表示
+  - 0s: 「✨ あなたに似合うメイクをセットしてみたよ♪」
+  - 3s: ヨイショメッセージ（lip/eyeshadow/cheek/base/eyebrowからランダム）
+  - 6s: 「他のアイテムも試せるよ！メニューをタップしてね♪」
+  - フェードイン/アウト付き、9.6秒後に消去
+- `Bubble` コンポーネントを import 追加
+
+### makeupRenderer.js
+- 全描画関数の `globalAlpha` 上限を引き上げ（1.5〜2倍）
+  - drawLip: multiply 0.65→0.95, overlay 0.72→0.95, highlight 0.22→0.30
+  - drawEyeshadow: source-over 0.85→1.0, shimmer 0.18→0.28
+  - drawCheek: 0.82→1.0
+  - drawFoundation: multiply 0.78→1.0, overlay 0.50→0.75, tZone 0.28→0.40, cheek 0.20→0.28
+  - drawBrow: multiply 0.65→0.90, soft 0.25→0.35
+  - drawConcealer: multiply 0.55→0.80, screen 0.22→0.35
+
+### i18n (ja/en/ko)
+- `kirari.ar_preset_intro` / `kirari.ar_preset_guide` キー追加
+
+---
+
 ## 2026-04-09 — feat: ARメイク画面デフォルト状態改善
 
 ### ArTryOnScreen
