@@ -88,18 +88,18 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
     return () => video.removeEventListener('loadeddata', onPlaying);
   }, [isActive, videoRef]);
 
-  // peek animation: 初回のみ、0.5秒後にパネルを40px上げて1秒見せる
+  // peek animation: 初回のみ、0.5秒後にパネルを40px浮上させて1秒見せて戻る
   useEffect(() => {
-    if (sessionStorage.getItem('ar_peek_shown')) return;
+    if (sessionStorage.getItem('ar_peek_shown_v2')) return;
+    let t2;
     const t1 = setTimeout(() => {
       setIsPeeking(true);
-      const t2 = setTimeout(() => {
+      t2 = setTimeout(() => {
         setIsPeeking(false);
-        sessionStorage.setItem('ar_peek_shown', '1');
+        sessionStorage.setItem('ar_peek_shown_v2', '1');
       }, 1000);
-      return () => clearTimeout(t2);
     }, 500);
-    return () => clearTimeout(t1);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
   const getVideo = useCallback(() => videoRef.current, [videoRef]);
@@ -322,8 +322,9 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
         left: 0, right: 0,
         background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(16px)',
         borderRadius: '20px 20px 0 0', boxShadow: '0 -4px 24px rgba(0,0,0,0.08)',
-        maxHeight: sheetOpen ? `${SHEET_MAX}px` : isPeeking ? `${SHEET_MIN + 40}px` : `${SHEET_MIN}px`,
-        transition: 'max-height 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+        maxHeight: sheetOpen ? `${SHEET_MAX}px` : `${SHEET_MIN}px`,
+        transform: isPeeking && !sheetOpen ? 'translateY(-40px)' : 'translateY(0)',
+        transition: 'max-height 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.4s ease-out',
         overflow: 'hidden', zIndex: 50,
       }}>
         {/* Drag handle */}
