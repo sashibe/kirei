@@ -461,11 +461,11 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
       {arKirariMsg && (
         <div style={{
           position: 'absolute',
-          bottom: (cart.cartItems.length > 0 ? 52 : 0) + SHEET_MIN + 8,
+          bottom: (cart.cartItems.length > 0 ? 52 : 0) + (sheetOpen ? SHEET_MAX : SHEET_MIN) + 8,
           left: 12, right: 12,
           display: 'flex', alignItems: 'flex-end', gap: 8,
           opacity: arKirariVisible ? 1 : 0,
-          transition: 'opacity 0.3s ease',
+          transition: 'bottom 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease',
           zIndex: 60, pointerEvents: 'none',
         }}>
           <Kirari size={44} expression="sparkle" bounce />
