@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 2026-04-09 — feat: CartSummaryBar常時表示 + パネル縮小デフォルト
+
+### ArTryOnScreen
+- `sheetOpen` デフォルト `true` → `false`（起動時パネル縮小、タブのみ表示）
+- CartSummaryBar を `currentArItems`（ARに表示中の商品）ベースで常時表示
+  - フルメイクプリセット5商品の合計金額を起動直後から表示
+  - `totalPrice` を `currentArItems.reduce(sum + price)` で都度計算
+- BottomSheet・キラリ・CART_CONFIRM_POPUP の `bottom` 基準を `cart.cartItems` → `currentArItems` に統一
+
+---
+
 ## 2026-04-09 — fix: ARキラリメッセージ 位置・タイミング・ヨイショ改善
 
 ### ArTryOnScreen
