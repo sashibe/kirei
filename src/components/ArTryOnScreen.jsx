@@ -110,7 +110,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [showMesh, setShowMesh] = useState(false);
   const [activeCategory, setActiveCategory] = useState('base'); // デフォルト: ベースタブ
-  const [sheetOpen, setSheetOpen] = useState(true);             // デフォルト: メニュー開いた状態
+  const [sheetOpen, setSheetOpen] = useState(false);            // デフォルト: パネル縮小（タブのみ表示）
   const [justAdded, setJustAdded] = useState(false);
   const [pendingItem, setPendingItem] = useState(null);
   const [hasPendingBadge, setHasPendingBadge] = useState(false);
@@ -472,7 +472,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
       {arKirariMsg && (
         <div style={{
           position: 'absolute',
-          bottom: (cart.cartItems.length > 0 ? 52 : 0) + sheetHeight + 8,
+          bottom: (currentArItems.length > 0 ? 52 : 0) + sheetHeight + 8,
           left: 12, right: 12,
           display: 'flex', alignItems: 'flex-end', gap: 8,
           opacity: arKirariVisible ? 1 : 0,
@@ -486,7 +486,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
 
       {/* BottomSheet */}
       <div ref={sheetRef} style={{
-        position: 'absolute', bottom: cart.cartItems.length > 0 ? 52 : 0,
+        position: 'absolute', bottom: currentArItems.length > 0 ? 52 : 0,
         left: 0, right: 0,
         background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(16px)',
         borderRadius: '20px 20px 0 0', boxShadow: '0 -4px 24px rgba(0,0,0,0.08)',
@@ -615,7 +615,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
       {CART_CONFIRM_POPUP && pendingItem && (
         <div style={{
           position: 'absolute',
-          bottom: (cart.cartItems.length > 0 ? 52 : 0) + (sheetOpen ? SHEET_MAX : SHEET_MIN),
+          bottom: (currentArItems.length > 0 ? 52 : 0) + (sheetOpen ? SHEET_MAX : SHEET_MIN),
           left: 0, right: 0,
           background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(12px)',
           borderTop: '1px solid rgba(168,85,247,0.12)',
@@ -653,9 +653,11 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
         </div>
       )}
 
-      {/* CartSummaryBar */}
-      {cart.cartItems.length > 0 && (
-        <CartSummaryBar items={cart.cartItems} totalPrice={cart.totalPrice}
+      {/* CartSummaryBar — currentArItems(ARに表示中の商品)を常時表示 */}
+      {currentArItems.length > 0 && (
+        <CartSummaryBar
+          items={currentArItems}
+          totalPrice={currentArItems.reduce((sum, i) => sum + (i.price || 0), 0)}
           onCheckout={() => { doCapture(); onCheckout(currentArItems); }} />
       )}
     </div>
