@@ -89,13 +89,13 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
 
   // peek animation: 初回のみ、0.5秒後にシートを開いて1.5秒見せてから閉じる
   useEffect(() => {
-    if (sessionStorage.getItem('ar_peek_shown_v2')) return;
+    if (sessionStorage.getItem('ar_peek_shown_v3')) return;
     let t2;
     const t1 = setTimeout(() => {
       setSheetOpen(true);
       t2 = setTimeout(() => {
         setSheetOpen(false);
-        sessionStorage.setItem('ar_peek_shown_v2', '1');
+        sessionStorage.setItem('ar_peek_shown_v3', '1');
       }, 1500);
     }, 500);
     return () => { clearTimeout(t1); clearTimeout(t2); };
@@ -486,7 +486,7 @@ function CategoryTabRow({ categories, activeCategory, sheetOpen, hasPendingBadge
   const [canScroll, setCanScroll] = useState(false);
   const [atEnd, setAtEnd] = useState(false);
 
-  // マウント時にスクロール可能かチェック
+  // マウント時にスクロール可能かチェック（rAFでレイアウト完了後に測定）
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -495,11 +495,10 @@ function CategoryTabRow({ categories, activeCategory, sheetOpen, hasPendingBadge
       setCanScroll(hasOverflow);
       setAtEnd(!hasOverflow || el.scrollLeft + el.clientWidth >= el.scrollWidth - 4);
     };
-    check();
-    // ResizeObserverで幅変化に追従
+    const raf = requestAnimationFrame(check);
     const ro = new ResizeObserver(check);
     ro.observe(el);
-    return () => ro.disconnect();
+    return () => { cancelAnimationFrame(raf); ro.disconnect(); };
   }, []);
 
   const onScroll = useCallback(() => {
