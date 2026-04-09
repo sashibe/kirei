@@ -255,6 +255,8 @@ export default {
   "kirari.random_dull": "ちょっとくすんでる日でも、大丈夫。チェックしてみて",
 
   // === キラリ ARガイドセリフ（改善7）===
+  "kirari.ar_preset_intro": "✨ あなたに似合うメイクをセットしてみたよ♪",
+  "kirari.ar_preset_guide": "他のアイテムも試せるよ！メニューをタップしてね♪",
   "kirari.ar_first_open": "カラーをタップすると即試せるよ\u2728",
   "kirari.ar_long_press": "そう！長押しで素顔と比べられるよ",
   "kirari.ar_cart_add": "カートに入れたよ\uD83D\uDED2",

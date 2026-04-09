@@ -254,6 +254,8 @@ export default {
   "kirari.random_lip": "오늘은 무슨 색 립 할 거야?",
   "kirari.random_dull": "좀 칙칙한 날이어도 괜찮아. 체크해 봐",
 
+  "kirari.ar_preset_intro": "✨ 어울리는 메이크업을 세팅해 봤어♪",
+  "kirari.ar_preset_guide": "다른 아이템도 시도해 봐! 메뉴를 탭해 봐♪",
   "kirari.ar_first_open": "컬러를 탭하면 바로 적용돼\u2728",
   "kirari.ar_long_press": "맞아! 길게 누르면 맨 얼굴과 비교할 수 있어",
   "kirari.ar_cart_add": "장바구니에 담았어\uD83D\uDED2",

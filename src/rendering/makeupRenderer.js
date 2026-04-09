@@ -114,7 +114,7 @@ export function drawLip(ctx, lms, w, h, colorStr, opacity) {
   };
 
   // ベースカラー
-  ctx.globalAlpha = opa * 0.65;
+  ctx.globalAlpha = opa * 0.95;
   ctx.globalCompositeOperation = 'multiply';
   ctx.fillStyle = hex;
   traceLipRing();
@@ -122,14 +122,14 @@ export function drawLip(ctx, lms, w, h, colorStr, opacity) {
 
   // ティント
   ctx.globalCompositeOperation = 'overlay';
-  ctx.globalAlpha = opa * 0.72;
+  ctx.globalAlpha = opa * 0.95;
   ctx.fillStyle = hex;
   traceLipRing();
   ctx.fill();
 
   // ハイライト
   ctx.globalCompositeOperation = 'screen';
-  ctx.globalAlpha = opa * 0.22;
+  ctx.globalAlpha = opa * 0.30;
   const topLip = lms[13], botLip = lms[14];
   const cx = (lmX(topLip, w) + lmX(botLip, w)) * 0.5;
   const cy = lmY(botLip, h) * 0.65 + lmY(topLip, h) * 0.35;
@@ -170,7 +170,7 @@ export function drawEyeshadow(ctx, lms, w, h, colorStr, opacity) {
     grad.addColorStop(0.5, hex + '90');
     grad.addColorStop(1, hex + '20');
 
-    ctx.globalAlpha = opa * 0.85;
+    ctx.globalAlpha = opa * 1.0;
     ctx.globalCompositeOperation = 'source-over';
     ctx.fillStyle = grad;
 
@@ -179,7 +179,7 @@ export function drawEyeshadow(ctx, lms, w, h, colorStr, opacity) {
 
     // シマー
     ctx.globalCompositeOperation = 'screen';
-    ctx.globalAlpha = opa * 0.18;
+    ctx.globalAlpha = opa * 0.28;
     const shimmer = ctx.createRadialGradient(cx, cy, 0, cx, cy, (maxY - minY) * h * 0.8);
     shimmer.addColorStop(0, 'rgba(255,255,255,0.5)');
     shimmer.addColorStop(1, 'rgba(255,255,255,0)');
@@ -219,7 +219,7 @@ export function drawCheek(ctx, lms, w, h, colorStr, opacity) {
 
     ctx.save();
     ctx.globalCompositeOperation = 'source-over';
-    ctx.globalAlpha = opa * 0.82;
+    ctx.globalAlpha = opa * 1.0;
 
     const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, rw);
     grad.addColorStop(0, hex);
@@ -292,14 +292,14 @@ export function drawFoundation(ctx, lms, w, h, colorStr, opacity) {
   base.addColorStop(0.5, hex + '65');
   base.addColorStop(0.8, hex + '40');
   base.addColorStop(1, hex + '00');
-  ctx.globalAlpha = opa * 0.78;
+  ctx.globalAlpha = opa * 1.0;
   ctx.globalCompositeOperation = 'multiply';
   ctx.fillStyle = base;
   tracePath(); ctx.fill();
 
   // ティント
   ctx.globalCompositeOperation = 'overlay';
-  ctx.globalAlpha = opa * 0.5;
+  ctx.globalAlpha = opa * 0.75;
   const tint = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR * 0.9);
   tint.addColorStop(0, hex + '70');
   tint.addColorStop(0.7, hex + '30');
@@ -309,7 +309,7 @@ export function drawFoundation(ctx, lms, w, h, colorStr, opacity) {
 
   // Tゾーン + 頬ハイライト
   ctx.globalCompositeOperation = 'screen';
-  ctx.globalAlpha = opa * 0.28;
+  ctx.globalAlpha = opa * 0.40;
   const nose = lms[4], forehead = lms[10];
   const tZone = ctx.createLinearGradient(lmX(forehead, w), lmY(forehead, h), lmX(nose, w), lmY(nose, h));
   tZone.addColorStop(0, 'rgba(255,255,255,0.35)');
@@ -318,7 +318,7 @@ export function drawFoundation(ctx, lms, w, h, colorStr, opacity) {
   ctx.fillStyle = tZone;
   tracePath(); ctx.fill();
 
-  ctx.globalAlpha = opa * 0.2;
+  ctx.globalAlpha = opa * 0.28;
   for (const cheekIdx of [234, 454]) {
     const cheek = lms[cheekIdx];
     const cr = maxR * 0.25;
@@ -360,7 +360,7 @@ export function drawBrow(ctx, lms, w, h, colorStr, opacity) {
     // 上辺→下辺（逆順）で閉じたポリゴン
     ctx.save();
     ctx.globalCompositeOperation = 'multiply';
-    ctx.globalAlpha = opa * 0.65;
+    ctx.globalAlpha = opa * 0.90;
     ctx.fillStyle = hex;
 
     ctx.beginPath();
@@ -371,7 +371,7 @@ export function drawBrow(ctx, lms, w, h, colorStr, opacity) {
     ctx.fill();
 
     // ソフトエッジ: 同じパスを少し大きく、低alphaで重ねる
-    ctx.globalAlpha = opa * 0.25;
+    ctx.globalAlpha = opa * 0.35;
     ctx.beginPath();
     ctx.moveTo(topPts[0][0], topPts[0][1] - 2);
     for (let i = 1; i < topPts.length; i++) ctx.lineTo(topPts[i][0], topPts[i][1] - 2);
@@ -392,7 +392,7 @@ export function drawConcealer(ctx, lms, w, h, colorStr, opacity) {
   ctx.save();
 
   for (const indices of [LEFT_UNDEREYE, RIGHT_UNDEREYE]) {
-    ctx.globalAlpha = opa * 0.55;
+    ctx.globalAlpha = opa * 0.80;
     ctx.globalCompositeOperation = 'multiply';
     ctx.fillStyle = hex + '60';
 
@@ -401,7 +401,7 @@ export function drawConcealer(ctx, lms, w, h, colorStr, opacity) {
 
     // 明るさ追加
     ctx.globalCompositeOperation = 'screen';
-    ctx.globalAlpha = opa * 0.22;
+    ctx.globalAlpha = opa * 0.35;
 
     let cx = 0, cy = 0;
     for (const i of indices) { cx += lms[i].x; cy += lms[i].y; }

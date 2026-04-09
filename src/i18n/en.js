@@ -254,6 +254,8 @@ export default {
   "kirari.random_lip": "What lip color are you going with today?",
   "kirari.random_dull": "Even on dull days, it's okay. Try a check",
 
+  "kirari.ar_preset_intro": "✨ I set up a makeup look that suits you♪",
+  "kirari.ar_preset_guide": "Try other items too! Tap the menu♪",
   "kirari.ar_first_open": "Tap a color to try it instantly\u2728",
   "kirari.ar_long_press": "Yes! Hold down to compare with bare face",
   "kirari.ar_cart_add": "Added to cart\uD83D\uDED2",
