@@ -1,7 +1,4 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-
-// 旧仕様（60秒遅延ポップアップ + バッジ）に戻す場合は true に変更
-const CART_CONFIRM_POPUP = false;
 import Kirari from './Kirari.jsx';
 import MakeupCanvas from './MakeupCanvas.jsx';
 import CartSummaryBar from './CartSummaryBar.jsx';
@@ -12,6 +9,16 @@ import { BASE_LOOKS } from '../data/makeupLooks.js';
 import { PRODUCTS } from '../data/products.js';
 import { getSeasonText } from '../analysis/personalColor.js';
 import { captureFrame, shareImage, saveImage } from '../utils/share.js';
+
+// 旧仕様（60秒遅延ポップアップ + バッジ）に戻す場合は true に変更
+const CART_CONFIRM_POPUP = false;
+
+// 初回peekアニメーション: true で有効、false で無効（復活させる場合は true に）
+const ENABLE_PEEK_ANIMATION = false;
+
+// デフォルト適用商品（ARページ起動時に自動適用: レステモ BBクリーム / ライト）
+const _DEFAULT_BASE = PRODUCTS.find(p => p.id === 'lesthemo_10000033');
+const _DEFAULT_BASE_COLOR = _DEFAULT_BASE?.colors?.[0] ?? null; // c01 ライト #F5E0CC
 
 // Vite: import all product images from assets/products/
 const productImages = import.meta.glob('../assets/products/*.jpg', { eager: true, query: '?url', import: 'default' });
@@ -56,14 +63,16 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
   const { t, lang } = useT();
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [showMesh, setShowMesh] = useState(false);
-  const [activeCategory, setActiveCategory] = useState('lip');
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const [activeCategory, setActiveCategory] = useState('base'); // デフォルト: ベースタブ
+  const [sheetOpen, setSheetOpen] = useState(true);             // デフォルト: メニュー開いた状態
   const [justAdded, setJustAdded] = useState(false);
   const [pendingItem, setPendingItem] = useState(null);
   const [hasPendingBadge, setHasPendingBadge] = useState(false);
   const productSelectedAtRef = useRef(null);
 
   const [selectedBase, setSelectedBase] = useState(null);
+  // デフォルト: レステモ BBクリーム / ライト を AR適用済み状態で起動
+  const [baseColor, setBaseColor] = useState(_DEFAULT_BASE_COLOR?.hex ?? null);
   const [lipColor, setLipColor] = useState(null);
   const [cheekColor, setCheekColor] = useState(null);
   const [eyeshadowColor, setEyeshadowColor] = useState(null);
@@ -73,10 +82,14 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
   const [selectedContactLens, setSelectedContactLens] = useState('none');
   const [lashesColor, setLashesColor] = useState(null);
   const [beforeAfter, setBeforeAfter] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [selectedColor, setSelectedColor] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(_DEFAULT_BASE ?? null);
+  const [selectedColor, setSelectedColor] = useState(_DEFAULT_BASE_COLOR ?? null);
   // カテゴリ別の適用済み商品を追跡: { [category]: { product, selectedColor } }
-  const [appliedItems, setAppliedItems] = useState({});
+  const [appliedItems, setAppliedItems] = useState(
+    _DEFAULT_BASE && _DEFAULT_BASE_COLOR
+      ? { base: { product: _DEFAULT_BASE, selectedColor: _DEFAULT_BASE_COLOR } }
+      : {}
+  );
 
   const canvasRef = useRef(null);
   const customContactRef = useRef(null);
@@ -93,7 +106,9 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
   }, [isActive, videoRef]);
 
   // peek animation: 初回のみ、0.5秒後にシートを開いて1.5秒見せてから閉じる
+  // ENABLE_PEEK_ANIMATION = true で復活
   useEffect(() => {
+    if (!ENABLE_PEEK_ANIMATION) return;
     if (sessionStorage.getItem('ar_peek_shown_v3')) return;
     let t2;
     const t1 = setTimeout(() => {
@@ -109,7 +124,6 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
   const getVideo = useCallback(() => videoRef.current, [videoRef]);
   const cameraLive = isActive && !cameraError && videoPlaying;
 
-  const [baseColor, setBaseColor] = useState(null);
   const currentBase = selectedBase
     ? (BASE_LOOKS.find(l => l.id === selectedBase) ?? BASE_LOOKS[0])
     : (baseColor ? { base: baseColor, brow: browColor } : null);
