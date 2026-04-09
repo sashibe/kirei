@@ -81,13 +81,13 @@ const MakeupCanvas = forwardRef(function MakeupCanvas({ getVideo, baseLook, colo
 
       if (frame % 2 === 0) {
         const result = detect(video, performance.now());
-        if (result?.landmarks) {
-          lms = result.landmarks;
-          lastLandmarksRef.current = lms;
-        }
+        // 顔未検出（空配列）の場合はキャッシュをクリア
+        lms = (result?.landmarks?.length > 0) ? result.landmarks : null;
+        lastLandmarksRef.current = lms;
       }
 
       if (!lms) {
+        // 顔なし → clearRect済みのまま次フレームへ
         rafRef.current = requestAnimationFrame(loop);
         return;
       }
