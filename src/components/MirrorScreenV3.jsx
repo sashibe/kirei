@@ -3,7 +3,6 @@ import CameraView from './CameraView.jsx';
 import Kirari from './Kirari.jsx';
 import Bubble from './Bubble.jsx';
 import GuideFrame from './GuideFrame.jsx';
-import ScoreBadge from './ScoreBadge.jsx';
 import useAutoShutter from '../hooks/useAutoShutter.js';
 import useKirari from '../hooks/useKirari.js';
 import useWeather from '../hooks/useWeather.js';
@@ -429,44 +428,60 @@ export default function MirrorScreenV3({ onResult }) {
           </div>
         )}
 
-        {/* === Score badges === */}
+        {/* === 統合診断カード（左上1枚） === */}
         {!checking && !analyzing && skinScores && showScores && (
-          <div style={{ position: "absolute", top: 72, right: 12, display: "flex", flexDirection: "column", gap: 8, zIndex: 2 }}>
-            {Object.entries(skinScores).map(([k, v], i) => (
-              <ScoreBadge key={`skin-${k}`} label={t(v.labelKey)} score={v.score} color={v.color} delay={i * 600} />
-            ))}
-          </div>
-        )}
-
-        {/* === Personal color badge (16type) === */}
-        {!checking && !analyzing && personalColor && showScores && (
           <div style={{
-            position: "absolute", top: 72, left: 12, zIndex: 2,
-            display: "inline-flex", alignItems: "center", gap: 8,
-            background: (personalColor.color || getPcColors(personalColor.season).color) + '18',
-            border: `1.5px solid ${personalColor.color || getPcColors(personalColor.season).border}`,
-            borderRadius: 20, padding: "6px 14px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+            position: "absolute", top: 72, left: 12, right: 12, zIndex: 2,
+            background: "rgba(255,255,255,0.82)",
+            backdropFilter: "blur(14px)",
+            WebkitBackdropFilter: "blur(14px)",
+            borderRadius: 16,
+            padding: "10px 14px",
+            boxShadow: "0 2px 16px rgba(0,0,0,0.10)",
           }}>
-            {(() => { const pc = getSeasonText(personalColor.subtypeId, lang); return (<>
-            <span style={{ fontSize: 16 }}>{pc.emoji || getPcIcon(personalColor.season)}</span>
-            <div>
-              <div style={{
-                fontSize: 13, fontWeight: 800,
-                color: pc.color || getPcColors(personalColor.season).color,
-              }}>
-                {pc.main || t(personalColor.label)}
-              </div>
-              {pc.sub && (
-                <div style={{ fontSize: 9, color: '#94a3b8', fontWeight: 600, marginTop: 1 }}>
-                  {pc.sub}
-                </div>
-              )}
+            {/* ヘッダー */}
+            <div style={{ fontSize: 10, color: "#94a3b8", fontWeight: 700, marginBottom: 7, letterSpacing: 0.3 }}>
+              🪞 {t("mirror.result_title") || "あなたの肌診断結果"}
             </div>
-            </>); })()}
-            {personalColor.confidence < 0.6 && (
-              <span style={{ fontSize: 8, color: '#94a3b8' }}>{t("pc.reference")}</span>
-            )}
+
+            {/* パーソナルカラー行 */}
+            {personalColor && (() => {
+              const pc = getSeasonText(personalColor.subtypeId, lang);
+              const pcCol = pc.color || getPcColors(personalColor.season).color;
+              return (
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                  <span style={{ fontSize: 18 }}>{pc.emoji || getPcIcon(personalColor.season)}</span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{ fontSize: 13, fontWeight: 800, color: pcCol }}>{pc.main || t(personalColor.label)}</span>
+                    {pc.sub && <span style={{ fontSize: 9, color: "#94a3b8", marginLeft: 5, fontWeight: 600 }}>{pc.sub}</span>}
+                    {personalColor.confidence < 0.6 && (
+                      <span style={{ fontSize: 8, color: "#94a3b8", marginLeft: 4 }}>{t("pc.reference")}</span>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* スコア行（/100付き・色分け） */}
+            <div style={{ display: "flex", gap: 4 }}>
+              {Object.entries(skinScores).map(([k, v]) => {
+                const good = v.score >= 60;
+                return (
+                  <div key={k} style={{
+                    flex: 1, textAlign: "center",
+                    background: good ? "rgba(34,197,94,0.08)" : "rgba(245,158,11,0.08)",
+                    borderRadius: 10, padding: "5px 2px",
+                    border: `1px solid ${good ? "rgba(34,197,94,0.2)" : "rgba(245,158,11,0.2)"}`,
+                  }}>
+                    <div style={{ fontSize: 9, color: "#94a3b8", fontWeight: 600, marginBottom: 2 }}>{t(v.labelKey)}</div>
+                    <div style={{ lineHeight: 1 }}>
+                      <span style={{ fontSize: 17, fontWeight: 800, color: good ? "#22c55e" : "#f59e0b" }}>{v.score}</span>
+                      <span style={{ fontSize: 8, color: "#94a3b8", fontWeight: 600 }}>/100</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
 

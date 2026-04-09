@@ -29,6 +29,7 @@ export default {
   "mirror.retry": "Try again",
   "mirror.quit": "Quit",
   "mirror.cancel": "Cancel",
+  "mirror.result_title": "Your Skin Analysis",
   "mirror.hide_scores": "Hide scores",
   "mirror.show_scores": "Show scores",
   "mirror.btn_skin": "Skin",

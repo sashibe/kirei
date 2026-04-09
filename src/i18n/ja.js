@@ -29,6 +29,7 @@ export default {
   "mirror.retry": "もう一度",
   "mirror.quit": "やめる",
   "mirror.cancel": "キャンセル",
+  "mirror.result_title": "あなたの肌診断結果",
   "mirror.hide_scores": "スコア非表示",
   "mirror.show_scores": "スコア表示",
   "mirror.btn_skin": "肌",
