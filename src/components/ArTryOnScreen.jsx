@@ -485,7 +485,24 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
 // === CategoryTabRow with scroll fade ===
 function CategoryTabRow({ categories, activeCategory, sheetOpen, hasPendingBadge, onTap, t }) {
   const scrollRef = useRef(null);
+  const [canScroll, setCanScroll] = useState(false);
   const [atEnd, setAtEnd] = useState(false);
+
+  // マウント時にスクロール可能かチェック
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const check = () => {
+      const hasOverflow = el.scrollWidth > el.clientWidth + 4;
+      setCanScroll(hasOverflow);
+      setAtEnd(!hasOverflow || el.scrollLeft + el.clientWidth >= el.scrollWidth - 4);
+    };
+    check();
+    // ResizeObserverで幅変化に追従
+    const ro = new ResizeObserver(check);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const onScroll = useCallback(() => {
     const el = scrollRef.current;
@@ -493,15 +510,18 @@ function CategoryTabRow({ categories, activeCategory, sheetOpen, hasPendingBadge
     setAtEnd(el.scrollLeft + el.clientWidth >= el.scrollWidth - 4);
   }, []);
 
+  const showIndicator = canScroll && !atEnd;
+
   return (
     <div style={{ position: 'relative', borderBottom: sheetOpen ? '1px solid #ede9fe' : 'none' }}>
       <div ref={scrollRef} onScroll={onScroll}
-        style={{ display: 'flex', gap: 0, overflowX: 'auto', scrollbarWidth: 'none' }}>
+        style={{ display: 'flex', gap: 0, overflowX: 'auto', scrollbarWidth: 'none',
+          WebkitOverflowScrolling: 'touch' }}>
         {categories.map(cat => {
           const showBadge = hasPendingBadge && cat.id === activeCategory;
           return (
             <button key={cat.id} onClick={() => !cat.comingSoon && onTap(cat.id)} style={{
-              flexShrink: 0, padding: '6px 8px', minWidth: 52,
+              flexShrink: 0, padding: '6px 6px', minWidth: 48,
               background: activeCategory === cat.id ? 'rgba(168,85,247,0.1)' : 'transparent',
               border: 'none',
               borderBottom: activeCategory === cat.id ? '2px solid #a855f7' : '2px solid transparent',
@@ -529,13 +549,16 @@ function CategoryTabRow({ categories, activeCategory, sheetOpen, hasPendingBadge
           );
         })}
       </div>
-      {/* 右端フェードグラデーション */}
-      {!atEnd && (
+      {/* 右端スクロールインジケーター */}
+      {showIndicator && (
         <div style={{
-          position: 'absolute', top: 0, right: 0, bottom: 0, width: 24,
-          background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.97))',
+          position: 'absolute', top: 0, right: 0, bottom: 0, width: 36,
+          background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.98))',
           pointerEvents: 'none',
-        }} />
+          display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
+        }}>
+          <span style={{ fontSize: 10, color: '#a855f7', paddingRight: 4, fontWeight: 700 }}>›</span>
+        </div>
       )}
     </div>
   );
