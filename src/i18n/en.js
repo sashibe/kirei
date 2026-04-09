@@ -79,6 +79,7 @@ export default {
   "result.look_comment_suffix": " looks great on you♪",
   "result.look_comment_default": "Perfect for you today!",
   "result.used_items": "Items Used",
+  "result.ar_items_title": "🛒 Items You Tried",
   "result.total": "Total",
   "result.total_selected": "Selected ({count} items)",
   "result.coord_hint": "Today's Coord Hint",

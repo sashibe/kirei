@@ -79,6 +79,7 @@ export default {
   "result.look_comment_suffix": "で仕上げたよ♪",
   "result.look_comment_default": "今日のあなたにぴったり！",
   "result.used_items": "使用アイテム",
+  "result.ar_items_title": "🛒 試着中のアイテム",
   "result.total": "合計",
   "result.total_selected": "選択中（{count}件）",
   "result.coord_hint": "今日のコーデヒント",

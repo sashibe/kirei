@@ -79,6 +79,7 @@ export default {
   "result.look_comment_suffix": "로 마무리했어♪",
   "result.look_comment_default": "오늘의 당신에게 딱!",
   "result.used_items": "사용 아이템",
+  "result.ar_items_title": "🛒 시착 중인 아이템",
   "result.total": "합계",
   "result.total_selected": "선택 중 ({count}개)",
   "result.coord_hint": "오늘의 코디 힌트",
