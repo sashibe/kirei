@@ -30,6 +30,7 @@ export default {
   "mirror.quit": "Quit",
   "mirror.cancel": "Cancel",
   "mirror.result_title": "Your Skin Analysis",
+  "pc.analyzing": "Analyzing personal color…",
   "mirror.hide_scores": "Hide scores",
   "mirror.show_scores": "Show scores",
   "mirror.btn_skin": "Skin",

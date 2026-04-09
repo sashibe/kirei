@@ -30,6 +30,7 @@ export default {
   "mirror.quit": "그만두기",
   "mirror.cancel": "취소",
   "mirror.result_title": "나의 피부 분석 결과",
+  "pc.analyzing": "퍼스널 컬러 분석 중…",
   "mirror.hide_scores": "점수 숨기기",
   "mirror.show_scores": "점수 보기",
   "mirror.btn_skin": "피부",
