@@ -19,8 +19,10 @@ export default function LanguageSwitcher({ size = 'normal' }) {
           style={{
             border: 'none',
             borderRadius: 8,
-            padding: isSmall ? '2px 6px' : '3px 8px',
-            fontSize: isSmall ? 8 : 9,
+            padding: isSmall ? '6px 8px' : '7px 10px',
+            fontSize: isSmall ? 11 : 12,
+            minWidth: isSmall ? 36 : 40,
+            minHeight: isSmall ? 32 : 36,
             fontWeight: 700,
             cursor: 'pointer',
             transition: 'all 0.2s',

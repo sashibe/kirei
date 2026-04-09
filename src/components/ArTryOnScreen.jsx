@@ -55,8 +55,11 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
   const [showMesh, setShowMesh] = useState(false);
   const [activeCategory, setActiveCategory] = useState('lip');
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [isPeeking, setIsPeeking] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
   const [pendingItem, setPendingItem] = useState(null);
+  const [hasPendingBadge, setHasPendingBadge] = useState(false);
+  const productSelectedAtRef = useRef(null);
 
   const [selectedBase, setSelectedBase] = useState(null);
   const [lipColor, setLipColor] = useState(null);
@@ -85,6 +88,20 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
     return () => video.removeEventListener('loadeddata', onPlaying);
   }, [isActive, videoRef]);
 
+  // peek animation: 初回のみ、0.5秒後にパネルを40px上げて1秒見せる
+  useEffect(() => {
+    if (sessionStorage.getItem('ar_peek_shown')) return;
+    const t1 = setTimeout(() => {
+      setIsPeeking(true);
+      const t2 = setTimeout(() => {
+        setIsPeeking(false);
+        sessionStorage.setItem('ar_peek_shown', '1');
+      }, 1000);
+      return () => clearTimeout(t2);
+    }, 500);
+    return () => clearTimeout(t1);
+  }, []);
+
   const getVideo = useCallback(() => videoRef.current, [videoRef]);
   const cameraLive = isActive && !cameraError && videoPlaying;
 
@@ -104,17 +121,26 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
   const handlePointerDown = useCallback(() => setBeforeAfter(true), []);
   const handlePointerUp = useCallback(() => setBeforeAfter(false), []);
 
-  // カテゴリタップ → 展開
-  // 未カート商品の確認チェック
+  // 未カート商品の確認チェック（60秒経過のみポップアップ、未満はバッジ）
   const checkPending = useCallback(() => {
     if (selectedProduct && selectedColor) {
       const uk = `${selectedProduct.id}_${selectedColor.id}`;
       if (!cart.cartItems.some(i => i.uniqueKey === uk)) {
-        setPendingItem({ product: selectedProduct, selectedColor, uniqueKey: uk });
+        const elapsed = productSelectedAtRef.current
+          ? Date.now() - productSelectedAtRef.current
+          : 0;
+        if (elapsed >= 60000) {
+          setPendingItem({ product: selectedProduct, selectedColor, uniqueKey: uk });
+          setHasPendingBadge(false);
+        } else {
+          setPendingItem(null);
+          setHasPendingBadge(true);
+        }
         return;
       }
     }
     setPendingItem(null);
+    setHasPendingBadge(false);
   }, [selectedProduct, selectedColor, cart.cartItems]);
 
   const handleCategoryTap = useCallback((catId) => {
@@ -187,9 +213,10 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
     }
   }, []);
 
-  // カート追加 → 自動縮小
+  // カート追加 → 自動縮小 + バッジ消去
   const handleAddToCart = useCallback((product, color) => {
     cart.dispatch({ type: 'ADD', payload: { product, selectedColor: color } });
+    setHasPendingBadge(false);
     setTimeout(() => setSheetOpen(false), 400);
   }, [cart]);
 
@@ -295,7 +322,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
         left: 0, right: 0,
         background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(16px)',
         borderRadius: '20px 20px 0 0', boxShadow: '0 -4px 24px rgba(0,0,0,0.08)',
-        maxHeight: sheetOpen ? `${SHEET_MAX}px` : `${SHEET_MIN}px`,
+        maxHeight: sheetOpen ? `${SHEET_MAX}px` : isPeeking ? `${SHEET_MIN + 40}px` : `${SHEET_MIN}px`,
         transition: 'max-height 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
         overflow: 'hidden', zIndex: 50,
       }}>
@@ -306,28 +333,12 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
           <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.15)' }} />
         </div>
 
-        {/* Category tabs */}
-        <div style={{ display: 'flex', gap: 0, borderBottom: sheetOpen ? '1px solid #ede9fe' : 'none' }}>
-          {CATEGORIES.map(cat => (
-            <button key={cat.id} onClick={() => !cat.comingSoon && handleCategoryTap(cat.id)} style={{
-              flex: 1, padding: '6px 2px', minWidth: 0,
-              background: activeCategory === cat.id ? 'rgba(168,85,247,0.1)' : 'transparent',
-              border: 'none',
-              borderBottom: activeCategory === cat.id ? '2px solid #a855f7' : '2px solid transparent',
-              color: cat.comingSoon ? '#cbd5e1' : activeCategory === cat.id ? '#a855f7' : '#94a3b8',
-              fontSize: 8, fontWeight: activeCategory === cat.id ? 700 : 400,
-              cursor: cat.comingSoon ? 'default' : 'pointer',
-              opacity: cat.comingSoon ? 0.5 : 1, position: 'relative',
-            }}>
-              <div style={{ fontSize: 13 }}>{cat.icon}</div>
-              <div>{t(cat.labelKey)}</div>
-              {cat.comingSoon && (
-                <span style={{ position: 'absolute', top: 1, right: 1, fontSize: 6, background: '#a855f7',
-                  color: '#fff', borderRadius: 3, padding: '0 2px', fontWeight: 700 }}>SOON</span>
-              )}
-            </button>
-          ))}
-        </div>
+        {/* Category tabs with scroll fade indicator */}
+        <CategoryTabRow
+          categories={CATEGORIES} activeCategory={activeCategory}
+          sheetOpen={sheetOpen} hasPendingBadge={hasPendingBadge}
+          onTap={handleCategoryTap} t={t}
+        />
 
         {/* Expanded content */}
         {sheetOpen && (
@@ -343,10 +354,12 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
                     checkPending();
                   }
                   setSelectedProduct(p);
+                  productSelectedAtRef.current = Date.now();
+                  setHasPendingBadge(false);
                   const dc = p.colors[0];
                   if (dc) { setSelectedColor(dc); applyColor(activeCategory, dc.hex); }
                 }}
-                onSelectColor={(c) => { setSelectedColor(c); applyColor(activeCategory, c.hex); }}
+                onSelectColor={(c) => { setSelectedColor(c); applyColor(activeCategory, c.hex); productSelectedAtRef.current = Date.now(); setHasPendingBadge(false); }}
                 onAddToCart={handleAddToCart}
                 lang={lang} t={t}
               />
@@ -463,6 +476,65 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
       {cart.cartItems.length > 0 && (
         <CartSummaryBar items={cart.cartItems} totalPrice={cart.totalPrice}
           onCheckout={() => { doCapture(); onCheckout(); }} />
+      )}
+    </div>
+  );
+}
+
+// === CategoryTabRow with scroll fade ===
+function CategoryTabRow({ categories, activeCategory, sheetOpen, hasPendingBadge, onTap, t }) {
+  const scrollRef = useRef(null);
+  const [atEnd, setAtEnd] = useState(false);
+
+  const onScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setAtEnd(el.scrollLeft + el.clientWidth >= el.scrollWidth - 4);
+  }, []);
+
+  return (
+    <div style={{ position: 'relative', borderBottom: sheetOpen ? '1px solid #ede9fe' : 'none' }}>
+      <div ref={scrollRef} onScroll={onScroll}
+        style={{ display: 'flex', gap: 0, overflowX: 'auto', scrollbarWidth: 'none' }}>
+        {categories.map(cat => {
+          const showBadge = hasPendingBadge && cat.id === activeCategory;
+          return (
+            <button key={cat.id} onClick={() => !cat.comingSoon && onTap(cat.id)} style={{
+              flexShrink: 0, padding: '6px 8px', minWidth: 52,
+              background: activeCategory === cat.id ? 'rgba(168,85,247,0.1)' : 'transparent',
+              border: 'none',
+              borderBottom: activeCategory === cat.id ? '2px solid #a855f7' : '2px solid transparent',
+              color: cat.comingSoon ? '#cbd5e1' : activeCategory === cat.id ? '#a855f7' : '#94a3b8',
+              fontSize: 8, fontWeight: activeCategory === cat.id ? 700 : 400,
+              cursor: cat.comingSoon ? 'default' : 'pointer',
+              opacity: cat.comingSoon ? 0.5 : 1, position: 'relative',
+            }}>
+              <div style={{ fontSize: 13, position: 'relative', display: 'inline-block' }}>
+                {cat.icon}
+                {showBadge && (
+                  <span style={{
+                    position: 'absolute', top: -3, right: -4,
+                    width: 6, height: 6, borderRadius: '50%',
+                    background: '#ec4899', border: '1px solid #fff',
+                  }} />
+                )}
+              </div>
+              <div>{t(cat.labelKey)}</div>
+              {cat.comingSoon && (
+                <span style={{ position: 'absolute', top: 1, right: 1, fontSize: 6, background: '#a855f7',
+                  color: '#fff', borderRadius: 3, padding: '0 2px', fontWeight: 700 }}>SOON</span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+      {/* 右端フェードグラデーション */}
+      {!atEnd && (
+        <div style={{
+          position: 'absolute', top: 0, right: 0, bottom: 0, width: 24,
+          background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.97))',
+          pointerEvents: 'none',
+        }} />
       )}
     </div>
   );

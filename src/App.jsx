@@ -18,6 +18,8 @@ import { useT } from './i18n/index.jsx';
 
 // Capacitorネイティブ環境検出
 const isNative = typeof window !== 'undefined' && !!window.Capacitor?.isNativePlatform?.();
+// ?demo=true でPROTOTYPEバッジ非表示
+const isDemoMode = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('demo') === 'true';
 
 // screen: 'mirror' | 'ar' | 'checkout' | 'skincare-ar' | 'skincare-routine' | 'guide'
 export default function App() {
@@ -70,7 +72,7 @@ export default function App() {
         <span style={{ fontSize: overlay ? 14 : 17, fontWeight: 800, background: colors.gradient, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>KIREI</span>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <span style={{ fontSize: 8, color: "#c084fc", background: "rgba(250,245,255,0.8)", padding: "2px 8px", borderRadius: 20, fontWeight: 600 }}>PROTOTYPE</span>
+        {!isDemoMode && <span style={{ fontSize: 8, color: "#c084fc", background: "rgba(250,245,255,0.8)", padding: "2px 8px", borderRadius: 20, fontWeight: 600 }}>PROTOTYPE</span>}
         <button onClick={() => { prevScreenRef.current = screen; setScreen('guide'); }} style={{
           display: 'flex', alignItems: 'center', gap: 3,
           background: 'linear-gradient(135deg, #a855f7, #ec4899)',
