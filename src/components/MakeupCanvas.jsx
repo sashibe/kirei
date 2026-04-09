@@ -96,7 +96,7 @@ const MakeupCanvas = forwardRef(function MakeupCanvas({ getVideo, baseLook, colo
       const h = canvas.height;
       const { baseLook: base, colorLook: color, intensity: inten, showMesh: mesh,
               glassesItem: glasses, earringItem: earring, contactLensItem: contactLens, lashesItem: lashes } = propsRef.current;
-      const opacity = (inten || 70) / 100;
+      const opacity = (inten ?? 70) / 100;
 
       // Layer 1: ベース（ファンデ・コンシーラー・眉）
       if (base) {

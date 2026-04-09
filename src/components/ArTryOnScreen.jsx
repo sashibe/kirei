@@ -127,6 +127,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
   const [selectedEarring, setSelectedEarring] = useState('none');
   const [selectedContactLens, setSelectedContactLens] = useState('none');
   const [lashesColor, setLashesColor] = useState(null);
+  const [intensity, setIntensity] = useState(70);
   const [beforeAfter, setBeforeAfter] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(_DEFAULT_BASE ?? null);
   const [selectedColor, setSelectedColor] = useState(_DEFAULT_BASE_COLOR ?? null);
@@ -404,7 +405,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
       {cameraLive && !beforeAfter && (
         <MakeupCanvas ref={canvasRef} getVideo={getVideo}
           baseLook={browColor ? { ...currentBase, brow: browColor } : currentBase}
-          colorLook={activeColorLook} intensity={70}
+          colorLook={activeColorLook} intensity={intensity}
           showMesh={showMesh} glassesItem={glassesItem} earringItem={earringItem}
           contactLensItem={contactLensItem} lashesItem={lashesItem} coverFit />
       )}
@@ -515,6 +516,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
               <ProductLayer
                 category={activeCategory}
                 selectedProduct={selectedProduct} selectedColor={selectedColor}
+                intensity={intensity} onIntensityChange={setIntensity}
                 personalColor={personalColor} cart={cart}
                 onSelectProduct={(p) => {
                   if (MAKEUP_CATEGORIES.includes(activeCategory) && selectedProduct && selectedProduct.id !== p.id) {
@@ -746,7 +748,7 @@ function CategoryTabRow({ categories, activeCategory, sheetOpen, hasPendingBadge
 }
 
 // === ProductLayer ===
-function ProductLayer({ category, selectedProduct, selectedColor, personalColor, cart, onSelectProduct, onSelectColor, onAddToCart, lang = 'ja', t }) {
+function ProductLayer({ category, selectedProduct, selectedColor, intensity = 70, onIntensityChange, personalColor, cart, onSelectProduct, onSelectColor, onAddToCart, lang = 'ja', t }) {
   const categoryProducts = sortByPC(PRODUCTS.filter(p => p.category === category), personalColor?.season);
   if (categoryProducts.length === 0) return <div style={{ fontSize: 12, color: '#94a3b8', textAlign: 'center', padding: 8 }}>Coming soon</div>;
 
@@ -834,7 +836,8 @@ function ProductLayer({ category, selectedProduct, selectedColor, personalColor,
               <span style={{ fontSize: 10, color: '#64748b', whiteSpace: 'nowrap', fontWeight: 600 }}>
                 {t?.('ar.intensity') || '\u6FC3\u3055'}
               </span>
-              <input type="range" min={0} max={100} defaultValue={70}
+              <input type="range" min={0} max={100} value={intensity}
+                onChange={e => onIntensityChange?.(Number(e.target.value))}
                 style={{ flex: 1, accentColor: '#a855f7' }}
               />
             </div>
