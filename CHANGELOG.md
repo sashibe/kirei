@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 2026-04-09 — feat: ARメイク画面デフォルト状態改善
+
+### ArTryOnScreen
+- 起動時デフォルト: ベースタブ選択 + メニュー開き状態
+- レステモ BBクリーム / ライト をデフォルト適用（AR描画 + selectedProduct/selectedColor/appliedItems 初期化）
+- `ENABLE_PEEK_ANIMATION = false` で初回peekアニメーション無効化（復活は `true` に変更）
+- `_DEFAULT_BASE` / `_DEFAULT_BASE_COLOR` 定数で変更容易
+
+---
+
 ## 2026-04-09 — feat: AR試着アイテム自動購入候補化 + AR描画濃度引き上げ
 
 ### ArTryOnScreen
