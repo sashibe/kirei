@@ -1,5 +1,35 @@
 # CHANGELOG
 
+## 2026-04-09 — feat: AR試着アイテム自動購入候補化 + AR描画濃度引き上げ
+
+### ArTryOnScreen
+- `CART_CONFIRM_POPUP = false` フラグ追加（デフォルト: カテゴリ切替ポップアップ無効）
+- `appliedItems` state: カテゴリ別に適用済み商品を追跡
+- `currentArItems` memo: 適用済みメイク + アクセサリ（メガネ/イヤリング/カラコン）の全リスト
+- `onCheckout(currentArItems)` でResultScreenに渡す
+
+### App.jsx
+- `currentArItemsRef` 追加、`handleCheckout` がarItemsを受け取り保存
+- `ResultScreen` に `currentArItems` prop追加
+
+### ResultScreen
+- カートセクションをチェックリストUIに刷新
+- `purchaseCandidates` = currentArItems + cart.cartItems の和集合（重複排除）
+- デフォルト全チェックON。チェックOFFで除外可能
+- 合計金額はチェック済み商品のみ集計
+- 「全選択/全解除」トグルボタン追加
+- 「AR試着」「カート済」ソースバッジ表示
+
+### makeupRenderer.js（AR描画濃度引き上げ）
+- drawLip: multiply 0.35→0.65、overlay 0.4→0.72
+- drawEyeshadow: source-over 0.6→0.85
+- drawCheek: source-over 0.55→0.82
+- drawFoundation: multiply 0.5→0.78、overlay 0.3→0.5
+- drawBrow: multiply 0.35→0.65
+- drawConcealer: multiply 0.35→0.55
+
+---
+
 ## 2026-04-09 — fix: PCカードプレースホルダー追加
 
 ### MirrorScreenV3

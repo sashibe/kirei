@@ -2,7 +2,7 @@
  * ResultScreen — 購入確認画面（CheckoutScreen）
  * カートアイテム一覧 + 購入CTA + スキンケア/メイク導線
  */
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import ScoreHistory from './ScoreHistory.jsx';
 import CoordinateOverlay from './CoordinateOverlay.jsx';
 import { useT } from '../i18n/index.jsx';
@@ -10,7 +10,7 @@ import { getPcColors, getSeasonText } from '../analysis/personalColor.js';
 import useWeather from '../hooks/useWeather.js';
 import { shareImage } from '../utils/share.js';
 
-export default function ResultScreen({ skinScores, personalColor, cart, capturedImage, onRestart, onSkincareAR, onBackToAR }) {
+export default function ResultScreen({ skinScores, personalColor, cart, capturedImage, currentArItems = [], onRestart, onSkincareAR, onBackToAR }) {
   const { t, lang } = useT();
   const weather = useWeather();
   const [showScores, setShowScores] = useState(false);
@@ -19,8 +19,45 @@ export default function ResultScreen({ skinScores, personalColor, cart, captured
   const pcText = personalColor?.subtypeId ? getSeasonText(personalColor.subtypeId, lang) : null;
   const pcBg = personalColor ? getPcColors(personalColor.season) : null;
   const cartItems = cart?.cartItems || [];
-  const totalPrice = cart?.totalPrice || 0;
   const txt = (v) => (typeof v === 'object' && v !== null) ? (v[lang] ?? v.ja ?? '') : (v ?? '');
+
+  // AR試着中アイテム + カートアイテムの和集合（重複はカートを優先）
+  const purchaseCandidates = useMemo(() => {
+    const map = new Map();
+    (currentArItems || []).forEach(item => {
+      if (item.price > 0) map.set(item.uniqueKey, { ...item, source: 'ar' });
+    });
+    (cartItems || []).forEach(item => {
+      if (map.has(item.uniqueKey)) {
+        map.set(item.uniqueKey, { ...map.get(item.uniqueKey), source: 'both' });
+      } else {
+        map.set(item.uniqueKey, { ...item, source: 'cart' });
+      }
+    });
+    return [...map.values()];
+  }, [currentArItems, cartItems]);
+
+  // 購入候補チェック状態（デフォルト全チェック）
+  const [checkedKeys, setCheckedKeys] = useState(() => new Set(purchaseCandidates.map(i => i.uniqueKey)));
+
+  const toggleCheck = (key) => setCheckedKeys(prev => {
+    const next = new Set(prev);
+    if (next.has(key)) next.delete(key); else next.add(key);
+    return next;
+  });
+
+  const checkedTotal = purchaseCandidates
+    .filter(i => checkedKeys.has(i.uniqueKey))
+    .reduce((sum, i) => sum + (i.price || 0), 0);
+
+  const handleCheckedCheckout = () => {
+    purchaseCandidates
+      .filter(i => checkedKeys.has(i.uniqueKey))
+      .forEach((item, idx) => {
+        const url = item.product?.affiliateUrl || item.product?.rakutenUrl;
+        if (url && url !== '#') setTimeout(() => window.open(url, '_blank'), idx * 500);
+      });
+  };
 
   return (
     <div style={{ paddingBottom: 24 }}>
@@ -62,56 +99,104 @@ export default function ResultScreen({ skinScores, personalColor, cart, captured
       {/* Score History */}
       <ScoreHistory />
 
-      {/* Cart section */}
+      {/* 購入候補チェックリスト */}
       <div style={{ margin: '0 16px 14px', padding: '16px', background: '#fff', borderRadius: 16,
         boxShadow: '0 2px 8px rgba(139,92,246,0.06)', border: '1px solid #ede9fe' }}>
-        <h3 style={{ fontSize: 14, fontWeight: 700, color: '#334155', margin: '0 0 12px' }}>
-          {'\uD83D\uDED2'} {t('cart_title') || '\u304A\u8CB7\u3044\u7269\u304B\u3054'}
-        </h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <h3 style={{ fontSize: 14, fontWeight: 700, color: '#334155', margin: 0 }}>
+            🛍️ {t('result.ar_items_title') || 'ARで試したアイテム'}
+          </h3>
+          {purchaseCandidates.length > 1 && (
+            <button onClick={() => {
+              const allChecked = purchaseCandidates.every(i => checkedKeys.has(i.uniqueKey));
+              setCheckedKeys(allChecked ? new Set() : new Set(purchaseCandidates.map(i => i.uniqueKey)));
+            }} style={{
+              fontSize: 10, color: '#a855f7', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600,
+            }}>
+              {purchaseCandidates.every(i => checkedKeys.has(i.uniqueKey)) ? '全解除' : '全選択'}
+            </button>
+          )}
+        </div>
 
-        {cartItems.length === 0 ? (
+        {purchaseCandidates.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '16px 0', color: '#94a3b8' }}>
-            <p style={{ fontSize: 14, margin: '0 0 12px' }}>{t('cart_empty') || '\u30AB\u30FC\u30C8\u306B\u5546\u54C1\u304C\u3042\u308A\u307E\u305B\u3093'}</p>
+            <p style={{ fontSize: 14, margin: '0 0 12px' }}>{t('cart_empty') || 'ARで試した商品がありません'}</p>
             <button onClick={onBackToAR} style={{
               background: 'linear-gradient(135deg, #a855f7, #ec4899)', color: '#fff',
               border: 'none', borderRadius: 14, padding: '10px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer',
-            }}>{'\uD83D\uDC84'} {t('try_makeup') || '\u30E1\u30A4\u30AF\u3092\u8A66\u3059 \u2192'}</button>
+            }}>💄 {t('try_makeup') || 'メイクを試す →'}</button>
           </div>
         ) : (
           <>
-            {cartItems.map(item => (
-              <div key={item.uniqueKey} style={{
-                display: 'flex', alignItems: 'center', gap: 12,
-                padding: '10px 0', borderBottom: '1px solid rgba(168,85,247,0.08)',
-              }}>
-                <div style={{ width: 32, height: 32, borderRadius: '50%',
-                  background: item.selectedColor?.hex || '#ccc', flexShrink: 0,
-                  border: '2px solid rgba(168,85,247,0.15)' }} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a2e',
-                    display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden' }}>{txt(item.product?.name)}</div>
-                  <div style={{ fontSize: 11, color: '#7c7291' }}>{txt(item.selectedColor?.name)}</div>
+            {purchaseCandidates.map(item => {
+              const checked = checkedKeys.has(item.uniqueKey);
+              return (
+                <div key={item.uniqueKey} onClick={() => toggleCheck(item.uniqueKey)} style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  padding: '10px 0', borderBottom: '1px solid rgba(168,85,247,0.08)',
+                  cursor: 'pointer', opacity: checked ? 1 : 0.45, transition: 'opacity 0.15s',
+                }}>
+                  {/* カスタムチェックボックス */}
+                  <div style={{
+                    width: 22, height: 22, borderRadius: 6, flexShrink: 0,
+                    border: `2px solid ${checked ? '#a855f7' : '#cbd5e1'}`,
+                    background: checked ? '#a855f7' : 'transparent',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    transition: 'all 0.15s',
+                  }}>
+                    {checked && <span style={{ color: '#fff', fontSize: 13, lineHeight: 1, fontWeight: 700 }}>✓</span>}
+                  </div>
+                  {/* カラースウォッチ */}
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
+                    background: item.selectedColor?.hex || '#ccc',
+                    border: '2px solid rgba(168,85,247,0.15)' }} />
+                  {/* 商品名 + バッジ */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: '#1a1a2e',
+                      display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                      {txt(item.product?.name)}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
+                      <span style={{ fontSize: 10, color: '#7c7291' }}>{txt(item.selectedColor?.name)}</span>
+                      {item.source === 'ar' && (
+                        <span style={{ fontSize: 8, background: '#e0e7ff', color: '#4f46e5',
+                          borderRadius: 4, padding: '1px 4px', fontWeight: 700 }}>AR試着</span>
+                      )}
+                      {item.source === 'cart' && (
+                        <span style={{ fontSize: 8, background: '#fdf4ff', color: '#a855f7',
+                          borderRadius: 4, padding: '1px 4px', fontWeight: 700 }}>カート済</span>
+                      )}
+                    </div>
+                  </div>
+                  {/* 価格 */}
+                  <div style={{ fontSize: 13, fontWeight: 700, color: '#a855f7', whiteSpace: 'nowrap' }}>
+                    ¥{(item.price || 0).toLocaleString()}
+                  </div>
                 </div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#a855f7', whiteSpace: 'nowrap' }}>
-                  {'\u00A5'}{(item.price || 0).toLocaleString()}</div>
-                <button onClick={() => cart.dispatch({ type: 'REMOVE', payload: { uniqueKey: item.uniqueKey } })} style={{
-                  background: 'none', border: 'none', color: '#94a3b8', fontSize: 16, cursor: 'pointer', padding: 4,
-                }}>{'\u2715'}</button>
-              </div>
-            ))}
+              );
+            })}
+
+            {/* 合計 */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0 0', marginTop: 8 }}>
-              <span style={{ fontSize: 13, color: '#64748b', fontWeight: 600 }}>{t('cart_total') || '\u5408\u8A08'}</span>
-              <span style={{ fontSize: 18, fontWeight: 800, color: '#a855f7' }}>{'\u00A5'}{totalPrice.toLocaleString()}</span>
+              <span style={{ fontSize: 13, color: '#64748b', fontWeight: 600 }}>
+                {t('cart_total') || '合計'} ({checkedKeys.size}点)
+              </span>
+              <span style={{ fontSize: 18, fontWeight: 800, color: '#a855f7' }}>¥{checkedTotal.toLocaleString()}</span>
             </div>
-            <button onClick={cart.handleCheckout} style={{
+            <button onClick={handleCheckedCheckout} disabled={checkedKeys.size === 0} style={{
               width: '100%', padding: 14, marginTop: 12,
-              background: 'linear-gradient(135deg, #a855f7, #ec4899)', border: 'none', borderRadius: 14,
-              fontSize: 14, fontWeight: 700, color: '#fff', cursor: 'pointer',
-              boxShadow: '0 4px 16px rgba(168,85,247,0.25)',
-            }}>{'\uD83D\uDED2'} {t('checkout') || '\u5546\u54C1\u3092\u8CFC\u5165\u3059\u308B'}</button>
+              background: checkedKeys.size === 0
+                ? '#e2e8f0'
+                : 'linear-gradient(135deg, #a855f7, #ec4899)',
+              border: 'none', borderRadius: 14,
+              fontSize: 14, fontWeight: 700,
+              color: checkedKeys.size === 0 ? '#94a3b8' : '#fff',
+              cursor: checkedKeys.size === 0 ? 'default' : 'pointer',
+              boxShadow: checkedKeys.size === 0 ? 'none' : '0 4px 16px rgba(168,85,247,0.25)',
+              transition: 'all 0.2s',
+            }}>🛒 {t('checkout') || '選択した商品を購入する'}</button>
             <p style={{ fontSize: 10, color: '#94a3b8', textAlign: 'center', margin: '6px 0 0' }}>
-              {t('result.purchase_note') || '\u203B\u5916\u90E8\u30B5\u30A4\u30C8\uff08MUSINSA\uff09\u306B\u79FB\u52D5\u3057\u307E\u3059'}
+              {t('result.purchase_note') || '※外部サイト（MUSINSA）に移動します'}
             </p>
           </>
         )}
