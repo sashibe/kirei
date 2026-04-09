@@ -55,7 +55,6 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
   const [showMesh, setShowMesh] = useState(false);
   const [activeCategory, setActiveCategory] = useState('lip');
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [isPeeking, setIsPeeking] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
   const [pendingItem, setPendingItem] = useState(null);
   const [hasPendingBadge, setHasPendingBadge] = useState(false);
@@ -88,16 +87,16 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
     return () => video.removeEventListener('loadeddata', onPlaying);
   }, [isActive, videoRef]);
 
-  // peek animation: 初回のみ、0.5秒後にパネルを40px浮上させて1秒見せて戻る
+  // peek animation: 初回のみ、0.5秒後にシートを開いて1.5秒見せてから閉じる
   useEffect(() => {
     if (sessionStorage.getItem('ar_peek_shown_v2')) return;
     let t2;
     const t1 = setTimeout(() => {
-      setIsPeeking(true);
+      setSheetOpen(true);
       t2 = setTimeout(() => {
-        setIsPeeking(false);
+        setSheetOpen(false);
         sessionStorage.setItem('ar_peek_shown_v2', '1');
-      }, 1000);
+      }, 1500);
     }, 500);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
@@ -323,8 +322,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
         background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(16px)',
         borderRadius: '20px 20px 0 0', boxShadow: '0 -4px 24px rgba(0,0,0,0.08)',
         maxHeight: sheetOpen ? `${SHEET_MAX}px` : `${SHEET_MIN}px`,
-        transform: isPeeking && !sheetOpen ? 'translateY(-40px)' : 'translateY(0)',
-        transition: 'max-height 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.4s ease-out',
+        transition: 'max-height 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
         overflow: 'hidden', zIndex: 50,
       }}>
         {/* Drag handle */}
