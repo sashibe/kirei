@@ -1,4 +1,7 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+
+// 旧仕様（60秒遅延ポップアップ + バッジ）に戻す場合は true に変更
+const CART_CONFIRM_POPUP = false;
 import Kirari from './Kirari.jsx';
 import MakeupCanvas from './MakeupCanvas.jsx';
 import CartSummaryBar from './CartSummaryBar.jsx';
@@ -72,6 +75,8 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
   const [beforeAfter, setBeforeAfter] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
+  // カテゴリ別の適用済み商品を追跡: { [category]: { product, selectedColor } }
+  const [appliedItems, setAppliedItems] = useState({});
 
   const canvasRef = useRef(null);
   const customContactRef = useRef(null);
@@ -117,11 +122,55 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
     : CONTACT_LENS_ITEMS.find(i => i.id === selectedContactLens);
   const lashesItem = lashesColor ? { id: 'custom', color: lashesColor } : null;
 
+  // 現在ARに表示中の全アイテム（メイク + アクセサリ）
+  const currentArItems = useMemo(() => {
+    const items = [];
+    // メイク系（カテゴリ別追跡）
+    Object.entries(appliedItems).forEach(([cat, { product, selectedColor: sc }]) => {
+      if (product && sc) {
+        items.push({
+          uniqueKey: `${product.id}_${sc.id}`,
+          product, selectedColor: sc,
+          category: cat, price: product.price,
+        });
+      }
+    });
+    // メガネ
+    if (selectedGlasses !== 'none' && glassesItem) {
+      items.push({
+        uniqueKey: `glasses_${glassesItem.id}`,
+        product: { id: `glasses_${glassesItem.id}`, name: glassesItem.name, price: glassesItem.price || 0, affiliateUrl: '#', category: 'glasses' },
+        selectedColor: { id: glassesItem.id, name: glassesItem.name, hex: glassesItem.color || '#333' },
+        category: 'glasses', price: glassesItem.price || 0,
+      });
+    }
+    // イヤリング
+    if (selectedEarring !== 'none' && earringItem) {
+      items.push({
+        uniqueKey: `earring_${earringItem.id}`,
+        product: { id: `earring_${earringItem.id}`, name: earringItem.name, price: earringItem.price || 0, affiliateUrl: '#', category: 'earring' },
+        selectedColor: { id: earringItem.id, name: earringItem.name, hex: earringItem.color || '#333' },
+        category: 'earring', price: earringItem.price || 0,
+      });
+    }
+    // カラコン
+    if (selectedContactLens !== 'none' && contactLensItem && contactLensItem.price > 0) {
+      items.push({
+        uniqueKey: `contacts_${contactLensItem.id}`,
+        product: { id: `contacts_${contactLensItem.id}`, name: contactLensItem.name, price: contactLensItem.price || 0, affiliateUrl: '#', category: 'contacts' },
+        selectedColor: { id: contactLensItem.id, name: contactLensItem.name, hex: contactLensItem.color || '#333' },
+        category: 'contacts', price: contactLensItem.price || 0,
+      });
+    }
+    return items;
+  }, [appliedItems, selectedGlasses, glassesItem, selectedEarring, earringItem, selectedContactLens, contactLensItem]);
+
   const handlePointerDown = useCallback(() => setBeforeAfter(true), []);
   const handlePointerUp = useCallback(() => setBeforeAfter(false), []);
 
-  // 未カート商品の確認チェック（60秒経過のみポップアップ、未満はバッジ）
+  // 未カート商品の確認チェック（CART_CONFIRM_POPUP=true 時のみ動作）
   const checkPending = useCallback(() => {
+    if (!CART_CONFIRM_POPUP) return;
     if (selectedProduct && selectedColor) {
       const uk = `${selectedProduct.id}_${selectedColor.id}`;
       if (!cart.cartItems.some(i => i.uniqueKey === uk)) {
@@ -215,7 +264,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
   // カート追加 → 自動縮小 + バッジ消去
   const handleAddToCart = useCallback((product, color) => {
     cart.dispatch({ type: 'ADD', payload: { product, selectedColor: color } });
-    setHasPendingBadge(false);
+    if (CART_CONFIRM_POPUP) setHasPendingBadge(false);
     setTimeout(() => setSheetOpen(false), 400);
   }, [cart]);
 
@@ -348,17 +397,28 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
                 selectedProduct={selectedProduct} selectedColor={selectedColor}
                 personalColor={personalColor} cart={cart}
                 onSelectProduct={(p) => {
-                  // メイク系で別商品に切替 → 確認チェック
                   if (MAKEUP_CATEGORIES.includes(activeCategory) && selectedProduct && selectedProduct.id !== p.id) {
                     checkPending();
                   }
                   setSelectedProduct(p);
                   productSelectedAtRef.current = Date.now();
-                  setHasPendingBadge(false);
+                  if (CART_CONFIRM_POPUP) setHasPendingBadge(false);
                   const dc = p.colors[0];
-                  if (dc) { setSelectedColor(dc); applyColor(activeCategory, dc.hex); }
+                  if (dc) {
+                    setSelectedColor(dc);
+                    applyColor(activeCategory, dc.hex);
+                    setAppliedItems(prev => ({ ...prev, [activeCategory]: { product: p, selectedColor: dc } }));
+                  }
                 }}
-                onSelectColor={(c) => { setSelectedColor(c); applyColor(activeCategory, c.hex); productSelectedAtRef.current = Date.now(); setHasPendingBadge(false); }}
+                onSelectColor={(c) => {
+                  setSelectedColor(c);
+                  applyColor(activeCategory, c.hex);
+                  productSelectedAtRef.current = Date.now();
+                  if (CART_CONFIRM_POPUP) setHasPendingBadge(false);
+                  if (selectedProduct) {
+                    setAppliedItems(prev => ({ ...prev, [activeCategory]: { product: selectedProduct, selectedColor: c } }));
+                  }
+                }}
                 onAddToCart={handleAddToCart}
                 lang={lang} t={t}
               />
@@ -429,8 +489,8 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
         )}
       </div>
 
-      {/* Confirm bar: カート追加確認 */}
-      {pendingItem && (
+      {/* Confirm bar: カート追加確認（CART_CONFIRM_POPUP=true 時のみ表示） */}
+      {CART_CONFIRM_POPUP && pendingItem && (
         <div style={{
           position: 'absolute',
           bottom: (cart.cartItems.length > 0 ? 52 : 0) + (sheetOpen ? SHEET_MAX : SHEET_MIN),
@@ -474,7 +534,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
       {/* CartSummaryBar */}
       {cart.cartItems.length > 0 && (
         <CartSummaryBar items={cart.cartItems} totalPrice={cart.totalPrice}
-          onCheckout={() => { doCapture(); onCheckout(); }} />
+          onCheckout={() => { doCapture(); onCheckout(currentArItems); }} />
       )}
     </div>
   );

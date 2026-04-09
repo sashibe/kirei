@@ -28,6 +28,7 @@ export default function App() {
   const prevScreenRef = useRef('mirror');
   const scoresRef = useRef({ skinScores: null, personalColor: null });
   const capturedImageRef = useRef(null);
+  const currentArItemsRef = useRef([]);
   const cart = useCart();
 
   // ミラー分析完了 → メイクならAR直行、スキンケアならSkincareAR
@@ -40,8 +41,9 @@ export default function App() {
     }
   }, []);
 
-  // ARからチェックアウト画面へ
-  const handleCheckout = useCallback(() => {
+  // ARからチェックアウト画面へ（currentArItemsを受け取り保存）
+  const handleCheckout = useCallback((arItems) => {
+    currentArItemsRef.current = arItems || [];
     setScreen('checkout');
   }, []);
 
@@ -112,6 +114,7 @@ export default function App() {
             personalColor={scoresRef.current.personalColor}
             cart={cart}
             capturedImage={capturedImageRef.current}
+            currentArItems={currentArItemsRef.current}
             onRestart={handleRestart}
             onSkincareAR={handleOpenSkincareAR}
             onBackToAR={() => setScreen('ar')}
