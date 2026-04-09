@@ -445,22 +445,31 @@ export default function MirrorScreenV3({ onResult }) {
             </div>
 
             {/* パーソナルカラー行 */}
-            {personalColor && (() => {
-              const pc = getSeasonText(personalColor.subtypeId, lang);
-              const pcCol = pc.color || getPcColors(personalColor.season).color;
-              return (
-                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
-                  <span style={{ fontSize: 18 }}>{pc.emoji || getPcIcon(personalColor.season)}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+              {personalColor ? (() => {
+                const pc = getSeasonText(personalColor.subtypeId, lang);
+                const pcCol = pc.color || getPcColors(personalColor.season).color;
+                return (
+                  <>
+                    <span style={{ fontSize: 18 }}>{pc.emoji || getPcIcon(personalColor.season)}</span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <span style={{ fontSize: 13, fontWeight: 800, color: pcCol }}>{pc.main || t(personalColor.label)}</span>
+                      {pc.sub && <span style={{ fontSize: 9, color: "#94a3b8", marginLeft: 5, fontWeight: 600 }}>{pc.sub}</span>}
+                      {personalColor.confidence < 0.6 && (
+                        <span style={{ fontSize: 8, color: "#94a3b8", marginLeft: 4 }}>{t("pc.reference")}</span>
+                      )}
+                    </div>
+                  </>
+                );
+              })() : (
+                <>
+                  <span style={{ fontSize: 18 }}>🎨</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <span style={{ fontSize: 13, fontWeight: 800, color: pcCol }}>{pc.main || t(personalColor.label)}</span>
-                    {pc.sub && <span style={{ fontSize: 9, color: "#94a3b8", marginLeft: 5, fontWeight: 600 }}>{pc.sub}</span>}
-                    {personalColor.confidence < 0.6 && (
-                      <span style={{ fontSize: 8, color: "#94a3b8", marginLeft: 4 }}>{t("pc.reference")}</span>
-                    )}
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "#cbd5e1" }}>{t("pc.analyzing") || "パーソナルカラー判定中…"}</span>
                   </div>
-                </div>
-              );
-            })()}
+                </>
+              )}
+            </div>
 
             {/* スコア行（/100付き・色分け） */}
             <div style={{ display: "flex", gap: 4 }}>
