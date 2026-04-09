@@ -159,6 +159,17 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
     kirariHideTimerRef.current = setTimeout(() => setArKirariVisible(false), duration);
   }, []);
 
+  // ボトムシートの実高さを ResizeObserver でリアルタイム追跡
+  const sheetRef = useRef(null);
+  const [sheetHeight, setSheetHeight] = useState(SHEET_MIN);
+  useEffect(() => {
+    const el = sheetRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => setSheetHeight(Math.round(entry.contentRect.height)));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   // 起動時 時間差メッセージ: 0.5s→intro / 6s→ヨイショ / 11.5s→操作ガイド
   useEffect(() => {
     const L = (ja, ko, en) => lang === 'ko' ? ko : lang === 'en' ? en : ja;
@@ -461,11 +472,11 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
       {arKirariMsg && (
         <div style={{
           position: 'absolute',
-          bottom: (cart.cartItems.length > 0 ? 52 : 0) + (sheetOpen ? SHEET_MAX : SHEET_MIN) + 8,
+          bottom: (cart.cartItems.length > 0 ? 52 : 0) + sheetHeight + 8,
           left: 12, right: 12,
           display: 'flex', alignItems: 'flex-end', gap: 8,
           opacity: arKirariVisible ? 1 : 0,
-          transition: 'bottom 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease',
+          transition: 'opacity 0.3s ease',
           zIndex: 60, pointerEvents: 'none',
         }}>
           <Kirari size={44} expression="sparkle" bounce />
@@ -474,7 +485,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
       )}
 
       {/* BottomSheet */}
-      <div style={{
+      <div ref={sheetRef} style={{
         position: 'absolute', bottom: cart.cartItems.length > 0 ? 52 : 0,
         left: 0, right: 0,
         background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(16px)',
