@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KIREI × OLIVE YOUNG — Partnership Proposal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Sans+JP:wght@300;400;500;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --purple: #a855f7;
+    --purple-deep: #7c3aed;
+    --pink: #ec4899;
+    --ink: #0f0c1a;
+    --ink-soft: #2a2240;
+    --muted: #7c7291;
+    --pearl: #faf9f6;
+    --surface: #f3f0f8;
+    --border: rgba(168,85,247,0.12);
+    --gold: #c9a96e;
+    --green: #10b981;
+    --oy-green: #00a862;
+    --oy-green-deep: #008c52;
+    --oy-dark: #1a1a1a;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Noto Sans KR', 'Noto Sans JP', sans-serif;
+    background: var(--pearl);
+    color: var(--ink);
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── LANG SWITCHER ── */
+  .lang-switcher {
+    position: fixed;
+    top: 16px; right: 16px;
+    z-index: 1000;
+    display: flex;
+    gap: 2px;
+    background: rgba(15,12,26,0.5);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 3px;
+  }
+  .lang-switcher button {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.06em;
+    border: none; background: transparent;
+    color: rgba(255,255,255,0.45);
+    padding: 5px 10px; border-radius: 5px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .lang-switcher button:hover { color: rgba(255,255,255,0.75); }
+  .lang-switcher button.active {
+    background: linear-gradient(135deg, var(--oy-green), #a855f7);
+    color: #fff;
+  }
+
+  /* ── COVER ── */
+  .cover {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center;
+    padding: 100px 40px 80px;
+    background: linear-gradient(160deg, #0a0f0d 0%, #0d1f16 40%, #0a0f0d 100%);
+    position: relative; overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    width: 800px; height: 800px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,168,98,0.12) 0%, transparent 65%);
+    top: -250px; left: 50%; transform: translateX(-50%);
+    pointer-events: none;
+  }
+  .cover::after {
+    content: '';
+    position: absolute;
+    width: 500px; height: 500px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(168,85,247,0.08) 0%, transparent 65%);
+    bottom: -150px; right: -120px;
+    pointer-events: none;
+  }
+
+  .cover-badge {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 48px;
+  }
+
+  .cover-lockup {
+    display: flex; align-items: center; justify-content: center;
+    gap: 24px; margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .cover-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(64px, 10vw, 100px);
+    font-weight: 300; color: #fff;
+    letter-spacing: 0.08em;
+    line-height: 1;
+  }
+  .cover-x {
+    font-family: 'DM Sans', sans-serif;
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 300; color: rgba(255,255,255,0.3);
+    line-height: 1;
+  }
+  .cover-partner {
+    font-family: 'DM Sans', sans-serif;
+    font-size: clamp(24px, 4.5vw, 46px);
+    font-weight: 600; color: #fff;
+    letter-spacing: 0.02em;
+    line-height: 1;
+  }
+  .cover-partner .oy-highlight {
+    color: var(--oy-green);
+  }
+
+  .cover-tagline {
+    font-size: clamp(15px, 2.5vw, 20px);
+    font-weight: 300;
+    color: rgba(255,255,255,0.6);
+    max-width: 640px;
+    line-height: 1.7;
+    margin-bottom: 56px;
+  }
+
+  .cover-divider {
+    width: 48px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--oy-green), transparent);
+    margin: 0 auto 48px;
+  }
+
+  .cover-meta {
+    display: flex; gap: 48px; flex-wrap: wrap; justify-content: center;
+  }
+  .cover-meta-item .label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px; font-weight: 500;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    margin-bottom: 6px;
+  }
+  .cover-meta-item .value {
+    font-size: 14px; font-weight: 500;
+    color: rgba(255,255,255,0.8);
+  }
+
+  .scroll-hint {
+    position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px; letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.2);
+    animation: bounce 2.5s ease-in-out infinite;
+  }
+  @keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(6px)} }
+
+  /* ── SECTIONS ── */
+  section {
+    padding: 100px 40px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  section.dark {
+    max-width: 100%;
+    background: linear-gradient(160deg, #0a0f0d 0%, #0d1f16 100%);
+    padding: 100px 40px;
+  }
+  section.dark .inner { max-width: 1000px; margin: 0 auto; }
+  section.tinted {
+    max-width: 100%;
+    background: var(--surface);
+    padding: 100px 40px;
+  }
+  section.tinted .inner { max-width: 1000px; margin: 0 auto; }
+
+  .section-number {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--oy-green);
+    margin-bottom: 16px;
+  }
+  .section-number.light { color: rgba(0,168,98,0.7); }
+
+  .divider {
+    width: 40px; height: 2px;
+    background: linear-gradient(90deg, var(--oy-green), var(--purple));
+    margin-bottom: 32px;
+    border-radius: 2px;
+  }
+
+  h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 400; line-height: 1.2;
+    color: var(--ink);
+    margin-bottom: 24px;
+  }
+  h2 em { font-style: italic; color: var(--oy-green-deep); }
+  h2.light { color: #fff; }
+  h2.light em { color: var(--oy-green); }
+
+  .lead {
+    font-size: 16px; font-weight: 300;
+    color: #4a4060; line-height: 1.9;
+    max-width: 720px; margin-bottom: 48px;
+  }
+  .lead.light { color: rgba(255,255,255,0.55); }
+
+  /* ── CARDS ── */
+  .card-grid { display: grid; gap: 20px; }
+  .card-grid.col-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .card-grid.col-3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,168,98,0.08); }
+  .card.dark-card {
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.07);
+  }
+  .card h3 {
+    font-size: 17px; font-weight: 500;
+    color: var(--ink); margin-bottom: 8px;
+  }
+  .card h3.light { color: #fff; }
+  .body-text { font-size: 14px; color: #5a5070; line-height: 1.75; }
+  .body-text.light { color: rgba(255,255,255,0.45); }
+
+  .card-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; margin-bottom: 16px;
+  }
+  .card-icon.green  { background: rgba(0,168,98,0.12); }
+  .card-icon.purple { background: rgba(168,85,247,0.12); }
+  .card-icon.pink   { background: rgba(236,72,153,0.12); }
+  .card-icon.gold   { background: rgba(201,169,110,0.12); }
+
+  /* ── HIGHLIGHT ── */
+  .highlight {
+    padding: 28px 32px;
+    background: linear-gradient(135deg, rgba(0,168,98,0.06), rgba(168,85,247,0.04));
+    border-left: 3px solid var(--oy-green);
+    border-radius: 0 12px 12px 0;
+  }
+  .highlight p { font-size: 15px; color: #3d3060; line-height: 1.8; }
+
+  /* ── STATS ── */
+  .stats-row {
+    display: flex; gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 20px; overflow: hidden;
+    margin-bottom: 40px;
+  }
+  .stat {
+    flex: 1; padding: 32px 24px; text-align: center;
+    border-right: 1px solid var(--border);
+  }
+  .stat:last-child { border-right: none; }
+  .stat .number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(40px, 6vw, 64px);
+    font-weight: 300; color: var(--oy-green-deep);
+    line-height: 1;
+  }
+  .stat .label {
+    font-size: 12px; color: var(--muted);
+    margin-top: 8px; line-height: 1.5;
+  }
+
+  /* ── FLOW ── */
+  .flow {
+    display: flex; gap: 0;
+    position: relative;
+  }
+  .flow::before {
+    content: '';
+    position: absolute;
+    top: 28px; left: 28px; right: 28px; height: 1px;
+    background: linear-gradient(90deg, var(--oy-green), var(--purple));
+    z-index: 0;
+  }
+  .flow-step {
+    flex: 1; text-align: center; position: relative; z-index: 1;
+    padding: 0 16px;
+  }
+  .flow-num {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--oy-green), var(--purple));
+    color: #fff; font-family: 'Cormorant Garamond', serif;
+    font-size: 24px; font-weight: 400;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+    box-shadow: 0 0 0 6px var(--pearl);
+  }
+  .flow-title {
+    font-size: 14px; font-weight: 500;
+    color: var(--ink); margin-bottom: 8px;
+  }
+  .flow-title.light { color: #fff; }
+  .flow-desc {
+    font-size: 12px; color: var(--muted); line-height: 1.6;
+  }
+  .flow-desc.light { color: rgba(255,255,255,0.4); }
+
+  /* ── TIMELINE ── */
+  .timeline { display: flex; flex-direction: column; gap: 0; }
+  .timeline-item {
+    display: grid; grid-template-columns: 160px 1fr auto;
+    gap: 24px; align-items: start;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .timeline-item:last-child { border-bottom: none; }
+  .timeline-phase {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--oy-green);
+    padding-top: 3px;
+  }
+  .timeline-title {
+    font-size: 16px; font-weight: 500;
+    color: var(--ink); margin-bottom: 6px;
+  }
+  .timeline-desc { font-size: 13px; color: var(--muted); line-height: 1.65; }
+  .timeline-tag {
+    font-size: 11px; font-weight: 500;
+    padding: 4px 10px; border-radius: 20px;
+    white-space: nowrap;
+  }
+  .timeline-tag.done { background: rgba(0,168,98,0.1); color: var(--oy-green); }
+  .timeline-tag.wip  { background: rgba(168,85,247,0.1); color: var(--purple); }
+  .timeline-tag.plan { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.08); }
+  .timeline-tag.plan-light { background: rgba(0,168,98,0.06); color: var(--muted); border: 1px solid var(--border); }
+
+  /* ── SCENARIO BOX ── */
+  .scenario {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 20px; overflow: hidden;
+  }
+  .scenario-header {
+    background: linear-gradient(135deg, #0a0f0d, #0d1f16);
+    padding: 20px 28px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .scenario-header-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--oy-green); opacity: 0.7;
+  }
+  .scenario-header p {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+  }
+  .scenario-steps { padding: 28px; }
+  .scenario-step {
+    display: flex; gap: 16px; align-items: flex-start;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(0,168,98,0.06);
+  }
+  .scenario-step:last-child { border-bottom: none; }
+  .scenario-time {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px; font-weight: 500;
+    color: var(--oy-green); width: 48px; flex-shrink: 0;
+    padding-top: 2px;
+  }
+  .scenario-action { font-size: 14px; color: var(--ink); line-height: 1.6; }
+  .scenario-action span {
+    display: inline-block;
+    background: rgba(0,168,98,0.08);
+    color: var(--oy-green-deep);
+    font-size: 12px; font-weight: 500;
+    padding: 2px 8px; border-radius: 4px;
+    margin-left: 8px;
+  }
+
+  /* ── VALUE TABLE ── */
+  .value-table { width: 100%; border-collapse: collapse; }
+  .value-table th {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--muted);
+    padding: 12px 16px; text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .value-table td {
+    padding: 16px; font-size: 14px; color: var(--ink);
+    border-bottom: 1px solid var(--border);
+    line-height: 1.6;
+  }
+  .value-table tr:last-child td { border-bottom: none; }
+  .value-table td:first-child { font-weight: 500; color: var(--oy-green-deep); width: 200px; }
+
+  /* ── MARKET PILL ── */
+  .market-row {
+    display: flex; flex-direction: column; gap: 12px;
+    margin-top: 40px;
+  }
+  .market-item {
+    display: flex; align-items: center; gap: 20px;
+    padding: 20px 24px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+  }
+  .market-flag {
+    font-size: 28px; flex-shrink: 0; width: 40px; text-align: center;
+  }
+  .market-phase {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--oy-green); margin-bottom: 4px;
+  }
+  .market-name { font-size: 16px; font-weight: 500; color: #fff; margin-bottom: 4px; }
+  .market-desc { font-size: 13px; color: rgba(255,255,255,0.4); line-height: 1.5; }
+  .market-arrow {
+    margin-left: auto; font-size: 20px;
+    color: rgba(0,168,98,0.4);
+  }
+
+  /* ── DISCLAIMER ── */
+  .disclaimer {
+    background: #0a0f0d;
+    padding: 48px 40px;
+    text-align: center;
+  }
+  .disclaimer p {
+    font-size: 12px; color: rgba(255,255,255,0.25);
+    line-height: 1.8; max-width: 700px; margin: 0 auto 8px;
+  }
+
+  /* ── OMNICHANNEL DIAGRAM ── */
+  .omni-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 24px;
+    align-items: center;
+    margin-bottom: 40px;
+  }
+  .omni-side {
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .omni-pill {
+    padding: 14px 20px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    text-align: center;
+  }
+  .omni-pill .omni-label {
+    font-size: 11px; font-weight: 500;
+    color: rgba(255,255,255,0.35);
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .omni-pill .omni-value {
+    font-size: 15px; font-weight: 500;
+    color: #fff;
+  }
+  .omni-center {
+    width: 100px; height: 100px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--oy-green), var(--purple));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600;
+    color: #fff; text-align: center;
+    line-height: 1.3;
+    box-shadow: 0 0 40px rgba(0,168,98,0.2);
+  }
+
+  @media (max-width: 640px) {
+    section { padding: 64px 24px; }
+    .flow { flex-direction: column; }
+    .flow::before { display: none; }
+    .flow-num { box-shadow: none; }
+    .timeline-item { grid-template-columns: 1fr; }
+    .stats-row { flex-direction: column; }
+    .stat { border-right: none; border-bottom: 1px solid var(--border); }
+    .stat:last-child { border-bottom: none; }
+    .omni-grid { grid-template-columns: 1fr; }
+    .omni-center { margin: 0 auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LANG SWITCHER -->
+<div class="lang-switcher">
+  <button onclick="setLang('ko')" class="active">KO</button>
+  <button onclick="setLang('ja')">JA</button>
+  <button onclick="setLang('en')">EN</button>
+</div>
+
+<!-- ══════════ COVER ══════════ -->
+<div class="cover">
+  <p class="cover-badge" data-i18n="cover_badge">파트너십 제안서 — Confidential</p>
+  <div class="cover-lockup">
+    <span class="cover-logo">KIREI</span>
+    <span class="cover-x">×</span>
+    <span class="cover-partner"><span class="oy-highlight">OLIVE</span> YOUNG</span>
+  </div>
+  <p class="cover-tagline" data-i18n="cover_tagline">
+    얼굴에서 시작하는 K-뷰티 AI — 1,390개 매장과 글로벌 EC를 연결하는 퍼스널 뷰티 경험
+  </p>
+  <div class="cover-divider"></div>
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <p class="label" data-i18n="cover_meta1_label">제안 유형</p>
+      <p class="value" data-i18n="cover_meta1_value">앱 내 통합 · 매장 연동 파트너십</p>
+    </div>
+    <div class="cover-meta-item">
+      <p class="label" data-i18n="cover_meta2_label">대상 시장</p>
+      <p class="value" data-i18n="cover_meta2_value">한국 → 글로벌(Sephora 포함)</p>
+    </div>
+    <div class="cover-meta-item">
+      <p class="label" data-i18n="cover_meta3_label">데모</p>
+      <p class="value"><a href="https://sashibe.github.io/kirei" target="_blank" style="color:var(--oy-green); text-decoration:none; border-bottom:1px solid rgba(0,168,98,0.3);">sashibe.github.io/kirei</a></p>
+    </div>
+  </div>
+  <p class="scroll-hint" data-i18n="scroll_hint">↓ scroll</p>
+</div>
+
+<!-- ══════════ 01 — OLIVE YOUNG의 다음 과제 ══════════ -->
+<section>
+  <p class="section-number" data-i18n="s01_num">01 — 올리브영이 직면한 과제</p>
+  <div class="divider"></div>
+  <h2 data-i18n="s01_title">5.83조 매출, 1,390개 매장.<br><em>그 다음은?</em></h2>
+  <p class="lead" data-i18n="s01_lead">올리브영은 한국 H&B 시장을 지배하고 있다. 하지만 글로벌 확장과 온라인 쇼핑 전환이 가속화되면서, '오프라인 체험'을 디지털로 확장하는 것이 다음 성장 과제다.</p>
+
+  <div class="stats-row">
+    <div class="stat">
+      <p class="number" data-i18n="s01_stat1_n">5.83조</p>
+      <p class="label" data-i18n="s01_stat1_l">2025 매출(원)<br>전년 대비 +21.8%</p>
+    </div>
+    <div class="stat">
+      <p class="number" data-i18n="s01_stat2_n">1,390+</p>
+      <p class="label" data-i18n="s01_stat2_l">한국 내 매장 수</p>
+    </div>
+    <div class="stat">
+      <p class="number" data-i18n="s01_stat3_n">453만</p>
+      <p class="label" data-i18n="s01_stat3_l">글로벌 앱 회원<br>(2025년 말 기준)</p>
+    </div>
+  </div>
+
+  <div class="card-grid col-2">
+    <div class="card">
+      <div class="card-icon green">🎨</div>
+      <h3 data-i18n="s01_c1_title">색상 미스매치 반품</h3>
+      <p class="body-text" data-i18n="s01_c1_text">립, 파운데이션, 아이섀도 — 화면으로는 색감 판단이 불가능하다. '내 얼굴에 어떻게 보이는지'를 알 수 없으면 구매를 망설이거나 반품한다.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon purple">🔍</div>
+      <h3 data-i18n="s01_c2_title">퍼스널 컬러 기반 추천 부재</h3>
+      <p class="body-text" data-i18n="s01_c2_text">MZ 세대에게 퍼스널 컬러는 상식이 됐지만, 앱에서 '내 퍼스널 컬러에 맞는 제품'을 자동으로 필터링하는 기능은 아직 없다.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon pink">🏪</div>
+      <h3 data-i18n="s01_c3_title">매장 테스터의 한계</h3>
+      <p class="body-text" data-i18n="s01_c3_text">위생 문제, 인력 부족, 글로벌 매장에서의 운영 비용. 오프라인 테스터 체험을 대체할 디지털 솔루션이 필요한 시점이다.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon gold">🌏</div>
+      <h3 data-i18n="s01_c4_title">글로벌 디지털 체험 강화</h3>
+      <p class="body-text" data-i18n="s01_c4_text">Sephora 제휴, 미국 직영 매장 진출. 그러나 해외 고객이 '올리브영 앱'을 매일 열어야 할 이유가 무엇인가?</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 02 — KIREI가 해결하는 것 ══════════ -->
+<section class="tinted">
+<div class="inner">
+  <p class="section-number" data-i18n="s02_num">02 — KIREI가 해결하는 것</p>
+  <div class="divider"></div>
+  <h2 data-i18n="s02_title">거울을 열면,<br><em>맞는 제품만 보인다.</em></h2>
+  <p class="lead" data-i18n="s02_lead">KIREI는 스마트폰 전면 카메라를 AI 뷰티 거울로 전환한다. 피부 분석 → 퍼스널 컬러 진단 → 상품 추천을 하나의 흐름으로 연결한다.</p>
+
+  <div class="flow" style="margin-bottom:48px;">
+    <div class="flow-step">
+      <div class="flow-num">1</div>
+      <p class="flow-title" data-i18n="s02_f1_t">거울 스크린</p>
+      <p class="flow-desc" data-i18n="s02_f1_d">카메라를 켜면 자동 피부 분석. 수분·질감·밝기 실시간 스코어링.</p>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">2</div>
+      <p class="flow-title" data-i18n="s02_f2_t">퍼스널 컬러 진단</p>
+      <p class="flow-desc" data-i18n="s02_f2_d">피부·홍채·입술 색조에서 봄웜/여름쿨/가을웜/겨울쿨 자동 판별.</p>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">3</div>
+      <p class="flow-title" data-i18n="s02_f3_t">AR 가상 메이크업</p>
+      <p class="flow-desc" data-i18n="s02_f3_d">립·치크·아이섀도·파운데이션을 내 얼굴에 실시간 합성. 구매 전 체험.</p>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">4</div>
+      <p class="flow-title" data-i18n="s02_f4_t">올리브영 바로 연결</p>
+      <p class="flow-desc" data-i18n="s02_f4_d">퍼스널 컬러 × 피부 타입에 맞춘 올리브영 상품 추천 → 바로 구매.</p>
+    </div>
+  </div>
+
+  <div class="card-grid col-3">
+    <div class="card">
+      <h3 data-i18n="s02_c1_t">마스코트 '키라리'</h3>
+      <p class="body-text" data-i18n="s02_c1_d">거울 요정 캐릭터가 매일 피부 상태를 확인하고 말을 건다. 앱을 매일 여는 습관을 감성적으로 지원.</p>
+    </div>
+    <div class="card">
+      <h3 data-i18n="s02_c2_t">스코어 히스토리</h3>
+      <p class="body-text" data-i18n="s02_c2_d">매일 쌓이는 데이터로 '내 변화를 볼 수 있는' 경험 제공. 지속적 케어 동기 부여.</p>
+    </div>
+    <div class="card">
+      <h3 data-i18n="s02_c3_t">날씨 연동 추천</h3>
+      <p class="body-text" data-i18n="s02_c3_d">습도·UV·기온 데이터와 연동하여 '오늘의 피부 환경'에 맞는 메이크업 제안.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════ 03 — 유저 시나리오 ══════════ -->
+<section>
+  <p class="section-number" data-i18n="s03_num">03 — 유저 시나리오</p>
+  <div class="divider"></div>
+  <h2 data-i18n="s03_title">올리브영 매장 앞에서.<br><em>3분 안에 완료.</em></h2>
+  <p class="lead" data-i18n="s03_lead">유저는 '앱을 쓴다'고 생각하지 않는다. 거울을 열었을 뿐인데, 쇼핑이 이미 끝나 있다.</p>
+
+  <div class="scenario">
+    <div class="scenario-header">
+      <div class="scenario-header-dot"></div>
+      <p data-i18n="s03_scenario_label">유저 시나리오 — 올리브영 매장 방문 전</p>
+    </div>
+    <div class="scenario-steps">
+      <div class="scenario-step">
+        <p class="scenario-time">0:00</p>
+        <p class="scenario-action" data-i18n="s03_s1">거울 앱을 열었다 — KIREI가 시작된다 <span data-i18n="s03_tag1">습관 진입</span></p>
+      </div>
+      <div class="scenario-step">
+        <p class="scenario-time">0:05</p>
+        <p class="scenario-action" data-i18n="s03_s2">키라리: "오늘 습도 38%, 촉촉한 립이 좋겠어요♪" <span data-i18n="s03_tag2">퍼스널라이즈</span></p>
+      </div>
+      <div class="scenario-step">
+        <p class="scenario-time">0:15</p>
+        <p class="scenario-action" data-i18n="s03_s3">화면 탭으로 피부 체크 — 스코어 표시 <span data-i18n="s03_tag3">체크</span></p>
+      </div>
+      <div class="scenario-step">
+        <p class="scenario-time">0:30</p>
+        <p class="scenario-action" data-i18n="s03_s4">퍼스널 컬러에 맞는 AR 립 컬러 — 내 얼굴에 실시간 합성 <span data-i18n="s03_tag4">AR 체험</span></p>
+      </div>
+      <div class="scenario-step">
+        <p class="scenario-time">1:00</p>
+        <p class="scenario-action" data-i18n="s03_s5">"올리브영에서 보기" 탭 → 상품 페이지로 이동 또는 매장에서 직접 픽업 <span data-i18n="s03_tag5">구매 전환</span></p>
+      </div>
+      <div class="scenario-step">
+        <p class="scenario-time">2:00</p>
+        <p class="scenario-action" data-i18n="s03_s6">구매 후 거울로 복귀 — 새 메이크업 AR 확인 <span data-i18n="s03_tag6">이탈 없음</span></p>
+      </div>
+    </div>
+  </div>
+  <div class="highlight" style="margin-top:24px;">
+    <p data-i18n="s03_highlight">거울 → 피부 체크 → AR 체험 → 구매가 한 세션 안에 완결. 유저는 '쇼핑을 했다'는 감각 없이 자연스럽게 전환한다. 온라인에서도, 매장 앞에서도 동일한 경험.</p>
+  </div>
+</section>
+
+<!-- ══════════ 04 — 올리브영에 주는 가치 ══════════ -->
+<section class="dark">
+<div class="inner">
+  <p class="section-number light" data-i18n="s04_num">04 — 올리브영에 주는 가치</p>
+  <div class="divider"></div>
+  <h2 class="light" data-i18n="s04_title">KIREI가<br><em>올리브영에 가져오는 것</em></h2>
+  <p class="lead light" data-i18n="s04_lead">단순 앱 제휴가 아니다. 퍼스널 컬러 × 피부 데이터가 올리브영의 오프라인과 온라인을 AI로 연결한다.</p>
+
+  <table class="value-table" style="color:rgba(255,255,255,0.8); margin-bottom:48px;">
+    <tr>
+      <th data-i18n="s04_th1" style="color:rgba(255,255,255,0.35);">과제</th>
+      <th data-i18n="s04_th2" style="color:rgba(255,255,255,0.35);">KIREI의 해결</th>
+      <th data-i18n="s04_th3" style="color:rgba(255,255,255,0.35);">기대 효과</th>
+    </tr>
+    <tr>
+      <td data-i18n="s04_r1_a" style="color:var(--oy-green);">색상 미스매치 반품</td>
+      <td data-i18n="s04_r1_b" style="color:rgba(255,255,255,0.65);">AR 가상 시착으로 구매 전 확인</td>
+      <td data-i18n="s04_r1_c" style="color:rgba(255,255,255,0.65);">반품률 감소</td>
+    </tr>
+    <tr>
+      <td data-i18n="s04_r2_a" style="color:var(--oy-green);">비개인화 추천</td>
+      <td data-i18n="s04_r2_b" style="color:rgba(255,255,255,0.65);">퍼스널 컬러 × 피부 타입 필터링</td>
+      <td data-i18n="s04_r2_c" style="color:rgba(255,255,255,0.65);">전환율 향상</td>
+    </tr>
+    <tr>
+      <td data-i18n="s04_r3_a" style="color:var(--oy-green);">매장 테스터 대체</td>
+      <td data-i18n="s04_r3_b" style="color:rgba(255,255,255,0.65);">AR이 위생적·비용 효율적 대안 제공</td>
+      <td data-i18n="s04_r3_c" style="color:rgba(255,255,255,0.65);">매장 운영비 절감</td>
+    </tr>
+    <tr>
+      <td data-i18n="s04_r4_a" style="color:var(--oy-green);">구매 외 재방문 동기</td>
+      <td data-i18n="s04_r4_b" style="color:rgba(255,255,255,0.65);">매일 거울 습관 × 키라리 대화</td>
+      <td data-i18n="s04_r4_c" style="color:rgba(255,255,255,0.65);">DAU · 세션 시간 ↑</td>
+    </tr>
+    <tr>
+      <td data-i18n="s04_r5_a" style="color:var(--oy-green);">글로벌 EC 체험 강화</td>
+      <td data-i18n="s04_r5_b" style="color:rgba(255,255,255,0.65);">해외 유저도 AR로 '내 얼굴에 시착' 가능</td>
+      <td data-i18n="s04_r5_c" style="color:rgba(255,255,255,0.65);">글로벌 전환율 ↑</td>
+    </tr>
+  </table>
+
+  <!-- Omnichannel Diagram -->
+  <div class="omni-grid">
+    <div class="omni-side">
+      <div class="omni-pill">
+        <p class="omni-label" data-i18n="s04_omni_online">Online</p>
+        <p class="omni-value" data-i18n="s04_omni_online_v">올리브영 앱 / Global EC</p>
+      </div>
+      <div class="omni-pill">
+        <p class="omni-label" data-i18n="s04_omni_sephora">Global Partner</p>
+        <p class="omni-value" data-i18n="s04_omni_sephora_v">Sephora 700개 매장</p>
+      </div>
+    </div>
+    <div class="omni-center" data-i18n="s04_omni_center">KIREI<br>AI Mirror</div>
+    <div class="omni-side">
+      <div class="omni-pill">
+        <p class="omni-label" data-i18n="s04_omni_store">Offline</p>
+        <p class="omni-value" data-i18n="s04_omni_store_v">한국 1,390+ 매장</p>
+      </div>
+      <div class="omni-pill">
+        <p class="omni-label" data-i18n="s04_omni_us">US Expansion</p>
+        <p class="omni-value" data-i18n="s04_omni_us_v">패서디나 + LA 매장</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-grid col-3" style="margin-top:40px;">
+    <div class="card dark-card">
+      <h3 class="light" data-i18n="s04_c1_t">제로 프릭션 전환</h3>
+      <p class="body-text light" data-i18n="s04_c1_d">거울을 여는 것만으로 자연스럽게 올리브영 상품으로 유도. 의도적 광고 없이 전환.</p>
+    </div>
+    <div class="card dark-card">
+      <h3 class="light" data-i18n="s04_c2_t">O2O 허브</h3>
+      <p class="body-text light" data-i18n="s04_c2_d">AR로 시착 → 가까운 매장에서 픽업 또는 온라인 구매. 오프라인과 온라인을 AI로 연결.</p>
+    </div>
+    <div class="card dark-card">
+      <h3 class="light" data-i18n="s04_c3_t">피부 데이터 자산</h3>
+      <p class="body-text light" data-i18n="s04_c3_d">익명화된 피부 스코어 × 구매 데이터를 추천 알고리즘 고도화에 활용.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════ 05 — 글로벌 전개 ══════════ -->
+<section class="dark" style="background: linear-gradient(160deg, #0f0c1a 0%, #1a1035 100%);">
+<div class="inner">
+  <p class="section-number light" data-i18n="s05_num">05 — 글로벌 전개</p>
+  <div class="divider"></div>
+  <h2 class="light" data-i18n="s05_title">올리브영의 글로벌 확장과<br><em>함께 나간다.</em></h2>
+  <p class="lead light" data-i18n="s05_lead">올리브영은 이미 세계로 나가고 있다. KIREI는 그 여정에 AI 뷰티 체험 레이어를 더한다.</p>
+
+  <div class="market-row">
+    <div class="market-item">
+      <div class="market-flag">🇰🇷</div>
+      <div>
+        <p class="market-phase" data-i18n="s05_m1_phase">Phase 1 — 한국</p>
+        <p class="market-name" data-i18n="s05_m1_name">올리브영 앱 내 통합</p>
+        <p class="market-desc" data-i18n="s05_m1_desc">올리브영 앱에 AI 거울 기능 내장. 1,390개 매장의 디지털 테스터로 동작. 퍼스널 컬러 문화가 성숙한 시장에서 핵심 경험 검증.</p>
+      </div>
+      <div class="market-arrow">→</div>
+    </div>
+    <div class="market-item">
+      <div class="market-flag">🇯🇵</div>
+      <div>
+        <p class="market-phase" data-i18n="s05_m2_phase">Phase 2 — 일본</p>
+        <p class="market-name" data-i18n="s05_m2_name">K-뷰티 역수입</p>
+        <p class="market-desc" data-i18n="s05_m2_desc">한국 실적 데이터와 함께 일본 진출. K-뷰티 역수입 포지셔닝. 일본어 UI 구현 완료.</p>
+      </div>
+      <div class="market-arrow">→</div>
+    </div>
+    <div class="market-item">
+      <div class="market-flag">🇺🇸</div>
+      <div>
+        <p class="market-phase" data-i18n="s05_m3_phase">Phase 3 — 미국 · Sephora</p>
+        <p class="market-name" data-i18n="s05_m3_name">패서디나 매장 + Sephora 700개 매장</p>
+        <p class="market-desc" data-i18n="s05_m3_desc">올리브영 미국 직영 매장 및 Sephora 파트너십 매장에서 KIREI AI 거울을 디지털 테스터로 제공. 영어 UI 구현 완료.</p>
+      </div>
+      <div class="market-arrow">→</div>
+    </div>
+    <div class="market-item">
+      <div class="market-flag">🌏</div>
+      <div>
+        <p class="market-phase" data-i18n="s05_m4_phase">Phase 4 — 동남아 · 중동</p>
+        <p class="market-name" data-i18n="s05_m4_name">글로벌 EC 확장</p>
+        <p class="market-desc" data-i18n="s05_m4_desc">올리브영 글로벌 앱(453만 회원)에 AI 거울 기능을 순차 적용. K-뷰티 수요가 높은 시장으로 확대.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="highlight" style="margin-top:40px; background: rgba(0,168,98,0.06); border-left-color: var(--oy-green);">
+    <p style="color:rgba(255,255,255,0.6);" data-i18n="s05_adv_text">날씨 앱은 오늘을 알지만 내 얼굴을 모른다. SNS는 트렌드를 알지만 내 피부를 모른다. <strong style="color:#fff;">KIREI는 내 얼굴에서 시작한다.</strong></p>
+  </div>
+</div>
+</section>
+
+<!-- ══════════ 06 — 기술 ══════════ -->
+<section>
+  <p class="section-number" data-i18n="s06_num">06 — 기술</p>
+  <div class="divider"></div>
+  <h2 data-i18n="s06_title">이미 동작한다.<br><em>통합 비용 최소.</em></h2>
+  <p class="lead" data-i18n="s06_lead">KIREI의 핵심 기술은 프로토타입 단계에서 이미 검증 완료. 올리브영 통합은 API 수준의 추가로 실현 가능하다.</p>
+
+  <div class="card-grid col-2">
+    <div class="card">
+      <div class="card-icon green">🧠</div>
+      <h3 data-i18n="s06_c1_t">AI 피부 분석 (구현 완료)</h3>
+      <p class="body-text" data-i18n="s06_c1_d">MediaPipe FaceLandmarker(468포인트)로 실시간 피부 분석. 브라우저 내 추론, 서버 비용 없음. 수분·질감·밝기 스코어링.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon purple">💄</div>
+      <h3 data-i18n="s06_c2_t">AR 메이크업 (구현 완료)</h3>
+      <p class="body-text" data-i18n="s06_c2_d">립·치크·아이섀도·파운데이션·브로우·컨실러 실시간 합성. Multiply/Softlight/Overlay 블렌드 지원.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon pink">🌐</div>
+      <h3 data-i18n="s06_c3_t">다국어 (구현 완료)</h3>
+      <p class="body-text" data-i18n="s06_c3_d">한국어·일본어·영어 i18n 구현 완료. 키라리 대사 3개 언어 대응. 추가 언어는 텍스트 추가만으로 확장.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon gold">🔗</div>
+      <h3 data-i18n="s06_c4_t">올리브영 통합 설계</h3>
+      <p class="body-text" data-i18n="s06_c4_d">퍼스널 컬러 타입 → 올리브영 검색 쿼리 자동 변환 로직 설계 완료. 올리브영 회원 ID 연동 스키마도 준비 중.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 07 — 로드맵 ══════════ -->
+<section class="tinted">
+<div class="inner">
+  <p class="section-number" data-i18n="s07_num">07 — 로드맵</p>
+  <div class="divider"></div>
+  <h2 data-i18n="s07_title">단계별 <em>가치 검증</em></h2>
+
+  <div class="timeline">
+    <div class="timeline-item">
+      <p class="timeline-phase" data-i18n="s07_p0_phase">Phase 0 — 완료</p>
+      <div>
+        <p class="timeline-title" data-i18n="s07_p0_title">기술 POC · 프로토타입</p>
+        <p class="timeline-desc" data-i18n="s07_p0_desc">WebRTC 카메라 통합, 피부 분석, AR 메이크업, 다국어 UI를 실제 동작하는 프로토타입으로 구현. GitHub Pages에서 데모 공개 중.</p>
+      </div>
+      <span class="timeline-tag done" data-i18n="s07_tag_done">✓ 완료</span>
+    </div>
+    <div class="timeline-item">
+      <p class="timeline-phase" data-i18n="s07_p1_phase">Phase 1 — 진행 중</p>
+      <div>
+        <p class="timeline-title" data-i18n="s07_p1_title">퍼스널 컬러 진단 · 행동 로그 기반 구축</p>
+        <p class="timeline-desc" data-i18n="s07_p1_desc">퍼스널 컬러 자동 판정, 피부 스코어 이력(Supabase), 키라리 개인화 대사, 행동 로그 설계를 구현 중.</p>
+      </div>
+      <span class="timeline-tag wip" data-i18n="s07_tag_wip">진행 중</span>
+    </div>
+    <div class="timeline-item">
+      <p class="timeline-phase" data-i18n="s07_p2_phase">Phase 2 — 올리브영 파트너십</p>
+      <div>
+        <p class="timeline-title" data-i18n="s07_p2_title">한국 공동 개발 · 앱 내 통합</p>
+        <p class="timeline-desc" data-i18n="s07_p2_desc">올리브영 상품 DB 연동, 회원 ID 연동, 퍼스널 컬러 기반 상품 추천, 올리브영 앱 내 AI 거울 기능 통합.</p>
+      </div>
+      <span class="timeline-tag plan-light" data-i18n="s07_tag_plan">계획 중</span>
+    </div>
+    <div class="timeline-item">
+      <p class="timeline-phase" data-i18n="s07_p3_phase">Phase 3 — 글로벌</p>
+      <div>
+        <p class="timeline-title" data-i18n="s07_p3_title">미국 · Sephora · 일본 전개</p>
+        <p class="timeline-desc" data-i18n="s07_p3_desc">한국에서의 전환율·반품률 감소 실적을 가지고 글로벌 확장. 올리브영 해외 매장 및 Sephora 제휴 매장에 AI 거울 체험 제공.</p>
+      </div>
+      <span class="timeline-tag plan-light" data-i18n="s07_tag_plan2">계획 중</span>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════ 08 — 제안 ══════════ -->
+<section>
+  <p class="section-number" data-i18n="s08_num">08 — 제안</p>
+  <div class="divider"></div>
+  <h2 data-i18n="s08_title">올리브영의 공식<br><em>AI 뷰티 거울</em>로서</h2>
+  <p class="lead" data-i18n="s08_lead">올리브영은 이미 K-뷰티의 글로벌 관문이다. KIREI는 그 관문에 AI 뷰티 체험을 더한다. 1,390개 매장과 453만 글로벌 회원을 위한 디지털 테스터 — 함께 만들고 싶다.</p>
+
+  <div class="card-grid col-3" style="margin-bottom:40px;">
+    <div class="card">
+      <div class="card-icon green">🤝</div>
+      <h3 data-i18n="s08_c1_t">앱 내 통합</h3>
+      <p class="body-text" data-i18n="s08_c1_d">올리브영 앱에 AI 거울 기능을 SDK 형태로 통합. 기존 UI/UX에 자연스럽게 녹아드는 형태로 구현.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon purple">🏪</div>
+      <h3 data-i18n="s08_c2_t">매장 디지털 테스터</h3>
+      <p class="body-text" data-i18n="s08_c2_d">매장 내 태블릿 또는 고객 스마트폰에서 AR 시착 체험 제공. 위생적이고 비용 효율적인 테스터 대안.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon gold">📊</div>
+      <h3 data-i18n="s08_c3_t">데이터 파트너십</h3>
+      <p class="body-text" data-i18n="s08_c3_d">익명화된 피부 × 구매 데이터를 양사가 활용. 올리브영 추천 정확도 향상에 직접 기여.</p>
+    </div>
+  </div>
+
+  <div style="text-align:center; padding:40px 0;">
+    <p class="section-number" data-i18n="s08_demo_label">동작 중인 프로토타입</p>
+    <p style="font-size:14px; color:var(--muted); margin-bottom:20px;" data-i18n="s08_demo_desc">실제 동작하는 AR 메이크업 · 피부 분석 체험을 확인하세요.</p>
+    <a href="https://sashibe.github.io/kirei" target="_blank"
+       style="display:inline-block; padding:14px 36px; background:linear-gradient(135deg, var(--oy-green), var(--purple));
+              color:#fff; text-decoration:none; border-radius:40px; font-size:14px; font-weight:500;
+              letter-spacing:0.05em; transition:transform 0.2s, box-shadow 0.2s;"
+       onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(0,168,98,0.25)'"
+       onmouseout="this.style.transform='';this.style.boxShadow=''">
+      Demo →
+    </a>
+  </div>
+</section>
+
+<!-- DISCLAIMER -->
+<div class="disclaimer">
+  <p data-i18n="footer_1">본 자료는 파트너십 제안을 목적으로 작성된 것이며, 시장 규모 등의 수치는 공개 자료에 기반한 추정이며 보증하는 것이 아닙니다.</p>
+  <p data-i18n="footer_2">본 앱은 의료 진단을 수행하는 것이 아닙니다. 스코어·체크 결과는 셀프 케어의 참고 정보입니다.</p>
+</div>
+
+<script>
+(function() {
+
+const i18n = {
+  ko: {
+    cover_badge: '파트너십 제안서 — Confidential',
+    cover_tagline: '얼굴에서 시작하는 K-뷰티 AI — 1,390개 매장과 글로벌 EC를 연결하는 퍼스널 뷰티 경험',
+    cover_meta1_label: '제안 유형', cover_meta1_value: '앱 내 통합 · 매장 연동 파트너십',
+    cover_meta2_label: '대상 시장', cover_meta2_value: '한국 → 글로벌(Sephora 포함)',
+    cover_meta3_label: '데모', scroll_hint: '↓ scroll',
+
+    s01_num: '01 — 올리브영이 직면한 과제',
+    s01_title: '5.83조 매출, 1,390개 매장.<br><em>그 다음은?</em>',
+    s01_lead: '올리브영은 한국 H&B 시장을 지배하고 있다. 하지만 글로벌 확장과 온라인 쇼핑 전환이 가속화되면서, \'오프라인 체험\'을 디지털로 확장하는 것이 다음 성장 과제다.',
+    s01_stat1_n: '5.83조', s01_stat1_l: '2025 매출(원)<br>전년 대비 +21.8%',
+    s01_stat2_n: '1,390+', s01_stat2_l: '한국 내 매장 수',
+    s01_stat3_n: '453만', s01_stat3_l: '글로벌 앱 회원<br>(2025년 말 기준)',
+    s01_c1_title: '색상 미스매치 반품', s01_c1_text: '립, 파운데이션, 아이섀도 — 화면으로는 색감 판단이 불가능하다. \'내 얼굴에 어떻게 보이는지\'를 알 수 없으면 구매를 망설이거나 반품한다.',
+    s01_c2_title: '퍼스널 컬러 기반 추천 부재', s01_c2_text: 'MZ 세대에게 퍼스널 컬러는 상식이 됐지만, 앱에서 \'내 퍼스널 컬러에 맞는 제품\'을 자동으로 필터링하는 기능은 아직 없다.',
+    s01_c3_title: '매장 테스터의 한계', s01_c3_text: '위생 문제, 인력 부족, 글로벌 매장에서의 운영 비용. 오프라인 테스터 체험을 대체할 디지털 솔루션이 필요한 시점이다.',
+    s01_c4_title: '글로벌 디지털 체험 강화', s01_c4_text: 'Sephora 제휴, 미국 직영 매장 진출. 그러나 해외 고객이 \'올리브영 앱\'을 매일 열어야 할 이유가 무엇인가?',
+
+    s02_num: '02 — KIREI가 해결하는 것',
+    s02_title: '거울을 열면,<br><em>맞는 제품만 보인다.</em>',
+    s02_lead: 'KIREI는 스마트폰 전면 카메라를 AI 뷰티 거울로 전환한다. 피부 분석 → 퍼스널 컬러 진단 → 상품 추천을 하나의 흐름으로 연결한다.',
+    s02_f1_t: '거울 스크린', s02_f1_d: '카메라를 켜면 자동 피부 분석. 수분·질감·밝기 실시간 스코어링.',
+    s02_f2_t: '퍼스널 컬러 진단', s02_f2_d: '피부·홍채·입술 색조에서 봄웜/여름쿨/가을웜/겨울쿨 자동 판별.',
+    s02_f3_t: 'AR 가상 메이크업', s02_f3_d: '립·치크·아이섀도·파운데이션을 내 얼굴에 실시간 합성. 구매 전 체험.',
+    s02_f4_t: '올리브영 바로 연결', s02_f4_d: '퍼스널 컬러 × 피부 타입에 맞춘 올리브영 상품 추천 → 바로 구매.',
+    s02_c1_t: '마스코트 \'키라리\'', s02_c1_d: '거울 요정 캐릭터가 매일 피부 상태를 확인하고 말을 건다. 앱을 매일 여는 습관을 감성적으로 지원.',
+    s02_c2_t: '스코어 히스토리', s02_c2_d: '매일 쌓이는 데이터로 \'내 변화를 볼 수 있는\' 경험 제공. 지속적 케어 동기 부여.',
+    s02_c3_t: '날씨 연동 추천', s02_c3_d: '습도·UV·기온 데이터와 연동하여 \'오늘의 피부 환경\'에 맞는 메이크업 제안.',
+
+    s03_num: '03 — 유저 시나리오',
+    s03_title: '올리브영 매장 앞에서.<br><em>3분 안에 완료.</em>',
+    s03_lead: '유저는 \'앱을 쓴다\'고 생각하지 않는다. 거울을 열었을 뿐인데, 쇼핑이 이미 끝나 있다.',
+    s03_scenario_label: '유저 시나리오 — 올리브영 매장 방문 전',
+    s03_s1: '거울 앱을 열었다 — KIREI가 시작된다 <span>습관 진입</span>',
+    s03_s2: '키라리: "오늘 습도 38%, 촉촉한 립이 좋겠어요♪" <span>퍼스널라이즈</span>',
+    s03_s3: '화면 탭으로 피부 체크 — 스코어 표시 <span>체크</span>',
+    s03_s4: '퍼스널 컬러에 맞는 AR 립 컬러 — 내 얼굴에 실시간 합성 <span>AR 체험</span>',
+    s03_s5: '"올리브영에서 보기" 탭 → 상품 페이지로 이동 또는 매장에서 직접 픽업 <span>구매 전환</span>',
+    s03_s6: '구매 후 거울로 복귀 — 새 메이크업 AR 확인 <span>이탈 없음</span>',
+    s03_highlight: '거울 → 피부 체크 → AR 체험 → 구매가 한 세션 안에 완결. 유저는 \'쇼핑을 했다\'는 감각 없이 자연스럽게 전환한다. 온라인에서도, 매장 앞에서도 동일한 경험.',
+
+    s04_num: '04 — 올리브영에 주는 가치',
+    s04_title: 'KIREI가<br><em>올리브영에 가져오는 것</em>',
+    s04_lead: '단순 앱 제휴가 아니다. 퍼스널 컬러 × 피부 데이터가 올리브영의 오프라인과 온라인을 AI로 연결한다.',
+    s04_th1: '과제', s04_th2: 'KIREI의 해결', s04_th3: '기대 효과',
+    s04_r1_a: '색상 미스매치 반품', s04_r1_b: 'AR 가상 시착으로 구매 전 확인', s04_r1_c: '반품률 감소',
+    s04_r2_a: '비개인화 추천', s04_r2_b: '퍼스널 컬러 × 피부 타입 필터링', s04_r2_c: '전환율 향상',
+    s04_r3_a: '매장 테스터 대체', s04_r3_b: 'AR이 위생적·비용 효율적 대안 제공', s04_r3_c: '매장 운영비 절감',
+    s04_r4_a: '구매 외 재방문 동기', s04_r4_b: '매일 거울 습관 × 키라리 대화', s04_r4_c: 'DAU · 세션 시간 ↑',
+    s04_r5_a: '글로벌 EC 체험 강화', s04_r5_b: '해외 유저도 AR로 \'내 얼굴에 시착\' 가능', s04_r5_c: '글로벌 전환율 ↑',
+    s04_omni_online: 'Online', s04_omni_online_v: '올리브영 앱 / Global EC',
+    s04_omni_sephora: 'Global Partner', s04_omni_sephora_v: 'Sephora 700개 매장',
+    s04_omni_store: 'Offline', s04_omni_store_v: '한국 1,390+ 매장',
+    s04_omni_us: 'US Expansion', s04_omni_us_v: '패서디나 + LA 매장',
+    s04_omni_center: 'KIREI<br>AI Mirror',
+    s04_c1_t: '제로 프릭션 전환', s04_c1_d: '거울을 여는 것만으로 자연스럽게 올리브영 상품으로 유도. 의도적 광고 없이 전환.',
+    s04_c2_t: 'O2O 허브', s04_c2_d: 'AR로 시착 → 가까운 매장에서 픽업 또는 온라인 구매. 오프라인과 온라인을 AI로 연결.',
+    s04_c3_t: '피부 데이터 자산', s04_c3_d: '익명화된 피부 스코어 × 구매 데이터를 추천 알고리즘 고도화에 활용.',
+
+    s05_num: '05 — 글로벌 전개',
+    s05_title: '올리브영의 글로벌 확장과<br><em>함께 나간다.</em>',
+    s05_lead: '올리브영은 이미 세계로 나가고 있다. KIREI는 그 여정에 AI 뷰티 체험 레이어를 더한다.',
+    s05_m1_phase: 'Phase 1 — 한국', s05_m1_name: '올리브영 앱 내 통합', s05_m1_desc: '올리브영 앱에 AI 거울 기능 내장. 1,390개 매장의 디지털 테스터로 동작. 퍼스널 컬러 문화가 성숙한 시장에서 핵심 경험 검증.',
+    s05_m2_phase: 'Phase 2 — 일본', s05_m2_name: 'K-뷰티 역수입', s05_m2_desc: '한국 실적 데이터와 함께 일본 진출. K-뷰티 역수입 포지셔닝. 일본어 UI 구현 완료.',
+    s05_m3_phase: 'Phase 3 — 미국 · Sephora', s05_m3_name: '패서디나 매장 + Sephora 700개 매장', s05_m3_desc: '올리브영 미국 직영 매장 및 Sephora 파트너십 매장에서 KIREI AI 거울을 디지털 테스터로 제공. 영어 UI 구현 완료.',
+    s05_m4_phase: 'Phase 4 — 동남아 · 중동', s05_m4_name: '글로벌 EC 확장', s05_m4_desc: '올리브영 글로벌 앱(453만 회원)에 AI 거울 기능을 순차 적용. K-뷰티 수요가 높은 시장으로 확대.',
+    s05_adv_text: '날씨 앱은 오늘을 알지만 내 얼굴을 모른다. SNS는 트렌드를 알지만 내 피부를 모른다. <strong style="color:#fff;">KIREI는 내 얼굴에서 시작한다.</strong>',
+
+    s06_num: '06 — 기술', s06_title: '이미 동작한다.<br><em>통합 비용 최소.</em>',
+    s06_lead: 'KIREI의 핵심 기술은 프로토타입 단계에서 이미 검증 완료. 올리브영 통합은 API 수준의 추가로 실현 가능하다.',
+    s06_c1_t: 'AI 피부 분석 (구현 완료)', s06_c1_d: 'MediaPipe FaceLandmarker(468포인트)로 실시간 피부 분석. 브라우저 내 추론, 서버 비용 없음. 수분·질감·밝기 스코어링.',
+    s06_c2_t: 'AR 메이크업 (구현 완료)', s06_c2_d: '립·치크·아이섀도·파운데이션·브로우·컨실러 실시간 합성. Multiply/Softlight/Overlay 블렌드 지원.',
+    s06_c3_t: '다국어 (구현 완료)', s06_c3_d: '한국어·일본어·영어 i18n 구현 완료. 키라리 대사 3개 언어 대응. 추가 언어는 텍스트 추가만으로 확장.',
+    s06_c4_t: '올리브영 통합 설계', s06_c4_d: '퍼스널 컬러 타입 → 올리브영 검색 쿼리 자동 변환 로직 설계 완료. 올리브영 회원 ID 연동 스키마도 준비 중.',
+
+    s07_num: '07 — 로드맵', s07_title: '단계별 <em>가치 검증</em>',
+    s07_p0_phase: 'Phase 0 — 완료', s07_p0_title: '기술 POC · 프로토타입', s07_p0_desc: 'WebRTC 카메라 통합, 피부 분석, AR 메이크업, 다국어 UI를 실제 동작하는 프로토타입으로 구현. GitHub Pages에서 데모 공개 중.',
+    s07_p1_phase: 'Phase 1 — 진행 중', s07_p1_title: '퍼스널 컬러 진단 · 행동 로그 기반 구축', s07_p1_desc: '퍼스널 컬러 자동 판정, 피부 스코어 이력(Supabase), 키라리 개인화 대사, 행동 로그 설계를 구현 중.',
+    s07_p2_phase: 'Phase 2 — 올리브영 파트너십', s07_p2_title: '한국 공동 개발 · 앱 내 통합', s07_p2_desc: '올리브영 상품 DB 연동, 회원 ID 연동, 퍼스널 컬러 기반 상품 추천, 올리브영 앱 내 AI 거울 기능 통합.',
+    s07_p3_phase: 'Phase 3 — 글로벌', s07_p3_title: '미국 · Sephora · 일본 전개', s07_p3_desc: '한국에서의 전환율·반품률 감소 실적을 가지고 글로벌 확장. 올리브영 해외 매장 및 Sephora 제휴 매장에 AI 거울 체험 제공.',
+    s07_tag_done: '✓ 완료', s07_tag_wip: '진행 중', s07_tag_plan: '계획 중', s07_tag_plan2: '계획 중',
+
+    s08_num: '08 — 제안',
+    s08_title: '올리브영의 공식<br><em>AI 뷰티 거울</em>로서',
+    s08_lead: '올리브영은 이미 K-뷰티의 글로벌 관문이다. KIREI는 그 관문에 AI 뷰티 체험을 더한다. 1,390개 매장과 453만 글로벌 회원을 위한 디지털 테스터 — 함께 만들고 싶다.',
+    s08_c1_t: '앱 내 통합', s08_c1_d: '올리브영 앱에 AI 거울 기능을 SDK 형태로 통합. 기존 UI/UX에 자연스럽게 녹아드는 형태로 구현.',
+    s08_c2_t: '매장 디지털 테스터', s08_c2_d: '매장 내 태블릿 또는 고객 스마트폰에서 AR 시착 체험 제공. 위생적이고 비용 효율적인 테스터 대안.',
+    s08_c3_t: '데이터 파트너십', s08_c3_d: '익명화된 피부 × 구매 데이터를 양사가 활용. 올리브영 추천 정확도 향상에 직접 기여.',
+    s08_demo_label: '동작 중인 프로토타입', s08_demo_desc: '실제 동작하는 AR 메이크업 · 피부 분석 체험을 확인하세요.',
+
+    footer_1: '본 자료는 파트너십 제안을 목적으로 작성된 것이며, 시장 규모 등의 수치는 공개 자료에 기반한 추정이며 보증하는 것이 아닙니다.',
+    footer_2: '본 앱은 의료 진단을 수행하는 것이 아닙니다. 스코어·체크 결과는 셀프 케어의 참고 정보입니다.',
+  },
+
+  ja: {
+    cover_badge: 'パートナーシップ提案書 — Confidential',
+    cover_tagline: '顔から始まるK-ビューティAI — 1,390店舗とグローバルECを繋ぐパーソナルビューティ体験',
+    cover_meta1_label: '提案タイプ', cover_meta1_value: 'アプリ内統合・店舗連動パートナーシップ',
+    cover_meta2_label: '対象市場', cover_meta2_value: '韓国 → グローバル（Sephora含む）',
+    cover_meta3_label: 'デモ', scroll_hint: '↓ scroll',
+
+    s01_num: '01 — OLIVE YOUNGが直面する課題',
+    s01_title: '売上5.83兆、1,390店舗。<br><em>その次は？</em>',
+    s01_lead: 'OLIVE YOUNGは韓国H&B市場を制覇している。しかしグローバル拡大とオンラインシフトが加速する中、「オフライン体験」をデジタルに拡張することが次の成長課題だ。',
+    s01_stat1_n: '5.83兆', s01_stat1_l: '2025年売上（ウォン）<br>前年比+21.8%',
+    s01_stat2_n: '1,390+', s01_stat2_l: '韓国内店舗数',
+    s01_stat3_n: '453万', s01_stat3_l: 'グローバルアプリ会員<br>（2025年末時点）',
+    s01_c1_title: 'カラーミスマッチ返品', s01_c1_text: 'リップ、ファンデ、アイシャドウ — 画面では色味の判断ができない。「自分の顔にどう見えるか」がわからないと購入を躊躇するか返品する。',
+    s01_c2_title: 'パーソナルカラー基準推薦の不在', s01_c2_text: 'MZ世代にとってパーソナルカラーは常識になったが、アプリで「自分のパーソナルカラーに合う商品」を自動フィルタリングする機能はまだない。',
+    s01_c3_title: '店舗テスターの限界', s01_c3_text: '衛生問題、人手不足、グローバル店舗での運営コスト。オフラインテスター体験を代替するデジタルソリューションが必要な時期だ。',
+    s01_c4_title: 'グローバルデジタル体験強化', s01_c4_text: 'Sephora提携、米国直営店進出。しかし海外顧客が「OLIVE YOUNGアプリ」を毎日開く理由は何か？',
+
+    s02_num: '02 — KIREIが解決すること',
+    s02_title: '鏡を開けば、<br><em>合う商品だけが見える。</em>',
+    s02_lead: 'KIREIはスマートフォンの前面カメラをAIビューティーミラーに変える。肌分析→パーソナルカラー診断→商品推薦を一つの流れで繋ぐ。',
+    s02_f1_t: 'ミラースクリーン', s02_f1_d: 'カメラを起動すると自動で肌分析。水分・質感・明るさをリアルタイムスコアリング。',
+    s02_f2_t: 'パーソナルカラー診断', s02_f2_d: '肌・虹彩・唇の色調からイエベ春/ブルベ夏/イエベ秋/ブルベ冬を自動判別。',
+    s02_f3_t: 'ARバーチャルメイク', s02_f3_d: 'リップ・チーク・アイシャドウ・ファンデを自分の顔にリアルタイム合成。購入前に体験。',
+    s02_f4_t: 'OLIVE YOUNGへ直結', s02_f4_d: 'パーソナルカラー×肌タイプに合ったOLIVE YOUNG商品を推薦→そのまま購入。',
+    s02_c1_t: 'マスコット「キラリ」', s02_c1_d: '鏡の妖精キャラクターが毎日肌状態を確認して話しかける。アプリを毎日開く習慣を感情的にサポート。',
+    s02_c2_t: 'スコア履歴', s02_c2_d: '毎日蓄積されるデータで「変化が見える」体験を提供。継続的ケアのモチベーション。',
+    s02_c3_t: '天気連動提案', s02_c3_d: '湿度・UV・気温データと連動し「今日の肌環境」に合ったメイクを提案。',
+
+    s03_num: '03 — ユーザーシナリオ',
+    s03_title: 'OLIVE YOUNGの店舗前で。<br><em>3分で完了。</em>',
+    s03_lead: 'ユーザーは「アプリを使う」とは思わない。鏡を開いただけで、買い物はもう終わっている。',
+    s03_scenario_label: 'ユーザーシナリオ — OLIVE YOUNG店舗訪問前',
+    s03_s1: '鏡アプリを開いた — KIREIがスタート <span>習慣エントリ</span>',
+    s03_s2: 'キラリ：「今日は湿度38%、しっとりリップがいいですよ♪」 <span>パーソナライズ</span>',
+    s03_s3: '画面タップで肌チェック — スコア表示 <span>チェック</span>',
+    s03_s4: 'パーソナルカラーに合ったARリップカラー — リアルタイム合成 <span>AR体験</span>',
+    s03_s5: '「OLIVE YOUNGで見る」タップ → 商品ページへ or 店舗で直接ピックアップ <span>購買転換</span>',
+    s03_s6: '購入後ミラーに戻る — 新しいメイクをAR確認 <span>離脱なし</span>',
+    s03_highlight: 'ミラー → 肌チェック → AR体験 → 購入が1セッションで完結。ユーザーは「買い物をした」感覚なく自然に転換する。オンラインでも、店舗前でも同じ体験。',
+
+    s04_num: '04 — OLIVE YOUNGへの価値',
+    s04_title: 'KIREIが<br><em>OLIVE YOUNGにもたらすもの</em>',
+    s04_lead: '単純なアプリ提携ではない。パーソナルカラー×肌データがOLIVE YOUNGのオフラインとオンラインをAIで繋ぐ。',
+    s04_th1: '課題', s04_th2: 'KIREIの解決', s04_th3: '期待効果',
+    s04_r1_a: 'カラーミスマッチ返品', s04_r1_b: 'AR仮想試着で購入前に確認', s04_r1_c: '返品率低下',
+    s04_r2_a: '非パーソナライズ推薦', s04_r2_b: 'パーソナルカラー×肌タイプでフィルタリング', s04_r2_c: '転換率向上',
+    s04_r3_a: '店舗テスター代替', s04_r3_b: 'ARが衛生的・コスト効率的な代替を提供', s04_r3_c: '店舗運営費削減',
+    s04_r4_a: '購入外の再訪動機', s04_r4_b: '毎日の鏡習慣×キラリ対話', s04_r4_c: 'DAU・セッション時間↑',
+    s04_r5_a: 'グローバルEC体験強化', s04_r5_b: '海外ユーザーもARで「自分の顔に試着」可能', s04_r5_c: 'グローバル転換率↑',
+    s04_omni_online: 'Online', s04_omni_online_v: 'OLIVE YOUNGアプリ / Global EC',
+    s04_omni_sephora: 'Global Partner', s04_omni_sephora_v: 'Sephora 700店舗',
+    s04_omni_store: 'Offline', s04_omni_store_v: '韓国1,390+店舗',
+    s04_omni_us: 'US Expansion', s04_omni_us_v: 'パサデナ + LA店舗',
+    s04_omni_center: 'KIREI<br>AI Mirror',
+    s04_c1_t: 'ゼロフリクション転換', s04_c1_d: '鏡を開くだけで自然にOLIVE YOUNG商品へ誘導。意図的な広告なしで転換。',
+    s04_c2_t: 'O2Oハブ', s04_c2_d: 'ARで試着 → 最寄り店舗でピックアップまたはオンライン購入。オフラインとオンラインをAIで接続。',
+    s04_c3_t: '肌データ資産', s04_c3_d: '匿名化された肌スコア×購買データを推薦アルゴリズム高度化に活用。',
+
+    s05_num: '05 — グローバル展開',
+    s05_title: 'OLIVE YOUNGのグローバル拡大と<br><em>共に出る。</em>',
+    s05_lead: 'OLIVE YOUNGはすでに世界へ向かっている。KIREIはその旅にAIビューティ体験レイヤーを加える。',
+    s05_m1_phase: 'Phase 1 — 韓国', s05_m1_name: 'OLIVE YOUNGアプリ内統合', s05_m1_desc: 'OLIVE YOUNGアプリにAIミラー機能を内蔵。1,390店舗のデジタルテスターとして稼働。パーソナルカラー文化が成熟した市場でコア体験を検証。',
+    s05_m2_phase: 'Phase 2 — 日本', s05_m2_name: 'K-ビューティ逆輸入', s05_m2_desc: '韓国での実績データと共に日本進出。K-ビューティ逆輸入ポジショニング。日本語UI実装済み。',
+    s05_m3_phase: 'Phase 3 — 米国・Sephora', s05_m3_name: 'パサデナ店舗 + Sephora 700店舗', s05_m3_desc: 'OLIVE YOUNG米国直営店およびSephoraパートナーシップ店舗でKIREI AIミラーをデジタルテスターとして提供。英語UI実装済み。',
+    s05_m4_phase: 'Phase 4 — 東南アジア・中東', s05_m4_name: 'グローバルEC拡張', s05_m4_desc: 'OLIVE YOUNGグローバルアプリ（453万会員）にAIミラー機能を順次適用。K-ビューティ需要の高い市場へ拡大。',
+    s05_adv_text: '天気アプリは今日を知っているが顔を知らない。SNSはトレンドを知っているが肌を知らない。<strong style="color:#fff;">KIREIは顔から始まる。</strong>',
+
+    s06_num: '06 — 技術', s06_title: 'すでに動作している。<br><em>統合コスト最小。</em>',
+    s06_lead: 'KIREIのコア技術はプロトタイプ段階で検証済み。OLIVE YOUNG統合はAPI水準の追加で実現可能。',
+    s06_c1_t: 'AI肌分析（実装済み）', s06_c1_d: 'MediaPipe FaceLandmarker（468ポイント）でリアルタイム肌分析。ブラウザ内推論、サーバーコストなし。水分・質感・明るさスコアリング。',
+    s06_c2_t: 'ARメイクアップ（実装済み）', s06_c2_d: 'リップ・チーク・アイシャドウ・ファンデ・ブロウ・コンシーラーをリアルタイム合成。Multiply/Softlight/Overlayブレンド対応。',
+    s06_c3_t: '多言語（実装済み）', s06_c3_d: '韓国語・日本語・英語のi18n実装済み。キラリ台詞も3言語対応。追加言語はテキスト追加のみで拡張。',
+    s06_c4_t: 'OLIVE YOUNG統合設計', s06_c4_d: 'パーソナルカラータイプ → OLIVE YOUNG検索クエリ自動変換ロジック設計済み。OLIVE YOUNG会員IDスキーマも準備中。',
+
+    s07_num: '07 — ロードマップ', s07_title: 'ステップごとの<em>価値検証</em>',
+    s07_p0_phase: 'Phase 0 — 完了', s07_p0_title: '技術POC・プロトタイプ', s07_p0_desc: 'WebRTCカメラ統合、肌分析、ARメイク、多言語UIを実際に動作するプロトタイプとして実装。GitHub Pagesでデモ公開中。',
+    s07_p1_phase: 'Phase 1 — 進行中', s07_p1_title: 'パーソナルカラー判定・行動ログ基盤構築', s07_p1_desc: 'パーソナルカラー自動判定、肌スコア履歴（Supabase）、キラリ個人化セリフ、行動ログ設計を実装中。',
+    s07_p2_phase: 'Phase 2 — OLIVE YOUNGパートナーシップ', s07_p2_title: '韓国共同開発・アプリ内統合', s07_p2_desc: 'OLIVE YOUNG商品DB連携、会員ID連携、パーソナルカラー基準商品推薦、OLIVE YOUNGアプリ内AIミラー機能統合。',
+    s07_p3_phase: 'Phase 3 — グローバル', s07_p3_title: '米国・Sephora・日本展開', s07_p3_desc: '韓国での転換率・返品率低下実績を持ってグローバル展開。OLIVE YOUNG海外店舗およびSephora提携店舗にAIミラー体験を提供。',
+    s07_tag_done: '✓ 完了', s07_tag_wip: '進行中', s07_tag_plan: '計画中', s07_tag_plan2: '計画中',
+
+    s08_num: '08 — 提案',
+    s08_title: 'OLIVE YOUNG公式<br><em>AIビューティーミラー</em>として',
+    s08_lead: 'OLIVE YOUNGはすでにK-ビューティのグローバルゲートウェイだ。KIREIはそのゲートウェイにAIビューティ体験を加える。1,390店舗と453万グローバル会員のためのデジタルテスター — 一緒に作りたい。',
+    s08_c1_t: 'アプリ内統合', s08_c1_d: 'OLIVE YOUNGアプリにAIミラー機能をSDK形式で統合。既存UI/UXに自然に溶け込む形で実装。',
+    s08_c2_t: '店舗デジタルテスター', s08_c2_d: '店舗内タブレットまたは顧客スマートフォンでAR試着体験を提供。衛生的でコスト効率的なテスター代替。',
+    s08_c3_t: 'データパートナーシップ', s08_c3_d: '匿名化された肌×購買データを両社で活用。OLIVE YOUNGの推薦精度向上に直接貢献。',
+    s08_demo_label: '動作中のプロトタイプ', s08_demo_desc: '実際に動作するARメイク・肌分析体験をご確認ください。',
+
+    footer_1: '本資料はパートナーシップ提案を目的として作成されたものであり、市場規模等の数値は公開資料に基づく推計であり、保証するものではありません。',
+    footer_2: '本アプリは医療診断を行うものではありません。スコア・チェック結果はセルフケアの参考情報です。',
+  },
+
+  en: {
+    cover_badge: 'Partnership Proposal — Confidential',
+    cover_tagline: 'K-beauty AI that starts from your face — a personal beauty experience connecting 1,390 stores and global EC',
+    cover_meta1_label: 'Proposal Type', cover_meta1_value: 'In-app Integration · Store Partnership',
+    cover_meta2_label: 'Target Markets', cover_meta2_value: 'Korea → Global (incl. Sephora)',
+    cover_meta3_label: 'Demo', scroll_hint: '↓ scroll',
+
+    s01_num: '01 — The Challenge Olive Young Faces',
+    s01_title: '₩5.83T revenue, 1,390 stores.<br><em>What\'s next?</em>',
+    s01_lead: 'Olive Young dominates Korea\'s H&B market. But as global expansion and online shopping accelerate, extending the "offline experience" into digital is the next growth challenge.',
+    s01_stat1_n: '₩5.83T', s01_stat1_l: '2025 Revenue<br>+21.8% YoY',
+    s01_stat2_n: '1,390+', s01_stat2_l: 'Stores in Korea',
+    s01_stat3_n: '4.53M', s01_stat3_l: 'Global App Members<br>(end of 2025)',
+    s01_c1_title: 'Color mismatch returns', s01_c1_text: 'Lips, foundations, eyeshadows — color judgment on screen is impossible. Without seeing "how it looks on my face," customers hesitate or return.',
+    s01_c2_title: 'No personal color recommendations', s01_c2_text: 'Personal color is common knowledge among Gen Z, but automatically filtering products by "my personal color" is still missing from the app.',
+    s01_c3_title: 'In-store tester limitations', s01_c3_text: 'Hygiene concerns, staffing shortages, operational costs in global stores. It\'s time for a digital solution to replace physical testers.',
+    s01_c4_title: 'Global digital experience', s01_c4_text: 'Sephora partnership, US flagship stores. But what makes global customers open the Olive Young app every day?',
+
+    s02_num: '02 — What KIREI Solves',
+    s02_title: 'Open the mirror.<br><em>See only what suits you.</em>',
+    s02_lead: 'KIREI transforms a smartphone\'s front camera into an AI beauty mirror. It connects skin analysis → personal color diagnosis → product recommendations in a single flow.',
+    s02_f1_t: 'Mirror Screen', s02_f1_d: 'Automatic skin analysis when camera opens. Real-time scoring of moisture, texture, and brightness.',
+    s02_f2_t: 'Personal Color Diagnosis', s02_f2_d: 'Determines Spring Warm / Summer Cool / Autumn Warm / Winter Cool from skin, iris, and lip hues.',
+    s02_f3_t: 'AR Virtual Makeup', s02_f3_d: 'Real-time compositing of lip, cheek, eyeshadow, and foundation on your face. Try before you buy.',
+    s02_f4_t: 'Direct Link to Olive Young', s02_f4_d: 'Recommends Olive Young products matched to personal color × skin type → buy immediately.',
+    s02_c1_t: 'Mascot "Kirari"', s02_c1_d: 'A mirror fairy character checks your skin daily and speaks to you. Emotionally supports the habit of opening the app every day.',
+    s02_c2_t: 'Score History', s02_c2_d: 'Daily accumulating data creates a "see your changes" experience. Motivates continued care.',
+    s02_c3_t: 'Weather-linked Suggestions', s02_c3_d: 'Suggests makeup suited to "today\'s skin environment" linked to humidity, UV, and temperature data.',
+
+    s03_num: '03 — User Scenario',
+    s03_title: 'In front of Olive Young.<br><em>Done in 3 minutes.</em>',
+    s03_lead: 'The user doesn\'t think "I\'ll use an app." They just opened a mirror—and shopping is already done.',
+    s03_scenario_label: 'User Scenario — Before visiting Olive Young',
+    s03_s1: 'Opens the mirror app — KIREI starts <span>Habit entry</span>',
+    s03_s2: 'Kirari: "Humidity is 38% today, a moisturizing lip would suit you♪" <span>Personalized</span>',
+    s03_s3: 'Taps screen for skin check — score is displayed <span>Check</span>',
+    s03_s4: 'AR lip color matched to personal color — composited on face in real time <span>AR experience</span>',
+    s03_s5: 'Taps "View on Olive Young" → product page or pick up at nearby store <span>Purchase conversion</span>',
+    s03_s6: 'Returns to mirror after purchase — checks new makeup in AR <span>No drop-off</span>',
+    s03_highlight: 'Mirror → skin check → AR experience → purchase completes within one session. The user converts naturally, without feeling like they "went shopping." Same experience online and at the store.',
+
+    s04_num: '04 — Value to Olive Young',
+    s04_title: 'What KIREI<br><em>Brings to Olive Young</em>',
+    s04_lead: 'This is not a simple app partnership. Personal color × skin data connects Olive Young\'s offline and online with AI.',
+    s04_th1: 'Challenge', s04_th2: 'How KIREI Solves It', s04_th3: 'Expected Impact',
+    s04_r1_a: 'Color mismatch returns', s04_r1_b: 'AR virtual try-on before purchase', s04_r1_c: 'Lower return rate',
+    s04_r2_a: 'Non-personalized recommendations', s04_r2_b: 'Filter by personal color × skin type', s04_r2_c: 'Higher conversion',
+    s04_r3_a: 'In-store tester replacement', s04_r3_b: 'AR provides hygienic, cost-effective alternative', s04_r3_c: 'Store cost reduction',
+    s04_r4_a: 'Return visits beyond purchase', s04_r4_b: 'Daily mirror habit × Kirari dialogue', s04_r4_c: 'DAU & session time ↑',
+    s04_r5_a: 'Global EC experience', s04_r5_b: 'International users can also AR try-on', s04_r5_c: 'Global conversion ↑',
+    s04_omni_online: 'Online', s04_omni_online_v: 'Olive Young App / Global EC',
+    s04_omni_sephora: 'Global Partner', s04_omni_sephora_v: 'Sephora 700 Stores',
+    s04_omni_store: 'Offline', s04_omni_store_v: 'Korea 1,390+ Stores',
+    s04_omni_us: 'US Expansion', s04_omni_us_v: 'Pasadena + LA Stores',
+    s04_omni_center: 'KIREI<br>AI Mirror',
+    s04_c1_t: 'Zero-friction conversion', s04_c1_d: 'Just opening the mirror naturally guides users to Olive Young products. Converts without intentional advertising.',
+    s04_c2_t: 'O2O Hub', s04_c2_d: 'AR try-on → pick up at nearby store or buy online. AI connects offline and online.',
+    s04_c3_t: 'Skin data as asset', s04_c3_d: 'Anonymized skin score × purchase data can be used to improve recommendation algorithms.',
+
+    s05_num: '05 — Global Rollout',
+    s05_title: 'Expanding with<br><em>Olive Young\'s global journey.</em>',
+    s05_lead: 'Olive Young is already going global. KIREI adds an AI beauty experience layer to that journey.',
+    s05_m1_phase: 'Phase 1 — Korea', s05_m1_name: 'Olive Young In-App Integration', s05_m1_desc: 'AI mirror built into the Olive Young app. Functions as digital tester for 1,390 stores. Validate core experience in a market with mature personal color culture.',
+    s05_m2_phase: 'Phase 2 — Japan', s05_m2_name: 'K-beauty Reverse Import', s05_m2_desc: 'Enter Japan with Korean performance data. K-beauty reverse import positioning. Japanese UI already implemented.',
+    s05_m3_phase: 'Phase 3 — US · Sephora', s05_m3_name: 'Pasadena Store + Sephora 700 Stores', s05_m3_desc: 'Provide KIREI AI mirror as digital tester at Olive Young US flagship and Sephora partner stores. English UI already implemented.',
+    s05_m4_phase: 'Phase 4 — SEA · Middle East', s05_m4_name: 'Global EC Expansion', s05_m4_desc: 'Roll out AI mirror to Olive Young Global app (4.53M members). Expand to markets with high K-beauty demand.',
+    s05_adv_text: 'Weather apps know today but not your face. Social media knows trends but not your skin. <strong style="color:#fff;">KIREI starts from your face.</strong>',
+
+    s06_num: '06 — Technology', s06_title: 'Already running.<br><em>Minimal integration cost.</em>',
+    s06_lead: 'KIREI\'s core technology is already validated at prototype stage. Olive Young integration can be realized with API-level additions.',
+    s06_c1_t: 'AI Skin Analysis (Implemented)', s06_c1_d: 'Real-time skin analysis via MediaPipe FaceLandmarker (468 points). In-browser inference, no server cost. Moisture, texture, brightness scoring.',
+    s06_c2_t: 'AR Makeup (Implemented)', s06_c2_d: 'Real-time compositing of lip, cheek, eyeshadow, foundation, brow, and concealer. Multiply/Softlight/Overlay blend support.',
+    s06_c3_t: 'Multilingual (Implemented)', s06_c3_d: 'Korean, Japanese, English i18n implemented. Kirari dialogue covers all 3 languages. Additional languages via text addition only.',
+    s06_c4_t: 'Olive Young Integration Design', s06_c4_d: 'Logic designed to auto-convert personal color type to Olive Young search queries. Olive Young member ID schema also in preparation.',
+
+    s07_num: '07 — Roadmap', s07_title: 'Step-by-step <em>Value Validation</em>',
+    s07_p0_phase: 'Phase 0 — Complete', s07_p0_title: 'Technical POC · Prototype', s07_p0_desc: 'WebRTC camera, skin analysis, AR makeup, multilingual UI implemented as a working prototype. Live demo on GitHub Pages.',
+    s07_p1_phase: 'Phase 1 — In Progress', s07_p1_title: 'Personal Color Detection · Behavior Log Foundation', s07_p1_desc: 'Implementing personal color auto-detection, skin score history (Supabase), Kirari personalized dialogue, behavior log design.',
+    s07_p2_phase: 'Phase 2 — Olive Young Partnership', s07_p2_title: 'Korea Co-development · In-App Integration', s07_p2_desc: 'Olive Young product DB integration, member ID linking, personal color-based recommendations, AI mirror integrated into Olive Young app.',
+    s07_p3_phase: 'Phase 3 — Global', s07_p3_title: 'US · Sephora · Japan Rollout', s07_p3_desc: 'Go global with Korean conversion rate & return rate data. Provide AI mirror experience at Olive Young overseas stores and Sephora partner locations.',
+    s07_tag_done: '✓ Complete', s07_tag_wip: 'In Progress', s07_tag_plan: 'Planned', s07_tag_plan2: 'Planned',
+
+    s08_num: '08 — The Proposal',
+    s08_title: 'Olive Young\'s Official<br><em>AI Beauty Mirror</em>',
+    s08_lead: 'Olive Young is already the global gateway for K-beauty. KIREI adds AI beauty experience to that gateway. A digital tester for 1,390 stores and 4.53M global members — let\'s build it together.',
+    s08_c1_t: 'In-App Integration', s08_c1_d: 'Integrate AI mirror into the Olive Young app as an SDK. Implemented to blend naturally into existing UI/UX.',
+    s08_c2_t: 'In-Store Digital Tester', s08_c2_d: 'Provide AR try-on via in-store tablets or customer smartphones. Hygienic, cost-effective tester alternative.',
+    s08_c3_t: 'Data Partnership', s08_c3_d: 'Anonymized skin × purchase data utilized by both parties. Direct contribution to improving Olive Young\'s recommendation accuracy.',
+    s08_demo_label: 'Live Prototype', s08_demo_desc: 'Experience the working AR makeup and skin analysis demo.',
+
+    footer_1: 'This document is prepared for partnership proposal purposes. Figures for market size etc. are estimates based on public materials and are not guaranteed.',
+    footer_2: 'This app does not perform medical diagnosis. Scores and check results are reference information for self-care.',
+  }
+};
+
+function setLang(lang) {
+  document.querySelectorAll('.lang-switcher button').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.lang-switcher button[onclick="setLang('${lang}')"]`).classList.add('active');
+
+  const t = i18n[lang];
+  if (!t) return;
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t[key]) el.innerHTML = t[key];
+  });
+
+  document.documentElement.lang = lang === 'ko' ? 'ko' : lang === 'ja' ? 'ja' : 'en';
+  document.body.style.fontFamily = lang === 'ko'
+    ? "'Noto Sans KR', 'Noto Sans JP', sans-serif"
+    : "'Noto Sans JP', 'Noto Sans KR', sans-serif";
+}
+
+window.setLang = setLang;
+
+})();
+</script>
+</body>
+</html>
