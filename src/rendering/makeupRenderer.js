@@ -281,12 +281,25 @@ export function drawFoundation(ctx, lms, w, h, colorStr, opacity) {
 
   const tracePath = () => {
     ctx.beginPath();
+    // フェイスオーバル
     ctx.moveTo(points[0][0], points[0][1]);
     for (let i = 1; i < points.length; i++) ctx.lineTo(points[i][0], points[i][1]);
     ctx.closePath();
+    // 右目くり抜き（evenoddで穴になる）
+    ctx.moveTo(lmX(lms[RIGHT_EYE_HOLE[0]], w), lmY(lms[RIGHT_EYE_HOLE[0]], h));
+    for (let i = 1; i < RIGHT_EYE_HOLE.length; i++) {
+      ctx.lineTo(lmX(lms[RIGHT_EYE_HOLE[i]], w), lmY(lms[RIGHT_EYE_HOLE[i]], h));
+    }
+    ctx.closePath();
+    // 左目くり抜き
+    ctx.moveTo(lmX(lms[LEFT_EYE_HOLE[0]], w), lmY(lms[LEFT_EYE_HOLE[0]], h));
+    for (let i = 1; i < LEFT_EYE_HOLE.length; i++) {
+      ctx.lineTo(lmX(lms[LEFT_EYE_HOLE[i]], w), lmY(lms[LEFT_EYE_HOLE[i]], h));
+    }
+    ctx.closePath();
   };
 
-  // ベースカバー（clipされた領域内のみ描画される）
+  // ベースカバー（evenodd で目の穴をくり抜き）
   const base = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR);
   base.addColorStop(0, hex + '80');
   base.addColorStop(0.5, hex + '65');
@@ -295,7 +308,7 @@ export function drawFoundation(ctx, lms, w, h, colorStr, opacity) {
   ctx.globalAlpha = opa * 1.0;
   ctx.globalCompositeOperation = 'multiply';
   ctx.fillStyle = base;
-  tracePath(); ctx.fill();
+  tracePath(); ctx.fill('evenodd');
 
   // ティント
   ctx.globalCompositeOperation = 'overlay';
@@ -305,7 +318,7 @@ export function drawFoundation(ctx, lms, w, h, colorStr, opacity) {
   tint.addColorStop(0.7, hex + '30');
   tint.addColorStop(1, hex + '00');
   ctx.fillStyle = tint;
-  tracePath(); ctx.fill();
+  tracePath(); ctx.fill('evenodd');
 
   // Tゾーン + 頬ハイライト
   ctx.globalCompositeOperation = 'screen';
@@ -316,7 +329,7 @@ export function drawFoundation(ctx, lms, w, h, colorStr, opacity) {
   tZone.addColorStop(0.5, 'rgba(255,255,255,0.2)');
   tZone.addColorStop(1, 'rgba(255,255,255,0)');
   ctx.fillStyle = tZone;
-  tracePath(); ctx.fill();
+  tracePath(); ctx.fill('evenodd');
 
   ctx.globalAlpha = opa * 0.28;
   for (const cheekIdx of [234, 454]) {
@@ -326,7 +339,7 @@ export function drawFoundation(ctx, lms, w, h, colorStr, opacity) {
     cheekGrad.addColorStop(0, 'rgba(255,255,255,0.4)');
     cheekGrad.addColorStop(1, 'rgba(255,255,255,0)');
     ctx.fillStyle = cheekGrad;
-    tracePath(); ctx.fill();
+    tracePath(); ctx.fill('evenodd');
   }
 
   ctx.restore();
