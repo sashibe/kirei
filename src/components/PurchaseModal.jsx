@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useT } from '../i18n/index.jsx';
 
-const MUSINSA_BASE = 'https://global.musinsa.com/jp/main/beauty';
+const OLIVEYOUNG_BASE = 'https://global.oliveyoung.com/';
 
-function buildMusinsaUrl(productName) {
-  return `${MUSINSA_BASE}?q=${encodeURIComponent(productName)}`;
+function buildOliveyoungUrl(productName) {
+  return `${OLIVEYOUNG_BASE}product/list?searchWord=${encodeURIComponent(productName)}`;
 }
 
 // 朝・夜で同一商品（name.ja が同じ）を統合する
@@ -100,7 +100,7 @@ export default function PurchaseModal({ products, onClose }) {
             </span>
           </div>
           <a
-            href={MUSINSA_BASE}
+            href={OLIVEYOUNG_BASE}
             target="_blank" rel="noopener noreferrer"
             style={{
               display: 'block', width: '100%', padding: 14, boxSizing: 'border-box',
@@ -173,7 +173,7 @@ function ProductRow({ p, i, selected, toggle, t }) {
           ¥{p.price.toLocaleString()}
         </p>
         <a
-          href={buildMusinsaUrl(productName)}
+          href={buildOliveyoungUrl(productName)}
           target="_blank" rel="noopener noreferrer"
           style={{ fontSize: 9, color: '#a855f7', textDecoration: 'none' }}
         >

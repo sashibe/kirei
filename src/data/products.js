@@ -1,4 +1,4 @@
-// src/data/products.js
+﻿// src/data/products.js
 // 楽天APIデータ + 仕様書カラー・商品名・ローカル画像をマージ
 // 全商品名・カラー名 i18n化済み
 // 生成日: 2026-04-08T12:17:27.975Z
@@ -14,8 +14,8 @@ export const PRODUCTS = [
     },
     "price": 1870,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/lilyanna/cabinet/ririmew/2401ririmew_thum_02.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00svqgm.x7s2ccac.g00svqgm.x7s2d8a4/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Flilyanna%2Fririmew-tint%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Flilyanna%2Fi%2F10000683%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
-    "rakutenUrl": "https://hb.afl.rakuten.co.jp/hgc/g00svqgm.x7s2ccac.g00svqgm.x7s2d8a4/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Flilyanna%2Fririmew-tint%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Flilyanna%2Fi%2F10000683%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
+    "rakutenUrl": "https://global.oliveyoung.com/",
     "reviewCount": 1263,
     "reviewAvg": 4.4,
     "colors": [
@@ -79,8 +79,8 @@ export const PRODUCTS = [
     },
     "price": 1199,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/ludia/cabinet/07561868/rom-5-1.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00snkfm.x7s2c06a.g00snkfm.x7s2dc71/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fludia%2From-l-01%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fludia%2Fi%2F10000418%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
-    "rakutenUrl": "https://hb.afl.rakuten.co.jp/hgc/g00snkfm.x7s2c06a.g00snkfm.x7s2dc71/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fludia%2From-l-01%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fludia%2Fi%2F10000418%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
+    "rakutenUrl": "https://global.oliveyoung.com/",
     "reviewCount": 756,
     "reviewAvg": 4.46,
     "colors": [
@@ -144,8 +144,8 @@ export const PRODUCTS = [
     },
     "price": 5390,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/yslbeauty/cabinet/products/51216/imgrc0107333562.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00u7bym.x7s2c8af.g00u7bym.x7s2d5c5/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fyslbeauty%2Fww-51216ysl%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fyslbeauty%2Fi%2F10000365%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
-    "rakutenUrl": "https://hb.afl.rakuten.co.jp/hgc/g00u7bym.x7s2c8af.g00u7bym.x7s2d5c5/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fyslbeauty%2Fww-51216ysl%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fyslbeauty%2Fi%2F10000365%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
+    "rakutenUrl": "https://global.oliveyoung.com/",
     "reviewCount": 464,
     "reviewAvg": 4.78,
     "colors": [
@@ -209,8 +209,8 @@ export const PRODUCTS = [
     },
     "price": 2728,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/citrus-shop/cabinet/cosme02/10010701/rip6_1/rip6_ss.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00tlumm.x7s2c2a6.g00tlumm.x7s2d2b1/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fcitrus-shop%2Frip6_ss%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fcitrus-shop%2Fi%2F10001109%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
-    "rakutenUrl": "https://hb.afl.rakuten.co.jp/hgc/g00tlumm.x7s2c2a6.g00tlumm.x7s2d2b1/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fcitrus-shop%2Frip6_ss%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fcitrus-shop%2Fi%2F10001109%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
+    "rakutenUrl": "https://global.oliveyoung.com/",
     "reviewCount": 459,
     "reviewAvg": 4.63,
     "colors": [
@@ -256,8 +256,8 @@ export const PRODUCTS = [
     },
     "price": 1670,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/citrus-shop/cabinet/cosme02/10108775/10575759/00_2.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00tlumm.x7s2c2a6.g00tlumm.x7s2d2b1/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fcitrus-shop%2Frip7%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fcitrus-shop%2Fi%2F10000018%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
-    "rakutenUrl": "https://hb.afl.rakuten.co.jp/hgc/g00tlumm.x7s2c2a6.g00tlumm.x7s2d2b1/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fcitrus-shop%2Frip7%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fcitrus-shop%2Fi%2F10000018%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
+    "rakutenUrl": "https://global.oliveyoung.com/",
     "reviewCount": 370,
     "reviewAvg": 4.6,
     "colors": [
@@ -303,8 +303,8 @@ export const PRODUCTS = [
     },
     "price": 13640,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/tomfordbeauty/cabinet/alt/eye_ecq/2502_eye_ecq_t05v2.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00u4fem.x7s2c6a4.g00u4fem.x7s2d538/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Ftomfordbeauty%2Feye_ecq%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Ftomfordbeauty%2Fi%2F10000000%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
-    "rakutenUrl": "https://hb.afl.rakuten.co.jp/hgc/g00u4fem.x7s2c6a4.g00u4fem.x7s2d538/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Ftomfordbeauty%2Feye_ecq%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Ftomfordbeauty%2Fi%2F10000000%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
+    "rakutenUrl": "https://global.oliveyoung.com/",
     "reviewCount": 2546,
     "reviewAvg": 4.83,
     "colors": [
@@ -368,8 +368,8 @@ export const PRODUCTS = [
     },
     "price": 2990,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/cliojapan/cabinet/06617315/06617316/imgrc0124329594.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00tasbm.x7s2c7cb.g00tasbm.x7s2d449/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fcliojapan%2F10000211%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fcliojapan%2Fi%2F10000211%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
-    "rakutenUrl": "https://hb.afl.rakuten.co.jp/hgc/g00tasbm.x7s2c7cb.g00tasbm.x7s2d449/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fcliojapan%2F10000211%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fcliojapan%2Fi%2F10000211%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
+    "rakutenUrl": "https://global.oliveyoung.com/",
     "reviewCount": 2332,
     "reviewAvg": 4.58,
     "colors": [
@@ -433,8 +433,8 @@ export const PRODUCTS = [
     },
     "price": 2640,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/lilyanna/cabinet/ririmew/ririmew-eyepale_emb.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00svqgm.x7s2ccac.g00svqgm.x7s2d8a4/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Flilyanna%2Fririmew-eyepalette%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Flilyanna%2Fi%2F10000410%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
-    "rakutenUrl": "https://hb.afl.rakuten.co.jp/hgc/g00svqgm.x7s2ccac.g00svqgm.x7s2d8a4/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Flilyanna%2Fririmew-eyepalette%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Flilyanna%2Fi%2F10000410%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
+    "rakutenUrl": "https://global.oliveyoung.com/",
     "reviewCount": 1499,
     "reviewAvg": 4.6,
     "colors": [
@@ -498,8 +498,8 @@ export const PRODUCTS = [
     },
     "price": 1496,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/yumebank/cabinet/thum/noreyeshadow/11014758/1.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00t08vm.x7s2c228.g00t08vm.x7s2d696/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fyumebank%2Fairfitcreameyeshadow-001%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fyumebank%2Fi%2F10000033%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
-    "rakutenUrl": "https://hb.afl.rakuten.co.jp/hgc/g00t08vm.x7s2c228.g00t08vm.x7s2d696/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fyumebank%2Fairfitcreameyeshadow-001%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fyumebank%2Fi%2F10000033%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
+    "rakutenUrl": "https://global.oliveyoung.com/",
     "reviewCount": 545,
     "reviewAvg": 4.51,
     "colors": [
@@ -563,8 +563,8 @@ export const PRODUCTS = [
     },
     "price": 10890,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/yslbeauty/cabinet/products/51079/main_51079ysl_01_v2.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00u7bym.x7s2c8af.g00u7bym.x7s2d5c5/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fyslbeauty%2Fww-51079ysl%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fyslbeauty%2Fi%2F10000307%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
-    "rakutenUrl": "https://hb.afl.rakuten.co.jp/hgc/g00u7bym.x7s2c8af.g00u7bym.x7s2d5c5/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fyslbeauty%2Fww-51079ysl%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fyslbeauty%2Fi%2F10000307%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
+    "rakutenUrl": "https://global.oliveyoung.com/",
     "reviewCount": 483,
     "reviewAvg": 4.78,
     "colors": [
@@ -628,8 +628,8 @@ export const PRODUCTS = [
     },
     "price": 4950,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/maccosmetics/cabinet/pdp/thumb_01/260404_mr/73802.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00t0fkm.x7s2c548.g00t0fkm.x7s2d349/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fmaccosmetics%2F73802%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fmaccosmetics%2Fi%2F10000924%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
-    "rakutenUrl": "https://hb.afl.rakuten.co.jp/hgc/g00t0fkm.x7s2c548.g00t0fkm.x7s2d349/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fmaccosmetics%2F73802%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fmaccosmetics%2Fi%2F10000924%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
+    "rakutenUrl": "https://global.oliveyoung.com/",
     "reviewCount": 278,
     "reviewAvg": 4.64,
     "colors": [
@@ -684,8 +684,8 @@ export const PRODUCTS = [
     },
     "price": 2490,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/dasique/cabinet/dasique_/09657397/12034937/imgrc0126710539.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00uf6wm.x7s2c906.g00uf6wm.x7s2d118/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fdasique%2F100000003%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fdasique%2Fi%2F10000006%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
-    "rakutenUrl": "https://hb.afl.rakuten.co.jp/hgc/g00uf6wm.x7s2c906.g00uf6wm.x7s2d118/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fdasique%2F100000003%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fdasique%2Fi%2F10000006%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
+    "rakutenUrl": "https://global.oliveyoung.com/",
     "reviewCount": 67,
     "reviewAvg": 4.55,
     "colors": [
@@ -740,8 +740,8 @@ export const PRODUCTS = [
     },
     "price": 1500,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/dralthea/cabinet/11897039/11897042/imgrc0106111341.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00tnwvm.x7s2c36c.g00tnwvm.x7s2d8c4/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fdralthea%2Ffluffy_blush%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fdralthea%2Fi%2F10000651%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
-    "rakutenUrl": "https://hb.afl.rakuten.co.jp/hgc/g00tnwvm.x7s2c36c.g00tnwvm.x7s2d8c4/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fdralthea%2Ffluffy_blush%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fdralthea%2Fi%2F10000651%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
+    "rakutenUrl": "https://global.oliveyoung.com/",
     "reviewCount": 31,
     "reviewAvg": 4.19,
     "colors": [
@@ -787,8 +787,8 @@ export const PRODUCTS = [
     },
     "price": 4950,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/maccosmetics/cabinet/pdp/thumb_01/260404_mr/24963.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00t0fkm.x7s2c548.g00t0fkm.x7s2d349/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fmaccosmetics%2F24963%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fmaccosmetics%2Fi%2F10000291%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
-    "rakutenUrl": "https://hb.afl.rakuten.co.jp/hgc/g00t0fkm.x7s2c548.g00t0fkm.x7s2d349/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fmaccosmetics%2F24963%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fmaccosmetics%2Fi%2F10000291%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
+    "rakutenUrl": "https://global.oliveyoung.com/",
     "reviewCount": 24,
     "reviewAvg": 4.79,
     "colors": [
@@ -843,8 +843,8 @@ export const PRODUCTS = [
     },
     "price": 1080,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/bijin-cosme/cabinet/pp-img/imgrc0128433107.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00r12qm.x7s2ce3c.g00r12qm.x7s2daf4/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbijin-cosme%2Fperipera-sunshine-cheek%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fbijin-cosme%2Fi%2F10007124%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
-    "rakutenUrl": "https://hb.afl.rakuten.co.jp/hgc/g00r12qm.x7s2ce3c.g00r12qm.x7s2daf4/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbijin-cosme%2Fperipera-sunshine-cheek%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fbijin-cosme%2Fi%2F10007124%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
+    "rakutenUrl": "https://global.oliveyoung.com/",
     "reviewCount": 18,
     "reviewAvg": 4.67,
     "colors": [
@@ -890,8 +890,8 @@ export const PRODUCTS = [
     },
     "price": 2560,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/lesthemo/cabinet/shg/bbcream_01_02_3500px.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00qdaem.x7s2c380.g00qdaem.x7s2d652/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Flesthemo%2Fbb%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Flesthemo%2Fi%2F10000033%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
-    "rakutenUrl": "https://hb.afl.rakuten.co.jp/hgc/g00qdaem.x7s2c380.g00qdaem.x7s2d652/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Flesthemo%2Fbb%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Flesthemo%2Fi%2F10000033%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
+    "rakutenUrl": "https://global.oliveyoung.com/",
     "reviewCount": 12940,
     "reviewAvg": 3.96,
     "colors": [
@@ -946,8 +946,8 @@ export const PRODUCTS = [
     },
     "price": 2300,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/tvert/cabinet/goods/cart/essenceliquid_topr.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00q4g8m.x7s2cb18.g00q4g8m.x7s2dc19/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Ftvert%2F926835%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Ftvert%2Fi%2F10000045%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
-    "rakutenUrl": "https://hb.afl.rakuten.co.jp/hgc/g00q4g8m.x7s2cb18.g00q4g8m.x7s2dc19/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Ftvert%2F926835%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Ftvert%2Fi%2F10000045%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
+    "rakutenUrl": "https://global.oliveyoung.com/",
     "reviewCount": 7729,
     "reviewAvg": 4.31,
     "colors": [
@@ -1002,8 +1002,8 @@ export const PRODUCTS = [
     },
     "price": 1380,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/curemart/cabinet/d/10385xx.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00r6k6m.x7s2c8e8.g00r6k6m.x7s2d125/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fcuremart%2F10385xx%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fcuremart%2Fi%2F10002525%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
-    "rakutenUrl": "https://hb.afl.rakuten.co.jp/hgc/g00r6k6m.x7s2c8e8.g00r6k6m.x7s2d125/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fcuremart%2F10385xx%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fcuremart%2Fi%2F10002525%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
+    "rakutenUrl": "https://global.oliveyoung.com/",
     "reviewCount": 653,
     "reviewAvg": 4.43,
     "colors": [
@@ -1058,8 +1058,8 @@ export const PRODUCTS = [
     },
     "price": 3850,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/vertrich-cosmetics/cabinet/09084502/imgrc0077922380.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00u0fim.x7s2c3f5.g00u0fim.x7s2d204/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fvertrich-cosmetics%2F01510153%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fvertrich-cosmetics%2Fi%2F10000024%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
-    "rakutenUrl": "https://hb.afl.rakuten.co.jp/hgc/g00u0fim.x7s2c3f5.g00u0fim.x7s2d204/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fvertrich-cosmetics%2F01510153%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fvertrich-cosmetics%2Fi%2F10000024%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
+    "rakutenUrl": "https://global.oliveyoung.com/",
     "reviewCount": 615,
     "reviewAvg": 4.53,
     "colors": [
@@ -1114,8 +1114,8 @@ export const PRODUCTS = [
     },
     "price": 1925,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/vertrich-cosmetics/cabinet/08264726/imgrc0073990495.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00u0fim.x7s2c3f5.g00u0fim.x7s2d204/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fvertrich-cosmetics%2F01510153new%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fvertrich-cosmetics%2Fi%2F10000095%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
-    "rakutenUrl": "https://hb.afl.rakuten.co.jp/hgc/g00u0fim.x7s2c3f5.g00u0fim.x7s2d204/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fvertrich-cosmetics%2F01510153new%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fvertrich-cosmetics%2Fi%2F10000095%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
+    "rakutenUrl": "https://global.oliveyoung.com/",
     "reviewCount": 527,
     "reviewAvg": 4.33,
     "colors": [
@@ -1170,8 +1170,8 @@ export const PRODUCTS = [
     },
     "price": 2598,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/queeneyes/cabinet/10603169/11380192/evernatural-i.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00rcj9m.x7s2c794.g00rcj9m.x7s2d110/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fqueeneyes%2Fevercolor_natural%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fqueeneyes%2Fi%2F10000234%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
-    "rakutenUrl": "https://hb.afl.rakuten.co.jp/hgc/g00rcj9m.x7s2c794.g00rcj9m.x7s2d110/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fqueeneyes%2Fevercolor_natural%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fqueeneyes%2Fi%2F10000234%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
+    "rakutenUrl": "https://global.oliveyoung.com/",
     "reviewCount": 39960,
     "reviewAvg": 4.36,
     "colors": [
@@ -1235,8 +1235,8 @@ export const PRODUCTS = [
     },
     "price": 3432,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/candymagic/cabinet/revia/t_rv1d_26_3s_co_01r.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00qssmm.x7s2c369.g00qssmm.x7s2dddd/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fcandymagic%2Frv-100%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fcandymagic%2Fi%2F10000575%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
-    "rakutenUrl": "https://hb.afl.rakuten.co.jp/hgc/g00qssmm.x7s2c369.g00qssmm.x7s2dddd/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fcandymagic%2Frv-100%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fcandymagic%2Fi%2F10000575%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
+    "rakutenUrl": "https://global.oliveyoung.com/",
     "reviewCount": 27670,
     "reviewAvg": 4.71,
     "colors": [
@@ -1300,8 +1300,8 @@ export const PRODUCTS = [
     },
     "price": 990,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/pinchi/cabinet/shohin01/color/eyecof/25_eyecofl_main.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00qnacm.x7s2cf0b.g00qnacm.x7s2d391/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fpinchi%2Fsdc1dceyecof01pr00m0%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fpinchi%2Fi%2F10000653%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
-    "rakutenUrl": "https://hb.afl.rakuten.co.jp/hgc/g00qnacm.x7s2cf0b.g00qnacm.x7s2d391/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fpinchi%2Fsdc1dceyecof01pr00m0%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fpinchi%2Fi%2F10000653%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
+    "rakutenUrl": "https://global.oliveyoung.com/",
     "reviewCount": 25906,
     "reviewAvg": 4.44,
     "colors": [
@@ -1365,8 +1365,8 @@ export const PRODUCTS = [
     },
     "price": 5904,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/loook/cabinet/2510_ring_main30.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00qb3jm.x7s2c2b5.g00qb3jm.x7s2d514/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Floook%2Faic1dcneo1r002l000%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Floook%2Fi%2F10000638%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
-    "rakutenUrl": "https://hb.afl.rakuten.co.jp/hgc/g00qb3jm.x7s2c2b5.g00qb3jm.x7s2d514/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Floook%2Faic1dcneo1r002l000%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Floook%2Fi%2F10000638%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
+    "rakutenUrl": "https://global.oliveyoung.com/",
     "reviewCount": 17786,
     "reviewAvg": 4.58,
     "colors": [
@@ -1430,8 +1430,8 @@ export const PRODUCTS = [
     },
     "price": 1760,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/queeneyes/cabinet/10603169/11058011/1080r3_loveil.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00rcj9m.x7s2c794.g00rcj9m.x7s2d110/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fqueeneyes%2Floveil%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fqueeneyes%2Fi%2F10000228%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
-    "rakutenUrl": "https://hb.afl.rakuten.co.jp/hgc/g00rcj9m.x7s2c794.g00rcj9m.x7s2d110/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fqueeneyes%2Floveil%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fqueeneyes%2Fi%2F10000228%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
+    "rakutenUrl": "https://global.oliveyoung.com/",
     "reviewCount": 12623,
     "reviewAvg": 4.52,
     "colors": [
@@ -1495,7 +1495,7 @@ export const PRODUCTS = [
     },
     "price": 1210,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/asiabnc/cabinet/09808241/imgrc0096399731.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00ti5vm.x7s2c65c.g00ti5vm.x7s2d5ee/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fasiabnc%2From-brow%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
     "reviewCount": 2614,
     "reviewAvg": 4.7,
     "colors": [
@@ -1559,7 +1559,7 @@ export const PRODUCTS = [
     },
     "price": 1000,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/citrus-shop/cabinet/cosme02/10228972/cos-cathydoll-4d/cos-4d.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00tlumm.x7s2c2a6.g00tlumm.x7s2d2b1/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fcitrus-shop%2Fcos-cathydoll-4d%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
     "reviewCount": 1406,
     "reviewAvg": 3.97,
     "colors": [
@@ -1605,7 +1605,7 @@ export const PRODUCTS = [
     },
     "price": 880,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/attenir/cabinet/thum/thum/1329_2502.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00tna6m.x7s2c71d.g00tna6m.x7s2d2de/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fattenir%2F1329%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
     "reviewCount": 1126,
     "reviewAvg": 4.74,
     "colors": [
@@ -1660,7 +1660,7 @@ export const PRODUCTS = [
     },
     "price": 2310,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/candy/cabinet/event_thum/1/4557-thum1nnn.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00pqgum.x7s2cde5.g00pqgum.x7s2d689/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fcandy%2F4557%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
     "reviewCount": 859,
     "reviewAvg": 4.29,
     "colors": [
@@ -1706,7 +1706,7 @@ export const PRODUCTS = [
     },
     "price": 1309,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/maybelline/cabinet/campagin/260404/prd/404123_v3.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00tlb5m.x7s2c68a.g00tlb5m.x7s2db65/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fmaybelline%2F404123%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
     "reviewCount": 761,
     "reviewAvg": 4.45,
     "colors": [
@@ -1761,7 +1761,7 @@ export const PRODUCTS = [
     },
     "price": 1540,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/koji-honpo/cabinet/10947038/10947039/2602saloneyelash_02.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00u1h9m.x7s2c377.g00u1h9m.x7s2d292/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fkoji-honpo%2F4972915045475%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
     "reviewCount": 258,
     "reviewAvg": 4.73,
     "colors": [
@@ -1797,7 +1797,7 @@ export const PRODUCTS = [
     },
     "price": 770,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/koji-honpo/cabinet/10947038/11252559/2602easylash_01.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00u1h9m.x7s2c377.g00u1h9m.x7s2d292/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fkoji-honpo%2F4972915045161%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
     "reviewCount": 216,
     "reviewAvg": 4.74,
     "colors": [
@@ -1833,7 +1833,7 @@ export const PRODUCTS = [
     },
     "price": 1760,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/missin/cabinet/08993373/cc1.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00u72jm.x7s2c499.g00u72jm.x7s2d409/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fmissin%2Flashs1%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
     "reviewCount": 142,
     "reviewAvg": 4.51,
     "colors": [
@@ -1869,7 +1869,7 @@ export const PRODUCTS = [
     },
     "price": 999,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/eyemonster/cabinet/05504399/imgrc0090089694.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00s5ndm.x7s2c9c7.g00s5ndm.x7s2d976/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Feyemonster%2Fdwel%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
     "reviewCount": 137,
     "reviewAvg": 4.78,
     "colors": [
@@ -1905,7 +1905,7 @@ export const PRODUCTS = [
     },
     "price": 14970,
     "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/cscjp/cabinet/revivelash/6000rv10003.jpg?_ex=200x200",
-    "affiliateUrl": "https://hb.afl.rakuten.co.jp/hgc/g00r0a5m.x7s2c959.g00r0a5m.x7s2dca8/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fcscjp%2F6000rv10003%2F&rafcid=wsc_i_is_fea85589-cff0-4ce0-afbd-f249bb6adf15",
+    "affiliateUrl": "https://global.oliveyoung.com/",
     "reviewCount": 341,
     "reviewAvg": 4.08,
     "colors": [
