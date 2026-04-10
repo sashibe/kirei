@@ -127,7 +127,10 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
   const [selectedEarring, setSelectedEarring] = useState('none');
   const [selectedContactLens, setSelectedContactLens] = useState('none');
   const [lashesColor, setLashesColor] = useState(null);
-  const [intensity, setIntensity] = useState(70);
+  const [intensityMap, setIntensityMap] = useState({
+    base: 70, lip: 70, eyeshadow: 70, cheek: 70,
+    eyebrow: 70, contacts: 70, lashes: 70, glasses: 70, earring: 70,
+  });
   const [beforeAfter, setBeforeAfter] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(_DEFAULT_BASE ?? null);
   const [selectedColor, setSelectedColor] = useState(_DEFAULT_BASE_COLOR ?? null);
@@ -405,7 +408,7 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
       {cameraLive && !beforeAfter && (
         <MakeupCanvas ref={canvasRef} getVideo={getVideo}
           baseLook={browColor ? { ...currentBase, brow: browColor } : currentBase}
-          colorLook={activeColorLook} intensity={intensity}
+          colorLook={activeColorLook} intensityMap={intensityMap}
           showMesh={showMesh} glassesItem={glassesItem} earringItem={earringItem}
           contactLensItem={contactLensItem} lashesItem={lashesItem} coverFit />
       )}
@@ -516,7 +519,8 @@ export default function ArTryOnScreen({ personalColor, cart, onCheckout, onCaptu
               <ProductLayer
                 category={activeCategory}
                 selectedProduct={selectedProduct} selectedColor={selectedColor}
-                intensity={intensity} onIntensityChange={setIntensity}
+                intensity={intensityMap[activeCategory] ?? 70}
+                onIntensityChange={(v) => setIntensityMap(prev => ({ ...prev, [activeCategory]: v }))}
                 personalColor={personalColor} cart={cart}
                 onSelectProduct={(p) => {
                   if (MAKEUP_CATEGORIES.includes(activeCategory) && selectedProduct && selectedProduct.id !== p.id) {
