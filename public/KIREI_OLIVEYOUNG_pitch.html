@@ -1039,24 +1039,31 @@
 <section>
   <p class="section-number" data-i18n="s06_num">06 — 기술</p>
   <div class="divider"></div>
-  <h2 data-i18n="s06_title">이미 동작한다.<br><em>통합 비용 최소.</em></h2>
-  <p class="lead" data-i18n="s06_lead">KIREI의 핵심 기술은 프로토타입 단계에서 이미 검증 완료. 올리브영 통합은 API 수준의 추가로 실현 가능하다.</p>
+  <h2 data-i18n="s06_title">최적의 엔진 위에<br><em>독자적인 체험을 쌓는다.</em></h2>
+  <p class="lead" data-i18n="s06_lead">게임의 가치를 결정하는 것은 3D 엔진이 아니라 게임 디자인이다. 뷰티 AR도 마찬가지 — 엔진은 최적의 것을 선택하고, 그 위에 올리브영만의 체험을 설계한다.</p>
+
+  <div class="highlight" style="margin-bottom:32px;">
+    <p data-i18n="s06_approach">KIREI는 자체 AR 엔진으로 프로토타입을 검증 완료했으며, 상용화 단계에서는 Perfect Corp·ModiFace 등 실적 있는 엔진의 활용도 유연하게 검토한다. 중요한 것은 엔진이 아니라, 그 위에 쌓는 체험이다.</p>
+  </div>
+
+  <div class="card-grid col-2" style="margin-bottom:24px;">
+    <div class="card">
+      <div class="card-icon green">⚙️</div>
+      <h3 data-i18n="s06_c1_t">AR 엔진 레이어</h3>
+      <p class="body-text" data-i18n="s06_c1_d">자체 엔진(MediaPipe 468포인트)으로 POC 검증 완료. 상용화 시 Perfect Corp 등 업계 최고 수준의 엔진 채용도 가능. 독자 개발과 기존 엔진 활용, 두 가지 경로를 보유.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon purple">🎨</div>
+      <h3 data-i18n="s06_c2_t">체험 설계 레이어 (KIREI 독자)</h3>
+      <p class="body-text" data-i18n="s06_c2_d">거울 대체 습관 설계, 키라리 AI 대화, 퍼스널 컬러 16타입 진단 → 전 카테고리 횡단 추천, 날씨·피부 이력 연동 — 범용 AR 엔진에는 없는 독자 가치.</p>
+    </div>
+  </div>
 
   <div class="card-grid col-2">
     <div class="card">
-      <div class="card-icon green">🧠</div>
-      <h3 data-i18n="s06_c1_t">AI 피부 분석 (구현 완료)</h3>
-      <p class="body-text" data-i18n="s06_c1_d">MediaPipe FaceLandmarker(468포인트)로 실시간 피부 분석. 브라우저 내 추론, 서버 비용 없음. 수분·질감·밝기 스코어링.</p>
-    </div>
-    <div class="card">
-      <div class="card-icon purple">💄</div>
-      <h3 data-i18n="s06_c2_t">AR 메이크업 (구현 완료)</h3>
-      <p class="body-text" data-i18n="s06_c2_d">립·치크·아이섀도·파운데이션·브로우·컨실러 실시간 합성. Multiply/Softlight/Overlay 블렌드 지원.</p>
-    </div>
-    <div class="card">
       <div class="card-icon pink">🌐</div>
-      <h3 data-i18n="s06_c3_t">다국어 (구현 완료)</h3>
-      <p class="body-text" data-i18n="s06_c3_d">한국어·일본어·영어 i18n 구현 완료. 키라리 대사 3개 언어 대응. 추가 언어는 텍스트 추가만으로 확장.</p>
+      <h3 data-i18n="s06_c3_t">멀티 플랫폼 전개</h3>
+      <p class="body-text" data-i18n="s06_c3_d">Web·네이티브 앱·매장 키오스크 — 동일 체험을 어디서든 전개. 초기는 Web으로 즉시 런칭, 이후 네이티브 앱으로 고도화. 3개 국어(한·일·영) 대응 완료.</p>
     </div>
     <div class="card">
       <div class="card-icon gold">🔗</div>
@@ -1247,11 +1254,12 @@ const i18n = {
     s05_m4_phase: 'Phase 4 — 동남아 · 중동', s05_m4_name: '글로벌 EC 확장', s05_m4_desc: '올리브영 글로벌 앱(453만 회원)에 AI 거울 기능을 순차 적용. K-뷰티 수요가 높은 시장으로 확대.',
     s05_adv_text: '날씨 앱은 오늘을 알지만 내 얼굴을 모른다. SNS는 트렌드를 알지만 내 피부를 모른다. <strong style="color:#fff;">KIREI는 내 얼굴에서 시작한다.</strong>',
 
-    s06_num: '06 — 기술', s06_title: '이미 동작한다.<br><em>통합 비용 최소.</em>',
-    s06_lead: 'KIREI의 핵심 기술은 프로토타입 단계에서 이미 검증 완료. 올리브영 통합은 API 수준의 추가로 실현 가능하다.',
-    s06_c1_t: 'AI 피부 분석 (구현 완료)', s06_c1_d: 'MediaPipe FaceLandmarker(468포인트)로 실시간 피부 분석. 브라우저 내 추론, 서버 비용 없음. 수분·질감·밝기 스코어링.',
-    s06_c2_t: 'AR 메이크업 (구현 완료)', s06_c2_d: '립·치크·아이섀도·파운데이션·브로우·컨실러 실시간 합성. Multiply/Softlight/Overlay 블렌드 지원.',
-    s06_c3_t: '다국어 (구현 완료)', s06_c3_d: '한국어·일본어·영어 i18n 구현 완료. 키라리 대사 3개 언어 대응. 추가 언어는 텍스트 추가만으로 확장.',
+    s06_num: '06 — 기술', s06_title: '최적의 엔진 위에<br><em>독자적인 체험을 쌓는다.</em>',
+    s06_lead: '게임의 가치를 결정하는 것은 3D 엔진이 아니라 게임 디자인이다. 뷰티 AR도 마찬가지 — 엔진은 최적의 것을 선택하고, 그 위에 올리브영만의 체험을 설계한다.',
+    s06_approach: 'KIREI는 자체 AR 엔진으로 프로토타입을 검증 완료했으며, 상용화 단계에서는 Perfect Corp·ModiFace 등 실적 있는 엔진의 활용도 유연하게 검토한다. 중요한 것은 엔진이 아니라, 그 위에 쌓는 체험이다.',
+    s06_c1_t: 'AR 엔진 레이어', s06_c1_d: '자체 엔진(MediaPipe 468포인트)으로 POC 검증 완료. 상용화 시 Perfect Corp 등 업계 최고 수준의 엔진 채용도 가능. 독자 개발과 기존 엔진 활용, 두 가지 경로를 보유.',
+    s06_c2_t: '체험 설계 레이어 (KIREI 독자)', s06_c2_d: '거울 대체 습관 설계, 키라리 AI 대화, 퍼스널 컬러 16타입 진단 → 전 카테고리 횡단 추천, 날씨·피부 이력 연동 — 범용 AR 엔진에는 없는 독자 가치.',
+    s06_c3_t: '멀티 플랫폼 전개', s06_c3_d: 'Web·네이티브 앱·매장 키오스크 — 동일 체험을 어디서든 전개. 초기는 Web으로 즉시 런칭, 이후 네이티브 앱으로 고도화. 3개 국어(한·일·영) 대응 완료.',
     s06_c4_t: '올리브영 통합 설계', s06_c4_d: '퍼스널 컬러 타입 → 올리브영 검색 쿼리 자동 변환 로직 설계 완료. 올리브영 회원 ID 연동 스키마도 준비 중.',
 
     s07_num: '07 — 로드맵', s07_title: '단계별 <em>가치 검증</em>',
@@ -1378,11 +1386,12 @@ const i18n = {
     s05_m4_phase: 'Phase 4 — 東南アジア・中東', s05_m4_name: 'グローバルEC拡張', s05_m4_desc: 'OLIVE YOUNGグローバルアプリ（453万会員）にAIミラー機能を順次適用。K-ビューティ需要の高い市場へ拡大。',
     s05_adv_text: '天気アプリは今日を知っているが顔を知らない。SNSはトレンドを知っているが肌を知らない。<strong style="color:#fff;">KIREIは顔から始まる。</strong>',
 
-    s06_num: '06 — 技術', s06_title: 'すでに動作している。<br><em>統合コスト最小。</em>',
-    s06_lead: 'KIREIのコア技術はプロトタイプ段階で検証済み。OLIVE YOUNG統合はAPI水準の追加で実現可能。',
-    s06_c1_t: 'AI肌分析（実装済み）', s06_c1_d: 'MediaPipe FaceLandmarker（468ポイント）でリアルタイム肌分析。ブラウザ内推論、サーバーコストなし。水分・質感・明るさスコアリング。',
-    s06_c2_t: 'ARメイクアップ（実装済み）', s06_c2_d: 'リップ・チーク・アイシャドウ・ファンデ・ブロウ・コンシーラーをリアルタイム合成。Multiply/Softlight/Overlayブレンド対応。',
-    s06_c3_t: '多言語（実装済み）', s06_c3_d: '韓国語・日本語・英語のi18n実装済み。キラリ台詞も3言語対応。追加言語はテキスト追加のみで拡張。',
+    s06_num: '06 — 技術', s06_title: '最適なエンジンの上に<br><em>独自の体験を積む。</em>',
+    s06_lead: 'ゲームの価値を決めるのは3Dエンジンではなくゲームデザインだ。ビューティARも同じ — エンジンは最適なものを選び、その上にOLIVE YOUNGだけの体験を設計する。',
+    s06_approach: 'KIREIは自社ARエンジンでプロトタイプを検証済み。商用化段階ではPerfect Corp・ModiFaceなど実績あるエンジンの活用も柔軟に検討する。重要なのはエンジンではなく、その上に積む体験だ。',
+    s06_c1_t: 'ARエンジンレイヤー', s06_c1_d: '自社エンジン（MediaPipe 468ポイント）でPOC検証完了。商用化時はPerfect Corp等の業界最高水準エンジン採用も可能。独自開発と既存エンジン活用、2つの経路を保有。',
+    s06_c2_t: '体験設計レイヤー（KIREI独自）', s06_c2_d: 'ミラー代替の習慣設計、キラリAI対話、パーソナルカラー16タイプ診断→全カテゴリ横断推薦、天気・肌履歴連動 — 汎用ARエンジンにはない独自価値。',
+    s06_c3_t: 'マルチプラットフォーム展開', s06_c3_d: 'Web・ネイティブアプリ・店舗キオスク — 同一体験をどこでも展開。初期はWebで即座にローンチ、その後ネイティブアプリへ高度化。3言語（韓・日・英）対応済み。',
     s06_c4_t: 'OLIVE YOUNG統合設計', s06_c4_d: 'パーソナルカラータイプ → OLIVE YOUNG検索クエリ自動変換ロジック設計済み。OLIVE YOUNG会員IDスキーマも準備中。',
 
     s07_num: '07 — ロードマップ', s07_title: 'ステップごとの<em>価値検証</em>',
@@ -1509,11 +1518,12 @@ const i18n = {
     s05_m4_phase: 'Phase 4 — SEA · Middle East', s05_m4_name: 'Global EC Expansion', s05_m4_desc: 'Roll out AI mirror to Olive Young Global app (4.53M members). Expand to markets with high K-beauty demand.',
     s05_adv_text: 'Weather apps know today but not your face. Social media knows trends but not your skin. <strong style="color:#fff;">KIREI starts from your face.</strong>',
 
-    s06_num: '06 — Technology', s06_title: 'Already running.<br><em>Minimal integration cost.</em>',
-    s06_lead: 'KIREI\'s core technology is already validated at prototype stage. Olive Young integration can be realized with API-level additions.',
-    s06_c1_t: 'AI Skin Analysis (Implemented)', s06_c1_d: 'Real-time skin analysis via MediaPipe FaceLandmarker (468 points). In-browser inference, no server cost. Moisture, texture, brightness scoring.',
-    s06_c2_t: 'AR Makeup (Implemented)', s06_c2_d: 'Real-time compositing of lip, cheek, eyeshadow, foundation, brow, and concealer. Multiply/Softlight/Overlay blend support.',
-    s06_c3_t: 'Multilingual (Implemented)', s06_c3_d: 'Korean, Japanese, English i18n implemented. Kirari dialogue covers all 3 languages. Additional languages via text addition only.',
+    s06_num: '06 — Technology', s06_title: 'Best engine underneath.<br><em>Unique experience on top.</em>',
+    s06_lead: 'What defines a game\'s value is not the 3D engine but the game design. Beauty AR is the same — choose the best engine, then design an experience unique to Olive Young.',
+    s06_approach: 'KIREI has validated its prototype with a proprietary AR engine. For commercialization, proven engines like Perfect Corp or ModiFace can be flexibly adopted. What matters is not the engine, but the experience built on top.',
+    s06_c1_t: 'AR Engine Layer', s06_c1_d: 'POC validated with proprietary engine (MediaPipe 468 points). For production, industry-leading engines like Perfect Corp can also be adopted. Two paths available: proprietary development or proven engine integration.',
+    s06_c2_t: 'Experience Design Layer (KIREI Original)', s06_c2_d: 'Mirror-replacement habit design, Kirari AI dialogue, 16-type personal color diagnosis → cross-category recommendations, weather & skin history integration — unique value not found in generic AR engines.',
+    s06_c3_t: 'Multi-Platform Deployment', s06_c3_d: 'Web, native app, in-store kiosk — same experience deployed anywhere. Launch immediately on Web, then evolve to native app. 3-language support (KO/JA/EN) already implemented.',
     s06_c4_t: 'Olive Young Integration Design', s06_c4_d: 'Logic designed to auto-convert personal color type to Olive Young search queries. Olive Young member ID schema also in preparation.',
 
     s07_num: '07 — Roadmap', s07_title: 'Step-by-step <em>Value Validation</em>',
