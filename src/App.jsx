@@ -269,7 +269,7 @@ export default function App() {
             <span style={{ fontSize: 13, fontWeight: 700, color: '#64748b' }}>KIREI Demo Guide</span>
           </div>
           <iframe
-            src={import.meta.env.BASE_URL + 'guide/index.html'}
+            src="https://sashibe.github.io/kirei/KIREI_OLIVEYOUNG_pitch.html"
             style={{ flex: 1, width: '100%', border: 'none' }}
             title="KIREI Demo Guide"
           />
