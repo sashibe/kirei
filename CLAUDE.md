@@ -327,14 +327,27 @@ C:\dev\kirei\
 
 ---
 
-## デザインシステム
+## デザインシステム＆UI契約
+
+> このセクションはjp-ui-contractsの設計思想に基づく**日本語UIの設計契約**。
+> AIがUIを生成・修正するときはここを先に読み、契約に沿った実装をすること。
+
+### 契約メタデータ
+
+- **Locale**: `ja-JP`
+- **Profile**: `mobile-consumer`（saasベース、カメラオーバーレイUI特化）
+- **Primary writing mode**: `horizontal-tb`
+- **Target surface**: `mobile web`（将来: Capacitorネイティブ）
+- **Review status**: `production`
 
 ### カラーパレット
+
 ```js
 const colors = {
-  primary:     '#a855f7',  // パープル
-  accent:      '#ec4899',  // ピンク
+  primary:     '#a855f7',  // パープル — CTAボタン（Secondary）
+  accent:      '#ec4899',  // ピンク — アクセント
   gradient:    'linear-gradient(135deg, #a855f7, #ec4899)',
+  skincare:    '#22c55e',  // グリーン — スキンケア系Primary CTA
   skinTone:    '#e879f9',
   pores:       '#a78bfa',
   dullness:    '#2dd4bf',
@@ -343,23 +356,162 @@ const colors = {
   summer:      '#94a3b8',
   autumn:      '#d97706',
   winter:      '#6366f1',
-  bg: 'linear-gradient(180deg, #faf5ff 0%, #fdf2f8 50%, #fff 100%)',
+  bg:          'linear-gradient(180deg, #faf5ff 0%, #fdf2f8 50%, #fff 100%)',
+  textPrimary: '#1a1a2e',
+  textSecondary: '#6b7280',
+  textMuted:   '#9ca3af',
+  overlay:     'rgba(0,0,0,0.45)',  // カメラオーバーレイ背景
 };
 ```
 
+#### カラー使用ルール
+- **Primary CTA（肌ケア）**: `skincare`（グリーン）。最も目立つアクションに使う
+- **Secondary CTA（メイク）**: `primary`（パープル）
+- **グラデーション**: ブランド感を出す場面のみ。本文背景に使わない
+- 色だけで意味を伝えない（スコアバッジはアイコン＋色で表現する）
+- カメラ画面オーバーレイのテキストは `overlay` 背景 + 白文字で視認性を確保する
+
 ### フォント
-- **Noto Sans JP** (400/500/600/700/800)
+
+```css
+font-family: 'Noto Sans JP', sans-serif;
+font-weight: 400 | 500 | 600 | 700 | 800;
+```
+
+- Noto Sans JPのみ使用。英数字もNoto Sans JPで統一（和欧同一フォントで混植ズレを防ぐ）
+- モノスペースが必要な場面（スコア数値の桁揃え等）は `font-variant-numeric: tabular-nums` を使う
+
+### タイプスケール
+
+| 役割 | サイズ | ウェイト | Line Height | Letter Spacing | 用途 |
+|------|--------|----------|-------------|----------------|------|
+| 大見出し | 24px | 700 | 1.35 | 0 | 画面タイトル |
+| 中見出し | 20px | 700 | 1.4 | 0 | セクション・カードタイトル |
+| 小見出し | 17px | 600 | 1.45 | 0 | グループラベル |
+| 本文 | 15px | 400 | 1.65 | normal | 説明文・キラリセリフ |
+| キャプション | 13px | 400 | 1.55 | normal | 補足・免責表示 |
+| ラベル | 13px | 500 | 1.4 | 0 | バッジ・タブ・ボタン内テキスト |
+| スコア数値 | 28px | 800 | 1.2 | 0 | スコア表示（tabular-nums） |
+| メトリクス | 20px | 700 | 1.25 | 0 | パーソナルカラーバッジ等 |
+
+#### タイポグラフィルール
+- 本文のletter-spacingは `normal` のまま。理由なく字間を広げない
+- 見出しと本文でline-heightを必ず分ける（同じ値にしない）
+- カメラオーバーレイ上のテキストは最低 `15px / weight 600` 以上を維持する
+- スコア数値には `font-variant-numeric: tabular-nums` を適用し桁が跳ばないようにする
+
+### 改行・オーバーフロー契約
+
+```css
+/* 全体基本設定 */
+html:lang(ja) {
+  line-break: strict;
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+
+/* 見出し（mixed-script対応） */
+h1:lang(ja), h2:lang(ja), h3:lang(ja) {
+  word-break: auto-phrase;
+  overflow-wrap: anywhere;
+}
+
+/* 本文・キラリセリフ */
+p:lang(ja), .bubble-text {
+  line-break: strict;
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+```
+
+- `word-break: break-all` を全体に使わない。URLや英単語のはみ出し対策は局所的に当てる
+- 商品名・ブランド名（`KIREI SELECT` 等）が折り返すときは単語単位で折れるよう `overflow-wrap: anywhere` で対応する
+- カメラオーバーレイ上のラベルは1行に収まるよう文字数を設計段階で確認する
+
+### Mixed-script（和欧混植）ルール
+
+KIREIはUI全体に英語混じりの表現が多い。以下を必ず守る。
+
+**頻出の混植パターン:**
+- `KIREI SELECT` — ブランド名
+- `ARトライオン` — 機能名
+- `Spring / Summer / Autumn / Winter` — パーソナルカラー
+- `Base makeup / Color makeup` — カテゴリラベル
+- スコア数値 + 日本語単位（`85点` 等）
+
+**ルール:**
+- 英語ブランド名・機能名はNoto Sans JPで統一レンダリングするため別フォント指定しない
+- パーソナルカラーの英語ラベルは `font-weight: 600` + 大文字表記で日本語との視覚的分離を確保する
+- 英語ラベルが混ざるバッジ・タブは実機でレンダリング確認してから採用する
+- 英語 + 日本語が混在する見出し（例: `ARトライオンで試す`）はモバイル幅での折り返しを必ず確認する
+
+### コンポーネント別契約
+
+#### ボタン
+- Primary（グリーン）: 肌ケア系CTA。最も目立つ位置に1つ
+- Secondary（パープル）: メイク系CTA
+- ボタン内の日本語ラベルは `13〜15px / weight 600` 以上。スモールボタンでも潰さない
+- タップターゲット: 最低 `44px` 高。密度より操作性を優先する
+
+#### バッジ・スコア表示
+- パーソナルカラーバッジ: 1行に収まる文字数で設計。折り返し禁止
+- スコア数値: `tabular-nums` で桁揃え
+- カメラ画面オーバーレイのバッジは背景 `rgba(0,0,0,0.45)` + 白文字 + `backdrop-filter: blur(8px)`
+
+#### カード（ProductCard / HeroCard / SmallLookCard）
+- タイトル・商品名・ルック名は1〜2行に収まるよう `overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2` で制御
+- 本文説明文: `15px / line-height 1.65`。カード内でも圧縮しない
+- 商品名に英語が混ざる場合、折り返しを実機確認する
+
+#### キラリのセリフ（Bubble）
+- `15px / line-height 1.65 / weight 400`
+- 語尾（「〜だよ♪」等）を含め自然な折り返しになるよう `line-break: strict` を適用
+- バブル幅は画面幅の `75%` を上限にする
+
+#### フォーム・カートサマリー
+- ラベル: `13px / weight 500`
+- 入力フィールドの `line-height: 1.5` を明示（本文ルールを引き継がない）
+- カートサマリーバーは商品名が長くても1行に収まるよう `text-overflow: ellipsis` を使う
+
+#### カメラオーバーレイUI（MirrorScreen特有）
+- フルスクリーンカメラ上のUIは情報を最小限にする
+- 背景なしのテキストは使わない。必ず `backdrop-filter: blur(8px)` + 半透明背景を当てる
+- オーバーレイ上のボタンは `min-height: 48px`（通常より4px大きく）
+- 低照度アラートのキラリセリフは白文字 + shadow `0 1px 4px rgba(0,0,0,0.6)` で視認性を担保する
 
 ### UIパターン
-- 角丸: 12px〜24px
-- 影: `box-shadow: 0 2px 12px rgba(139,92,246,0.08)`
-- ガラスモーフィズム: `backdrop-filter: blur(8px)`（カメラ画面上のオーバーレイ）
-- `position: fixed` + `transform` の罠に注意 → `createPortal(…, document.body)` で回避
 
-### ジェンダーニュートラル原則
+- 角丸: `12px`（カード・入力欄）/ `20px`（ボタン）/ `24px`（モーダル・シート）
+- 影: `box-shadow: 0 2px 12px rgba(139,92,246,0.08)`
+- ガラスモーフィズム: `backdrop-filter: blur(8px)`（カメラ画面オーバーレイのみ）
+- `position: fixed` + `transform` の罠 → `createPortal(…, document.body)` で回避
+
+### ジェンダーニュートラル原則（UI文言契約）
+
 - UI上に「男性用」「女性用」「メンズ」「レディース」の表記禁止
 - スタイルタブは行為ベース（Color makeup / Base makeup / Skin care）
-- OK: 「清潔感アップ」「血色感をプラス」／NG: 「女子力アップ」「メンズ向け」
+- OK: 「清潔感アップ」「血色感をプラス」
+- NG: 「女子力アップ」「メンズ向け」「美人になる」
+
+### 薬機法・医療表現契約（UI文言）
+
+- 禁止: 「診断」「治療」「病気」「あなたは○○タイプです」（断定表現）
+- OK: 「チェック」「ケア」「スコア」「○○の傾向があります」
+- コスメ推薦: 効果効能の断定禁止（「シワが消える」等）
+- 結果画面・スキンケアAR画面に必ず免責表示: `※本アプリは医療診断を行うものではありません`
+
+### バリデーション観点（UI生成後の確認チェック）
+
+生成したUIは以下の観点で必ず確認する:
+
+- [ ] カメラオーバーレイ上のテキストが視認できるか（コントラスト比）
+- [ ] パーソナルカラーバッジ（Spring等）がモバイル幅で1行に収まっているか
+- [ ] `ARトライオン` `KIREI SELECT` 等mixed-script見出しの折り返しが自然か
+- [ ] CTAボタンのタップターゲットが44px以上あるか
+- [ ] キラリのセリフが自然な禁則処理で折り返されているか
+- [ ] カートサマリーバーで商品名が長い場合に崩れないか
+- [ ] スコア数値の桁が揃っているか（tabular-nums）
+- [ ] 免責表示がキャプションサイズ（13px）で潰れずに読めるか
 
 ---
 
